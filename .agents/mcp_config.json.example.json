@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "intellij": {
+      "command": "npx",
+      "args": ["-y", "@jetbrains/mcp-proxy"],
+      "disabled": false,
+      "autoApprove": []
+    },
+    "vscode": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-vscode"],
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}
