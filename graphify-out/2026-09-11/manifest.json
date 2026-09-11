@@ -6,10 +6,10 @@
     "semantic_hash": "9686f5c4adddd12d578ecb91ae85d92d"
   },
   ".agents/mcp_config.json": {
-    "mtime": 1789127560.226534,
-    "seen": 1789128233.8141403,
-    "ast_hash": "eabe3536b4e64d65e63ec23e6c87681c",
-    "semantic_hash": ""
+    "mtime": 1789119482.3596182,
+    "seen": 1789125311.391016,
+    "ast_hash": "1363b03a71edd72c1b643b8c8cb24642",
+    "semantic_hash": "1363b03a71edd72c1b643b8c8cb24642"
   },
   ".agents/skills/caveman-compress/scripts/__init__.py": {
     "mtime": 1788778730.9398146,
@@ -1018,17 +1018,5 @@
     "seen": 1789125311.3912106,
     "ast_hash": "081c348d068770af78fcd90980521318",
     "semantic_hash": "081c348d068770af78fcd90980521318"
-  },
-  ".agents/rules/caveman.md": {
-    "mtime": 1789127708.2963715,
-    "seen": 1789128233.8143735,
-    "ast_hash": "49cd7bc30fe67a615a61ceef217a5b11",
-    "semantic_hash": ""
-  },
-  "backend/AGENTS.md": {
-    "mtime": 1789126339.6698582,
-    "seen": 1789128233.8147311,
-    "ast_hash": "2524f18b6789f49c162e16cdaca82bf0",
-    "semantic_hash": ""
   }
 }

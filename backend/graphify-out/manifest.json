@@ -1,0 +1,74 @@
+{
+  "build.gradle.kts": {
+    "mtime": 1788493958.6345415,
+    "seen": 1789125828.8595538,
+    "ast_hash": "bda97192602d7ec605e747b1b346f635",
+    "semantic_hash": ""
+  },
+  "gradlew": {
+    "mtime": 1788493958.6345415,
+    "seen": 1789125828.8595595,
+    "ast_hash": "a43be8432bac3ffd05b3769aa42fe996",
+    "semantic_hash": ""
+  },
+  "settings.gradle.kts": {
+    "mtime": 1788493958.6345415,
+    "seen": 1789125828.859562,
+    "ast_hash": "ceac6392a093be1fcc23ef9c9a7436da",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/Models/AcademicContext.java": {
+    "mtime": 1789123264.017099,
+    "seen": 1789125828.8595634,
+    "ast_hash": "14a8ff2ad8410553302daf8af2f614f1",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/Models/AcademicEvent.java": {
+    "mtime": 1789123298.6254215,
+    "seen": 1789125828.8595648,
+    "ast_hash": "6c2df6632df0ef1fdc22232302de3070",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/Models/Course.java": {
+    "mtime": 1789123298.6709762,
+    "seen": 1789125828.859566,
+    "ast_hash": "4bd492f897906c0e13382b62d91d3a7c",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/Models/Enums/TaskStatus.java": {
+    "mtime": 1789122993.1983638,
+    "seen": 1789125828.8595674,
+    "ast_hash": "813a8f58ab59ae2864d8a094db632d12",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/Models/Note.java": {
+    "mtime": 1789123298.6939895,
+    "seen": 1789125828.8595684,
+    "ast_hash": "648f0203f83fb04fd537de8474bcf2ae",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/Models/Schedule.java": {
+    "mtime": 1789123298.6029422,
+    "seen": 1789125828.85957,
+    "ast_hash": "fc0235330ea5747ba6bc887b6d6d5856",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/Models/Task.java": {
+    "mtime": 1789123410.243422,
+    "seen": 1789125828.859571,
+    "ast_hash": "cbf60d902ef7e2a1e50ba9abffa44741",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/NyareApplication.java": {
+    "mtime": 1788495177.03335,
+    "seen": 1789125828.8595722,
+    "ast_hash": "5354638197d9130838583e3dfe5b41d8",
+    "semantic_hash": ""
+  },
+  "src/test/java/group/four/nyare/nyare/NyareApplicationTests.java": {
+    "mtime": 1788493958.6385417,
+    "seen": 1789125828.8595736,
+    "ast_hash": "42273f9430f79bfdc75f34bb23971c27",
+    "semantic_hash": ""
+  }
+}
