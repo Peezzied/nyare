@@ -1,6 +1,7 @@
 {
   "mcpServers": {
     "intellij": {
+      "$typeName": "McpServer",
       "command": "npx",
       "args": ["-y", "@jetbrains/mcp-proxy"],
       "disabled": false

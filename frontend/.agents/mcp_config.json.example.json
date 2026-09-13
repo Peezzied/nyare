@@ -1,6 +1,7 @@
 {
   "mcpServers": {
     "vscode": {
+      "$typeName": "McpServer",
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-vscode"],
       "disabled": false
