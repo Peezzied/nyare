@@ -1,7 +1,7 @@
-package group.four.nyare.nyare.Repositories;
+package group.four.nyare.nyare.repository;
 
-import group.four.nyare.nyare.Models.Enums.TaskStatus;
-import group.four.nyare.nyare.Models.Task;
+import group.four.nyare.nyare.model.Task;
+import group.four.nyare.nyare.model.enums.TaskStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

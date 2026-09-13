@@ -1,6 +1,6 @@
-package group.four.nyare.nyare.Repositories;
+package group.four.nyare.nyare.repository;
 
-import group.four.nyare.nyare.Models.Course;
+import group.four.nyare.nyare.model.Course;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -9,4 +9,3 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface CourseRepository extends JpaRepository<Course, Long> {
 }
-

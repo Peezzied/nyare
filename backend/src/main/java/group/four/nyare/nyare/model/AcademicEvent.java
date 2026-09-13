@@ -1,4 +1,4 @@
-package group.four.nyare.nyare.Models;
+package group.four.nyare.nyare.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,29 +28,29 @@ public class AcademicEvent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private UUID id;
 
     @NotNull(message = "Course is required")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "course_id", nullable = false)
+    @JoinColumn(nullable = false)
     private Course course;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "note_id")
+    @JoinColumn
     private Note note;
 
     @NotBlank(message = "Event title cannot be blank")
     @Size(max = 255, message = "Event title cannot exceed 255 characters")
-    @Column(name = "title", nullable = false, length = 255)
+    @Column(nullable = false, length = 255)
     private String title;
 
     @Size(max = 2048, message = "Event description cannot exceed 2048 characters")
-    @Column(name = "description", length = 2048)
+    @Column(length = 2048)
     private String description;
 
     @NotNull(message = "Deadline is required")
-    @Column(name = "deadline", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime deadline;
 
     /**
@@ -134,24 +134,10 @@ public class AcademicEvent {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AcademicEvent that = (AcademicEvent) o;
-        return id != null && id.equals(that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
-
-    @Override
     public String toString() {
         return "AcademicEvent{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
                 ", deadline=" + deadline +
                 '}';
     }

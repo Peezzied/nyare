@@ -1,4 +1,4 @@
-package group.four.nyare.nyare.Models;
+package group.four.nyare.nyare.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,27 +30,26 @@ public class Note {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private UUID id;
 
     @NotNull(message = "Course is required")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "course_id", nullable = false)
+    @JoinColumn(nullable = false)
     private Course course;
 
     /**
      * Rich text content represented as a JSON string (e.g. TipTap JSON format).
      */
     @NotBlank(message = "Note content cannot be blank")
-    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
     @LastModifiedDate
-    @Column(name = "updated_at")
     private Instant updatedAt;
 
     /**
@@ -104,19 +103,6 @@ public class Note {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Note note = (Note) o;
-        return id != null && id.equals(note.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
     }
 
     @Override
