@@ -45,7 +45,7 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 
 - **Explore / Query**: Run `graphify query "<question>"` or `graphify explain "<concept>"` before large refactors or navigation.
 - **Check Paths**: Run `graphify path "<A>" "<B>"` to inspect dependencies between modules.
-- **Keep Graph Fresh**: Run `graphify update .` after modifying Java files or project dependencies.
+- **Keep Graph Fresh**: Run `graphify update .` after modifying Java files or project dependencies (always run outside sandbox with `BypassSandbox: true` and `Cwd` set to the backend project root).
 
 ---
 
@@ -56,17 +56,3 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 3. **Tier 3 (Strict Last Resort)**: Full CLI build (`./gradlew build`) reserved strictly for final verification or when MCP is unreachable.
 
 ---
-
-## Build & Test Commands (Fallback / Final Gate)
-
-```bash
-# Build project (Final gate only)
-./gradlew build
-
-# Run unit and integration tests
-./gradlew test
-
-# Start local dev server
-./gradlew bootRun
-```
-
