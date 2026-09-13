@@ -6,8 +6,8 @@ description: Use when designing, architecting, or reviewing features, APIs, serv
 # Architect Craft
 
 ## Overview
-
-**Architect Craft** is the authoritative system architecture skill for Nyare. It unifies Nyare's **Core Domain Invariants** (calendar-first planning, virtual study plan, append-only AI extraction, tri-state recommendations, rigid events vs. flexible tasks, and uncertainty preservation) with **Dr. JSkill's Spring Boot engineering standards** (Spring Boot 4.x, Java 25, clean layering, RESTful contracts, and robust verification).
+ 
+**Architect Craft** is the authoritative system architecture skill for Nyare. It unifies Superpowers process discipline ([`superpowers:brainstorming`](file:///C:/Users/karol/.gemini/config/plugins/superpowers/skills/brainstorming/SKILL.md) and [`superpowers:writing-plans`](file:///C:/Users/karol/.gemini/config/plugins/superpowers/skills/writing-plans/SKILL.md)), Nyare's **Core Domain Invariants** (calendar-first planning, virtual study plan, append-only AI extraction, tri-state recommendations, rigid events vs. flexible tasks, and uncertainty preservation), and **Dr. JSkill's Spring Boot engineering standards** (Spring Boot 4.x, Java 25, clean layering, RESTful contracts, and robust verification).
 
 Whenever you design, structure, or review any backend or full-stack capability in Nyare, this skill enforces the boundaries, ubiquitous language, and patterns that keep the architecture clean, predictable, and resilient against over-engineering.
 
@@ -28,7 +28,20 @@ Whenever you design, structure, or review any backend or full-stack capability i
 
 ---
 
-## Foundation 1: Dependency on Dr. JSkill Best Practices
+## Foundation 1: Process Integration with Superpowers
+
+Architect Craft operates hand-in-hand with the Superpowers design and planning lifecycle:
+
+1. **Exploration & Requirements Phase**:
+   - **REQUIRED PROCESS**: Use [`superpowers:brainstorming`](file:///C:/Users/karol/.gemini/config/plugins/superpowers/skills/brainstorming/SKILL.md) before designing new features, changing system behavior, or structuring components.
+   - Clarify domain constraints, propose alternative approaches with trade-offs, align on design decisions, and present specs in structured sections for user approval before implementation.
+2. **Implementation Planning Phase**:
+   - **REQUIRED PROCESS**: Use [`superpowers:writing-plans`](file:///C:/Users/karol/.gemini/config/plugins/superpowers/skills/writing-plans/SKILL.md) once design specifications are approved.
+   - Break architecture changes into bite-sized, TDD-driven tasks with clear file structures, verification gates, and atomic commits.
+
+---
+
+## Foundation 2: Dependency on Dr. JSkill Best Practices
 
 Architect Craft strictly incorporates and depends on [Dr. JSkill (`dr-jskill`)](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/.agents/skills/dr-jskill/SKILL.md):
 
@@ -53,7 +66,7 @@ Architect Craft strictly incorporates and depends on [Dr. JSkill (`dr-jskill`)](
 
 ---
 
-## Foundation 2: Core Domain Invariants
+## Foundation 3: Core Domain Invariants
 
 Every architectural design must strictly respect the provisions established in the global architecture documentation:
 - [Conceptual Model & Domain Dictionary](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/docs/conceptual-model.md)
