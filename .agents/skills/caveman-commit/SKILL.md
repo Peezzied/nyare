@@ -5,7 +5,7 @@ description: >
   "write a commit", "commit message", /commit or /caveman-commit.
 ---
 
-Write commit messages terse and exact. Conventional Commits format. No fluff. Why over what.
+Write commit messages terse and exact. Conventional Commits format. No fluff. Why over what. Use minimal/low thinking effort (budget minimal reasoning tokens since generating commit messages is concise and direct).
 
 ## Rules
 
