@@ -12,7 +12,7 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 
 ---
 
-## Domain Model (`group.four.nyare.nyare.Models`)
+## Domain Model (`group.four.nyare.nyare.model`)
 
 - **`Course`**: Academic subject containing schedules, notes, tasks, events, and context.
 - **`Schedule`**: Recurring weekly class meeting times (`day`, `startTime`, `endTime`, `course`).
@@ -27,15 +27,18 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 ## Core Architecture & Guidelines
 
 1. **Layered Structure**:
-   - Entities: `group.four.nyare.nyare.Models`
-   - Repositories: Spring Data JPA repositories extending `JpaRepository` or `CrudRepository`
-   - Services: Domain business logic and validation
-   - Controllers: REST endpoints returning JSON / Problem Details (RFC 7807)
+   - Packages: All lowercase (`group.four.nyare.nyare.model`, `dto`, `repository`, `service`, `controller`, `exception`).
+   - Repositories: Spring Data JPA repositories extending `JpaRepository` or `CrudRepository`.
+   - Services: Interface + Implementation (`XxxService` + `XxxServiceImpl`) with class-level `@Transactional(readOnly = true)`.
+   - Controllers: REST endpoints returning JSON / Problem Details (RFC 7807) with unversioned paths (`/api/...`).
 2. **Domain Boundaries**:
    - AI processing operates only on current day's journal entries (`Note`).
    - Preserve uncertainty: never invent deadlines or missing metadata.
    - Do not implement automatic task merging, splitting, or deterministic scoring systems (MVP boundary).
    - Deadlines (`AcademicEvent.deadline`) are fixed constraints; task dates (`Task.scheduledDate`) are flexible suggestions.
+3. **Conventions & Standards Reference**:
+   - All backend components must adhere to the standards in `docs/conventions.md`.
+   - When designing, creating, or modifying entities, DTOs, services, or controllers, fetch and inspect `docs/conventions.md` for exact patterns, validation rules, and templates.
 
 ---
 
