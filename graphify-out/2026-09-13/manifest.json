@@ -234,9 +234,9 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/Models/Task.java": {
-    "mtime": 1789287508.961693,
-    "seen": 1789288668.8893843,
-    "ast_hash": "c2bef803da4db72abfb283b9c91866e5",
+    "mtime": 1789301476.2143867,
+    "seen": 1789302032.5985844,
+    "ast_hash": "86f90010adf9697db2ea2f2c51f304ee",
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/NyareApplication.java": {
@@ -246,10 +246,10 @@
     "semantic_hash": ""
   },
   "backend/src/test/java/group/four/nyare/nyare/NyareApplicationTests.java": {
-    "mtime": 1788493958.6385417,
-    "seen": 1789125311.3910732,
-    "ast_hash": "42273f9430f79bfdc75f34bb23971c27",
-    "semantic_hash": "42273f9430f79bfdc75f34bb23971c27"
+    "mtime": 1789297591.2724488,
+    "seen": 1789302032.5986054,
+    "ast_hash": "4ccb1d1d570ce8b82a10b6e4ba4702ca",
+    "semantic_hash": ""
   },
   "frontend/.vscode/extensions.json": {
     "mtime": 1788498117.9945378,
@@ -969,6 +969,78 @@
     "mtime": 1789286011.2853136,
     "seen": 1789288668.8895392,
     "ast_hash": "f7add5c0ee870fa845f57b4489bf330d",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskRequest.java": {
+    "mtime": 1789300480.6654027,
+    "seen": 1789302032.5985394,
+    "ast_hash": "2d9ecd114c00988e264d2b49e67e135d",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java": {
+    "mtime": 1789300489.4232721,
+    "seen": 1789302032.598547,
+    "ast_hash": "fcef55ea8572bd692e211db333ca0499",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskStatusRequest.java": {
+    "mtime": 1789300485.405689,
+    "seen": 1789302032.5985513,
+    "ast_hash": "9d7052a8db3dbf7458ccb3753a0f7795",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/group/four/nyare/nyare/Repositories/CourseRepository.java": {
+    "mtime": 1789301465.7872813,
+    "seen": 1789302032.5985935,
+    "ast_hash": "cbc4462cf3867b34c3a6c034bc58ce1c",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/group/four/nyare/nyare/Repositories/TaskRepository.java": {
+    "mtime": 1789301471.71989,
+    "seen": 1789302032.5985973,
+    "ast_hash": "8da62e3fc96ef6f11f3f52dd5202c57e",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java": {
+    "mtime": 1789301652.3703105,
+    "seen": 1789302032.598601,
+    "ast_hash": "6e68ee0edb24817a66850ba3ac0bb174",
+    "semantic_hash": ""
+  },
+  ".agents/rules/ponytail.md": {
+    "mtime": 1789297124.7576902,
+    "seen": 1789302032.5986512,
+    "ast_hash": "c015b34524a6b541eb95b792e6e61626",
+    "semantic_hash": ""
+  },
+  "backend/docs/api/openapi.yaml": {
+    "mtime": 1789300531.102338,
+    "seen": 1789302032.5991437,
+    "ast_hash": "40a76386fb3eadf9ae89d216219bbda5",
+    "semantic_hash": ""
+  },
+  "backend/docs/api/tasks-api.md": {
+    "mtime": 1789300495.1837926,
+    "seen": 1789302032.599148,
+    "ast_hash": "910df0563648987ccf231f10799399a6",
+    "semantic_hash": ""
+  },
+  "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md": {
+    "mtime": 1789297414.172243,
+    "seen": 1789302032.5991585,
+    "ast_hash": "85572e6668b743937862cdb2eb31604e",
+    "semantic_hash": ""
+  },
+  "docs/openapi.yaml": {
+    "mtime": 1789300542.4998546,
+    "seen": 1789302032.5991623,
+    "ast_hash": "40a76386fb3eadf9ae89d216219bbda5",
+    "semantic_hash": ""
+  },
+  "docs/tasks-api.md": {
+    "mtime": 1789300507.6694252,
+    "seen": 1789302032.5991662,
+    "ast_hash": "910df0563648987ccf231f10799399a6",
     "semantic_hash": ""
   }
 }

@@ -1,4 +1,4 @@
-package group.four.nyare.nyare.Models;
+package group.four.nyare.nyare.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,16 +19,16 @@ public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private Long id;
 
     @NotBlank(message = "Course name is required")
     @Size(max = 128, message = "Course name cannot exceed 128 characters")
-    @Column(name = "name", nullable = false, length = 128)
+    @Column(nullable = false, length = 128)
     private String name;
 
     @Size(max = 1024, message = "Course description cannot exceed 1024 characters")
-    @Column(name = "description", length = 1024)
+    @Column(length = 1024)
     private String description;
 
     /**
@@ -69,24 +69,10 @@ public class Course {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Course course = (Course) o;
-        return id != null && id.equals(course.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
-
-    @Override
     public String toString() {
         return "Course{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
                 '}';
     }
 }

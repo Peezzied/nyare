@@ -229,6 +229,45 @@
       "source_location": "L43"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dtos_taskrequest_taskrequest",
+      "label": "TaskRequest",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": "taskrequest",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskRequest.java",
+      "source_location": "L23"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse",
+      "label": "TaskResponse",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": "taskresponse",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java",
+      "source_location": "L26"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dtos_taskstatusrequest_taskstatusrequest",
+      "label": "TaskStatusRequest",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": "taskstatusrequest",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskStatusRequest.java",
+      "source_location": "L12"
+    },
+    {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task",
       "label": "Task",
       "_callable": true,
@@ -239,7 +278,46 @@
       "file_type": "code",
       "norm_label": "task",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L34"
+      "source_location": "L35"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repositories_courserepository_courserepository",
+      "label": "CourseRepository",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": "courserepository",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/CourseRepository.java",
+      "source_location": "L10"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repositories_taskrepository_taskrepository",
+      "label": "TaskRepository",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": "taskrepository",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/TaskRepository.java",
+      "source_location": "L16"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice",
+      "label": "TaskService",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": "taskservice",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L24"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_academicevent_academicevent",
@@ -312,12 +390,12 @@
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 72,
+      "community": 98,
       "community_name": "TaskStatus",
       "file_type": "code",
       "norm_label": "taskstatus",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Enums/TaskStatus.java",
-      "source_location": "L3"
+      "source_location": "L6"
     },
     {
       "id": "agents_skills_dr_jskill_scripts_create_basic_project_usage",
@@ -1986,6 +2064,18 @@
       "source_location": "L44"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse_from",
+      "label": ".from()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": ".from()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java",
+      "source_location": "L44"
+    },
+    {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_equals",
       "label": ".equals()",
       "_callable": true,
@@ -1995,7 +2085,19 @@
       "file_type": "code",
       "norm_label": ".equals()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L191"
+      "source_location": "L199"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getcourse",
+      "label": ".getCourse()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": ".getcourse()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
+      "source_location": "L127"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getcreatedat",
@@ -2007,7 +2109,7 @@
       "file_type": "code",
       "norm_label": ".getcreatedat()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L175"
+      "source_location": "L183"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getdescription",
@@ -2019,7 +2121,7 @@
       "file_type": "code",
       "norm_label": ".getdescription()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L143"
+      "source_location": "L151"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getduration",
@@ -2031,7 +2133,7 @@
       "file_type": "code",
       "norm_label": ".getduration()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L159"
+      "source_location": "L167"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getid",
@@ -2043,7 +2145,19 @@
       "file_type": "code",
       "norm_label": ".getid()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L115"
+      "source_location": "L123"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getnote",
+      "label": ".getNote()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": ".getnote()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
+      "source_location": "L135"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getscheduleddate",
@@ -2055,7 +2169,7 @@
       "file_type": "code",
       "norm_label": ".getscheduleddate()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L151"
+      "source_location": "L159"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getstatus",
@@ -2067,7 +2181,7 @@
       "file_type": "code",
       "norm_label": ".getstatus()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L167"
+      "source_location": "L175"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_gettitle",
@@ -2079,7 +2193,7 @@
       "file_type": "code",
       "norm_label": ".gettitle()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L135"
+      "source_location": "L143"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getupdatedat",
@@ -2091,7 +2205,7 @@
       "file_type": "code",
       "norm_label": ".getupdatedat()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L183"
+      "source_location": "L191"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_hashcode",
@@ -2103,7 +2217,7 @@
       "file_type": "code",
       "norm_label": ".hashcode()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L199"
+      "source_location": "L207"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_setcourse",
@@ -2115,7 +2229,7 @@
       "file_type": "code",
       "norm_label": ".setcourse()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L123"
+      "source_location": "L131"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_setcreatedat",
@@ -2127,7 +2241,7 @@
       "file_type": "code",
       "norm_label": ".setcreatedat()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L179"
+      "source_location": "L187"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_setdescription",
@@ -2139,7 +2253,7 @@
       "file_type": "code",
       "norm_label": ".setdescription()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L147"
+      "source_location": "L155"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_setduration",
@@ -2151,7 +2265,19 @@
       "file_type": "code",
       "norm_label": ".setduration()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L163"
+      "source_location": "L171"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_setnote",
+      "label": ".setNote()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": ".setnote()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
+      "source_location": "L139"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_setscheduleddate",
@@ -2163,7 +2289,7 @@
       "file_type": "code",
       "norm_label": ".setscheduleddate()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L155"
+      "source_location": "L163"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_setstatus",
@@ -2175,7 +2301,7 @@
       "file_type": "code",
       "norm_label": ".setstatus()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L171"
+      "source_location": "L179"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_settitle",
@@ -2187,7 +2313,7 @@
       "file_type": "code",
       "norm_label": ".settitle()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L139"
+      "source_location": "L147"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_setupdatedat",
@@ -2199,7 +2325,19 @@
       "file_type": "code",
       "norm_label": ".setupdatedat()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L187"
+      "source_location": "L195"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_task",
+      "label": ".Task()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": ".task()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
+      "source_location": "L92"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_tostring",
@@ -2211,7 +2349,91 @@
       "file_type": "code",
       "norm_label": ".tostring()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L204"
+      "source_location": "L212"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repositories_taskrepository_taskrepository_findallfiltered",
+      "label": ".findAllFiltered()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": ".findallfiltered()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/TaskRepository.java",
+      "source_location": "L28"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_createtask",
+      "label": ".createTask()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": ".createtask()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L36"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_deletetask",
+      "label": ".deleteTask()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": ".deletetask()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L93"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_gettask",
+      "label": ".getTask()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": ".gettask()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L58"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_listtasks",
+      "label": ".listTasks()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": ".listtasks()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L47"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_updatetask",
+      "label": ".updateTask()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": ".updatetask()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L71"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_updatetaskstatus",
+      "label": ".updateTaskStatus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": ".updatetaskstatus()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L83"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_academicevent_academicevent_academicevent",
@@ -2536,30 +2758,6 @@
       "norm_label": ".tostring()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Note.java",
       "source_location": "L122"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getnote",
-      "label": ".getNote()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 60,
-      "community_name": "Note",
-      "file_type": "code",
-      "norm_label": ".getnote()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L127"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_setnote",
-      "label": ".setNote()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 60,
-      "community_name": "Note",
-      "file_type": "code",
-      "norm_label": ".setnote()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L131"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_academiccontext_academiccontext_academiccontext",
@@ -2992,30 +3190,6 @@
       "norm_label": ".setcourse()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Note.java",
       "source_location": "L81"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getcourse",
-      "label": ".getCourse()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 70,
-      "community_name": "Course",
-      "file_type": "code",
-      "norm_label": ".getcourse()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L119"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_models_task_task_task",
-      "label": ".Task()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 70,
-      "community_name": "Course",
-      "file_type": "code",
-      "norm_label": ".task()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L84"
     },
     {
       "id": "agents_skills_dr_jskill_docs_vuepress_client_decodehash",
@@ -3815,6 +3989,17 @@
       "norm_label": "classify a file as 'natural_language', 'code', 'config', or 'unknown'. returns:...",
       "source_file": ".agents/skills/caveman-compress/scripts/detect.py",
       "source_location": "L78"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_models_task_java_override",
+      "label": "Override",
+      "_origin": "ast",
+      "community": 100,
+      "community_name": "Override",
+      "file_type": "code",
+      "norm_label": "override",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "agents_skills_caveman_explore_package",
@@ -7249,13 +7434,90 @@
       "source_location": "L9"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_models_task_java_override",
-      "label": "Override",
+      "id": "backend_src_main_java_group_four_nyare_nyare_dtos_taskrequest",
+      "label": "TaskRequest.java",
       "_origin": "ast",
       "community": 58,
       "community_name": "Task",
       "file_type": "code",
-      "norm_label": "override",
+      "norm_label": "taskrequest.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskRequest.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse",
+      "label": "TaskResponse.java",
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": "taskresponse.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dtos_taskstatusrequest",
+      "label": "TaskStatusRequest.java",
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": "taskstatusrequest.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskStatusRequest.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_models_task_java_course",
+      "label": "Course",
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": "course",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repositories_courserepository",
+      "label": "CourseRepository.java",
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": "courserepository.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/CourseRepository.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repositories_taskrepository",
+      "label": "TaskRepository.java",
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": "taskrepository.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/TaskRepository.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_services_taskservice",
+      "label": "TaskService.java",
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": "taskservice.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "group_four_nyare_nyare_models_course",
+      "label": "group.four.nyare.nyare.Models.Course",
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": "group.four.nyare.nyare.models.course",
       "source_file": "",
       "source_location": ""
     },
@@ -7267,6 +7529,50 @@
       "community_name": "Task",
       "file_type": "code",
       "norm_label": "group.four.nyare.nyare.models.enums.taskstatus",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "note",
+      "label": "Note",
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": "note",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_springframework_data_jpa_repository_jparepository",
+      "label": "org.springframework.data.jpa.repository.JpaRepository",
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": "org.springframework.data.jpa.repository.jparepository",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_springframework_data_jpa_repository_query",
+      "label": "org.springframework.data.jpa.repository.Query",
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": "org.springframework.data.jpa.repository.query",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "override",
+      "label": "Override",
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": "override",
       "source_file": "",
       "source_location": ""
     },
@@ -7728,48 +8034,472 @@
       "source_location": "L139"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_models_enums_taskstatus",
-      "label": "TaskStatus.java",
+      "id": "backend_docs_api_tasks_api",
+      "label": "api/tasks-api.md",
       "_origin": "ast",
       "community": 72,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": "taskstatus.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Enums/TaskStatus.java",
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "api/tasks-api.md",
+      "source_file": "backend/docs/api/tasks-api.md",
       "source_location": "L1"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_models_enums_taskstatus_taskstatus_completed",
-      "label": "COMPLETED",
+      "id": "backend_docs_api_tasks_api_1_overview_domain_architecture",
+      "label": "1. Overview & Domain Architecture",
       "_origin": "ast",
       "community": 72,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": "completed",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Enums/TaskStatus.java",
-      "source_location": "L6"
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "1. overview & domain architecture",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L10"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_models_enums_taskstatus_taskstatus_in_progress",
-      "label": "IN_PROGRESS",
+      "id": "backend_docs_api_tasks_api_2_1_taskstatus_enum",
+      "label": "2.1 TaskStatus Enum",
       "_origin": "ast",
       "community": 72,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": "in_progress",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Enums/TaskStatus.java",
-      "source_location": "L5"
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "2.1 taskstatus enum",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L26"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_models_enums_taskstatus_taskstatus_todo",
-      "label": "TODO",
+      "id": "backend_docs_api_tasks_api_2_2_task_schema_overview",
+      "label": "2.2 Task Schema Overview",
       "_origin": "ast",
       "community": 72,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": "todo",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Enums/TaskStatus.java",
-      "source_location": "L4"
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "2.2 task schema overview",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L36"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_2_data_models_enums",
+      "label": "2. Data Models & Enums",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "2. data models & enums",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_3_1_400_bad_request_example_validation_failure",
+      "label": "3.1 400 Bad Request Example (Validation Failure)",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "3.1 400 bad request example (validation failure)",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L68"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_3_2_404_not_found_example",
+      "label": "3.2 404 Not Found Example",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "3.2 404 not found example",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L82"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_3_error_handling_rfc_7807_problem_details",
+      "label": "3. Error Handling (RFC 7807 Problem Details)",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "3. error handling (rfc 7807 problem details)",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L53"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_4_1_create_task",
+      "label": "4.1 Create Task",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4.1 create task",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L113"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_4_2_list_tasks",
+      "label": "4.2 List Tasks",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4.2 list tasks",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L190"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_4_3_get_task_by_id",
+      "label": "4.3 Get Task by ID",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4.3 get task by id",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L259"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_4_4_full_update_of_task",
+      "label": "4.4 Full Update of Task",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4.4 full update of task",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L312"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_4_5_update_task_status_only",
+      "label": "4.5 Update Task Status Only",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4.5 update task status only",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L402"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_4_6_delete_task",
+      "label": "4.6 Delete Task",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4.6 delete task",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L478"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_4_endpoints_specification",
+      "label": "4. Endpoints Specification",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4. endpoints specification",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L98"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_example_request",
+      "label": "Example Request",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "example request",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L133"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_example_request_202",
+      "label": "Example Request",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "example request",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L202"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_example_request_269",
+      "label": "Example Request",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "example request",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L269"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_example_request_335",
+      "label": "Example Request",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "example request",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L335"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_example_request_417",
+      "label": "Example Request",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "example request",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L417"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_example_request_488",
+      "label": "Example Request",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "example request",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L488"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_nyare_task_management_service_api_specification",
+      "label": "Nyare Task Management Service API Specification",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "nyare task management service api specification",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_path_parameters",
+      "label": "Path Parameters",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "path parameters",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L264"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_path_parameters_317",
+      "label": "Path Parameters",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "path parameters",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L317"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_path_parameters_407",
+      "label": "Path Parameters",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "path parameters",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L407"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_path_parameters_483",
+      "label": "Path Parameters",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "path parameters",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L483"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_problem_details_schema",
+      "label": "Problem Details Schema",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "problem details schema",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L57"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_query_parameters",
+      "label": "Query Parameters",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "query parameters",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L195"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_request_body_taskrequest",
+      "label": "Request Body (`TaskRequest`)",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "request body (`taskrequest`)",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L122"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_request_body_taskrequest_322",
+      "label": "Request Body (`TaskRequest`)",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "request body (`taskrequest`)",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L322"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_request_body_taskstatusrequest",
+      "label": "Request Body (`TaskStatusRequest`)",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "request body (`taskstatusrequest`)",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L412"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_request_headers",
+      "label": "Request Headers",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "request headers",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L118"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_responses",
+      "label": "Responses",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "responses",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L150"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_responses_209",
+      "label": "Responses",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "responses",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L209"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_responses_276",
+      "label": "Responses",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "responses",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L276"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_responses_352",
+      "label": "Responses",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "responses",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L352"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_responses_428",
+      "label": "Responses",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "responses",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L428"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_responses_494",
+      "label": "Responses",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "responses",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L494"
+    },
+    {
+      "id": "backend_docs_api_tasks_api_summary_table",
+      "label": "Summary Table",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "summary table",
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L100"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_models_academiccontext_java_entity",
@@ -7931,6 +8661,710 @@
       "norm_label": "entity",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "docs_tasks_api",
+      "label": "docs/tasks-api.md",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "docs/tasks-api.md",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "docs_tasks_api_1_overview_domain_architecture",
+      "label": "1. Overview & Domain Architecture",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "1. overview & domain architecture",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L10"
+    },
+    {
+      "id": "docs_tasks_api_2_1_taskstatus_enum",
+      "label": "2.1 TaskStatus Enum",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "2.1 taskstatus enum",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L26"
+    },
+    {
+      "id": "docs_tasks_api_2_2_task_schema_overview",
+      "label": "2.2 Task Schema Overview",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "2.2 task schema overview",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L36"
+    },
+    {
+      "id": "docs_tasks_api_2_data_models_enums",
+      "label": "2. Data Models & Enums",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "2. data models & enums",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "docs_tasks_api_3_1_400_bad_request_example_validation_failure",
+      "label": "3.1 400 Bad Request Example (Validation Failure)",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "3.1 400 bad request example (validation failure)",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L68"
+    },
+    {
+      "id": "docs_tasks_api_3_2_404_not_found_example",
+      "label": "3.2 404 Not Found Example",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "3.2 404 not found example",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L82"
+    },
+    {
+      "id": "docs_tasks_api_3_error_handling_rfc_7807_problem_details",
+      "label": "3. Error Handling (RFC 7807 Problem Details)",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "3. error handling (rfc 7807 problem details)",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L53"
+    },
+    {
+      "id": "docs_tasks_api_4_1_create_task",
+      "label": "4.1 Create Task",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4.1 create task",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L113"
+    },
+    {
+      "id": "docs_tasks_api_4_2_list_tasks",
+      "label": "4.2 List Tasks",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4.2 list tasks",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L190"
+    },
+    {
+      "id": "docs_tasks_api_4_3_get_task_by_id",
+      "label": "4.3 Get Task by ID",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4.3 get task by id",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L259"
+    },
+    {
+      "id": "docs_tasks_api_4_4_full_update_of_task",
+      "label": "4.4 Full Update of Task",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4.4 full update of task",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L312"
+    },
+    {
+      "id": "docs_tasks_api_4_5_update_task_status_only",
+      "label": "4.5 Update Task Status Only",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4.5 update task status only",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L402"
+    },
+    {
+      "id": "docs_tasks_api_4_6_delete_task",
+      "label": "4.6 Delete Task",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4.6 delete task",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L478"
+    },
+    {
+      "id": "docs_tasks_api_4_endpoints_specification",
+      "label": "4. Endpoints Specification",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4. endpoints specification",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L98"
+    },
+    {
+      "id": "docs_tasks_api_example_request",
+      "label": "Example Request",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "example request",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L133"
+    },
+    {
+      "id": "docs_tasks_api_example_request_202",
+      "label": "Example Request",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "example request",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L202"
+    },
+    {
+      "id": "docs_tasks_api_example_request_269",
+      "label": "Example Request",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "example request",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L269"
+    },
+    {
+      "id": "docs_tasks_api_example_request_335",
+      "label": "Example Request",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "example request",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L335"
+    },
+    {
+      "id": "docs_tasks_api_example_request_417",
+      "label": "Example Request",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "example request",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L417"
+    },
+    {
+      "id": "docs_tasks_api_example_request_488",
+      "label": "Example Request",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "example request",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L488"
+    },
+    {
+      "id": "docs_tasks_api_nyare_task_management_service_api_specification",
+      "label": "Nyare Task Management Service API Specification",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "nyare task management service api specification",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "docs_tasks_api_path_parameters",
+      "label": "Path Parameters",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "path parameters",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L264"
+    },
+    {
+      "id": "docs_tasks_api_path_parameters_317",
+      "label": "Path Parameters",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "path parameters",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L317"
+    },
+    {
+      "id": "docs_tasks_api_path_parameters_407",
+      "label": "Path Parameters",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "path parameters",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L407"
+    },
+    {
+      "id": "docs_tasks_api_path_parameters_483",
+      "label": "Path Parameters",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "path parameters",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L483"
+    },
+    {
+      "id": "docs_tasks_api_problem_details_schema",
+      "label": "Problem Details Schema",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "problem details schema",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L57"
+    },
+    {
+      "id": "docs_tasks_api_query_parameters",
+      "label": "Query Parameters",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "query parameters",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L195"
+    },
+    {
+      "id": "docs_tasks_api_request_body_taskrequest",
+      "label": "Request Body (`TaskRequest`)",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "request body (`taskrequest`)",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L122"
+    },
+    {
+      "id": "docs_tasks_api_request_body_taskrequest_322",
+      "label": "Request Body (`TaskRequest`)",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "request body (`taskrequest`)",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L322"
+    },
+    {
+      "id": "docs_tasks_api_request_body_taskstatusrequest",
+      "label": "Request Body (`TaskStatusRequest`)",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "request body (`taskstatusrequest`)",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L412"
+    },
+    {
+      "id": "docs_tasks_api_request_headers",
+      "label": "Request Headers",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "request headers",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L118"
+    },
+    {
+      "id": "docs_tasks_api_responses",
+      "label": "Responses",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "responses",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L150"
+    },
+    {
+      "id": "docs_tasks_api_responses_209",
+      "label": "Responses",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "responses",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L209"
+    },
+    {
+      "id": "docs_tasks_api_responses_276",
+      "label": "Responses",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "responses",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L276"
+    },
+    {
+      "id": "docs_tasks_api_responses_352",
+      "label": "Responses",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "responses",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L352"
+    },
+    {
+      "id": "docs_tasks_api_responses_428",
+      "label": "Responses",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "responses",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L428"
+    },
+    {
+      "id": "docs_tasks_api_responses_494",
+      "label": "Responses",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "responses",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L494"
+    },
+    {
+      "id": "docs_tasks_api_summary_table",
+      "label": "Summary Table",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "4. Endpoints Specification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "summary table",
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L100"
+    },
+    {
+      "id": "backend_docs_superpowers_plans_2026_09_13_task_manager_service",
+      "label": "2026-09-13-task-manager-service.md",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "Task Manager Service Implementation Plan",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "2026-09-13-task-manager-service.md",
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_file_map",
+      "label": "File Map",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "Task Manager Service Implementation Plan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "file map",
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L32"
+    },
+    {
+      "id": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_global_constraints",
+      "label": "Global Constraints",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "Task Manager Service Implementation Plan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "global constraints",
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L13"
+    },
+    {
+      "id": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_placeholder_scan",
+      "label": "Placeholder Scan",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "Task Manager Service Implementation Plan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "placeholder scan",
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L1254"
+    },
+    {
+      "id": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_self_review_checklist",
+      "label": "Self-Review Checklist",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "Task Manager Service Implementation Plan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "self-review checklist",
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L1239"
+    },
+    {
+      "id": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_spec_coverage",
+      "label": "Spec Coverage",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "Task Manager Service Implementation Plan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "spec coverage",
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L1241"
+    },
+    {
+      "id": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_1_dtos_request_and_response_records",
+      "label": "Task 1: DTOs \u2014 Request and Response Records",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "Task Manager Service Implementation Plan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "task 1: dtos \u2014 request and response records",
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L50"
+    },
+    {
+      "id": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_2_repositories_taskrepository_and_courserepository",
+      "label": "Task 2: Repositories \u2014 TaskRepository and CourseRepository",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "Task Manager Service Implementation Plan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "task 2: repositories \u2014 taskrepository and courserepository",
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L190"
+    },
+    {
+      "id": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_3_service_layer_taskservice",
+      "label": "Task 3: Service Layer \u2014 TaskService",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "Task Manager Service Implementation Plan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "task 3: service layer \u2014 taskservice",
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L391"
+    },
+    {
+      "id": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_4_exception_handler_globalexceptionhandler",
+      "label": "Task 4: Exception Handler \u2014 GlobalExceptionHandler",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "Task Manager Service Implementation Plan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "task 4: exception handler \u2014 globalexceptionhandler",
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L773"
+    },
+    {
+      "id": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_5_rest_controller_taskcontroller",
+      "label": "Task 5: REST Controller \u2014 TaskController",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "Task Manager Service Implementation Plan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "task 5: rest controller \u2014 taskcontroller",
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L838"
+    },
+    {
+      "id": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_6_final_verification",
+      "label": "Task 6: Final Verification",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "Task Manager Service Implementation Plan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "task 6: final verification",
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L1198"
+    },
+    {
+      "id": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_manager_service_implementation_plan",
+      "label": "Task Manager Service Implementation Plan",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "Task Manager Service Implementation Plan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "task manager service implementation plan",
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_type_consistency",
+      "label": "Type Consistency",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "Task Manager Service Implementation Plan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "type consistency",
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L1258"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_models_enums_taskstatus",
+      "label": "TaskStatus.java",
+      "_origin": "ast",
+      "community": 98,
+      "community_name": "TaskStatus",
+      "file_type": "code",
+      "norm_label": "taskstatus.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Enums/TaskStatus.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_models_enums_taskstatus_taskstatus_completed",
+      "label": "COMPLETED",
+      "_origin": "ast",
+      "community": 98,
+      "community_name": "TaskStatus",
+      "file_type": "code",
+      "norm_label": "completed",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Enums/TaskStatus.java",
+      "source_location": "L9"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_models_enums_taskstatus_taskstatus_in_progress",
+      "label": "IN_PROGRESS",
+      "_origin": "ast",
+      "community": 98,
+      "community_name": "TaskStatus",
+      "file_type": "code",
+      "norm_label": "in_progress",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Enums/TaskStatus.java",
+      "source_location": "L8"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_models_enums_taskstatus_taskstatus_todo",
+      "label": "TODO",
+      "_origin": "ast",
+      "community": 98,
+      "community_name": "TaskStatus",
+      "file_type": "code",
+      "norm_label": "todo",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Enums/TaskStatus.java",
+      "source_location": "L7"
+    },
+    {
+      "id": "agents_rules_ponytail",
+      "label": "ponytail.md",
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "ponytail.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "ponytail.md",
+      "source_file": ".agents/rules/ponytail.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "agents_rules_ponytail_ponytail_lazy_senior_dev_mode",
+      "label": "Ponytail, lazy senior dev mode",
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "ponytail.md",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "ponytail, lazy senior dev mode",
+      "source_file": ".agents/rules/ponytail.md",
+      "source_location": "L1"
     },
     {
       "id": "_agents_skills_graphify_references_exports_graph_database_export",
@@ -11516,7 +12950,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -11528,7 +12962,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -11540,7 +12974,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -11552,24 +12986,12 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
       "source": "backend_src_main_java_group_four_nyare_nyare_models_task_task_equals",
-      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_java_override",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "attribute",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L191",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_src_main_java_group_four_nyare_nyare_models_task_task_hashcode",
-      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_java_override",
+      "target": "override",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -11580,15 +13002,27 @@
       "weight": 1.0
     },
     {
-      "source": "backend_src_main_java_group_four_nyare_nyare_models_task_task_tostring",
-      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_java_override",
+      "source": "backend_src_main_java_group_four_nyare_nyare_models_task_task_hashcode",
+      "target": "override",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L204",
+      "source_location": "L207",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_models_task_task_tostring",
+      "target": "override",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
+      "source_location": "L212",
       "weight": 1.0
     },
     {
@@ -11613,6 +13047,18 @@
       "context": "attribute",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/NyareApplication.java",
       "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_repositories_taskrepository_taskrepository_findallfiltered",
+      "target": "org_springframework_data_jpa_repository_query",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/TaskRepository.java",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
@@ -13476,6 +14922,18 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse_from",
+      "target": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
       "source": "agents_skills_caveman_compress_scripts_validate_validate_inline_codes",
       "target": "agents_skills_caveman_compress_scripts_validate_validate_inline_codes_render_spans",
       "relation": "contains",
@@ -13485,6 +14943,42 @@
       "context": "call",
       "source_file": ".agents/skills/caveman-compress/scripts/validate.py",
       "source_location": "L348",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskrequest_taskrequest",
+      "target": "group_four_nyare_nyare_models_enums_taskstatus",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskRequest.java",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse",
+      "target": "group_four_nyare_nyare_models_enums_taskstatus",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskstatusrequest_taskstatusrequest",
+      "target": "group_four_nyare_nyare_models_enums_taskstatus",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskStatusRequest.java",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -13561,26 +15055,26 @@
     },
     {
       "source": "backend_src_main_java_group_four_nyare_nyare_models_task_task",
-      "target": "backend_src_main_java_group_four_nyare_nyare_models_course_course",
+      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_java_course",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L44",
+      "source_location": "L52",
       "weight": 1.0
     },
     {
       "source": "backend_src_main_java_group_four_nyare_nyare_models_task_task",
-      "target": "backend_src_main_java_group_four_nyare_nyare_models_note_note",
+      "target": "note",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L49",
+      "source_location": "L57",
       "weight": 1.0
     },
     {
@@ -13592,7 +15086,55 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L68",
+      "source_location": "L76",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_repositories_courserepository_courserepository",
+      "target": "group_four_nyare_nyare_models_course",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/CourseRepository.java",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_repositories_taskrepository_taskrepository",
+      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_task",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/TaskRepository.java",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_repositories_taskrepository_taskrepository_findallfiltered",
+      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_task",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/TaskRepository.java",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_listtasks",
+      "target": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L47",
       "weight": 1.0
     },
     {
@@ -14112,6 +15654,54 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskrequest",
+      "target": "group_four_nyare_nyare_models_enums_taskstatus",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskRequest.java",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse",
+      "target": "group_four_nyare_nyare_models_enums_taskstatus",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse",
+      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_task",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskstatusrequest",
+      "target": "group_four_nyare_nyare_models_enums_taskstatus",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskStatusRequest.java",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
       "source": "backend_src_main_java_group_four_nyare_nyare_models_academiccontext",
       "target": "jakarta_persistence_table",
       "relation": "imports",
@@ -14288,7 +15878,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -14300,7 +15890,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -14361,6 +15951,126 @@
       "context": "import",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/NyareApplication.java",
       "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_repositories_courserepository",
+      "target": "group_four_nyare_nyare_models_course",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/CourseRepository.java",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_repositories_courserepository",
+      "target": "org_springframework_data_jpa_repository_jparepository",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/CourseRepository.java",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_repositories_taskrepository",
+      "target": "group_four_nyare_nyare_models_enums_taskstatus",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/TaskRepository.java",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_repositories_taskrepository",
+      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_task",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/TaskRepository.java",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_repositories_taskrepository",
+      "target": "org_springframework_data_jpa_repository_jparepository",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/TaskRepository.java",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_repositories_taskrepository",
+      "target": "org_springframework_data_jpa_repository_query",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/TaskRepository.java",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice",
+      "target": "backend_src_main_java_group_four_nyare_nyare_dtos_taskrequest_taskrequest",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice",
+      "target": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice",
+      "target": "backend_src_main_java_group_four_nyare_nyare_dtos_taskstatusrequest_taskstatusrequest",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice",
+      "target": "group_four_nyare_nyare_models_enums_taskstatus",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -14844,6 +16554,18 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse_from",
+      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_task",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
       "source": "backend_src_main_java_group_four_nyare_nyare_models_academiccontext_academiccontext_academiccontext",
       "target": "backend_src_main_java_group_four_nyare_nyare_models_course_course",
       "relation": "references",
@@ -14989,19 +16711,7 @@
     },
     {
       "source": "backend_src_main_java_group_four_nyare_nyare_models_task_task_setcourse",
-      "target": "backend_src_main_java_group_four_nyare_nyare_models_course_course",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "parameter_type",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L123",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_src_main_java_group_four_nyare_nyare_models_task_task_setnote",
-      "target": "backend_src_main_java_group_four_nyare_nyare_models_note_note",
+      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_java_course",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -15009,6 +16719,18 @@
       "context": "parameter_type",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
       "source_location": "L131",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_models_task_task_setnote",
+      "target": "note",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
+      "source_location": "L139",
       "weight": 1.0
     },
     {
@@ -15020,19 +16742,79 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L171",
+      "source_location": "L179",
       "weight": 1.0
     },
     {
       "source": "backend_src_main_java_group_four_nyare_nyare_models_task_task_task",
-      "target": "backend_src_main_java_group_four_nyare_nyare_models_course_course",
+      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_java_course",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L107",
+      "source_location": "L115",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_repositories_taskrepository_taskrepository_findallfiltered",
+      "target": "group_four_nyare_nyare_models_enums_taskstatus",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/TaskRepository.java",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_createtask",
+      "target": "backend_src_main_java_group_four_nyare_nyare_dtos_taskrequest_taskrequest",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_listtasks",
+      "target": "group_four_nyare_nyare_models_enums_taskstatus",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_updatetask",
+      "target": "backend_src_main_java_group_four_nyare_nyare_dtos_taskrequest_taskrequest",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L71",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_updatetaskstatus",
+      "target": "backend_src_main_java_group_four_nyare_nyare_dtos_taskstatusrequest_taskstatusrequest",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L83",
       "weight": 1.0
     },
     {
@@ -15133,19 +16915,7 @@
     },
     {
       "source": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getcourse",
-      "target": "backend_src_main_java_group_four_nyare_nyare_models_course_course",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "return_type",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L119",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getnote",
-      "target": "backend_src_main_java_group_four_nyare_nyare_models_note_note",
+      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_java_course",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -15153,6 +16923,18 @@
       "context": "return_type",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
       "source_location": "L127",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getnote",
+      "target": "note",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "return_type",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
+      "source_location": "L135",
       "weight": 1.0
     },
     {
@@ -15164,7 +16946,55 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L167",
+      "source_location": "L175",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_createtask",
+      "target": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "return_type",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_gettask",
+      "target": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "return_type",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L58",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_updatetask",
+      "target": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "return_type",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L71",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_updatetaskstatus",
+      "target": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "return_type",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L83",
       "weight": 1.0
     },
     {
@@ -15175,7 +17005,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Enums/TaskStatus.java",
-      "source_location": "L4",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -15186,7 +17016,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Enums/TaskStatus.java",
-      "source_location": "L5",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -15197,7 +17027,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Enums/TaskStatus.java",
-      "source_location": "L6",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_rules_ponytail",
+      "target": "agents_rules_ponytail_ponytail_lazy_senior_dev_mode",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/rules/ponytail.md",
+      "source_location": "L1",
       "weight": 1.0
     },
     {
@@ -19656,6 +21497,567 @@
       "weight": 1.0
     },
     {
+      "source": "backend_docs_api_tasks_api",
+      "target": "backend_docs_api_tasks_api_nyare_task_management_service_api_specification",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_2_data_models_enums",
+      "target": "backend_docs_api_tasks_api_2_1_taskstatus_enum",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_2_data_models_enums",
+      "target": "backend_docs_api_tasks_api_2_2_task_schema_overview",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_3_error_handling_rfc_7807_problem_details",
+      "target": "backend_docs_api_tasks_api_problem_details_schema",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_3_error_handling_rfc_7807_problem_details",
+      "target": "backend_docs_api_tasks_api_3_1_400_bad_request_example_validation_failure",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_3_error_handling_rfc_7807_problem_details",
+      "target": "backend_docs_api_tasks_api_3_2_404_not_found_example",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L82",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_1_create_task",
+      "target": "backend_docs_api_tasks_api_request_headers",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L118",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_1_create_task",
+      "target": "backend_docs_api_tasks_api_request_body_taskrequest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_1_create_task",
+      "target": "backend_docs_api_tasks_api_example_request",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L133",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_1_create_task",
+      "target": "backend_docs_api_tasks_api_responses",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L150",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_2_list_tasks",
+      "target": "backend_docs_api_tasks_api_query_parameters",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L195",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_2_list_tasks",
+      "target": "backend_docs_api_tasks_api_example_request_202",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L202",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_2_list_tasks",
+      "target": "backend_docs_api_tasks_api_responses_209",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L209",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_3_get_task_by_id",
+      "target": "backend_docs_api_tasks_api_path_parameters",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L264",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_3_get_task_by_id",
+      "target": "backend_docs_api_tasks_api_example_request_269",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L269",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_3_get_task_by_id",
+      "target": "backend_docs_api_tasks_api_responses_276",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L276",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_4_full_update_of_task",
+      "target": "backend_docs_api_tasks_api_path_parameters_317",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L317",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_4_full_update_of_task",
+      "target": "backend_docs_api_tasks_api_request_body_taskrequest_322",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L322",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_4_full_update_of_task",
+      "target": "backend_docs_api_tasks_api_example_request_335",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L335",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_4_full_update_of_task",
+      "target": "backend_docs_api_tasks_api_responses_352",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L352",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_5_update_task_status_only",
+      "target": "backend_docs_api_tasks_api_path_parameters_407",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L407",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_5_update_task_status_only",
+      "target": "backend_docs_api_tasks_api_request_body_taskstatusrequest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L412",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_5_update_task_status_only",
+      "target": "backend_docs_api_tasks_api_example_request_417",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L417",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_5_update_task_status_only",
+      "target": "backend_docs_api_tasks_api_responses_428",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L428",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_6_delete_task",
+      "target": "backend_docs_api_tasks_api_path_parameters_483",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L483",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_6_delete_task",
+      "target": "backend_docs_api_tasks_api_example_request_488",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L488",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_6_delete_task",
+      "target": "backend_docs_api_tasks_api_responses_494",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L494",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_endpoints_specification",
+      "target": "backend_docs_api_tasks_api_summary_table",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L100",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_endpoints_specification",
+      "target": "backend_docs_api_tasks_api_4_1_create_task",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L113",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_endpoints_specification",
+      "target": "backend_docs_api_tasks_api_4_2_list_tasks",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L190",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_endpoints_specification",
+      "target": "backend_docs_api_tasks_api_4_3_get_task_by_id",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L259",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_endpoints_specification",
+      "target": "backend_docs_api_tasks_api_4_4_full_update_of_task",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L312",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_endpoints_specification",
+      "target": "backend_docs_api_tasks_api_4_5_update_task_status_only",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L402",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_4_endpoints_specification",
+      "target": "backend_docs_api_tasks_api_4_6_delete_task",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L478",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_nyare_task_management_service_api_specification",
+      "target": "backend_docs_api_tasks_api_1_overview_domain_architecture",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_nyare_task_management_service_api_specification",
+      "target": "backend_docs_api_tasks_api_2_data_models_enums",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_nyare_task_management_service_api_specification",
+      "target": "backend_docs_api_tasks_api_3_error_handling_rfc_7807_problem_details",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L53",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_api_tasks_api_nyare_task_management_service_api_specification",
+      "target": "backend_docs_api_tasks_api_4_endpoints_specification",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/api/tasks-api.md",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_superpowers_plans_2026_09_13_task_manager_service",
+      "target": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_manager_service_implementation_plan",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_self_review_checklist",
+      "target": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_spec_coverage",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L1241",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_self_review_checklist",
+      "target": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_placeholder_scan",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L1254",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_self_review_checklist",
+      "target": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_type_consistency",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L1258",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_manager_service_implementation_plan",
+      "target": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_6_final_verification",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L1198",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_manager_service_implementation_plan",
+      "target": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_self_review_checklist",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L1239",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_manager_service_implementation_plan",
+      "target": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_global_constraints",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_manager_service_implementation_plan",
+      "target": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_2_repositories_taskrepository_and_courserepository",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L190",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_manager_service_implementation_plan",
+      "target": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_file_map",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_manager_service_implementation_plan",
+      "target": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_3_service_layer_taskservice",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L391",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_manager_service_implementation_plan",
+      "target": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_1_dtos_request_and_response_records",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_manager_service_implementation_plan",
+      "target": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_4_exception_handler_globalexceptionhandler",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L773",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_manager_service_implementation_plan",
+      "target": "backend_docs_superpowers_plans_2026_09_13_task_manager_service_task_5_rest_controller_taskcontroller",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md",
+      "source_location": "L838",
+      "weight": 1.0
+    },
+    {
       "source": "backend_gradlew",
       "target": "backend_gradlew__entry",
       "relation": "contains",
@@ -19664,6 +22066,39 @@
       "confidence_score": 1.0,
       "source_file": "backend/gradlew",
       "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskrequest",
+      "target": "backend_src_main_java_group_four_nyare_nyare_dtos_taskrequest_taskrequest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskRequest.java",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse",
+      "target": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskstatusrequest",
+      "target": "backend_src_main_java_group_four_nyare_nyare_dtos_taskstatusrequest_taskstatusrequest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskStatusRequest.java",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -19707,7 +22142,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Enums/TaskStatus.java",
-      "source_location": "L3",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -19740,7 +22175,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -19755,6 +22190,39 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_main_java_group_four_nyare_nyare_repositories_courserepository",
+      "target": "backend_src_main_java_group_four_nyare_nyare_repositories_courserepository_courserepository",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/CourseRepository.java",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_repositories_taskrepository",
+      "target": "backend_src_main_java_group_four_nyare_nyare_repositories_taskrepository_taskrepository",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/TaskRepository.java",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice",
+      "target": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
       "source": "backend_src_test_java_group_four_nyare_nyare_nyareapplicationtests",
       "target": "backend_src_test_java_group_four_nyare_nyare_nyareapplicationtests_nyareapplicationtests",
       "relation": "contains",
@@ -19763,6 +22231,424 @@
       "confidence_score": 1.0,
       "source_file": "backend/src/test/java/group/four/nyare/nyare/NyareApplicationTests.java",
       "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api",
+      "target": "docs_tasks_api_nyare_task_management_service_api_specification",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_2_data_models_enums",
+      "target": "docs_tasks_api_2_1_taskstatus_enum",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_2_data_models_enums",
+      "target": "docs_tasks_api_2_2_task_schema_overview",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_3_error_handling_rfc_7807_problem_details",
+      "target": "docs_tasks_api_problem_details_schema",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_3_error_handling_rfc_7807_problem_details",
+      "target": "docs_tasks_api_3_1_400_bad_request_example_validation_failure",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_3_error_handling_rfc_7807_problem_details",
+      "target": "docs_tasks_api_3_2_404_not_found_example",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L82",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_1_create_task",
+      "target": "docs_tasks_api_request_headers",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L118",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_1_create_task",
+      "target": "docs_tasks_api_request_body_taskrequest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_1_create_task",
+      "target": "docs_tasks_api_example_request",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L133",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_1_create_task",
+      "target": "docs_tasks_api_responses",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L150",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_2_list_tasks",
+      "target": "docs_tasks_api_query_parameters",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L195",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_2_list_tasks",
+      "target": "docs_tasks_api_example_request_202",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L202",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_2_list_tasks",
+      "target": "docs_tasks_api_responses_209",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L209",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_3_get_task_by_id",
+      "target": "docs_tasks_api_path_parameters",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L264",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_3_get_task_by_id",
+      "target": "docs_tasks_api_example_request_269",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L269",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_3_get_task_by_id",
+      "target": "docs_tasks_api_responses_276",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L276",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_4_full_update_of_task",
+      "target": "docs_tasks_api_path_parameters_317",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L317",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_4_full_update_of_task",
+      "target": "docs_tasks_api_request_body_taskrequest_322",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L322",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_4_full_update_of_task",
+      "target": "docs_tasks_api_example_request_335",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L335",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_4_full_update_of_task",
+      "target": "docs_tasks_api_responses_352",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L352",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_5_update_task_status_only",
+      "target": "docs_tasks_api_path_parameters_407",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L407",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_5_update_task_status_only",
+      "target": "docs_tasks_api_request_body_taskstatusrequest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L412",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_5_update_task_status_only",
+      "target": "docs_tasks_api_example_request_417",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L417",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_5_update_task_status_only",
+      "target": "docs_tasks_api_responses_428",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L428",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_6_delete_task",
+      "target": "docs_tasks_api_path_parameters_483",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L483",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_6_delete_task",
+      "target": "docs_tasks_api_example_request_488",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L488",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_6_delete_task",
+      "target": "docs_tasks_api_responses_494",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L494",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_endpoints_specification",
+      "target": "docs_tasks_api_summary_table",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L100",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_endpoints_specification",
+      "target": "docs_tasks_api_4_1_create_task",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L113",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_endpoints_specification",
+      "target": "docs_tasks_api_4_2_list_tasks",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L190",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_endpoints_specification",
+      "target": "docs_tasks_api_4_3_get_task_by_id",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L259",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_endpoints_specification",
+      "target": "docs_tasks_api_4_4_full_update_of_task",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L312",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_endpoints_specification",
+      "target": "docs_tasks_api_4_5_update_task_status_only",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L402",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_4_endpoints_specification",
+      "target": "docs_tasks_api_4_6_delete_task",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L478",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_nyare_task_management_service_api_specification",
+      "target": "docs_tasks_api_1_overview_domain_architecture",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_nyare_task_management_service_api_specification",
+      "target": "docs_tasks_api_2_data_models_enums",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_nyare_task_management_service_api_specification",
+      "target": "docs_tasks_api_3_error_handling_rfc_7807_problem_details",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L53",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_tasks_api_nyare_task_management_service_api_specification",
+      "target": "docs_tasks_api_4_endpoints_specification",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/tasks-api.md",
+      "source_location": "L98",
       "weight": 1.0
     },
     {
@@ -19994,6 +22880,28 @@
       "confidence_score": 1.0,
       "source_file": ".agents/skills/caveman-compress/scripts/compress.py",
       "source_location": "L113",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_repositories_courserepository_courserepository",
+      "target": "org_springframework_data_jpa_repository_jparepository",
+      "relation": "inherits",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/CourseRepository.java",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_repositories_taskrepository_taskrepository",
+      "target": "org_springframework_data_jpa_repository_jparepository",
+      "relation": "inherits",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/TaskRepository.java",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -20730,7 +23638,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L107",
+      "source_location": "L115",
       "weight": 1.0
     },
     {
@@ -20741,7 +23649,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L115",
+      "source_location": "L123",
       "weight": 1.0
     },
     {
@@ -20752,7 +23660,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L119",
+      "source_location": "L127",
       "weight": 1.0
     },
     {
@@ -20763,7 +23671,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L123",
+      "source_location": "L131",
       "weight": 1.0
     },
     {
@@ -20774,7 +23682,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L127",
+      "source_location": "L135",
       "weight": 1.0
     },
     {
@@ -20785,7 +23693,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L131",
+      "source_location": "L139",
       "weight": 1.0
     },
     {
@@ -20796,7 +23704,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L135",
+      "source_location": "L143",
       "weight": 1.0
     },
     {
@@ -20807,7 +23715,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L139",
+      "source_location": "L147",
       "weight": 1.0
     },
     {
@@ -20818,7 +23726,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L143",
+      "source_location": "L151",
       "weight": 1.0
     },
     {
@@ -20829,7 +23737,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L147",
+      "source_location": "L155",
       "weight": 1.0
     },
     {
@@ -20840,7 +23748,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L151",
+      "source_location": "L159",
       "weight": 1.0
     },
     {
@@ -20851,7 +23759,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L155",
+      "source_location": "L163",
       "weight": 1.0
     },
     {
@@ -20862,7 +23770,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L159",
+      "source_location": "L167",
       "weight": 1.0
     },
     {
@@ -20873,7 +23781,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L163",
+      "source_location": "L171",
       "weight": 1.0
     },
     {
@@ -20884,7 +23792,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L167",
+      "source_location": "L175",
       "weight": 1.0
     },
     {
@@ -20895,7 +23803,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L171",
+      "source_location": "L179",
       "weight": 1.0
     },
     {
@@ -20906,7 +23814,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L175",
+      "source_location": "L183",
       "weight": 1.0
     },
     {
@@ -20917,7 +23825,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L179",
+      "source_location": "L187",
       "weight": 1.0
     },
     {
@@ -20928,7 +23836,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L183",
+      "source_location": "L191",
       "weight": 1.0
     },
     {
@@ -20939,7 +23847,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L187",
+      "source_location": "L195",
       "weight": 1.0
     },
     {
@@ -20950,7 +23858,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L191",
+      "source_location": "L199",
       "weight": 1.0
     },
     {
@@ -20961,7 +23869,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L199",
+      "source_location": "L207",
       "weight": 1.0
     },
     {
@@ -20972,7 +23880,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L204",
+      "source_location": "L212",
       "weight": 1.0
     },
     {
@@ -20984,6 +23892,83 @@
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/NyareApplication.java",
       "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_repositories_taskrepository_taskrepository",
+      "target": "backend_src_main_java_group_four_nyare_nyare_repositories_taskrepository_taskrepository_findallfiltered",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Repositories/TaskRepository.java",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice",
+      "target": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_createtask",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice",
+      "target": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_listtasks",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice",
+      "target": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_gettask",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L58",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice",
+      "target": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_updatetask",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L71",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice",
+      "target": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_updatetaskstatus",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L83",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice",
+      "target": "backend_src_main_java_group_four_nyare_nyare_services_taskservice_taskservice_deletetask",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/Services/TaskService.java",
+      "source_location": "L93",
       "weight": 1.0
     },
     {
@@ -22106,6 +25091,126 @@
       "confidence_score": 1.0,
       "source_file": ".agents/skills/dr-jskill/docs/workshop/README.md",
       "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse_from",
+      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getid",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse_from",
+      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getcourse",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse_from",
+      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getnote",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse_from",
+      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_task_gettitle",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse_from",
+      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getdescription",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java",
+      "source_location": "L53",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse_from",
+      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getscheduleddate",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java",
+      "source_location": "L54",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse_from",
+      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getduration",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java",
+      "source_location": "L55",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse_from",
+      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getstatus",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse_from",
+      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getcreatedat",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_dtos_taskresponse_taskresponse_from",
+      "target": "backend_src_main_java_group_four_nyare_nyare_models_task_task_getupdatedat",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java",
+      "source_location": "L58",
       "weight": 1.0
     },
     {
@@ -24209,5 +27314,5 @@
       "source_file": ".agents/skills/dr-jskill/references/SPRING-BOOT-4.md"
     }
   ],
-  "built_at_commit": "cc9dfef3b94787b51535888d369b99a31032d6ad"
+  "built_at_commit": "a4ef702b150d510ce008e5f583461783fdc1b19d"
 }

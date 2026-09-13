@@ -71,7 +71,7 @@
   "69": "Schedule",
   "70": "Course",
   "71": "05 — A more professional front-end",
-  "72": "TaskStatus",
+  "72": "4. Endpoints Specification",
   "73": "Entity",
   "74": "Docker Prerequisite",
   "75": "Java 25 Prerequisite",
@@ -94,5 +94,10 @@
   "92": "Backend Agent Guide (Nyare)",
   "93": "Entity",
   "94": "Entity",
-  "95": "Entity"
+  "95": "Entity",
+  "96": "4. Endpoints Specification",
+  "97": "Task Manager Service Implementation Plan",
+  "98": "TaskStatus",
+  "99": "ponytail.md",
+  "100": "Override"
 }

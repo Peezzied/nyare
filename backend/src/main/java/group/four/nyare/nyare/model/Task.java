@@ -1,6 +1,6 @@
-package group.four.nyare.nyare.Models;
+package group.four.nyare.nyare.model;
 
-import group.four.nyare.nyare.Models.Enums.TaskStatus;
+import group.four.nyare.nyare.model.enums.TaskStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -46,44 +46,43 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private UUID id;
 
     @NotNull(message = "Course is required")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "course_id", nullable = false)
+    @JoinColumn(nullable = false)
     private Course course;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "note_id")
+    @JoinColumn
     private Note note;
 
     @NotBlank(message = "Task title is required")
     @Size(max = 255, message = "Task title cannot exceed 255 characters")
-    @Column(name = "title", nullable = false, length = 255)
+    @Column(nullable = false, length = 255)
     private String title;
 
     @Size(max = 2048, message = "Task description cannot exceed 2048 characters")
-    @Column(name = "description", length = 2048)
+    @Column(length = 2048)
     private String description;
 
-    @Column(name = "scheduled_date")
+    @Column
     private LocalDate scheduledDate;
 
-    @Column(name = "duration")
+    @Column
     private Duration duration;
 
     @NotNull(message = "Task status is required")
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 32)
+    @Column(nullable = false, length = 32)
     private TaskStatus status = TaskStatus.TODO;
 
     @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
     @LastModifiedDate
-    @Column(name = "updated_at")
     private Instant updatedAt;
 
     /**
@@ -194,19 +193,6 @@ public class Task {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Task task = (Task) o;
-        return id != null && id.equals(task.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
     }
 
     @Override

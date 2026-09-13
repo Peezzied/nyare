@@ -1,4 +1,4 @@
-package group.four.nyare.nyare.Models;
+package group.four.nyare.nyare.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,28 +33,28 @@ public class AcademicContext {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private UUID id;
 
     @NotNull(message = "Course is required")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "course_id", nullable = false)
+    @JoinColumn(nullable = false)
     private Course course;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "note_id")
+    @JoinColumn
     private Note note;
 
     @NotBlank(message = "Context value cannot be blank")
     @Size(max = 2048, message = "Context value cannot exceed 2048 characters")
-    @Column(name = "value", nullable = false, length = 2048)
+    @Column(nullable = false, length = 2048)
     private String value;
 
     /**
      * Timestamp when the academic context was recorded.
      */
     @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
     /**
@@ -121,19 +121,6 @@ public class AcademicContext {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AcademicContext that = (AcademicContext) o;
-        return id != null && id.equals(that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
     }
 
     @Override

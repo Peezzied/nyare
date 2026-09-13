@@ -1,4 +1,4 @@
-package group.four.nyare.nyare.Models;
+package group.four.nyare.nyare.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,25 +25,25 @@ public class Schedule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private Long id;
 
     @NotNull(message = "Course is required")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "course_id", nullable = false)
+    @JoinColumn(nullable = false)
     private Course course;
 
     @NotNull(message = "Day of week is required")
     @Enumerated(EnumType.STRING)
-    @Column(name = "day", nullable = false, length = 16)
+    @Column(nullable = false, length = 16)
     private DayOfWeek day;
 
     @NotNull(message = "Start time is required")
-    @Column(name = "start_time", nullable = false)
+    @Column(nullable = false)
     private LocalTime startTime;
 
     @NotNull(message = "End time is required")
-    @Column(name = "end_time", nullable = false)
+    @Column(nullable = false)
     private LocalTime endTime;
 
     /**
@@ -101,19 +101,6 @@ public class Schedule {
 
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Schedule schedule = (Schedule) o;
-        return id != null && id.equals(schedule.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
     }
 
     @Override

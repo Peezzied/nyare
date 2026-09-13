@@ -1,16 +1,16 @@
 # Graph Report - nyare  (2026-09-13)
 
 ## Corpus Check
-- 137 files · ~143,938 words
+- 147 files · ~156,321 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 873 nodes · 1140 edges · 96 communities (56 shown, 37 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 33 edges (avg confidence: 0.86)
+- 993 nodes · 1288 edges · 101 communities (59 shown, 39 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 43 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `cc9dfef3`
+- Built from commit: `a4ef702b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -86,7 +86,7 @@
 - Schedule
 - Course
 - 05 — A more professional front-end
-- TaskStatus
+- 4. Endpoints Specification
 - Entity
 - Docker Prerequisite
 - Java 25 Prerequisite
@@ -108,15 +108,20 @@
 - Entity
 - Entity
 - Entity
+- 4. Endpoints Specification
+- Task Manager Service Implementation Plan
+- TaskStatus
+- ponytail.md
+- Override
 
 ## God Nodes (most connected - your core abstractions)
-1. `Course` - 32 edges
-2. `Task` - 31 edges
-3. `Note` - 30 edges
+1. `Task` - 36 edges
+2. `Course` - 28 edges
+3. `Note` - 27 edges
 4. `Dr JSkill Specification` - 24 edges
 5. `getVersionValue()` - 23 edges
-6. `AcademicContext` - 20 edges
-7. `AcademicEvent` - 20 edges
+6. `AcademicEvent` - 20 edges
+7. `AcademicContext` - 20 edges
 8. `applyDotfiles()` - 18 edges
 9. `_compress_file_locked()` - 18 edges
 10. `Schedule` - 17 edges
@@ -150,7 +155,7 @@
 - **Graphify Query & Knowledge Retrieval Flow** — _agents_skills_graphify_skill_fast_path_query, _agents_skills_graphify_references_query_query_expansion, _agents_skills_graphify_references_query_traversal_modes, _agents_skills_graphify_references_query_work_memory_reflections [INFERRED 0.95]
 - **Spring Boot 4 Testing Ecosystem Modernization** — _agents_skills_dr_jskill_references_spring_boot_4_mockito_bean, _agents_skills_dr_jskill_references_spring_boot_4_webmvc_test_starter, _agents_skills_dr_jskill_references_test_testcontainers_service_connection, _agents_skills_dr_jskill_references_test_rest_test_client [INFERRED 0.95]
 
-## Communities (96 total, 37 thin omitted)
+## Communities (101 total, 39 thin omitted)
 
 ### Community 0 - "versions.mjs"
 Cohesion: 0.06
@@ -361,37 +366,49 @@ Cohesion: 0.33
 Nodes (6): Chapters, GitHub Copilot CLI + Java workshop, using Dr JSkill, How to use this workshop, Prerequisites, Reference material, What you'll build
 
 ### Community 58 - "Task"
-Cohesion: 0.11
-Nodes (3): Override, Task, group.four.nyare.nyare.Models.Enums.TaskStatus
+Cohesion: 0.07
+Nodes (14): TaskRequest, TaskResponse, TaskStatusRequest, Course, Task, CourseRepository, TaskRepository, TaskService (+6 more)
 
 ### Community 71 - "05 — A more professional front-end"
 Cohesion: 0.22
 Nodes (9): 05 — A more professional front-end, 1. What "professional-looking" means here, 2. Add Bootstrap structure, 3. Empty states, 4. Toasts for feedback, 5. Loading spinners, 6. Inline form validation, 7. Review what the agent produced (+1 more)
 
-### Community 72 - "TaskStatus"
-Cohesion: 0.40
-Nodes (4): TaskStatus, COMPLETED, IN_PROGRESS, TODO
+### Community 72 - "4. Endpoints Specification"
+Cohesion: 0.05
+Nodes (38): 1. Overview & Domain Architecture, 2.1 TaskStatus Enum, 2.2 Task Schema Overview, 2. Data Models & Enums, 3.1 400 Bad Request Example (Validation Failure), 3.2 404 Not Found Example, 3. Error Handling (RFC 7807 Problem Details), 4.1 Create Task (+30 more)
 
 ### Community 92 - "Backend Agent Guide (Nyare)"
 Cohesion: 0.29
 Nodes (6): Backend Agent Guide (Nyare), Core Architecture & Guidelines, Domain Model (`group.four.nyare.nyare.Models`), Knowledge Graph Workflows (`graphify`), Tech Stack, Verification & Build Tiering
 
+### Community 96 - "4. Endpoints Specification"
+Cohesion: 0.05
+Nodes (38): 1. Overview & Domain Architecture, 2.1 TaskStatus Enum, 2.2 Task Schema Overview, 2. Data Models & Enums, 3.1 400 Bad Request Example (Validation Failure), 3.2 404 Not Found Example, 3. Error Handling (RFC 7807 Problem Details), 4.1 Create Task (+30 more)
+
+### Community 97 - "Task Manager Service Implementation Plan"
+Cohesion: 0.14
+Nodes (13): File Map, Global Constraints, Placeholder Scan, Self-Review Checklist, Spec Coverage, Task 1: DTOs — Request and Response Records, Task 2: Repositories — TaskRepository and CourseRepository, Task 3: Service Layer — TaskService (+5 more)
+
+### Community 98 - "TaskStatus"
+Cohesion: 0.40
+Nodes (4): TaskStatus, COMPLETED, IN_PROGRESS, TODO
+
 ## Knowledge Gaps
-- **359 isolated node(s):** `{ flags, positional }`, `outputDir`, `{ flags, positional }`, `outputDir`, `DEFAULT_BOOT_FALLBACK` (+354 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 476 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **37 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **427 isolated node(s):** `Ponytail, lazy senior dev mode`, `1. Overview & Domain Architecture`, `2.1 TaskStatus Enum`, `2.2 Task Schema Overview`, `Problem Details Schema` (+422 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 543 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **39 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Dr JSkill Specification` connect `Dr JSkill Specification` to `Spring Boot Testing Best Practices Guide`, `Azure Deployment Guide`, `Dr JSkill Agent Guidelines`, `Dr JSkill`, `Angular Frontend Integration Guide`, `Docker Guide for Spring Boot`, `Spring Security Best Practices Guide`?**
-  _High betweenness centrality (0.049) - this node is a cross-community bridge._
+  _High betweenness centrality (0.038) - this node is a cross-community bridge._
 - **Why does `Dr JSkill Documentation Home` connect `Dr JSkill Specification` to `README.md`?**
-  _High betweenness centrality (0.043) - this node is a cross-community bridge._
+  _High betweenness centrality (0.033) - this node is a cross-community bridge._
 - **Why does `Appendix B — Troubleshooting` connect `Appendix B — Troubleshooting` to `README.md`?**
-  _High betweenness centrality (0.022) - this node is a cross-community bridge._
-- **What connects `{ flags, positional }`, `outputDir`, `{ flags, positional }` to the rest of the system?**
-  _359 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _High betweenness centrality (0.017) - this node is a cross-community bridge._
+- **What connects `Ponytail, lazy senior dev mode`, `1. Overview & Domain Architecture`, `2.1 TaskStatus Enum` to the rest of the system?**
+  _427 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `versions.mjs` be split into smaller, more focused modules?**
   _Cohesion score 0.05707762557077625 - nodes in this community are weakly interconnected._
 - **Should `compress.py` be split into smaller, more focused modules?**
