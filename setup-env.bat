@@ -16,5 +16,8 @@ echo Installing graphify via pip...
 python -m pip install --upgrade pip >nul 2>&1
 python -m pip install graphify
 
+echo Installing Antigravity plugin(s): ponytail...
+agy plugin install https://github.com/DietrichGebert/ponytail
+
 echo Done. Restart your terminal for PATH changes to take effect.
 pause

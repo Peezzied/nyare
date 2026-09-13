@@ -49,10 +49,18 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 
 ---
 
-## Build & Test Commands
+## Verification & Build Tiering
+
+1. **Tier 1 (Primary - IntelliJ MCP)**: Use IntelliJ MCP server for static analysis, symbol navigation, diagnostics, and in-memory compilation.
+2. **Tier 2 (Targeted)**: Run specific tests (e.g., `./gradlew test --tests <ClassName>`) or focused compiles (`./gradlew compileJava`).
+3. **Tier 3 (Strict Last Resort)**: Full CLI build (`./gradlew build`) reserved strictly for final verification or when MCP is unreachable.
+
+---
+
+## Build & Test Commands (Fallback / Final Gate)
 
 ```bash
-# Build project
+# Build project (Final gate only)
 ./gradlew build
 
 # Run unit and integration tests
@@ -61,3 +69,4 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 # Start local dev server
 ./gradlew bootRun
 ```
+
