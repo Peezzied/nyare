@@ -1,16 +1,16 @@
 # Graph Report - nyare  (2026-09-13)
 
 ## Corpus Check
-- 150 files · ~156,581 words
+- 159 files · ~163,624 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 874 nodes · 1048 edges · 110 communities (57 shown, 50 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 33 edges (avg confidence: 0.86)
+- 1151 nodes · 1508 edges · 129 communities (73 shown, 53 thin omitted)
+- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 79 edges (avg confidence: 0.83)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9ae047c2`
+- Built from commit: `5425a2ab`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -115,25 +115,44 @@
 - Override
 - group.four.nyare.nyare.Models.Course
 - group.four.nyare.nyare.Models.Enums.TaskStatus
-- jakarta.persistence.EntityListeners
-- jakarta.persistence.Table
+- Task
+- TaskRequest
 - Note
-- org.springframework.data.jpa.domain.support.AuditingEntityListener
-- org.springframework.data.jpa.repository.JpaRepository
-- org.springframework.data.jpa.repository.Query
+- TaskStatus
+- TaskServiceImpl.java
+- TaskResponse
 - Override
+- AcademicEvent
+- AcademicContext
+- Note
+- Schedule
+- Course
+- Foundation 2: Core Domain Invariants
+- Foundation 2: Core Domain Invariants
+- Workflow Directory
+- 2. Core Entities & Hierarchy
+- Nyare Conceptual Model & Domain Dictionary
+- 3. Important Domain Distinctions
+- Nyare MVP Boundaries & Non-Goals
+- 2. Detailed Entity Specifications
+- AI Processing & Planning API Workflows Draft
+- Setup issues
+- Candidate Additions for `backend/AGENTS.md`
+- TaskService
+- Docker & deployment
+- Agent behavior
 
 ## God Nodes (most connected - your core abstractions)
-1. `Dr JSkill Specification` - 24 edges
-2. `getVersionValue()` - 23 edges
-3. `applyDotfiles()` - 18 edges
-4. `_compress_file_locked()` - 18 edges
-5. `validate()` - 14 edges
-6. `Appendix A — Prompt cheat sheet` - 12 edges
-7. `Docker Guide for Spring Boot` - 12 edges
-8. `02 — Getting started` - 11 edges
-9. `07 — Performance` - 11 edges
-10. `downloadAndExtractProject()` - 10 edges
+1. `TaskResponse` - 36 edges
+2. `Task` - 35 edges
+3. `Course` - 33 edges
+4. `TaskStatus` - 29 edges
+5. `Note` - 28 edges
+6. `Dr JSkill Specification` - 24 edges
+7. `getVersionValue()` - 23 edges
+8. `TaskRequest` - 21 edges
+9. `AcademicEvent` - 18 edges
+10. `AcademicContext` - 18 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Lean Build Skill` --semantically_similar_to--> `Surgical Patch Skill`  [INFERRED] [semantically similar]
@@ -164,7 +183,7 @@
 - **Graphify Query & Knowledge Retrieval Flow** — _agents_skills_graphify_skill_fast_path_query, _agents_skills_graphify_references_query_query_expansion, _agents_skills_graphify_references_query_traversal_modes, _agents_skills_graphify_references_query_work_memory_reflections [INFERRED 0.95]
 - **Spring Boot 4 Testing Ecosystem Modernization** — _agents_skills_dr_jskill_references_spring_boot_4_mockito_bean, _agents_skills_dr_jskill_references_spring_boot_4_webmvc_test_starter, _agents_skills_dr_jskill_references_test_testcontainers_service_connection, _agents_skills_dr_jskill_references_test_rest_test_client [INFERRED 0.95]
 
-## Communities (110 total, 50 thin omitted)
+## Communities (129 total, 53 thin omitted)
 
 ### Community 0 - "versions.mjs"
 Cohesion: 0.06
@@ -185,6 +204,10 @@ Nodes (20): AI Assistant Integration Setup, Dr JSkill Overview, Dr JSkill vs JHi
 ### Community 4 - "validate.py"
 Cohesion: 0.10
 Nodes (28): benchmark_pair(), count_tokens(), main(), print_table(), Path, count_bullets(), extract_code_blocks(), extract_fenced_spans() (+20 more)
+
+### Community 5 - "jakarta.persistence.Entity"
+Cohesion: 0.40
+Nodes (4): jakarta.persistence.Entity, jakarta.persistence.EntityListeners, jakarta.persistence.Table, org.springframework.data.jpa.domain.support.AuditingEntityListener
 
 ### Community 6 - "frontend/package.json"
 Cohesion: 0.10
@@ -243,8 +266,8 @@ Cohesion: 0.33
 Nodes (6): CI Build & Test Job, GitHub Actions Build & Test Workflow, CI Docker Build Job, Docker Compose JVM AOT Full Stack, Docker Compose Native GraalVM Full Stack, Docker Compose JVM Full Stack
 
 ### Community 21 - "Appendix B — Troubleshooting"
-Cohesion: 0.06
-Nodes (34): A POST returns 400 and the log says "Cannot map `null` into type `boolean`", Agent behavior, Appendix B — Troubleshooting, Copilot CLI doesn't see the Dr JSkill skill, `copilot` command not found, Docker build fails downloading Node/npm: "SSL peer shut down incorrectly", Docker: `Cannot connect to the Docker daemon`, `docker compose up` builds slowly every time (+26 more)
+Cohesion: 0.12
+Nodes (16): Appendix B — Troubleshooting, Frontend build fails with `EACCES` or permission errors, Frontend build fails with `ERESOLVE` mentioning `oxlint`, Generation / first run (Chapter 2), JDTLS / code intelligence, JDTLS never finishes indexing, `lsp workspaceSymbol` returns empty results, `./mvnw` fails with `No such file or directory` (+8 more)
 
 ### Community 22 - "08 — Deployment"
 Cohesion: 0.11
@@ -391,25 +414,85 @@ Cohesion: 0.14
 Nodes (13): File Map, Global Constraints, Placeholder Scan, Self-Review Checklist, Spec Coverage, Task 1: DTOs — Request and Response Records, Task 2: Repositories — TaskRepository and CourseRepository, Task 3: Service Layer — TaskService (+5 more)
 
 ### Community 98 - "Nyare Backend Conventions and Standards"
-Cohesion: 0.18
+Cohesion: 0.20
 Nodes (10): 1. Architecture Overview, 2. Package Structure & Naming, 3. Domain Entity Guidelines, 4. DTO & Validation Guidelines, 5. Service & Transaction Guidelines, 6. REST API & Controller Guidelines, 7. Persistence & SQLite Guidelines, 8. Verification & Testing Standards (+2 more)
 
+### Community 106 - "TaskStatus"
+Cohesion: 0.20
+Nodes (5): TaskStatusRequest, TaskStatus, COMPLETED, IN_PROGRESS, TODO
+
+### Community 107 - "TaskServiceImpl.java"
+Cohesion: 0.18
+Nodes (9): ResourceNotFoundException, CourseRepository, TaskRepository, Override, TaskServiceImpl, org.springframework.data.jpa.repository.JpaRepository, org.springframework.data.jpa.repository.Query, org.springframework.stereotype.Service (+1 more)
+
+### Community 115 - "Foundation 2: Core Domain Invariants"
+Cohesion: 0.11
+Nodes (17): 1. `Course` is the Root Organizational Anchor, 2. Rigid Constraints vs. Flexible Recommendations, 3. Virtual Study Plan (Zero Persistence Entity), 4. Tri-State Study Plan Recommendations, 5. Append-Only Materialization (No Auto-Reconciliation), 6. Strict Scoping of AI Extraction, 7. Dynamic Holistic Reasoning (No Deterministic Scoring), 8. Preserve Uncertainty (Zero Data Fabrication) (+9 more)
+
+### Community 116 - "Foundation 2: Core Domain Invariants"
+Cohesion: 0.11
+Nodes (17): 1. `Course` is the Root Organizational Anchor, 2. Rigid Constraints vs. Flexible Recommendations, 3. Virtual Study Plan (Zero Persistence Entity), 4. Tri-State Study Plan Recommendations, 5. Append-Only Materialization (No Auto-Reconciliation), 6. Strict Scoping of AI Extraction, 7. Dynamic Holistic Reasoning (No Deterministic Scoring), 8. Preserve Uncertainty (Zero Data Fabrication) (+9 more)
+
+### Community 117 - "Workflow Directory"
+Cohesion: 0.17
+Nodes (11): 1. System Overview, 2. Core Academic Model, 3. Journal Processing Workflow, 4. AI Planning Workflow, 5. Study Plan and Calendar Relationship, 6. Information and Planning Boundaries, 7. Handling Missing Information, 8. User Interface and Navigation (+3 more)
+
+### Community 118 - "2. Core Entities & Hierarchy"
+Cohesion: 0.20
+Nodes (10): 2. Core Entities & Hierarchy, `Academic Context`, `Academic Event`, `Academic Term`, `Course`, Entity Definitions, `Journal Entry` (`Note`), `Schedule` (+2 more)
+
+### Community 119 - "Nyare Conceptual Model & Domain Dictionary"
+Cohesion: 0.22
+Nodes (5): 1. Core Concept & Pipeline, 4. Preserving Uncertainty & Incomplete Information, Nyare Conceptual Model & Domain Dictionary, Contents, Temporary Architectural Notes (Backend & AI Architecture Drafts)
+
+### Community 120 - "3. Important Domain Distinctions"
+Cohesion: 0.22
+Nodes (9): 1. Academic Event vs. Deadline, 2. Task vs. Academic Event, 3. Academic Context vs. Task, 3. Important Domain Distinctions, 4. Academic Context vs. Academic Event, 5. Recommended Date vs. Deadline, 6. Extractability vs. Plannability, 7. Source Information vs. Extracted Information (Materialization) (+1 more)
+
+### Community 121 - "Nyare MVP Boundaries & Non-Goals"
+Cohesion: 0.22
+Nodes (8): 1. No Micro-Scheduling / Time-Blocking, 2. No Automated Task Reconciliation, Merging, or Splitting, 3. No Deterministic Priority Scoring Engine, 4. No Mandatory Recurring Availability Calendars, 5. No Study Plan Persistence Entity, 6. Strict Uncertainty Preservation (Zero Hallucination), 7. Strict Processing Scope (Today's Notes Only), Nyare MVP Boundaries & Non-Goals
+
+### Community 122 - "2. Detailed Entity Specifications"
+Cohesion: 0.22
+Nodes (9): 1. Entity Overview & Persistence Strategy, 2. Detailed Entity Specifications, 3. The Virtual Study Plan DTO (Non-Persisted), A. `Course` (`courses`), B. `AcademicEvent` (`academic_events`), Backend Domain Model & JPA Mapping Draft, C. `Task` (`tasks`), D. `AcademicContext` (`academic_contexts`) (+1 more)
+
+### Community 123 - "AI Processing & Planning API Workflows Draft"
+Cohesion: 0.25
+Nodes (8): 1. AI Processing Workflow (`POST /api/ai/process-today`), 2. AI Planning Workflow (`POST /api/ai/plan`), 3. The Student Feedback & Reconsideration Loop, AI Processing & Planning API Workflows Draft, Overview, Overview, Proposed Request / Response Contract, Proposed Request / Response Contract
+
+### Community 124 - "Setup issues"
+Cohesion: 0.29
+Nodes (7): Copilot CLI doesn't see the Dr JSkill skill, `copilot` command not found, Docker: `Cannot connect to the Docker daemon`, `java --version` shows Java 21 (or similar), `jdtls --help` errors / not found, `node --version` prints an older version, Setup issues
+
+### Community 125 - "Candidate Additions for `backend/AGENTS.md`"
+Cohesion: 0.29
+Nodes (5): 1. Domain Modeling Rules, 2. Service Layer & AI Processing Rules, 3. Verification & Conventions, Backend Agent Guide Candidate Updates Draft, Candidate Additions for `backend/AGENTS.md`
+
+### Community 127 - "Docker & deployment"
+Cohesion: 0.33
+Nodes (6): A POST returns 400 and the log says "Cannot map `null` into type `boolean`", Docker build fails downloading Node/npm: "SSL peer shut down incorrectly", `docker compose up` builds slowly every time, Docker & deployment, `docker exec ... sh` fails with "exec: \"sh\": executable file not found", Spring Boot Actuator endpoints return 404
+
+### Community 128 - "Agent behavior"
+Cohesion: 0.40
+Nodes (5): Agent behavior, The agent insists on adding a dependency I rejected, The agent keeps producing different code each run, The agent made a huge change I didn't want, The agent says "done" but nothing changed
+
 ## Knowledge Gaps
-- **428 isolated node(s):** `Overview`, `Entity & Table Declarations`, `Primary Key Mappings`, `Naming Strategy (No Manual Column Names)`, `Relationships & Foreign Keys` (+423 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 521 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **50 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **509 isolated node(s):** `Overview`, `When NOT to Use`, `Foundation 1: Dependency on Dr. JSkill Best Practices`, `1. `Course` is the Root Organizational Anchor`, `2. Rigid Constraints vs. Flexible Recommendations` (+504 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 656 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **53 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Dr JSkill Specification` connect `Dr JSkill Specification` to `Spring Boot Testing Best Practices Guide`, `Azure Deployment Guide`, `Dr JSkill Agent Guidelines`, `Dr JSkill`, `Angular Frontend Integration Guide`, `Docker Guide for Spring Boot`, `Spring Security Best Practices Guide`?**
-  _High betweenness centrality (0.049) - this node is a cross-community bridge._
+  _High betweenness centrality (0.016) - this node is a cross-community bridge._
 - **Why does `Dr JSkill Documentation Home` connect `Dr JSkill Specification` to `README.md`?**
-  _High betweenness centrality (0.043) - this node is a cross-community bridge._
-- **Why does `Appendix B — Troubleshooting` connect `Appendix B — Troubleshooting` to `README.md`?**
-  _High betweenness centrality (0.022) - this node is a cross-community bridge._
-- **What connects `Overview`, `Entity & Table Declarations`, `Primary Key Mappings` to the rest of the system?**
-  _428 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _High betweenness centrality (0.016) - this node is a cross-community bridge._
+- **Why does `Course` connect `Course` to `jakarta.persistence.Entity`, `Task`, `TaskRequest`, `TaskServiceImpl.java`, `AcademicEvent`, `AcademicContext`, `Note`, `Schedule`?**
+  _High betweenness centrality (0.012) - this node is a cross-community bridge._
+- **What connects `Overview`, `When NOT to Use`, `Foundation 1: Dependency on Dr. JSkill Best Practices` to the rest of the system?**
+  _509 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `versions.mjs` be split into smaller, more focused modules?**
   _Cohesion score 0.05707762557077625 - nodes in this community are weakly interconnected._
 - **Should `compress.py` be split into smaller, more focused modules?**

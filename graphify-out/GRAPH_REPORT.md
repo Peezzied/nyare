@@ -1,16 +1,16 @@
 # Graph Report - nyare  (2026-09-13)
 
 ## Corpus Check
-- 150 files · ~156,581 words
+- 159 files · ~163,724 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1043 nodes · 1404 edges · 115 communities (60 shown, 52 thin omitted)
-- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 79 edges (avg confidence: 0.83)
+- 1137 nodes · 1512 edges · 109 communities (69 shown, 37 thin omitted)
+- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 79 edges (avg confidence: 0.83)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `bf977db7`
+- Built from commit: `5425a2ab`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -72,22 +72,15 @@
 - 06 — Testing
 - 00 — Introduction
 - GitHub Copilot CLI + Java workshop, using Dr JSkill
-- Course
-- Override
-- Override
 - GitHub Copilot CLI
-- Nyare MVP Boundaries
+- Nyare System Overview
 - __init__.py
 - checkpoint-and-run.sh
 - Graphify Knowledge Graph Rule
 - FastContext Explorer
 - Dr-JSkill Favicon
-- Override
-- Override
-- Override
 - 05 — A more professional front-end
 - 4. Endpoints Specification
-- Entity
 - Docker Prerequisite
 - Java 25 Prerequisite
 - Node.js 24 & npm 11 Prerequisite
@@ -105,28 +98,29 @@
 - Vite Logo Asset
 - Vue Logo
 - Backend Agent Guide (Nyare)
-- Entity
-- Entity
-- Entity
 - 4. Endpoints Specification
 - Task Manager Service Implementation Plan
 - Nyare Backend Conventions and Standards
 - ponytail.md
-- Override
-- group.four.nyare.nyare.Models.Course
-- group.four.nyare.nyare.Models.Enums.TaskStatus
 - Task
 - TaskRequest
-- Note
 - TaskStatus
 - TaskServiceImpl.java
 - TaskResponse
-- Override
 - AcademicEvent
 - AcademicContext
 - Note
 - Schedule
 - Course
+- Foundation 3: Core Domain Invariants
+- Foundation 2: Core Domain Invariants
+- Workflow Directory
+- 2. Core Entities & Hierarchy
+- temp/README.md
+- Nyare MVP Boundaries & Non-Goals
+- 2. Detailed Entity Specifications
+- AI Processing & Planning API Workflows Draft
+- Candidate Additions for `backend/AGENTS.md`
 
 ## God Nodes (most connected - your core abstractions)
 1. `TaskResponse` - 36 edges
@@ -137,8 +131,8 @@
 6. `Dr JSkill Specification` - 24 edges
 7. `getVersionValue()` - 23 edges
 8. `TaskRequest` - 21 edges
-9. `AcademicContext` - 18 edges
-10. `AcademicEvent` - 18 edges
+9. `_compress_file_locked()` - 18 edges
+10. `applyDotfiles()` - 18 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Lean Build Skill` --semantically_similar_to--> `Surgical Patch Skill`  [INFERRED] [semantically similar]
@@ -169,7 +163,7 @@
 - **Graphify Query & Knowledge Retrieval Flow** — _agents_skills_graphify_skill_fast_path_query, _agents_skills_graphify_references_query_query_expansion, _agents_skills_graphify_references_query_traversal_modes, _agents_skills_graphify_references_query_work_memory_reflections [INFERRED 0.95]
 - **Spring Boot 4 Testing Ecosystem Modernization** — _agents_skills_dr_jskill_references_spring_boot_4_mockito_bean, _agents_skills_dr_jskill_references_spring_boot_4_webmvc_test_starter, _agents_skills_dr_jskill_references_test_testcontainers_service_connection, _agents_skills_dr_jskill_references_test_rest_test_client [INFERRED 0.95]
 
-## Communities (115 total, 52 thin omitted)
+## Communities (109 total, 37 thin omitted)
 
 ### Community 0 - "versions.mjs"
 Cohesion: 0.06
@@ -379,6 +373,10 @@ Nodes (7): 00 — Introduction, 1. What is an Agent Skill?, 2. What Dr JSkill is
 Cohesion: 0.33
 Nodes (6): Chapters, GitHub Copilot CLI + Java workshop, using Dr JSkill, How to use this workshop, Prerequisites, Reference material, What you'll build
 
+### Community 62 - "Nyare System Overview"
+Cohesion: 0.40
+Nodes (3): Nyare MVP Boundaries, Nyare System Overview, Nyare System Workflows & Architecture Diagrams
+
 ### Community 71 - "05 — A more professional front-end"
 Cohesion: 0.22
 Nodes (9): 05 — A more professional front-end, 1. What "professional-looking" means here, 2. Add Bootstrap structure, 3. Empty states, 4. Toasts for feedback, 5. Loading spinners, 6. Inline form validation, 7. Review what the agent produced (+1 more)
@@ -400,33 +398,65 @@ Cohesion: 0.14
 Nodes (13): File Map, Global Constraints, Placeholder Scan, Self-Review Checklist, Spec Coverage, Task 1: DTOs — Request and Response Records, Task 2: Repositories — TaskRepository and CourseRepository, Task 3: Service Layer — TaskService (+5 more)
 
 ### Community 98 - "Nyare Backend Conventions and Standards"
-Cohesion: 0.18
+Cohesion: 0.20
 Nodes (10): 1. Architecture Overview, 2. Package Structure & Naming, 3. Domain Entity Guidelines, 4. DTO & Validation Guidelines, 5. Service & Transaction Guidelines, 6. REST API & Controller Guidelines, 7. Persistence & SQLite Guidelines, 8. Verification & Testing Standards (+2 more)
 
 ### Community 106 - "TaskStatus"
-Cohesion: 0.15
+Cohesion: 0.16
 Nodes (5): TaskStatusRequest, TaskStatus, COMPLETED, IN_PROGRESS, TODO
 
 ### Community 107 - "TaskServiceImpl.java"
 Cohesion: 0.19
 Nodes (9): ResourceNotFoundException, CourseRepository, TaskRepository, Override, TaskServiceImpl, org.springframework.data.jpa.repository.JpaRepository, org.springframework.data.jpa.repository.Query, org.springframework.stereotype.Service (+1 more)
 
+### Community 115 - "Foundation 3: Core Domain Invariants"
+Cohesion: 0.11
+Nodes (18): 1. `Course` is the Root Organizational Anchor, 2. Rigid Constraints vs. Flexible Recommendations, 3. Virtual Study Plan (Zero Persistence Entity), 4. Tri-State Study Plan Recommendations, 5. Append-Only Materialization (No Auto-Reconciliation), 6. Strict Scoping of AI Extraction, 7. Dynamic Holistic Reasoning (No Deterministic Scoring), 8. Preserve Uncertainty (Zero Data Fabrication) (+10 more)
+
+### Community 116 - "Foundation 2: Core Domain Invariants"
+Cohesion: 0.11
+Nodes (17): 1. `Course` is the Root Organizational Anchor, 2. Rigid Constraints vs. Flexible Recommendations, 3. Virtual Study Plan (Zero Persistence Entity), 4. Tri-State Study Plan Recommendations, 5. Append-Only Materialization (No Auto-Reconciliation), 6. Strict Scoping of AI Extraction, 7. Dynamic Holistic Reasoning (No Deterministic Scoring), 8. Preserve Uncertainty (Zero Data Fabrication) (+9 more)
+
+### Community 117 - "Workflow Directory"
+Cohesion: 0.20
+Nodes (10): 1. System Overview, 2. Core Academic Model, 3. Journal Processing Workflow, 4. AI Planning Workflow, 5. Study Plan and Calendar Relationship, 6. Information and Planning Boundaries, 7. Handling Missing Information, 8. User Interface and Navigation (+2 more)
+
+### Community 118 - "2. Core Entities & Hierarchy"
+Cohesion: 0.09
+Nodes (22): 1. Academic Event vs. Deadline, 1. Core Concept & Pipeline, 2. Core Entities & Hierarchy, 2. Task vs. Academic Event, 3. Academic Context vs. Task, 3. Important Domain Distinctions, 4. Academic Context vs. Academic Event, 4. Preserving Uncertainty & Incomplete Information (+14 more)
+
+### Community 121 - "Nyare MVP Boundaries & Non-Goals"
+Cohesion: 0.25
+Nodes (8): 1. No Micro-Scheduling / Time-Blocking, 2. No Automated Task Reconciliation, Merging, or Splitting, 3. No Deterministic Priority Scoring Engine, 4. No Mandatory Recurring Availability Calendars, 5. No Study Plan Persistence Entity, 6. Strict Uncertainty Preservation (Zero Hallucination), 7. Strict Processing Scope (Today's Notes Only), Nyare MVP Boundaries & Non-Goals
+
+### Community 122 - "2. Detailed Entity Specifications"
+Cohesion: 0.22
+Nodes (9): 1. Entity Overview & Persistence Strategy, 2. Detailed Entity Specifications, 3. The Virtual Study Plan DTO (Non-Persisted), A. `Course` (`courses`), B. `AcademicEvent` (`academic_events`), Backend Domain Model & JPA Mapping Draft, C. `Task` (`tasks`), D. `AcademicContext` (`academic_contexts`) (+1 more)
+
+### Community 123 - "AI Processing & Planning API Workflows Draft"
+Cohesion: 0.25
+Nodes (8): 1. AI Processing Workflow (`POST /api/ai/process-today`), 2. AI Planning Workflow (`POST /api/ai/plan`), 3. The Student Feedback & Reconsideration Loop, AI Processing & Planning API Workflows Draft, Overview, Overview, Proposed Request / Response Contract, Proposed Request / Response Contract
+
+### Community 125 - "Candidate Additions for `backend/AGENTS.md`"
+Cohesion: 0.29
+Nodes (5): 1. Domain Modeling Rules, 2. Service Layer & AI Processing Rules, 3. Verification & Conventions, Backend Agent Guide Candidate Updates Draft, Candidate Additions for `backend/AGENTS.md`
+
 ## Knowledge Gaps
-- **431 isolated node(s):** `TODO`, `IN_PROGRESS`, `COMPLETED`, `{ flags, positional }`, `outputDir` (+426 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 575 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **52 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **509 isolated node(s):** `name`, `version`, `license`, `private`, `type` (+504 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 639 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **37 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Dr JSkill Specification` connect `Dr JSkill Specification` to `Spring Boot Testing Best Practices Guide`, `Azure Deployment Guide`, `Dr JSkill Agent Guidelines`, `Dr JSkill`, `Angular Frontend Integration Guide`, `Docker Guide for Spring Boot`, `Spring Security Best Practices Guide`?**
-  _High betweenness centrality (0.030) - this node is a cross-community bridge._
+  _High betweenness centrality (0.023) - this node is a cross-community bridge._
 - **Why does `Dr JSkill Documentation Home` connect `Dr JSkill Specification` to `README.md`?**
-  _High betweenness centrality (0.025) - this node is a cross-community bridge._
-- **Why does `Course` connect `Course` to `jakarta.persistence.Entity`, `Task`, `TaskServiceImpl.java`, `AcademicEvent`, `AcademicContext`, `Note`, `Schedule`?**
-  _High betweenness centrality (0.015) - this node is a cross-community bridge._
-- **What connects `TODO`, `IN_PROGRESS`, `COMPLETED` to the rest of the system?**
-  _431 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _High betweenness centrality (0.020) - this node is a cross-community bridge._
+- **Why does `02 — Getting started` connect `02 — Getting started` to `README.md`?**
+  _High betweenness centrality (0.009) - this node is a cross-community bridge._
+- **What connects `name`, `version`, `license` to the rest of the system?**
+  _509 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `versions.mjs` be split into smaller, more focused modules?**
   _Cohesion score 0.05707762557077625 - nodes in this community are weakly interconnected._
 - **Should `compress.py` be split into smaller, more focused modules?**

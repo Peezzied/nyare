@@ -840,10 +840,10 @@
     "semantic_hash": "a831cf3669f1e6ab85d8a80ebe655f99"
   },
   "AGENTS.md": {
-    "mtime": 1789029997.9221783,
-    "seen": 1789125311.391201,
-    "ast_hash": "f6cc2f50eb20c2cb5b9a7fd6ff55e0f2",
-    "semantic_hash": "f6cc2f50eb20c2cb5b9a7fd6ff55e0f2"
+    "mtime": 1789310273.0090125,
+    "seen": 1789310911.3589575,
+    "ast_hash": "84710f01eb41b219a81c6544e1466a0d",
+    "semantic_hash": ""
   },
   "frontend/README.md": {
     "mtime": 1788498118.0813675,
@@ -1059,6 +1059,60 @@
     "mtime": 1789308220.2897005,
     "seen": 1789309047.5799215,
     "ast_hash": "8ead0f9ec4f3752507e3fe510abffdff",
+    "semantic_hash": ""
+  },
+  ".agents/skills/architect-craft/SKILL.md": {
+    "mtime": 1789314914.3485703,
+    "seen": 1789314922.9207752,
+    "ast_hash": "16c7afad9c5f899ceff8155002534f37",
+    "semantic_hash": ""
+  },
+  "backend/.agents/skills/architect-craft/SKILL.md": {
+    "mtime": 1789310864.6407578,
+    "seen": 1789310911.3589609,
+    "ast_hash": "9bfc044e525e38cd53b5b8adef74e9d6",
+    "semantic_hash": ""
+  },
+  "docs/conceptual-model.md": {
+    "mtime": 1789310244.992734,
+    "seen": 1789310911.3589709,
+    "ast_hash": "bb121fde7f0dcfe0027290aa495c56a0",
+    "semantic_hash": ""
+  },
+  "docs/mvp-boundaries.md": {
+    "mtime": 1789310264.6688724,
+    "seen": 1789310911.3589723,
+    "ast_hash": "6858b3d62c226d41d0269842c88a03aa",
+    "semantic_hash": ""
+  },
+  "docs/system-workflows.md": {
+    "mtime": 1789310257.6002424,
+    "seen": 1789310911.3589754,
+    "ast_hash": "a55a6ec8ceac2d6b4b9b8067024acc77",
+    "semantic_hash": ""
+  },
+  "docs/temp/README.md": {
+    "mtime": 1789310872.7687,
+    "seen": 1789310911.358978,
+    "ast_hash": "3fcd34e59e347b7e02abfe93f514360b",
+    "semantic_hash": ""
+  },
+  "docs/temp/ai-workflows-draft.md": {
+    "mtime": 1789310486.0410814,
+    "seen": 1789310911.3589792,
+    "ast_hash": "816beceffd01b5844c89ce1b6641b209",
+    "semantic_hash": ""
+  },
+  "docs/temp/backend-agents-guide-draft.md": {
+    "mtime": 1789310491.1031103,
+    "seen": 1789310911.3589807,
+    "ast_hash": "f5ca90c0e407d9a7f73924f7c170d0b7",
+    "semantic_hash": ""
+  },
+  "docs/temp/backend-domain-model-draft.md": {
+    "mtime": 1789310480.2249105,
+    "seen": 1789310911.3589818,
+    "ast_hash": "5e1fc0024f4068a2bd6df58b8cce9c18",
     "semantic_hash": ""
   }
 }
