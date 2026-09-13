@@ -102,11 +102,16 @@
   "100": "Override",
   "101": "group.four.nyare.nyare.Models.Course",
   "102": "group.four.nyare.nyare.Models.Enums.TaskStatus",
-  "103": "jakarta.persistence.EntityListeners",
-  "104": "jakarta.persistence.Table",
+  "103": "Task",
+  "104": "TaskRequest",
   "105": "Note",
-  "106": "org.springframework.data.jpa.domain.support.AuditingEntityListener",
-  "107": "org.springframework.data.jpa.repository.JpaRepository",
-  "108": "org.springframework.data.jpa.repository.Query",
-  "109": "Override"
+  "106": "TaskStatus",
+  "107": "TaskServiceImpl.java",
+  "108": "TaskResponse",
+  "109": "Override",
+  "110": "AcademicEvent",
+  "111": "AcademicContext",
+  "112": "Note",
+  "113": "Schedule",
+  "114": "Course"
 }

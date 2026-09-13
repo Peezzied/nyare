@@ -1,16 +1,16 @@
 # Graph Report - nyare  (2026-09-13)
 
 ## Corpus Check
-- 147 files · ~156,321 words
+- 150 files · ~156,581 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 993 nodes · 1288 edges · 101 communities (59 shown, 39 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 43 edges (avg confidence: 0.85)
+- 874 nodes · 1048 edges · 110 communities (57 shown, 50 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 33 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a4ef702b`
+- Built from commit: `9ae047c2`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -72,9 +72,9 @@
 - 06 — Testing
 - 00 — Introduction
 - GitHub Copilot CLI + Java workshop, using Dr JSkill
-- Task
-- AcademicEvent
-- Note
+- Course
+- Override
+- Override
 - GitHub Copilot CLI
 - Nyare MVP Boundaries
 - __init__.py
@@ -82,9 +82,9 @@
 - Graphify Knowledge Graph Rule
 - FastContext Explorer
 - Dr-JSkill Favicon
-- AcademicContext
-- Schedule
-- Course
+- Override
+- Override
+- Override
 - 05 — A more professional front-end
 - 4. Endpoints Specification
 - Entity
@@ -110,21 +110,30 @@
 - Entity
 - 4. Endpoints Specification
 - Task Manager Service Implementation Plan
-- TaskStatus
+- Nyare Backend Conventions and Standards
 - ponytail.md
+- Override
+- group.four.nyare.nyare.Models.Course
+- group.four.nyare.nyare.Models.Enums.TaskStatus
+- jakarta.persistence.EntityListeners
+- jakarta.persistence.Table
+- Note
+- org.springframework.data.jpa.domain.support.AuditingEntityListener
+- org.springframework.data.jpa.repository.JpaRepository
+- org.springframework.data.jpa.repository.Query
 - Override
 
 ## God Nodes (most connected - your core abstractions)
-1. `Task` - 36 edges
-2. `Course` - 28 edges
-3. `Note` - 27 edges
-4. `Dr JSkill Specification` - 24 edges
-5. `getVersionValue()` - 23 edges
-6. `AcademicEvent` - 20 edges
-7. `AcademicContext` - 20 edges
-8. `applyDotfiles()` - 18 edges
-9. `_compress_file_locked()` - 18 edges
-10. `Schedule` - 17 edges
+1. `Dr JSkill Specification` - 24 edges
+2. `getVersionValue()` - 23 edges
+3. `applyDotfiles()` - 18 edges
+4. `_compress_file_locked()` - 18 edges
+5. `validate()` - 14 edges
+6. `Appendix A — Prompt cheat sheet` - 12 edges
+7. `Docker Guide for Spring Boot` - 12 edges
+8. `02 — Getting started` - 11 edges
+9. `07 — Performance` - 11 edges
+10. `downloadAndExtractProject()` - 10 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Lean Build Skill` --semantically_similar_to--> `Surgical Patch Skill`  [INFERRED] [semantically similar]
@@ -155,7 +164,7 @@
 - **Graphify Query & Knowledge Retrieval Flow** — _agents_skills_graphify_skill_fast_path_query, _agents_skills_graphify_references_query_query_expansion, _agents_skills_graphify_references_query_traversal_modes, _agents_skills_graphify_references_query_work_memory_reflections [INFERRED 0.95]
 - **Spring Boot 4 Testing Ecosystem Modernization** — _agents_skills_dr_jskill_references_spring_boot_4_mockito_bean, _agents_skills_dr_jskill_references_spring_boot_4_webmvc_test_starter, _agents_skills_dr_jskill_references_test_testcontainers_service_connection, _agents_skills_dr_jskill_references_test_rest_test_client [INFERRED 0.95]
 
-## Communities (101 total, 39 thin omitted)
+## Communities (110 total, 50 thin omitted)
 
 ### Community 0 - "versions.mjs"
 Cohesion: 0.06
@@ -176,10 +185,6 @@ Nodes (20): AI Assistant Integration Setup, Dr JSkill Overview, Dr JSkill vs JHi
 ### Community 4 - "validate.py"
 Cohesion: 0.10
 Nodes (28): benchmark_pair(), count_tokens(), main(), print_table(), Path, count_bullets(), extract_code_blocks(), extract_fenced_spans() (+20 more)
-
-### Community 5 - "jakarta.persistence.Entity"
-Cohesion: 0.40
-Nodes (4): jakarta.persistence.Entity, jakarta.persistence.EntityListeners, jakarta.persistence.Table, org.springframework.data.jpa.domain.support.AuditingEntityListener
 
 ### Community 6 - "frontend/package.json"
 Cohesion: 0.10
@@ -350,8 +355,8 @@ Cohesion: 0.67
 Nodes (3): Vue App Mount Element, Frontend HTML Entrypoint, Vue 3 + Vite Template Guide
 
 ### Community 54 - "Model Craft"
-Cohesion: 0.09
-Nodes (21): 1. JPA & Persistence Annotations, 2. Bean Validation Constraints, 3. Constructors & Accessors (Vanilla Java), 4. JPA-Safe Identity (`equals`, `hashCode`, `toString`), 5. Domain Javadoc & Comments, 6. Step-by-Step Enhancement Checklist, 7. Canonical Reference Example, 8. Common Mistakes & Anti-Patterns (+13 more)
+Cohesion: 0.13
+Nodes (14): 1. JPA & Persistence Annotations, 2. Bean Validation Constraints, 3. Constructors & Accessors, 4. YAGNI Identity (No `equals()` / `hashCode()` Bloat), 5. Domain Javadoc, 6. Canonical Reference Example, Auditing & Temporal Fields, Entity & Table Declarations (+6 more)
 
 ### Community 55 - "06 — Testing"
 Cohesion: 0.20
@@ -365,10 +370,6 @@ Nodes (7): 00 — Introduction, 1. What is an Agent Skill?, 2. What Dr JSkill is
 Cohesion: 0.33
 Nodes (6): Chapters, GitHub Copilot CLI + Java workshop, using Dr JSkill, How to use this workshop, Prerequisites, Reference material, What you'll build
 
-### Community 58 - "Task"
-Cohesion: 0.07
-Nodes (14): TaskRequest, TaskResponse, TaskStatusRequest, Course, Task, CourseRepository, TaskRepository, TaskService (+6 more)
-
 ### Community 71 - "05 — A more professional front-end"
 Cohesion: 0.22
 Nodes (9): 05 — A more professional front-end, 1. What "professional-looking" means here, 2. Add Bootstrap structure, 3. Empty states, 4. Toasts for feedback, 5. Loading spinners, 6. Inline form validation, 7. Review what the agent produced (+1 more)
@@ -379,7 +380,7 @@ Nodes (38): 1. Overview & Domain Architecture, 2.1 TaskStatus Enum, 2.2 Task Sch
 
 ### Community 92 - "Backend Agent Guide (Nyare)"
 Cohesion: 0.29
-Nodes (6): Backend Agent Guide (Nyare), Core Architecture & Guidelines, Domain Model (`group.four.nyare.nyare.Models`), Knowledge Graph Workflows (`graphify`), Tech Stack, Verification & Build Tiering
+Nodes (6): Backend Agent Guide (Nyare), Core Architecture & Guidelines, Domain Model (`group.four.nyare.nyare.model`), Knowledge Graph Workflows (`graphify`), Tech Stack, Verification & Build Tiering
 
 ### Community 96 - "4. Endpoints Specification"
 Cohesion: 0.05
@@ -389,26 +390,26 @@ Nodes (38): 1. Overview & Domain Architecture, 2.1 TaskStatus Enum, 2.2 Task Sch
 Cohesion: 0.14
 Nodes (13): File Map, Global Constraints, Placeholder Scan, Self-Review Checklist, Spec Coverage, Task 1: DTOs — Request and Response Records, Task 2: Repositories — TaskRepository and CourseRepository, Task 3: Service Layer — TaskService (+5 more)
 
-### Community 98 - "TaskStatus"
-Cohesion: 0.40
-Nodes (4): TaskStatus, COMPLETED, IN_PROGRESS, TODO
+### Community 98 - "Nyare Backend Conventions and Standards"
+Cohesion: 0.18
+Nodes (10): 1. Architecture Overview, 2. Package Structure & Naming, 3. Domain Entity Guidelines, 4. DTO & Validation Guidelines, 5. Service & Transaction Guidelines, 6. REST API & Controller Guidelines, 7. Persistence & SQLite Guidelines, 8. Verification & Testing Standards (+2 more)
 
 ## Knowledge Gaps
-- **427 isolated node(s):** `Ponytail, lazy senior dev mode`, `1. Overview & Domain Architecture`, `2.1 TaskStatus Enum`, `2.2 Task Schema Overview`, `Problem Details Schema` (+422 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 543 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **39 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **428 isolated node(s):** `Overview`, `Entity & Table Declarations`, `Primary Key Mappings`, `Naming Strategy (No Manual Column Names)`, `Relationships & Foreign Keys` (+423 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 521 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **50 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Dr JSkill Specification` connect `Dr JSkill Specification` to `Spring Boot Testing Best Practices Guide`, `Azure Deployment Guide`, `Dr JSkill Agent Guidelines`, `Dr JSkill`, `Angular Frontend Integration Guide`, `Docker Guide for Spring Boot`, `Spring Security Best Practices Guide`?**
-  _High betweenness centrality (0.038) - this node is a cross-community bridge._
+  _High betweenness centrality (0.049) - this node is a cross-community bridge._
 - **Why does `Dr JSkill Documentation Home` connect `Dr JSkill Specification` to `README.md`?**
-  _High betweenness centrality (0.033) - this node is a cross-community bridge._
+  _High betweenness centrality (0.043) - this node is a cross-community bridge._
 - **Why does `Appendix B — Troubleshooting` connect `Appendix B — Troubleshooting` to `README.md`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
-- **What connects `Ponytail, lazy senior dev mode`, `1. Overview & Domain Architecture`, `2.1 TaskStatus Enum` to the rest of the system?**
-  _427 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _High betweenness centrality (0.022) - this node is a cross-community bridge._
+- **What connects `Overview`, `Entity & Table Declarations`, `Primary Key Mappings` to the rest of the system?**
+  _428 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `versions.mjs` be split into smaller, more focused modules?**
   _Cohesion score 0.05707762557077625 - nodes in this community are weakly interconnected._
 - **Should `compress.py` be split into smaller, more focused modules?**
