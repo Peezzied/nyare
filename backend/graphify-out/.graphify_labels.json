@@ -1,10 +1,10 @@
 {
-  "0": "Task",
+  "0": "TaskResponse",
   "1": "NyareApplicationTests.java",
   "2": "gradlew",
   "3": "NyareApplication",
-  "4": "TaskStatus",
-  "5": "Note",
+  "4": "Task",
+  "5": "jakarta.persistence.Entity",
   "6": "Model Craft",
   "7": "Backend Agent Guide (Nyare)",
   "8": "IntelliJ MCP Backend Workflow & Static Analysis Rule",
@@ -12,8 +12,12 @@
   "10": "settings.gradle.kts",
   "11": "AcademicEvent",
   "12": "4. Endpoints Specification",
-  "13": "Course",
+  "13": "AcademicContext",
   "14": "Task Manager Service Implementation Plan",
   "15": "Nyare Task Management Service API Specification",
-  "16": "TaskRepository.java"
+  "16": "TaskServiceImpl.java",
+  "17": "Note",
+  "18": "Schedule",
+  "19": "Course",
+  "20": "Nyare Backend Conventions and Standards"
 }

@@ -17,48 +17,6 @@
     "ast_hash": "ceac6392a093be1fcc23ef9c9a7436da",
     "semantic_hash": ""
   },
-  "src/main/java/group/four/nyare/nyare/Models/AcademicContext.java": {
-    "mtime": 1789286173.4362357,
-    "seen": 1789286330.87974,
-    "ast_hash": "4c88ad5fd4c8d63c2c8a65c205b85099",
-    "semantic_hash": ""
-  },
-  "src/main/java/group/four/nyare/nyare/Models/AcademicEvent.java": {
-    "mtime": 1789286362.8421352,
-    "seen": 1789286906.7951474,
-    "ast_hash": "6c55247230ab8a1405ce4b5052f3cf4f",
-    "semantic_hash": ""
-  },
-  "src/main/java/group/four/nyare/nyare/Models/Course.java": {
-    "mtime": 1789286893.829376,
-    "seen": 1789286906.7951493,
-    "ast_hash": "70c80e2112fb57968aeca11150457f4d",
-    "semantic_hash": ""
-  },
-  "src/main/java/group/four/nyare/nyare/Models/Enums/TaskStatus.java": {
-    "mtime": 1789287495.6609497,
-    "seen": 1789287981.642052,
-    "ast_hash": "fb0cb22da83d731d12726b6dabafb8af",
-    "semantic_hash": ""
-  },
-  "src/main/java/group/four/nyare/nyare/Models/Note.java": {
-    "mtime": 1789287503.173078,
-    "seen": 1789287981.6420534,
-    "ast_hash": "302cf322f2a98cccbe68172d646c5a7e",
-    "semantic_hash": ""
-  },
-  "src/main/java/group/four/nyare/nyare/Models/Schedule.java": {
-    "mtime": 1789287499.437999,
-    "seen": 1789287981.6420548,
-    "ast_hash": "36d097f85f09843ffb394cb8ff60ce4c",
-    "semantic_hash": ""
-  },
-  "src/main/java/group/four/nyare/nyare/Models/Task.java": {
-    "mtime": 1789301476.2143867,
-    "seen": 1789301484.5711632,
-    "ast_hash": "86f90010adf9697db2ea2f2c51f304ee",
-    "semantic_hash": ""
-  },
   "src/main/java/group/four/nyare/nyare/NyareApplication.java": {
     "mtime": 1789288349.656134,
     "seen": 1789288370.124081,
@@ -84,51 +42,15 @@
     "semantic_hash": ""
   },
   ".agents/skills/model-craft/SKILL.md": {
-    "mtime": 1789286011.2853136,
-    "seen": 1789286330.8797557,
-    "ast_hash": "f7add5c0ee870fa845f57b4489bf330d",
+    "mtime": 1789308328.1237833,
+    "seen": 1789308644.136494,
+    "ast_hash": "3dda2c113eec4d669a7da472ff73d723",
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1789286671.9771743,
-    "seen": 1789286906.7951624,
-    "ast_hash": "45550471b0ab1f62d7e2b472152a0355",
-    "semantic_hash": ""
-  },
-  "src/main/java/group/four/nyare/nyare/DTOs/TaskRequest.java": {
-    "mtime": 1789300480.6654027,
-    "seen": 1789300598.4973855,
-    "ast_hash": "2d9ecd114c00988e264d2b49e67e135d",
-    "semantic_hash": ""
-  },
-  "src/main/java/group/four/nyare/nyare/DTOs/TaskResponse.java": {
-    "mtime": 1789300489.4232721,
-    "seen": 1789300598.4973874,
-    "ast_hash": "fcef55ea8572bd692e211db333ca0499",
-    "semantic_hash": ""
-  },
-  "src/main/java/group/four/nyare/nyare/DTOs/TaskStatusRequest.java": {
-    "mtime": 1789300485.405689,
-    "seen": 1789300598.4973886,
-    "ast_hash": "9d7052a8db3dbf7458ccb3753a0f7795",
-    "semantic_hash": ""
-  },
-  "src/main/java/group/four/nyare/nyare/Repositories/CourseRepository.java": {
-    "mtime": 1789301465.7872813,
-    "seen": 1789301484.5711665,
-    "ast_hash": "cbc4462cf3867b34c3a6c034bc58ce1c",
-    "semantic_hash": ""
-  },
-  "src/main/java/group/four/nyare/nyare/Repositories/TaskRepository.java": {
-    "mtime": 1789301471.71989,
-    "seen": 1789301484.5711677,
-    "ast_hash": "8da62e3fc96ef6f11f3f52dd5202c57e",
-    "semantic_hash": ""
-  },
-  "src/main/java/group/four/nyare/nyare/Services/TaskService.java": {
-    "mtime": 1789301652.3703105,
-    "seen": 1789301665.6970348,
-    "ast_hash": "6e68ee0edb24817a66850ba3ac0bb174",
+    "mtime": 1789308241.7214592,
+    "seen": 1789308644.136495,
+    "ast_hash": "7b0aad98d8e483839feb6d2092cf8bf7",
     "semantic_hash": ""
   },
   "docs/api/openapi.yaml": {
@@ -147,6 +69,102 @@
     "mtime": 1789297414.172243,
     "seen": 1789300598.4974139,
     "ast_hash": "85572e6668b743937862cdb2eb31604e",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/dto/TaskRequest.java": {
+    "mtime": 1789308394.432639,
+    "seen": 1789308644.1364722,
+    "ast_hash": "147cf60e0e1b33fc63efbe5c54d14599",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/dto/TaskResponse.java": {
+    "mtime": 1789308398.50875,
+    "seen": 1789308644.1364744,
+    "ast_hash": "320f5988b69f65cbaa812d5beb232902",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/dto/TaskStatusRequest.java": {
+    "mtime": 1789308401.2773871,
+    "seen": 1789308644.1364756,
+    "ast_hash": "387e6841efa228c45317800df8c01459",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/exception/ResourceNotFoundException.java": {
+    "mtime": 1789308404.1415164,
+    "seen": 1789308644.136477,
+    "ast_hash": "f8efd1875b3cb750ceaef1079bef6e82",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/model/AcademicContext.java": {
+    "mtime": 1789308385.5862758,
+    "seen": 1789308644.1364782,
+    "ast_hash": "d1d1346aafde724b6a7615d362ca0043",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/model/AcademicEvent.java": {
+    "mtime": 1789308379.2356834,
+    "seen": 1789308644.1364791,
+    "ast_hash": "461a7bcde1b1084be09010f6c7c501e1",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/model/Course.java": {
+    "mtime": 1789308362.2980895,
+    "seen": 1789308644.1364803,
+    "ast_hash": "b6f8d6bbc27460a1a0bda16ecaadafe4",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/model/Note.java": {
+    "mtime": 1789308369.6140788,
+    "seen": 1789308644.1364813,
+    "ast_hash": "9163eb75d343c86f81b9db08a70adb7a",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/model/Schedule.java": {
+    "mtime": 1789308390.4731493,
+    "seen": 1789308644.1364825,
+    "ast_hash": "ca24fc0ba825b41500f285370ae40c15",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/model/Task.java": {
+    "mtime": 1789308375.0101585,
+    "seen": 1789308644.136484,
+    "ast_hash": "78323f284ce9960df7752931c0718da6",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/model/enums/TaskStatus.java": {
+    "mtime": 1789308350.2293315,
+    "seen": 1789308644.1364853,
+    "ast_hash": "d950d8f3b9cb5bad48fa7e02a3600b27",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/repository/CourseRepository.java": {
+    "mtime": 1789308411.6479986,
+    "seen": 1789308644.1364863,
+    "ast_hash": "f1e884900adc26540c71cc6a2afb9775",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/repository/TaskRepository.java": {
+    "mtime": 1789308414.661046,
+    "seen": 1789308644.1364875,
+    "ast_hash": "7ce9ac375f2e6cd47a556bf8db08e04d",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/service/TaskService.java": {
+    "mtime": 1789308418.3448997,
+    "seen": 1789308644.1364882,
+    "ast_hash": "48babd29e7e72bfb304754b938e9d522",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/service/impl/TaskServiceImpl.java": {
+    "mtime": 1789308424.6543336,
+    "seen": 1789308644.1364892,
+    "ast_hash": "8e26e18a8053d02c6aa2cfcc4cb9cee1",
+    "semantic_hash": ""
+  },
+  "docs/conventions.md": {
+    "mtime": 1789308220.2897005,
+    "seen": 1789308644.1364992,
+    "ast_hash": "8ead0f9ec4f3752507e3fe510abffdff",
     "semantic_hash": ""
   }
 }

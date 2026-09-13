@@ -1,12 +1,12 @@
 # Graph Report - backend  (2026-09-13)
 
 ## Corpus Check
-- 25 files · ~15,404 words
+- 24 files · ~15,262 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 246 nodes · 377 edges · 17 communities (12 shown, 3 thin omitted)
-- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 20 edges (avg confidence: 0.8)
+- 240 nodes · 344 edges · 17 communities (13 shown, 2 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 10 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
@@ -29,19 +29,19 @@
 - Course
 - Task Manager Service Implementation Plan
 - Nyare Task Management Service API Specification
-- ResourceNotFoundException
+- TaskRepository.java
 
 ## God Nodes (most connected - your core abstractions)
-1. `Task` - 37 edges
-2. `Course` - 35 edges
+1. `Task` - 36 edges
+2. `Course` - 34 edges
 3. `Note` - 30 edges
 4. `AcademicContext` - 20 edges
 5. `AcademicEvent` - 20 edges
 6. `TaskStatus` - 18 edges
 7. `Schedule` - 17 edges
-8. `TaskService` - 12 edges
-9. `Model Craft` - 10 edges
-10. `Task Manager Service Implementation Plan` - 10 edges
+8. `Model Craft` - 10 edges
+9. `Task Manager Service Implementation Plan` - 10 edges
+10. `TaskResponse` - 9 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `AcademicContext` --references--> `Course`  [EXTRACTED]
@@ -58,7 +58,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (17 total, 3 thin omitted)
+## Communities (17 total, 2 thin omitted)
 
 ### Community 1 - "NyareApplicationTests.java"
 Cohesion: 0.60
@@ -73,8 +73,8 @@ Cohesion: 0.60
 Nodes (3): org.springframework.boot.autoconfigure.SpringBootApplication, org.springframework.data.jpa.repository.config.EnableJpaAuditing, NyareApplication
 
 ### Community 4 - "TaskStatus"
-Cohesion: 0.15
-Nodes (14): org.springframework.data.jpa.repository.JpaRepository, org.springframework.data.jpa.repository.Query, org.springframework.stereotype.Service, org.springframework.transaction.annotation.Transactional, TaskRequest, TaskResponse, TaskStatusRequest, TaskStatus (+6 more)
+Cohesion: 0.18
+Nodes (8): TaskRequest, TaskResponse, TaskStatusRequest, TaskStatus, COMPLETED, IN_PROGRESS, TODO, TaskService
 
 ### Community 5 - "Note"
 Cohesion: 0.08
@@ -108,25 +108,29 @@ Nodes (13): File Map, Global Constraints, Placeholder Scan, Self-Review Checklis
 Cohesion: 0.20
 Nodes (9): 1. Overview & Domain Architecture, 2.1 TaskStatus Enum, 2.2 Task Schema Overview, 2. Data Models & Enums, 3.1 400 Bad Request Example (Validation Failure), 3.2 404 Not Found Example, 3. Error Handling (RFC 7807 Problem Details), Nyare Task Management Service API Specification (+1 more)
 
+### Community 16 - "TaskRepository.java"
+Cohesion: 0.43
+Nodes (4): org.springframework.data.jpa.repository.JpaRepository, org.springframework.data.jpa.repository.Query, CourseRepository, TaskRepository
+
 ## Knowledge Gaps
 - **68 isolated node(s):** `TODO`, `IN_PROGRESS`, `COMPLETED`, `1. Tool Discovery & Dynamic Capability Inspection`, `2. Pre-Build Verification (Immediate Post-Edit Validation)` (+63 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 114 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **3 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 116 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **2 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Course` connect `Course` to `Task`, `AcademicEvent`, `TaskStatus`, `Note`?**
-  _High betweenness centrality (0.124) - this node is a cross-community bridge._
-- **Why does `Task` connect `Task` to `Course`, `TaskStatus`, `Note`?**
-  _High betweenness centrality (0.120) - this node is a cross-community bridge._
+- **Why does `Task` connect `Task` to `TaskRepository.java`, `Course`, `TaskStatus`, `Note`?**
+  _High betweenness centrality (0.145) - this node is a cross-community bridge._
+- **Why does `Course` connect `Course` to `Task`, `TaskRepository.java`, `AcademicEvent`, `Note`?**
+  _High betweenness centrality (0.112) - this node is a cross-community bridge._
 - **Why does `Note` connect `Note` to `Task`, `AcademicEvent`, `Course`?**
-  _High betweenness centrality (0.077) - this node is a cross-community bridge._
+  _High betweenness centrality (0.081) - this node is a cross-community bridge._
 - **What connects `TODO`, `IN_PROGRESS`, `COMPLETED` to the rest of the system?**
   _68 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Task` be split into smaller, more focused modules?**
-  _Cohesion score 0.13846153846153847 - nodes in this community are weakly interconnected._
-- **Should `TaskStatus` be split into smaller, more focused modules?**
-  _Cohesion score 0.14814814814814814 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.14285714285714285 - nodes in this community are weakly interconnected._
 - **Should `Note` be split into smaller, more focused modules?**
-  _Cohesion score 0.08205128205128205 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07926829268292683 - nodes in this community are weakly interconnected._
+- **Should `Model Craft` be split into smaller, more focused modules?**
+  _Cohesion score 0.09090909090909091 - nodes in this community are weakly interconnected._
