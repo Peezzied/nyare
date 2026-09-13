@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "vscode": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-vscode"],
+      "disabled": false
+    }
+  }
+}
