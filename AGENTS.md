@@ -2,6 +2,17 @@
 
 Nyare is a **calendar-first academic planning assistant**. Students use their class schedule to navigate courses, write course-linked journal entries, and receive AI-generated study recommendations.
 
+---
+
+## Documentation Directory
+
+For in-depth architectural and technical guidelines, consult the global documentation:
+- [Conceptual Model & Domain Dictionary](docs/conceptual-model.md): Ubiquitous language, entity hierarchy, Academic Event taxonomy, and key distinctions.
+- [System Workflows & Diagrams](docs/system-workflows.md): Complete set of 9 Mermaid flowcharts covering processing, planning, navigation, and feedback.
+- [MVP Boundaries & Non-Goals](docs/mvp-boundaries.md): Explicit architectural limits (no time-blocking, no automatic reconciliation, no scoring formula, virtual study plan).
+
+---
+
 ## Core Concept
 
 ```text
@@ -9,58 +20,57 @@ Course Schedule
       ↓
 Course-linked Journal
       ↓
-AI Processing
+AI Processing (explicit trigger, today's notes only)
       ↓
 Tasks / Academic Events / Academic Context
       ↓
-AI Planning
+AI Planning (synthesizing academic state + feedback)
       ↓
-Study Plan
+Study Plan (tri-state recommendations)
       ↓
 Calendar View
 ```
 
+---
+
 ## Core Model
 
-- **Course** contains class schedules, journal entries, tasks, academic events, and academic context.
-- **Journal Entry** is always associated with a course.
-- **Task** represents something the student needs to do.
-- **Academic Event** represents something happening at a specific time. A **Deadline** is a type of Academic Event.
-- **Academic Context** is information about the student's academic situation that helps AI understand and plan.
-- **Study Plan** is a group of recommended tasks displayed in the UI, not a separate entity.
+- **Course**: Academic subject organizing schedules, journal entries, tasks, academic events, and academic context. All student data belongs to exactly one course.
+- **Class Schedule**: Recurring weekly class meeting times (`dayOfWeek`, `startTime`, `endTime`) anchoring calendar navigation.
+- **Journal Entry (`Note`)**: Raw student-written notes in JSON format; the immutable source of truth.
+- **Task**: Actionable work item the student needs to do (`TODO`, `IN_PROGRESS`, `COMPLETED`), with optional estimated duration and flexible recommended date.
+- **Academic Event**: Rigid time constraint or occurrence at a specific date/time.
+  - Subtypes include: `Exam`, `Quiz`, `Presentation`, `Class Activity`, and `Deadline` (latest required submission time).
+- **Academic Context**: Temporal descriptive facts about the student's academic situation (syllabus coverage, progress, prerequisites, difficulty) aiding AI reasoning.
+- **Study Plan**: Virtual presentation construct grouping recommended tasks; **never persisted as a separate database entity**.
 
-## AI Behavior
+---
 
-- AI processing is explicitly triggered by the user.
-- Processing applies only to the **current day's journal entries**.
-- AI may extract Tasks, Academic Events, and Academic Context.
-- The AI Planner considers existing academic information when generating recommendations.
-- AI reasons from available information rather than relying on a deterministic priority-scoring system.
-- Missing information must remain uncertain. Do not invent deadlines, dates, or other facts.
-- Academic Context is time-aware. Older context may become less relevant as new information is absent or emerges.
+## AI Behavior & Planning
 
-## UI
+- **Explicit Trigger**: Processing applies only to the **current day's journal entries** upon explicit user request.
+- **Append-Only Materialization**: AI extracts Tasks, Academic Events, and Academic Context as fresh records without rewriting or mutating past entities.
+- **Preserve Uncertainty**: Missing information must remain uncertain. Never hallucinate deadlines, durations, or priority metrics.
+- **Dynamic Reasoning**: AI reasons from the holistic academic context rather than computing deterministic priority scores.
+- **Tri-State Study Plan Recommendations**:
+  - **Scheduled**: Recommended for a specific calendar date.
+  - **Flexible / Later**: Recommended for action without a specific target date.
+  - **Needs Context**: Actionable, but lacking sufficient details for confident scheduling.
+- **Student Feedback & Reconsideration Loop**: When students provide feedback on recommendations (e.g., *"I have no time today"*), AI reconsiders the Study Plan without mutating underlying Task or Event records.
+- **High-Level Planning**: Nyare recommends what day to work on tasks, not granular hourly time-blocks.
 
-- **Calendar View** is the main view. It displays class schedules, Academic Events, and recommended tasks.
-- **Notes View** is read-only and lets users browse their course-linked journal entries.
-- Tasks in the Study Plan may appear as:
-    - **Scheduled**: recommended for a specific date.
-    - **Later**: recommended without a specific date.
-    - **Needs Context**: actionable but lacking enough information for confident planning.
+---
 
-Deadlines are rigid academic constraints. Recommended task dates are flexible recommendations.
+## User Interface & Navigation
 
-## Planning
+- **Calendar View**: Primary interactive hub. Displays class schedules, rigid Academic Events / Deadlines, and recommended tasks. Clicking a class navigates to writing course-linked journal notes.
+- **Tri-Area Layout**:
+  - *Calendar Grid*: Displays scheduled items, classes, and deadlines.
+  - *Later Area*: Backlog of flexible, undated recommendations.
+  - *Needs Context Area*: Tasks requiring additional information before confident planning.
+- **Notes View**: Purely read-only browser allowing students to inspect their course-linked journal entries by course.
 
-Study Plan recommendations may be:
-
-- **Scheduled**: recommended for a specific date.
-- **Flexible / Later**: recommended without a specific date.
-- **Needs Context**: actionable information exists, but insufficient context prevents confident planning.
-
-Deadlines are rigid academic constraints. Recommended dates are flexible planning recommendations.
-
-Nyare performs **high-level planning**, not automatic time-blocking.
+---
 
 ## MVP Boundaries
 
@@ -68,4 +78,5 @@ Nyare performs **high-level planning**, not automatic time-blocking.
 - Do not build a deterministic task-priority scoring system.
 - Do not require detailed recurring availability schedules.
 - Do not treat the Study Plan as a separate persistence model.
+- Do not enforce automatic calendar time-blocking.
 - Keep the system simple for both users and developers.
