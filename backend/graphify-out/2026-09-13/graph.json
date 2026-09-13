@@ -92,7 +92,7 @@
       "file_type": "code",
       "norm_label": "nyareapplication",
       "source_file": "src/main/java/group/four/nyare/nyare/NyareApplication.java",
-      "source_location": "L7"
+      "source_location": "L6"
     },
     {
       "id": "src_main_java_group_four_nyare_nyare_models_course_course",
@@ -131,18 +131,6 @@
       "norm_label": ".equals()",
       "source_file": "src/main/java/group/four/nyare/nyare/Models/Task.java",
       "source_location": "L191"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_models_task_task_getcourse",
-      "label": ".getCourse()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "Task",
-      "file_type": "code",
-      "norm_label": ".getcourse()",
-      "source_file": "src/main/java/group/four/nyare/nyare/Models/Task.java",
-      "source_location": "L119"
     },
     {
       "id": "src_main_java_group_four_nyare_nyare_models_task_task_getcreatedat",
@@ -878,13 +866,13 @@
             "callee": "run",
             "receiver_type": "SpringApplication",
             "lang": "java",
-            "line": "L12"
+            "line": "L10"
           }
         ]
       },
       "norm_label": ".main()",
       "source_file": "src/main/java/group/four/nyare/nyare/NyareApplication.java",
-      "source_location": "L11"
+      "source_location": "L9"
     },
     {
       "id": "src_main_java_group_four_nyare_nyare_models_course_course_course",
@@ -1005,6 +993,18 @@
       "norm_label": ".setcourse()",
       "source_file": "src/main/java/group/four/nyare/nyare/Models/Note.java",
       "source_location": "L81"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_models_task_task_getcourse",
+      "label": ".getCourse()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "Course",
+      "file_type": "code",
+      "norm_label": ".getcourse()",
+      "source_file": "src/main/java/group/four/nyare/nyare/Models/Task.java",
+      "source_location": "L119"
     },
     {
       "id": "src_main_java_group_four_nyare_nyare_models_task_task_setcourse",
@@ -1386,17 +1386,6 @@
       "community_name": "NyareApplication",
       "file_type": "code",
       "norm_label": "org.springframework.boot.autoconfigure.springbootapplication",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "org_springframework_data_jpa_repository_config_enablejpaauditing",
-      "label": "org.springframework.data.jpa.repository.config.EnableJpaAuditing",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "NyareApplication",
-      "file_type": "code",
-      "norm_label": "org.springframework.data.jpa.repository.config.enablejpaauditing",
       "source_file": "",
       "source_location": ""
     },
@@ -2437,19 +2426,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "src/main/java/group/four/nyare/nyare/NyareApplication.java",
-      "source_location": "L7",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main_java_group_four_nyare_nyare_nyareapplication_nyareapplication",
-      "target": "org_springframework_data_jpa_repository_config_enablejpaauditing",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "attribute",
-      "source_file": "src/main/java/group/four/nyare/nyare/NyareApplication.java",
-      "source_location": "L7",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -2846,18 +2823,6 @@
       "context": "import",
       "source_file": "src/main/java/group/four/nyare/nyare/NyareApplication.java",
       "source_location": "L4",
-      "weight": 1.0
-    },
-    {
-      "source": "src_main_java_group_four_nyare_nyare_nyareapplication",
-      "target": "org_springframework_data_jpa_repository_config_enablejpaauditing",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/main/java/group/four/nyare/nyare/NyareApplication.java",
-      "source_location": "L5",
       "weight": 1.0
     },
     {
@@ -3676,7 +3641,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main/java/group/four/nyare/nyare/NyareApplication.java",
-      "source_location": "L7",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -4666,7 +4631,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main/java/group/four/nyare/nyare/NyareApplication.java",
-      "source_location": "L11",
+      "source_location": "L9",
       "weight": 1.0
     },
     {

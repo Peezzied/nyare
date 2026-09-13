@@ -1,11 +1,11 @@
 # Graph Report - backend  (2026-09-13)
 
 ## Corpus Check
-- 16 files · ~6,590 words
+- 16 files · ~6,585 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 165 nodes · 235 edges · 14 communities (8 shown, 4 thin omitted)
+- 164 nodes · 233 edges · 14 communities (7 shown, 5 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
@@ -55,7 +55,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (14 total, 4 thin omitted)
+## Communities (14 total, 5 thin omitted)
 
 ### Community 0 - "Task"
 Cohesion: 0.09
@@ -68,10 +68,6 @@ Nodes (3): org.junit.jupiter.api.Test, org.springframework.boot.test.context.Spr
 ### Community 2 - "gradlew"
 Cohesion: 0.83
 Nodes (3): gradlew script, die(), warn()
-
-### Community 3 - "NyareApplication"
-Cohesion: 0.60
-Nodes (3): org.springframework.boot.autoconfigure.SpringBootApplication, org.springframework.data.jpa.repository.config.EnableJpaAuditing, NyareApplication
 
 ### Community 5 - "AcademicContext"
 Cohesion: 0.13
@@ -92,21 +88,21 @@ Nodes (6): 1. Tool Discovery & Dynamic Capability Inspection, 2. Pre-Build Verif
 ## Knowledge Gaps
 - **29 isolated node(s):** `TODO`, `IN_PROGRESS`, `COMPLETED`, `1. Tool Discovery & Dynamic Capability Inspection`, `2. Pre-Build Verification (Immediate Post-Edit Validation)` (+24 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 81 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Task` connect `Task` to `Note`, `Course`, `AcademicContext`?**
-  _High betweenness centrality (0.178) - this node is a cross-community bridge._
+  _High betweenness centrality (0.181) - this node is a cross-community bridge._
 - **Why does `Course` connect `Course` to `Task`, `AcademicContext`, `AcademicEvent`, `Note`, `Schedule`?**
-  _High betweenness centrality (0.176) - this node is a cross-community bridge._
+  _High betweenness centrality (0.179) - this node is a cross-community bridge._
 - **Why does `Note` connect `Note` to `Task`, `AcademicEvent`, `Course`, `AcademicContext`?**
-  _High betweenness centrality (0.139) - this node is a cross-community bridge._
+  _High betweenness centrality (0.141) - this node is a cross-community bridge._
 - **What connects `TODO`, `IN_PROGRESS`, `COMPLETED` to the rest of the system?**
   _29 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Task` be split into smaller, more focused modules?**
-  _Cohesion score 0.08923076923076922 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09333333333333334 - nodes in this community are weakly interconnected._
 - **Should `AcademicContext` be split into smaller, more focused modules?**
   _Cohesion score 0.13 - nodes in this community are weakly interconnected._
 - **Should `Model Craft` be split into smaller, more focused modules?**

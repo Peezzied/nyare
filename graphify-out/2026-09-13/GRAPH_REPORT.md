@@ -5,12 +5,12 @@
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 873 nodes · 1140 edges · 96 communities (55 shown, 38 thin omitted)
+- 873 nodes · 1140 edges · 96 communities (56 shown, 37 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 33 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `43b07c4b`
+- Built from commit: `cc9dfef3`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -86,7 +86,7 @@
 - Schedule
 - Course
 - 05 — A more professional front-end
-- group.four.nyare.nyare.Models.Enums.TaskStatus
+- TaskStatus
 - Entity
 - Docker Prerequisite
 - Java 25 Prerequisite
@@ -150,7 +150,7 @@
 - **Graphify Query & Knowledge Retrieval Flow** — _agents_skills_graphify_skill_fast_path_query, _agents_skills_graphify_references_query_query_expansion, _agents_skills_graphify_references_query_traversal_modes, _agents_skills_graphify_references_query_work_memory_reflections [INFERRED 0.95]
 - **Spring Boot 4 Testing Ecosystem Modernization** — _agents_skills_dr_jskill_references_spring_boot_4_mockito_bean, _agents_skills_dr_jskill_references_spring_boot_4_webmvc_test_starter, _agents_skills_dr_jskill_references_test_testcontainers_service_connection, _agents_skills_dr_jskill_references_test_rest_test_client [INFERRED 0.95]
 
-## Communities (96 total, 38 thin omitted)
+## Communities (96 total, 37 thin omitted)
 
 ### Community 0 - "versions.mjs"
 Cohesion: 0.06
@@ -361,21 +361,25 @@ Cohesion: 0.33
 Nodes (6): Chapters, GitHub Copilot CLI + Java workshop, using Dr JSkill, How to use this workshop, Prerequisites, Reference material, What you'll build
 
 ### Community 58 - "Task"
-Cohesion: 0.09
-Nodes (6): TaskStatus, COMPLETED, IN_PROGRESS, TODO, Override, Task
+Cohesion: 0.11
+Nodes (3): Override, Task, group.four.nyare.nyare.Models.Enums.TaskStatus
 
 ### Community 71 - "05 — A more professional front-end"
 Cohesion: 0.22
 Nodes (9): 05 — A more professional front-end, 1. What "professional-looking" means here, 2. Add Bootstrap structure, 3. Empty states, 4. Toasts for feedback, 5. Loading spinners, 6. Inline form validation, 7. Review what the agent produced (+1 more)
+
+### Community 72 - "TaskStatus"
+Cohesion: 0.40
+Nodes (4): TaskStatus, COMPLETED, IN_PROGRESS, TODO
 
 ### Community 92 - "Backend Agent Guide (Nyare)"
 Cohesion: 0.29
 Nodes (6): Backend Agent Guide (Nyare), Core Architecture & Guidelines, Domain Model (`group.four.nyare.nyare.Models`), Knowledge Graph Workflows (`graphify`), Tech Stack, Verification & Build Tiering
 
 ## Knowledge Gaps
-- **359 isolated node(s):** `TODO`, `IN_PROGRESS`, `COMPLETED`, `{ flags, positional }`, `outputDir` (+354 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 477 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **38 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **359 isolated node(s):** `{ flags, positional }`, `outputDir`, `{ flags, positional }`, `outputDir`, `DEFAULT_BOOT_FALLBACK` (+354 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 476 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **37 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -386,7 +390,7 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.043) - this node is a cross-community bridge._
 - **Why does `Appendix B — Troubleshooting` connect `Appendix B — Troubleshooting` to `README.md`?**
   _High betweenness centrality (0.022) - this node is a cross-community bridge._
-- **What connects `TODO`, `IN_PROGRESS`, `COMPLETED` to the rest of the system?**
+- **What connects `{ flags, positional }`, `outputDir`, `{ flags, positional }` to the rest of the system?**
   _359 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `versions.mjs` be split into smaller, more focused modules?**
   _Cohesion score 0.05707762557077625 - nodes in this community are weakly interconnected._
