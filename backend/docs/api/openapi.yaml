@@ -1,0 +1,517 @@
+openapi: 3.1.0
+info:
+  title: Nyare Task Management API
+  description: |
+    REST API specification for the Nyare Task Management Service.
+    Nyare is a calendar-first academic planning assistant. This service enables creating,
+    querying, updating, status transitioning, and deleting student study tasks linked to courses.
+  version: 1.0.0
+  contact:
+    name: Nyare Development Team
+servers:
+  - url: http://localhost:8080
+    description: Local Development Server
+
+paths:
+  /api/tasks:
+    get:
+      summary: List tasks
+      description: |
+        Retrieves a list of tasks. Supports optional filtering by course ID, task status,
+        and whether a flexible study date has been scheduled.
+      operationId: listTasks
+      tags:
+        - Tasks
+      parameters:
+        - name: courseId
+          in: query
+          required: false
+          description: Filter tasks belonging to a specific course ID.
+          schema:
+            type: integer
+            format: int64
+            example: 101
+        - name: status
+          in: query
+          required: false
+          description: Filter tasks by lifecycle status.
+          schema:
+            $ref: '#/components/schemas/TaskStatus'
+        - name: scheduled
+          in: query
+          required: false
+          description: Filter scheduled tasks (true = has scheduledDate, false = unscheduled / later).
+          schema:
+            type: boolean
+            example: true
+      responses:
+        '200':
+          description: List of tasks matching the criteria.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskResponse'
+              examples:
+                taskListExample:
+                  summary: Example task list
+                  value:
+                    - id: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+                      courseId: 101
+                      noteId: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+                      title: Complete Chapter 4 Problem Set
+                      description: Solve exercises 4.1 through 4.15 on linear regression.
+                      scheduledDate: '2026-09-18'
+                      duration: PT1H30M
+                      status: TODO
+                      createdAt: '2026-09-13T10:15:30Z'
+                      updatedAt: null
+                    - id: 7c2eeb4a-1a2b-4c3d-8e9f-0a1b2c3d4e5f
+                      courseId: 101
+                      noteId: null
+                      title: Review Lecture Slides on Matrix Inversion
+                      description: null
+                      scheduledDate: '2026-09-19'
+                      duration: PT45M
+                      status: TODO
+                      createdAt: '2026-09-13T11:00:00Z'
+                      updatedAt: null
+        '400':
+          description: Bad request / Invalid filter parameter format.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: https://api.nyare.app/errors/bad-request
+                title: Bad Request
+                status: 400
+                detail: Invalid status parameter 'INVALID_STATUS'. Allowed values are TODO, IN_PROGRESS, COMPLETED
+                instance: /api/tasks
+
+    post:
+      summary: Create a new task
+      description: Creates a new study or academic task linked to a course.
+      operationId: createTask
+      tags:
+        - Tasks
+      requestBody:
+        required: true
+        description: Task creation payload.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+            examples:
+              createTaskExample:
+                summary: New study task
+                value:
+                  courseId: 101
+                  noteId: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+                  title: Complete Chapter 4 Problem Set
+                  description: Solve exercises 4.1 through 4.15 on linear regression.
+                  scheduledDate: '2026-09-18'
+                  duration: PT1H30M
+                  status: TODO
+      responses:
+        '201':
+          description: Task successfully created.
+          headers:
+            Location:
+              description: URI of the newly created task resource.
+              schema:
+                type: string
+                example: /api/tasks/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+              example:
+                id: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+                courseId: 101
+                noteId: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+                title: Complete Chapter 4 Problem Set
+                description: Solve exercises 4.1 through 4.15 on linear regression.
+                scheduledDate: '2026-09-18'
+                duration: PT1H30M
+                status: TODO
+                createdAt: '2026-09-13T10:15:30Z'
+                updatedAt: null
+        '400':
+          description: Invalid request payload or validation failure.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: https://api.nyare.app/errors/bad-request
+                title: Bad Request
+                status: 400
+                detail: "Validation failed: 'title' must not be blank; 'courseId' is required"
+                instance: /api/tasks
+
+  /api/tasks/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Unique identifier of the task (UUID v4).
+        schema:
+          type: string
+          format: uuid
+          example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+
+    get:
+      summary: Get task by ID
+      description: Retrieves the detailed representation of a task using its UUID.
+      operationId: getTaskById
+      tags:
+        - Tasks
+      responses:
+        '200':
+          description: Task found and returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+              example:
+                id: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+                courseId: 101
+                noteId: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+                title: Complete Chapter 4 Problem Set
+                description: Solve exercises 4.1 through 4.15 on linear regression.
+                scheduledDate: '2026-09-18'
+                duration: PT1H30M
+                status: TODO
+                createdAt: '2026-09-13T10:15:30Z'
+                updatedAt: null
+        '404':
+          description: Task not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: https://api.nyare.app/errors/not-found
+                title: Not Found
+                status: 404
+                detail: Task with ID '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' not found
+                instance: /api/tasks/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+
+    put:
+      summary: Full update of a task
+      description: Replaces all modifiable attributes of an existing task.
+      operationId: updateTask
+      tags:
+        - Tasks
+      requestBody:
+        required: true
+        description: Complete task update payload.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+            example:
+              courseId: 101
+              noteId: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+              title: Complete Chapter 4 & 5 Problem Sets
+              description: Solve exercises 4.1 to 5.10 with verified solutions.
+              scheduledDate: '2026-09-20'
+              duration: PT2H
+              status: IN_PROGRESS
+      responses:
+        '200':
+          description: Task updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+              example:
+                id: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+                courseId: 101
+                noteId: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+                title: Complete Chapter 4 & 5 Problem Sets
+                description: Solve exercises 4.1 to 5.10 with verified solutions.
+                scheduledDate: '2026-09-20'
+                duration: PT2H
+                status: IN_PROGRESS
+                createdAt: '2026-09-13T10:15:30Z'
+                updatedAt: '2026-09-13T14:30:00Z'
+        '400':
+          description: Validation error or invalid request payload.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: https://api.nyare.app/errors/bad-request
+                title: Bad Request
+                status: 400
+                detail: Title cannot be blank and must be under 255 characters
+                instance: /api/tasks/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+        '404':
+          description: Task not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: https://api.nyare.app/errors/not-found
+                title: Not Found
+                status: 404
+                detail: Task with ID '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' not found
+                instance: /api/tasks/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+
+    delete:
+      summary: Delete a task
+      description: Permanently removes a task by its UUID.
+      operationId: deleteTask
+      tags:
+        - Tasks
+      responses:
+        '204':
+          description: Task successfully deleted. No response body.
+        '404':
+          description: Task not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: https://api.nyare.app/errors/not-found
+                title: Not Found
+                status: 404
+                detail: Task with ID '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' not found
+                instance: /api/tasks/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+
+  /api/tasks/{id}/status:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Unique identifier of the task (UUID v4).
+        schema:
+          type: string
+          format: uuid
+          example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+
+    patch:
+      summary: Update task status only
+      description: Updates only the lifecycle status of a task.
+      operationId: updateTaskStatus
+      tags:
+        - Tasks
+      requestBody:
+        required: true
+        description: Status transition payload.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskStatusRequest'
+            example:
+              status: COMPLETED
+      responses:
+        '200':
+          description: Task status successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+              example:
+                id: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+                courseId: 101
+                noteId: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+                title: Complete Chapter 4 & 5 Problem Sets
+                description: Solve exercises 4.1 to 5.10 with verified solutions.
+                scheduledDate: '2026-09-20'
+                duration: PT2H
+                status: COMPLETED
+                createdAt: '2026-09-13T10:15:30Z'
+                updatedAt: '2026-09-13T16:45:00Z'
+        '400':
+          description: Invalid status value provided.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: https://api.nyare.app/errors/bad-request
+                title: Bad Request
+                status: 400
+                detail: "Invalid status: 'DONE'. Allowed values are TODO, IN_PROGRESS, COMPLETED"
+                instance: /api/tasks/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d/status
+        '404':
+          description: Task not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: https://api.nyare.app/errors/not-found
+                title: Not Found
+                status: 404
+                detail: Task with ID '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' not found
+                instance: /api/tasks/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d/status
+
+components:
+  schemas:
+    TaskStatus:
+      type: string
+      description: Represents the lifecycle status of an academic task in the study plan.
+      enum:
+        - TODO
+        - IN_PROGRESS
+        - COMPLETED
+      example: TODO
+
+    TaskRequest:
+      type: object
+      required:
+        - courseId
+        - title
+      properties:
+        courseId:
+          type: integer
+          format: int64
+          description: ID of the associated Course offering.
+          example: 101
+        noteId:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: ID of the originating journal Note (if extracted or linked).
+          example: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Actionable title of the task.
+          example: Complete Chapter 4 Problem Set
+        description:
+          type:
+            - string
+            - 'null'
+          maxLength: 2048
+          description: Detailed instructions or study notes.
+          example: Solve exercises 4.1 through 4.15 on linear regression.
+        scheduledDate:
+          type:
+            - string
+            - 'null'
+          format: date
+          description: Flexible target study date in ISO-8601 format (YYYY-MM-DD).
+          example: '2026-09-18'
+        duration:
+          type:
+            - string
+            - 'null'
+          description: Estimated completion time in ISO-8601 duration format.
+          example: PT1H30M
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+          default: TODO
+
+    TaskStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+
+    TaskResponse:
+      type: object
+      required:
+        - id
+        - courseId
+        - title
+        - status
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the task (UUID v4).
+          example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+        courseId:
+          type: integer
+          format: int64
+          description: ID of the associated Course offering.
+          example: 101
+        noteId:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: ID of the originating journal Note (if linked).
+          example: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+        title:
+          type: string
+          description: Actionable title of the task.
+          example: Complete Chapter 4 Problem Set
+        description:
+          type:
+            - string
+            - 'null'
+          description: Detailed instructions or study notes.
+          example: Solve exercises 4.1 through 4.15 on linear regression.
+        scheduledDate:
+          type:
+            - string
+            - 'null'
+          format: date
+          description: Flexible target study date in ISO-8601 format (YYYY-MM-DD).
+          example: '2026-09-18'
+        duration:
+          type:
+            - string
+            - 'null'
+          description: Estimated completion time in ISO-8601 duration format.
+          example: PT1H30M
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+        createdAt:
+          type: string
+          format: date-time
+          description: UTC creation timestamp in ISO-8601 format.
+          example: '2026-09-13T10:15:30Z'
+        updatedAt:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          description: UTC last modified timestamp in ISO-8601 format.
+          example: '2026-09-13T14:30:00Z'
+
+    ProblemDetail:
+      type: object
+      required:
+        - type
+        - title
+        - status
+        - detail
+        - instance
+      properties:
+        type:
+          type: string
+          format: uri
+          description: A URI reference identifying the problem type.
+          example: https://api.nyare.app/errors/not-found
+        title:
+          type: string
+          description: Short, human-readable summary of the problem type.
+          example: Not Found
+        status:
+          type: integer
+          description: The HTTP status code generated by the origin server.
+          example: 404
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem.
+          example: Task with ID '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' not found
+        instance:
+          type: string
+          description: A URI reference identifying the specific occurrence of the problem.
+          example: /api/tasks/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d

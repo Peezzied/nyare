@@ -8,6 +8,7 @@ class NyareApplicationTests {
 
 	@Test
 	void contextLoads() {
+
 	}
 
 }
