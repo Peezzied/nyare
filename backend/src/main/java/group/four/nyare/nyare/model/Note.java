@@ -9,8 +9,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -39,11 +40,13 @@ public class Note {
     private Course course;
 
     /**
-     * Rich text content represented as a JSON string (e.g. TipTap JSON format).
+     * Structured note content containing markdown and image metadata.
      */
-    @NotBlank(message = "Note content cannot be blank")
+    @NotNull(message = "Note content cannot be null")
+    @Valid
+    @Convert(converter = group.four.nyare.nyare.model.converter.NoteContentConverter.class)
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;
+    private NoteContent content;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -59,12 +62,12 @@ public class Note {
     }
 
     /**
-     * Creates a new Note linked to a course with rich JSON content.
+     * Creates a new Note linked to a course with structured content.
      *
      * @param course  the course this note belongs to
-     * @param content the rich text JSON content
+     * @param content the structured note content
      */
-    public Note(Course course, String content) {
+    public Note(Course course, NoteContent content) {
         this.course = course;
         this.content = content;
     }
@@ -81,12 +84,23 @@ public class Note {
         this.course = course;
     }
 
-    public String getContent() {
+    public NoteContent getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setContent(NoteContent content) {
         this.content = content;
+    }
+
+    /**
+     * Domain method for AI pipeline to update image metadata while preserving markdown.
+     *
+     * @param newMetadata the new image metadata map
+     */
+    public void updateImageMetadata(java.util.Map<String, ImageMetadata> newMetadata) {
+        if (this.content != null) {
+            this.content.setImageMetadata(newMetadata);
+        }
     }
 
     public Instant getCreatedAt() {
