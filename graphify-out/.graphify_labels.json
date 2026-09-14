@@ -132,5 +132,9 @@
   "130": "4.4 Full Update of Note",
   "131": "4.6 Delete Note",
   "132": "Nyare System Overview",
-  "133": "3. Error Handling (RFC 7807 Problem Details)"
+  "133": "3. Error Handling (RFC 7807 Problem Details)",
+  "134": "4. Endpoints Specification",
+  "135": "TaskStatus",
+  "136": "TaskRequest",
+  "137": "TaskService"
 }
