@@ -1,0 +1,360 @@
+openapi: 3.1.0
+info:
+  title: Nyare Notes Management API
+  description: |
+    REST API specification for the Nyare Notes Management Service.
+    Nyare is a calendar-first academic planning assistant. This service enables creating,
+    listing, retrieving, updating, and deleting course-linked journal notes, as well as
+    selectively updating AI-extracted image metadata.
+  version: 1.0.0
+  contact:
+    name: Nyare Development Team
+servers:
+  - url: http://localhost:8080
+    description: Local Development Server
+
+paths:
+  /api/notes:
+    get:
+      summary: List notes by course
+      description: |
+        Retrieves all notes belonging to a specific course offering, ordered chronologically newest first.
+      operationId: listNotes
+      tags:
+        - Notes
+      parameters:
+        - name: courseId
+          in: query
+          required: true
+          description: Filter notes belonging to a specific course ID.
+          schema:
+            type: integer
+            format: int64
+            example: 101
+      responses:
+        '200':
+          description: List of notes for the specified course.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NoteResponse'
+        '400':
+          description: Missing or invalid courseId query parameter.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '404':
+          description: Course not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+    post:
+      summary: Create a new note
+      description: Creates a new journal entry associated with a course.
+      operationId: createNote
+      tags:
+        - Notes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteRequest'
+      responses:
+        '201':
+          description: Note successfully created.
+          headers:
+            Location:
+              description: URI pointing to the newly created note.
+              schema:
+                type: string
+                example: /api/notes/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteResponse'
+        '400':
+          description: Validation failure (e.g. blank markdown, image reference mismatch).
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '404':
+          description: Specified course not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+  /api/notes/{id}:
+    get:
+      summary: Retrieve a note by ID
+      description: Returns the full details of a specific journal note by its unique UUID.
+      operationId: getNoteById
+      tags:
+        - Notes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique UUID of the note.
+          schema:
+            type: string
+            format: uuid
+            example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+      responses:
+        '200':
+          description: Note retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteResponse'
+        '404':
+          description: Note not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+    put:
+      summary: Full update of a note
+      description: Completely updates a note's content and course association.
+      operationId: updateNote
+      tags:
+        - Notes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique UUID of the note to update.
+          schema:
+            type: string
+            format: uuid
+            example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteRequest'
+      responses:
+        '200':
+          description: Note updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteResponse'
+        '400':
+          description: Validation failure on updated content.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '404':
+          description: Note or target course not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+    delete:
+      summary: Delete a note
+      description: Deletes a journal note. Does not cascade-delete downstream tasks or events.
+      operationId: deleteNote
+      tags:
+        - Notes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique UUID of the note to delete.
+          schema:
+            type: string
+            format: uuid
+            example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+      responses:
+        '204':
+          description: Note successfully deleted. No response body.
+        '404':
+          description: Note not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+  /api/notes/{id}/image-metadata:
+    patch:
+      summary: Targeted update of image metadata (AI pipeline)
+      description: |
+        Updates the imageMetadata map of an existing note without altering student-authored markdown text.
+        All metadata keys must match existing reference labels in the note's markdown.
+      operationId: updateImageMetadata
+      tags:
+        - Notes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique UUID of the note.
+          schema:
+            type: string
+            format: uuid
+            example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageMetadataUpdateRequest'
+      responses:
+        '200':
+          description: Image metadata updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteResponse'
+        '400':
+          description: Metadata keys do not match existing markdown image references.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '404':
+          description: Note not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+components:
+  schemas:
+    ImageMetadata:
+      type: object
+      required:
+        - base64
+      properties:
+        base64:
+          type: string
+          description: Base64-encoded image data or data URI string.
+          example: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB...
+        description:
+          type: string
+          nullable: true
+          description: AI-generated visual description, OCR extraction, or visual summary.
+          example: AVL tree single right rotation diagram showing node balance restoration.
+
+    NoteContent:
+      type: object
+      required:
+        - markdown
+        - imageMetadata
+      properties:
+        markdown:
+          type: string
+          description: |
+            Markdown note content. Images are referenced via reference-style links `![alt][ref-label]`.
+          example: "# Lecture 4: Self-Balancing Trees\n\n![AVL Tree Rotation][fig-avl]"
+        imageMetadata:
+          type: object
+          description: Map of image metadata keyed by reference label used in the markdown body.
+          additionalProperties:
+            $ref: '#/components/schemas/ImageMetadata'
+          example:
+            fig-avl:
+              base64: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB...
+              description: Diagram demonstrating single right rotation in an AVL tree.
+
+    NoteRequest:
+      type: object
+      required:
+        - courseId
+        - content
+      properties:
+        courseId:
+          type: integer
+          format: int64
+          description: ID of the course offering.
+          example: 101
+        content:
+          $ref: '#/components/schemas/NoteContent'
+
+    ImageMetadataUpdateRequest:
+      type: object
+      required:
+        - imageMetadata
+      properties:
+        imageMetadata:
+          type: object
+          description: Map of updated image metadata keyed by reference label.
+          additionalProperties:
+            $ref: '#/components/schemas/ImageMetadata'
+          example:
+            fig-avl:
+              base64: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB...
+              description: Diagram demonstrating single right rotation in an AVL tree.
+
+    NoteResponse:
+      type: object
+      required:
+        - id
+        - courseId
+        - content
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the note.
+          example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+        courseId:
+          type: integer
+          format: int64
+          description: ID of the associated course offering.
+          example: 101
+        content:
+          $ref: '#/components/schemas/NoteContent'
+        createdAt:
+          type: string
+          format: date-time
+          description: UTC timestamp when the note was created.
+          example: '2026-09-14T10:15:30Z'
+        updatedAt:
+          type: string
+          format: date-time
+          description: UTC timestamp when the note was last updated.
+          example: '2026-09-14T10:20:00Z'
+
+    ProblemDetail:
+      type: object
+      required:
+        - status
+        - title
+      properties:
+        type:
+          type: string
+          format: uri
+          description: URI reference identifying the problem type.
+          example: about:blank
+        title:
+          type: string
+          description: Short, human-readable summary of the problem type.
+          example: Validation Failed
+        status:
+          type: integer
+          description: The HTTP status code generated by the origin server.
+          example: 400
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem.
+          example: "content.imageMetadata: Image reference 'fig-2' in markdown does not have corresponding entry in imageMetadata"
+        instance:
+          type: string
+          format: uri
+          description: URI reference identifying the specific occurrence of the problem.
+          example: /api/notes
