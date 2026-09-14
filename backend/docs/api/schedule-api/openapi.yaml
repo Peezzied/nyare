@@ -1,0 +1,387 @@
+openapi: 3.1.0
+info:
+  title: Nyare Schedule API
+  description: |
+    REST API specification for the Nyare Schedule Management Service.
+    Nyare is a calendar-first academic planning assistant. This service manages recurring
+    weekly class meeting times for courses, serving as the primary structural anchor for
+    the calendar grid and course journal navigation.
+  version: 1.0.0
+  contact:
+    name: Nyare Development Team
+servers:
+  - url: http://localhost:8080
+    description: Local Development Server
+
+paths:
+  /api/schedules:
+    get:
+      summary: List schedules for a course
+      description: |
+        Retrieves all recurring class schedules for a specific course offering.
+        Results are ordered chronologically by day of week ascending (MONDAY through SUNDAY),
+        then by startTime ascending. Supports optional day filtering.
+      operationId: listSchedules
+      tags:
+        - Schedules
+      parameters:
+        - name: courseId
+          in: query
+          required: true
+          description: Filter schedules belonging to a specific course ID (required).
+          schema:
+            type: integer
+            format: int64
+            example: 101
+        - name: day
+          in: query
+          required: false
+          description: Optional filter by recurring day of the week.
+          schema:
+            $ref: '#/components/schemas/DayOfWeek'
+      responses:
+        '200':
+          description: List of recurring schedules matching the criteria.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScheduleResponse'
+              examples:
+                scheduleListExample:
+                  summary: Example schedule list for course
+                  value:
+                    - id: 1
+                      courseId: 101
+                      day: MONDAY
+                      startTime: '09:00:00'
+                      endTime: '10:30:00'
+                    - id: 2
+                      courseId: 101
+                      day: WEDNESDAY
+                      startTime: '09:00:00'
+                      endTime: '10:30:00'
+        '400':
+          description: Missing required courseId or invalid filter parameter format.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: about:blank
+                title: Bad Request
+                status: 400
+                detail: Required query parameter 'courseId' is missing
+                instance: /api/schedules
+        '404':
+          description: Course not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: about:blank
+                title: Resource Not Found
+                status: 404
+                detail: Course not found with ID: 99
+                instance: /api/schedules
+
+    post:
+      summary: Create a schedule
+      description: Creates a new recurring weekly class meeting time for a course offering.
+      operationId: createSchedule
+      tags:
+        - Schedules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleRequest'
+            example:
+              courseId: 101
+              day: MONDAY
+              startTime: '09:00:00'
+              endTime: '10:30:00'
+      responses:
+        '201':
+          description: Schedule successfully created.
+          headers:
+            Location:
+              description: URI of the newly created schedule resource.
+              schema:
+                type: string
+                example: /api/schedules/1
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleResponse'
+              example:
+                id: 1
+                courseId: 101
+                day: MONDAY
+                startTime: '09:00:00'
+                endTime: '10:30:00'
+        '400':
+          description: Validation error or start time is not strictly before end time.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: about:blank
+                title: Bad Request
+                status: 400
+                detail: Start time (11:00:00) must be strictly before end time (10:00:00)
+                instance: /api/schedules
+        '404':
+          description: Course not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: about:blank
+                title: Resource Not Found
+                status: 404
+                detail: Course not found with ID: 99
+                instance: /api/schedules
+
+  /api/schedules/{id}:
+    get:
+      summary: Get schedule by ID
+      description: Retrieves details of a single recurring schedule by its unique ID.
+      operationId: getScheduleById
+      tags:
+        - Schedules
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the schedule.
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Schedule found and returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleResponse'
+              example:
+                id: 1
+                courseId: 101
+                day: MONDAY
+                startTime: '09:00:00'
+                endTime: '10:30:00'
+        '404':
+          description: Schedule not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: about:blank
+                title: Resource Not Found
+                status: 404
+                detail: Schedule not found with ID: 1
+                instance: /api/schedules/1
+
+    put:
+      summary: Update schedule
+      description: Performs a full replacement of an existing recurring schedule with updated meeting details.
+      operationId: updateSchedule
+      tags:
+        - Schedules
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the schedule to update.
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleRequest'
+            example:
+              courseId: 101
+              day: WEDNESDAY
+              startTime: '10:00:00'
+              endTime: '11:30:00'
+      responses:
+        '200':
+          description: Schedule successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleResponse'
+              example:
+                id: 1
+                courseId: 101
+                day: WEDNESDAY
+                startTime: '10:00:00'
+                endTime: '11:30:00'
+        '400':
+          description: Validation error or start time is not strictly before end time.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: about:blank
+                title: Bad Request
+                status: 400
+                detail: Start time (11:30:00) must be strictly before end time (10:00:00)
+                instance: /api/schedules/1
+        '404':
+          description: Schedule or target Course not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: about:blank
+                title: Resource Not Found
+                status: 404
+                detail: Schedule not found with ID: 1
+                instance: /api/schedules/1
+
+    delete:
+      summary: Delete schedule
+      description: Permanently deletes a recurring schedule by its unique ID.
+      operationId: deleteSchedule
+      tags:
+        - Schedules
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the schedule to delete.
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '204':
+          description: Schedule successfully deleted. No content returned.
+        '404':
+          description: Schedule not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: about:blank
+                title: Resource Not Found
+                status: 404
+                detail: Schedule not found with ID: 1
+                instance: /api/schedules/1
+
+components:
+  schemas:
+    DayOfWeek:
+      type: string
+      enum:
+        - MONDAY
+        - TUESDAY
+        - WEDNESDAY
+        - THURSDAY
+        - FRIDAY
+        - SATURDAY
+        - SUNDAY
+      description: Recurring day of the week for class meetings.
+      example: MONDAY
+
+    ScheduleRequest:
+      type: object
+      required:
+        - courseId
+        - day
+        - startTime
+        - endTime
+      properties:
+        courseId:
+          type: integer
+          format: int64
+          description: ID of the associated Course offering.
+          example: 101
+        day:
+          $ref: '#/components/schemas/DayOfWeek'
+        startTime:
+          type: string
+          pattern: '^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$'
+          description: Class start time in ISO-8601 local time format (HH:mm:ss or HH:mm). Must be strictly before endTime.
+          example: '09:00:00'
+        endTime:
+          type: string
+          pattern: '^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$'
+          description: Class end time in ISO-8601 local time format (HH:mm:ss or HH:mm). Must be strictly after startTime.
+          example: '10:30:00'
+
+    ScheduleResponse:
+      type: object
+      required:
+        - id
+        - courseId
+        - day
+        - startTime
+        - endTime
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier of the schedule.
+          example: 1
+        courseId:
+          type: integer
+          format: int64
+          description: ID of the associated Course offering.
+          example: 101
+        day:
+          $ref: '#/components/schemas/DayOfWeek'
+        startTime:
+          type: string
+          description: Class start time in ISO-8601 local time format (HH:mm:ss).
+          example: '09:00:00'
+        endTime:
+          type: string
+          description: Class end time in ISO-8601 local time format (HH:mm:ss).
+          example: '10:30:00'
+
+    ProblemDetail:
+      type: object
+      required:
+        - type
+        - title
+        - status
+        - detail
+      properties:
+        type:
+          type: string
+          format: uri
+          description: A URI reference identifying the problem type.
+          example: about:blank
+        title:
+          type: string
+          description: Short, human-readable summary of the problem.
+          example: Resource Not Found
+        status:
+          type: integer
+          description: HTTP status code.
+          example: 404
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence.
+          example: Schedule not found with ID: 1
+        instance:
+          type: string
+          description: URI identifying the specific request/resource.
+          example: /api/schedules/1
