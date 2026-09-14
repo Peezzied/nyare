@@ -322,5 +322,17 @@
     "seen": 1789385151.6979856,
     "ast_hash": "910df0563648987ccf231f10799399a6",
     "semantic_hash": ""
+  },
+  "docs/api/academic-events-api/academic-events-api.md": {
+    "mtime": 1789385613.930444,
+    "seen": 1789385638.8065195,
+    "ast_hash": "300531c63d058ed85ddcc05a2329a68f",
+    "semantic_hash": ""
+  },
+  "docs/api/academic-events-api/openapi.yaml": {
+    "mtime": 1789385632.5663004,
+    "seen": 1789385638.8065212,
+    "ast_hash": "ec09aaaa89c3d4b6a4fa8b06b0d6caf5",
+    "semantic_hash": ""
   }
 }

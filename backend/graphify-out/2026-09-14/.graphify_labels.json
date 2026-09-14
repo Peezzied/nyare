@@ -1,6 +1,6 @@
 {
   "0": "AcademicEventResponse",
-  "1": "Note",
+  "1": "AcademicEvent",
   "2": "Schedule",
   "3": "Backend Agent Guide",
   "4": "org.springframework.data.jpa.repository.JpaRepository",
@@ -29,5 +29,11 @@
   "27": "settings.gradle.kts",
   "28": "NoteContent",
   "29": "ValidImageReferences",
-  "30": "ImageMetadata"
+  "30": "4. Endpoints Specification",
+  "31": "4. Endpoints Specification",
+  "32": "AcademicContext",
+  "33": "Note",
+  "34": "Course",
+  "35": "jakarta.persistence.Entity",
+  "36": "4.2 List Notes by Course"
 }
