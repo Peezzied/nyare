@@ -567,13 +567,52 @@
       "source_location": "L13"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_config_webconfig_webconfig",
+      "label": "WebConfig",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "file_type": "code",
+      "norm_label": "webconfig",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/config/WebConfig.java",
+      "source_location": "L10"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_testcorsregistry",
+      "label": "TestCorsRegistry",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "file_type": "code",
+      "norm_label": "testcorsregistry",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L34"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_webconfigtest",
+      "label": "WebConfigTest",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "file_type": "code",
+      "norm_label": "webconfigtest",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L13"
+    },
+    {
       "id": "backend_src_test_java_group_four_nyare_nyare_nyareapplicationtests_nyareapplicationtests",
       "label": "NyareApplicationTests",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 31,
-      "community_name": "NyareApplicationTests.java",
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
       "file_type": "code",
       "norm_label": "nyareapplicationtests",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/NyareApplicationTests.java",
@@ -4407,12 +4446,80 @@
       "source_location": "L51"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_config_webconfig_webconfig_addcorsmappings",
+      "label": ".addCorsMappings()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "addMapping",
+            "receiver_type": "CorsRegistry",
+            "lang": "java",
+            "line": "L15"
+          }
+        ]
+      },
+      "norm_label": ".addcorsmappings()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/config/WebConfig.java",
+      "source_location": "L13"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_testcorsregistry_getcorsconfigurations",
+      "label": ".getCorsConfigurations()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "file_type": "code",
+      "norm_label": ".getcorsconfigurations()",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L35"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_webconfigtest_addcorsmappings_registersexpectedconfiguration",
+      "label": ".addCorsMappings_registersExpectedConfiguration()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "getAllowedOrigins",
+            "receiver_type": "CorsConfiguration",
+            "lang": "java",
+            "line": "L27"
+          },
+          {
+            "callee": "getAllowedMethods",
+            "receiver_type": "CorsConfiguration",
+            "lang": "java",
+            "line": "L29"
+          },
+          {
+            "callee": "getAllowedHeaders",
+            "receiver_type": "CorsConfiguration",
+            "lang": "java",
+            "line": "L31"
+          }
+        ]
+      },
+      "norm_label": ".addcorsmappings_registersexpectedconfiguration()",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L15"
+    },
+    {
       "id": "backend_src_test_java_group_four_nyare_nyare_nyareapplicationtests_nyareapplicationtests_contextloads",
       "label": ".contextLoads()",
       "_callable": true,
       "_origin": "ast",
       "community": 31,
-      "community_name": "NyareApplicationTests.java",
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
       "file_type": "code",
       "norm_label": ".contextloads()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/NyareApplicationTests.java",
@@ -6975,6 +7082,126 @@
       "source_location": "L16"
     },
     {
+      "id": "docs_mvp_boundaries",
+      "label": "mvp-boundaries.md",
+      "_origin": "ast",
+      "community": 117,
+      "community_name": "Workflow Directory",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "mvp-boundaries.md",
+      "source_file": "docs/mvp-boundaries.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "docs_mvp_boundaries_1_no_micro_scheduling_time_blocking",
+      "label": "1. No Micro-Scheduling / Time-Blocking",
+      "_origin": "ast",
+      "community": 117,
+      "community_name": "Workflow Directory",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "1. no micro-scheduling / time-blocking",
+      "source_file": "docs/mvp-boundaries.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "docs_mvp_boundaries_2_no_automated_task_reconciliation_merging_or_splitting",
+      "label": "2. No Automated Task Reconciliation, Merging, or Splitting",
+      "_origin": "ast",
+      "community": 117,
+      "community_name": "Workflow Directory",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "2. no automated task reconciliation, merging, or splitting",
+      "source_file": "docs/mvp-boundaries.md",
+      "source_location": "L18"
+    },
+    {
+      "id": "docs_mvp_boundaries_3_no_deterministic_priority_scoring_engine",
+      "label": "3. No Deterministic Priority Scoring Engine",
+      "_origin": "ast",
+      "community": 117,
+      "community_name": "Workflow Directory",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "3. no deterministic priority scoring engine",
+      "source_file": "docs/mvp-boundaries.md",
+      "source_location": "L30"
+    },
+    {
+      "id": "docs_mvp_boundaries_4_no_mandatory_recurring_availability_calendars",
+      "label": "4. No Mandatory Recurring Availability Calendars",
+      "_origin": "ast",
+      "community": 117,
+      "community_name": "Workflow Directory",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4. no mandatory recurring availability calendars",
+      "source_file": "docs/mvp-boundaries.md",
+      "source_location": "L41"
+    },
+    {
+      "id": "docs_mvp_boundaries_5_no_study_plan_persistence_entity",
+      "label": "5. No Study Plan Persistence Entity",
+      "_origin": "ast",
+      "community": 117,
+      "community_name": "Workflow Directory",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "5. no study plan persistence entity",
+      "source_file": "docs/mvp-boundaries.md",
+      "source_location": "L51"
+    },
+    {
+      "id": "docs_mvp_boundaries_6_strict_uncertainty_preservation_zero_hallucination",
+      "label": "6. Strict Uncertainty Preservation (Zero Hallucination)",
+      "_origin": "ast",
+      "community": 117,
+      "community_name": "Workflow Directory",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "6. strict uncertainty preservation (zero hallucination)",
+      "source_file": "docs/mvp-boundaries.md",
+      "source_location": "L62"
+    },
+    {
+      "id": "docs_mvp_boundaries_7_strict_processing_scope_today_s_notes_only",
+      "label": "7. Strict Processing Scope (Today's Notes Only)",
+      "_origin": "ast",
+      "community": 117,
+      "community_name": "Workflow Directory",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "7. strict processing scope (today's notes only)",
+      "source_file": "docs/mvp-boundaries.md",
+      "source_location": "L73"
+    },
+    {
+      "id": "docs_mvp_boundaries_nyare_mvp_boundaries_non_goals",
+      "label": "Nyare MVP Boundaries & Non-Goals",
+      "_origin": "ast",
+      "community": 117,
+      "community_name": "Workflow Directory",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "nyare mvp boundaries & non-goals",
+      "source_file": "docs/mvp-boundaries.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "docs_system_workflows",
+      "label": "system-workflows.md",
+      "_origin": "ast",
+      "community": 117,
+      "community_name": "Workflow Directory",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "system-workflows.md",
+      "source_file": "docs/system-workflows.md",
+      "source_location": "L1"
+    },
+    {
       "id": "docs_system_workflows_1_system_overview",
       "label": "1. System Overview",
       "_origin": "ast",
@@ -7083,6 +7310,18 @@
       "source_location": "L289"
     },
     {
+      "id": "docs_system_workflows_nyare_system_workflows_architecture_diagrams",
+      "label": "Nyare System Workflows & Architecture Diagrams",
+      "_origin": "ast",
+      "community": 117,
+      "community_name": "Workflow Directory",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "nyare system workflows & architecture diagrams",
+      "source_file": "docs/system-workflows.md",
+      "source_location": "L1"
+    },
+    {
       "id": "docs_system_workflows_workflow_directory",
       "label": "Workflow Directory",
       "_origin": "ast",
@@ -7092,30 +7331,6 @@
       "node_kind": "heading",
       "norm_label": "workflow directory",
       "source_file": "docs/system-workflows.md",
-      "source_location": "L7"
-    },
-    {
-      "id": "docs_conceptual_model_1_academic_event_vs_deadline",
-      "label": "1. Academic Event vs. Deadline",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "1. academic event vs. deadline",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L96"
-    },
-    {
-      "id": "docs_conceptual_model_1_core_concept_pipeline",
-      "label": "1. Core Concept & Pipeline",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "1. core concept & pipeline",
-      "source_file": "docs/conceptual-model.md",
       "source_location": "L7"
     },
     {
@@ -7129,114 +7344,6 @@
       "norm_label": "2. core entities & hierarchy",
       "source_file": "docs/conceptual-model.md",
       "source_location": "L29"
-    },
-    {
-      "id": "docs_conceptual_model_2_task_vs_academic_event",
-      "label": "2. Task vs. Academic Event",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "2. task vs. academic event",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L100"
-    },
-    {
-      "id": "docs_conceptual_model_3_academic_context_vs_task",
-      "label": "3. Academic Context vs. Task",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "3. academic context vs. task",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L104"
-    },
-    {
-      "id": "docs_conceptual_model_3_important_domain_distinctions",
-      "label": "3. Important Domain Distinctions",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "3. important domain distinctions",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L94"
-    },
-    {
-      "id": "docs_conceptual_model_4_academic_context_vs_academic_event",
-      "label": "4. Academic Context vs. Academic Event",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "4. academic context vs. academic event",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L110"
-    },
-    {
-      "id": "docs_conceptual_model_4_preserving_uncertainty_incomplete_information",
-      "label": "4. Preserving Uncertainty & Incomplete Information",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "4. preserving uncertainty & incomplete information",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L138"
-    },
-    {
-      "id": "docs_conceptual_model_5_recommended_date_vs_deadline",
-      "label": "5. Recommended Date vs. Deadline",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "5. recommended date vs. deadline",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L116"
-    },
-    {
-      "id": "docs_conceptual_model_6_extractability_vs_plannability",
-      "label": "6. Extractability vs. Plannability",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "6. extractability vs. plannability",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L120"
-    },
-    {
-      "id": "docs_conceptual_model_7_source_information_vs_extracted_information_materialization",
-      "label": "7. Source Information vs. Extracted Information (Materialization)",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "7. source information vs. extracted information (materialization)",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L126"
-    },
-    {
-      "id": "docs_conceptual_model_8_task_consideration_vs_task_updating",
-      "label": "8. Task Consideration vs. Task Updating",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "8. task consideration vs. task updating",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L130"
     },
     {
       "id": "docs_conceptual_model_academic_context",
@@ -7311,18 +7418,6 @@
       "source_location": "L55"
     },
     {
-      "id": "docs_conceptual_model_nyare_conceptual_model_domain_dictionary",
-      "label": "Nyare Conceptual Model & Domain Dictionary",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "nyare conceptual model & domain dictionary",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L1"
-    },
-    {
       "id": "docs_conceptual_model_schedule",
       "label": "`Schedule`",
       "_origin": "ast",
@@ -7363,7 +7458,7 @@
       "label": "conceptual-model.md",
       "_origin": "ast",
       "community": 119,
-      "community_name": "temp/README.md",
+      "community_name": "Nyare Conceptual Model & Domain Dictionary",
       "file_type": "document",
       "node_kind": "page",
       "norm_label": "conceptual-model.md",
@@ -7371,15 +7466,39 @@
       "source_location": "L1"
     },
     {
-      "id": "docs_temp_ai_workflows_draft",
-      "label": "ai-workflows-draft.md",
+      "id": "docs_conceptual_model_1_core_concept_pipeline",
+      "label": "1. Core Concept & Pipeline",
       "_origin": "ast",
       "community": 119,
-      "community_name": "temp/README.md",
+      "community_name": "Nyare Conceptual Model & Domain Dictionary",
       "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "ai-workflows-draft.md",
-      "source_file": "docs/temp/ai-workflows-draft.md",
+      "node_kind": "heading",
+      "norm_label": "1. core concept & pipeline",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "docs_conceptual_model_4_preserving_uncertainty_incomplete_information",
+      "label": "4. Preserving Uncertainty & Incomplete Information",
+      "_origin": "ast",
+      "community": 119,
+      "community_name": "Nyare Conceptual Model & Domain Dictionary",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4. preserving uncertainty & incomplete information",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L138"
+    },
+    {
+      "id": "docs_conceptual_model_nyare_conceptual_model_domain_dictionary",
+      "label": "Nyare Conceptual Model & Domain Dictionary",
+      "_origin": "ast",
+      "community": 119,
+      "community_name": "Nyare Conceptual Model & Domain Dictionary",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "nyare conceptual model & domain dictionary",
+      "source_file": "docs/conceptual-model.md",
       "source_location": "L1"
     },
     {
@@ -7387,47 +7506,11 @@
       "label": "backend-domain-model-draft.md",
       "_origin": "ast",
       "community": 119,
-      "community_name": "temp/README.md",
+      "community_name": "Nyare Conceptual Model & Domain Dictionary",
       "file_type": "document",
       "node_kind": "page",
       "norm_label": "backend-domain-model-draft.md",
       "source_file": "docs/temp/backend-domain-model-draft.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "docs_temp_readme",
-      "label": "temp/README.md",
-      "_origin": "ast",
-      "community": 119,
-      "community_name": "temp/README.md",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "temp/readme.md",
-      "source_file": "docs/temp/README.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "docs_temp_readme_contents",
-      "label": "Contents",
-      "_origin": "ast",
-      "community": 119,
-      "community_name": "temp/README.md",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "contents",
-      "source_file": "docs/temp/README.md",
-      "source_location": "L9"
-    },
-    {
-      "id": "docs_temp_readme_temporary_architectural_notes_backend_ai_architecture_drafts",
-      "label": "Temporary Architectural Notes (Backend & AI Architecture Drafts)",
-      "_origin": "ast",
-      "community": 119,
-      "community_name": "temp/README.md",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "temporary architectural notes (backend & ai architecture drafts)",
-      "source_file": "docs/temp/README.md",
       "source_location": "L1"
     },
     {
@@ -7819,6 +7902,18 @@
       "source_location": "L114"
     },
     {
+      "id": "docs_temp_ai_workflows_draft",
+      "label": "ai-workflows-draft.md",
+      "_origin": "ast",
+      "community": 123,
+      "community_name": "AI Processing & Planning API Workflows Draft",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "ai-workflows-draft.md",
+      "source_file": "docs/temp/ai-workflows-draft.md",
+      "source_location": "L1"
+    },
+    {
       "id": "docs_temp_ai_workflows_draft_1_ai_processing_workflow_post_api_ai_process_today",
       "label": "1. AI Processing Workflow (`POST /api/ai/process-today`)",
       "_origin": "ast",
@@ -8042,6 +8137,42 @@
       "source_location": "L11"
     },
     {
+      "id": "docs_temp_readme",
+      "label": "temp/README.md",
+      "_origin": "ast",
+      "community": 125,
+      "community_name": "Candidate Additions for `backend/AGENTS.md`",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "temp/readme.md",
+      "source_file": "docs/temp/README.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "docs_temp_readme_contents",
+      "label": "Contents",
+      "_origin": "ast",
+      "community": 125,
+      "community_name": "Candidate Additions for `backend/AGENTS.md`",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "contents",
+      "source_file": "docs/temp/README.md",
+      "source_location": "L9"
+    },
+    {
+      "id": "docs_temp_readme_temporary_architectural_notes_backend_ai_architecture_drafts",
+      "label": "Temporary Architectural Notes (Backend & AI Architecture Drafts)",
+      "_origin": "ast",
+      "community": 125,
+      "community_name": "Candidate Additions for `backend/AGENTS.md`",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "temporary architectural notes (backend & ai architecture drafts)",
+      "source_file": "docs/temp/README.md",
+      "source_location": "L1"
+    },
+    {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_notecontent",
       "label": "NoteContent.java",
       "_origin": "ast",
@@ -8119,100 +8250,112 @@
       "source_location": ""
     },
     {
-      "id": "docs_mvp_boundaries_1_no_micro_scheduling_time_blocking",
-      "label": "1. No Micro-Scheduling / Time-Blocking",
+      "id": "docs_conceptual_model_1_academic_event_vs_deadline",
+      "label": "1. Academic Event vs. Deadline",
       "_origin": "ast",
       "community": 127,
-      "community_name": "Nyare MVP Boundaries & Non-Goals",
+      "community_name": "3. Important Domain Distinctions",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "1. no micro-scheduling / time-blocking",
-      "source_file": "docs/mvp-boundaries.md",
-      "source_location": "L7"
+      "norm_label": "1. academic event vs. deadline",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L96"
     },
     {
-      "id": "docs_mvp_boundaries_2_no_automated_task_reconciliation_merging_or_splitting",
-      "label": "2. No Automated Task Reconciliation, Merging, or Splitting",
+      "id": "docs_conceptual_model_2_task_vs_academic_event",
+      "label": "2. Task vs. Academic Event",
       "_origin": "ast",
       "community": 127,
-      "community_name": "Nyare MVP Boundaries & Non-Goals",
+      "community_name": "3. Important Domain Distinctions",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "2. no automated task reconciliation, merging, or splitting",
-      "source_file": "docs/mvp-boundaries.md",
-      "source_location": "L18"
+      "norm_label": "2. task vs. academic event",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L100"
     },
     {
-      "id": "docs_mvp_boundaries_3_no_deterministic_priority_scoring_engine",
-      "label": "3. No Deterministic Priority Scoring Engine",
+      "id": "docs_conceptual_model_3_academic_context_vs_task",
+      "label": "3. Academic Context vs. Task",
       "_origin": "ast",
       "community": 127,
-      "community_name": "Nyare MVP Boundaries & Non-Goals",
+      "community_name": "3. Important Domain Distinctions",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "3. no deterministic priority scoring engine",
-      "source_file": "docs/mvp-boundaries.md",
-      "source_location": "L30"
+      "norm_label": "3. academic context vs. task",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L104"
     },
     {
-      "id": "docs_mvp_boundaries_4_no_mandatory_recurring_availability_calendars",
-      "label": "4. No Mandatory Recurring Availability Calendars",
+      "id": "docs_conceptual_model_3_important_domain_distinctions",
+      "label": "3. Important Domain Distinctions",
       "_origin": "ast",
       "community": 127,
-      "community_name": "Nyare MVP Boundaries & Non-Goals",
+      "community_name": "3. Important Domain Distinctions",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "4. no mandatory recurring availability calendars",
-      "source_file": "docs/mvp-boundaries.md",
-      "source_location": "L41"
+      "norm_label": "3. important domain distinctions",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L94"
     },
     {
-      "id": "docs_mvp_boundaries_5_no_study_plan_persistence_entity",
-      "label": "5. No Study Plan Persistence Entity",
+      "id": "docs_conceptual_model_4_academic_context_vs_academic_event",
+      "label": "4. Academic Context vs. Academic Event",
       "_origin": "ast",
       "community": 127,
-      "community_name": "Nyare MVP Boundaries & Non-Goals",
+      "community_name": "3. Important Domain Distinctions",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "5. no study plan persistence entity",
-      "source_file": "docs/mvp-boundaries.md",
-      "source_location": "L51"
+      "norm_label": "4. academic context vs. academic event",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L110"
     },
     {
-      "id": "docs_mvp_boundaries_6_strict_uncertainty_preservation_zero_hallucination",
-      "label": "6. Strict Uncertainty Preservation (Zero Hallucination)",
+      "id": "docs_conceptual_model_5_recommended_date_vs_deadline",
+      "label": "5. Recommended Date vs. Deadline",
       "_origin": "ast",
       "community": 127,
-      "community_name": "Nyare MVP Boundaries & Non-Goals",
+      "community_name": "3. Important Domain Distinctions",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "6. strict uncertainty preservation (zero hallucination)",
-      "source_file": "docs/mvp-boundaries.md",
-      "source_location": "L62"
+      "norm_label": "5. recommended date vs. deadline",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L116"
     },
     {
-      "id": "docs_mvp_boundaries_7_strict_processing_scope_today_s_notes_only",
-      "label": "7. Strict Processing Scope (Today's Notes Only)",
+      "id": "docs_conceptual_model_6_extractability_vs_plannability",
+      "label": "6. Extractability vs. Plannability",
       "_origin": "ast",
       "community": 127,
-      "community_name": "Nyare MVP Boundaries & Non-Goals",
+      "community_name": "3. Important Domain Distinctions",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "7. strict processing scope (today's notes only)",
-      "source_file": "docs/mvp-boundaries.md",
-      "source_location": "L73"
+      "norm_label": "6. extractability vs. plannability",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L120"
     },
     {
-      "id": "docs_mvp_boundaries_nyare_mvp_boundaries_non_goals",
-      "label": "Nyare MVP Boundaries & Non-Goals",
+      "id": "docs_conceptual_model_7_source_information_vs_extracted_information_materialization",
+      "label": "7. Source Information vs. Extracted Information (Materialization)",
       "_origin": "ast",
       "community": 127,
-      "community_name": "Nyare MVP Boundaries & Non-Goals",
+      "community_name": "3. Important Domain Distinctions",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "nyare mvp boundaries & non-goals",
-      "source_file": "docs/mvp-boundaries.md",
-      "source_location": "L1"
+      "norm_label": "7. source information vs. extracted information (materialization)",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L126"
+    },
+    {
+      "id": "docs_conceptual_model_8_task_consideration_vs_task_updating",
+      "label": "8. Task Consideration vs. Task Updating",
+      "_origin": "ast",
+      "community": 127,
+      "community_name": "3. Important Domain Distinctions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "8. task consideration vs. task updating",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L130"
     },
     {
       "id": "backend_docs_api_notes_api_notes_api",
@@ -8625,42 +8768,6 @@
       "norm_label": "responses",
       "source_file": "backend/docs/api/notes-api/notes-api.md",
       "source_location": "L396"
-    },
-    {
-      "id": "docs_mvp_boundaries",
-      "label": "mvp-boundaries.md",
-      "_origin": "ast",
-      "community": 132,
-      "community_name": "Nyare System Overview",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "mvp-boundaries.md",
-      "source_file": "docs/mvp-boundaries.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "docs_system_workflows",
-      "label": "system-workflows.md",
-      "_origin": "ast",
-      "community": 132,
-      "community_name": "Nyare System Overview",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "system-workflows.md",
-      "source_file": "docs/system-workflows.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "docs_system_workflows_nyare_system_workflows_architecture_diagrams",
-      "label": "Nyare System Workflows & Architecture Diagrams",
-      "_origin": "ast",
-      "community": 132,
-      "community_name": "Nyare System Overview",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "nyare system workflows & architecture diagrams",
-      "source_file": "docs/system-workflows.md",
-      "source_location": "L1"
     },
     {
       "id": "backend_docs_api_notes_api_notes_api_3_1_400_bad_request_example_reference_mismatch",
@@ -10785,22 +10892,77 @@
       "source_location": "L34"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_config_webconfig",
+      "label": "WebConfig.java",
+      "_origin": "ast",
+      "community": 31,
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "file_type": "code",
+      "norm_label": "webconfig.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/config/WebConfig.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_config_webconfig_java_override",
+      "label": "Override",
+      "_origin": "ast",
+      "community": 31,
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "file_type": "code",
+      "norm_label": "override",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest",
+      "label": "WebConfigTest.java",
+      "_origin": "ast",
+      "community": 31,
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "file_type": "code",
+      "norm_label": "webconfigtest.java",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_java_override",
+      "label": "Override",
+      "_origin": "ast",
+      "community": 31,
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "file_type": "code",
+      "norm_label": "override",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "backend_src_test_java_group_four_nyare_nyare_nyareapplicationtests",
       "label": "NyareApplicationTests.java",
       "_origin": "ast",
       "community": 31,
-      "community_name": "NyareApplicationTests.java",
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
       "file_type": "code",
       "norm_label": "nyareapplicationtests.java",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/NyareApplicationTests.java",
       "source_location": "L1"
     },
     {
+      "id": "org_junit_jupiter_api_displayname",
+      "label": "org.junit.jupiter.api.DisplayName",
+      "_origin": "ast",
+      "community": 31,
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "file_type": "code",
+      "norm_label": "org.junit.jupiter.api.displayname",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "org_junit_jupiter_api_test",
       "label": "org.junit.jupiter.api.Test",
       "_origin": "ast",
       "community": 31,
-      "community_name": "NyareApplicationTests.java",
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
       "file_type": "code",
       "norm_label": "org.junit.jupiter.api.test",
       "source_file": "",
@@ -10811,9 +10973,53 @@
       "label": "org.springframework.boot.test.context.SpringBootTest",
       "_origin": "ast",
       "community": 31,
-      "community_name": "NyareApplicationTests.java",
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
       "file_type": "code",
       "norm_label": "org.springframework.boot.test.context.springboottest",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_springframework_context_annotation_configuration",
+      "label": "org.springframework.context.annotation.Configuration",
+      "_origin": "ast",
+      "community": 31,
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "file_type": "code",
+      "norm_label": "org.springframework.context.annotation.configuration",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_springframework_web_cors_corsconfiguration",
+      "label": "org.springframework.web.cors.CorsConfiguration",
+      "_origin": "ast",
+      "community": 31,
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "file_type": "code",
+      "norm_label": "org.springframework.web.cors.corsconfiguration",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_springframework_web_servlet_config_annotation_corsregistry",
+      "label": "org.springframework.web.servlet.config.annotation.CorsRegistry",
+      "_origin": "ast",
+      "community": 31,
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "file_type": "code",
+      "norm_label": "org.springframework.web.servlet.config.annotation.corsregistry",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_springframework_web_servlet_config_annotation_webmvcconfigurer",
+      "label": "org.springframework.web.servlet.config.annotation.WebMvcConfigurer",
+      "_origin": "ast",
+      "community": 31,
+      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "file_type": "code",
+      "norm_label": "org.springframework.web.servlet.config.annotation.webmvcconfigurer",
       "source_file": "",
       "source_location": ""
     },
@@ -15314,8 +15520,8 @@
       "_origin": "semantic",
       "author": null,
       "captured_at": null,
-      "community": 132,
-      "community_name": "Nyare System Overview",
+      "community": 117,
+      "community_name": "Workflow Directory",
       "contributor": null,
       "file_type": "document",
       "norm_label": "nyare system overview",
@@ -15329,8 +15535,8 @@
       "_origin": "semantic",
       "author": null,
       "captured_at": null,
-      "community": 132,
-      "community_name": "Nyare System Overview",
+      "community": 117,
+      "community_name": "Workflow Directory",
       "contributor": null,
       "file_type": "rationale",
       "norm_label": "nyare mvp boundaries",
@@ -18326,6 +18532,30 @@
   ],
   "links": [
     {
+      "source": "backend_src_main_java_group_four_nyare_nyare_config_webconfig_webconfig",
+      "target": "org_springframework_context_annotation_configuration",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/config/WebConfig.java",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_config_webconfig_webconfig_addcorsmappings",
+      "target": "backend_src_main_java_group_four_nyare_nyare_config_webconfig_java_override",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/config/WebConfig.java",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
       "source": "backend_src_main_java_group_four_nyare_nyare_controller_globalexceptionhandler_globalexceptionhandler",
       "target": "org_springframework_web_bind_annotation_restcontrolleradvice",
       "relation": "references",
@@ -18887,6 +19117,42 @@
       "context": "attribute",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/TaskRepository.java",
       "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_testcorsregistry_getcorsconfigurations",
+      "target": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_java_override",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_webconfigtest_addcorsmappings_registersexpectedconfiguration",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_webconfigtest_addcorsmappings_registersexpectedconfiguration",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -20774,6 +21040,18 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_webconfigtest_addcorsmappings_registersexpectedconfiguration",
+      "target": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_testcorsregistry",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
       "source": "agents_skills_caveman_compress_scripts_validate_validate_inline_codes",
       "target": "agents_skills_caveman_compress_scripts_validate_validate_inline_codes_render_spans",
       "relation": "contains",
@@ -21350,6 +21628,18 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_testcorsregistry_getcorsconfigurations",
+      "target": "org_springframework_web_cors_corsconfiguration",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
       "source": "agents_skills_caveman_compress_scripts_benchmark",
       "target": "agents_skills_caveman_compress_scripts_validate_validate",
       "relation": "imports",
@@ -21863,6 +22153,42 @@
       "context": "import",
       "source_file": ".agents/skills/dr-jskill/scripts/create-web-project.mjs",
       "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_config_webconfig",
+      "target": "org_springframework_context_annotation_configuration",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/config/WebConfig.java",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_config_webconfig",
+      "target": "org_springframework_web_servlet_config_annotation_corsregistry",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/config/WebConfig.java",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_config_webconfig",
+      "target": "org_springframework_web_servlet_config_annotation_webmvcconfigurer",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/config/WebConfig.java",
+      "source_location": "L5",
       "weight": 1.0
     },
     {
@@ -22826,6 +23152,54 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest",
+      "target": "org_springframework_web_cors_corsconfiguration",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest",
+      "target": "org_springframework_web_servlet_config_annotation_corsregistry",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
       "source": "backend_src_test_java_group_four_nyare_nyare_nyareapplicationtests",
       "target": "org_junit_jupiter_api_test",
       "relation": "imports",
@@ -23303,6 +23677,18 @@
       "context": "parameter_type",
       "source_file": ".agents/skills/caveman-compress/scripts/validate.py",
       "source_location": "L382",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_config_webconfig_webconfig_addcorsmappings",
+      "target": "org_springframework_web_servlet_config_annotation_corsregistry",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/config/WebConfig.java",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -31381,6 +31767,17 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_main_java_group_four_nyare_nyare_config_webconfig",
+      "target": "backend_src_main_java_group_four_nyare_nyare_config_webconfig_webconfig",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/config/WebConfig.java",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
       "source": "backend_src_main_java_group_four_nyare_nyare_controller_globalexceptionhandler",
       "target": "backend_src_main_java_group_four_nyare_nyare_controller_globalexceptionhandler_globalexceptionhandler",
       "relation": "contains",
@@ -31763,6 +32160,28 @@
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
       "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest",
+      "target": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_webconfigtest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_webconfigtest",
+      "target": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_testcorsregistry",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -33130,6 +33549,17 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_main_java_group_four_nyare_nyare_config_webconfig_webconfig",
+      "target": "org_springframework_web_servlet_config_annotation_webmvcconfigurer",
+      "relation": "implements",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/config/WebConfig.java",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
       "source": "backend_src_main_java_group_four_nyare_nyare_model_converter_notecontentconverter_notecontentconverter",
       "target": "jakarta_persistence_attributeconverter",
       "relation": "implements",
@@ -33218,6 +33648,17 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_testcorsregistry",
+      "target": "org_springframework_web_servlet_config_annotation_corsregistry",
+      "relation": "inherits",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
       "source": "agents_skills_caveman_compress_scripts_validate_validationresult",
       "target": "agents_skills_caveman_compress_scripts_validate_validationresult_init",
       "relation": "method",
@@ -33248,6 +33689,17 @@
       "confidence_score": 1.0,
       "source_file": ".agents/skills/caveman-compress/scripts/validate.py",
       "source_location": "L53",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_config_webconfig_webconfig",
+      "target": "backend_src_main_java_group_four_nyare_nyare_config_webconfig_webconfig_addcorsmappings",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/config/WebConfig.java",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -35792,6 +36244,28 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_testcorsregistry",
+      "target": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_testcorsregistry_getcorsconfigurations",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_webconfigtest",
+      "target": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_webconfigtest_addcorsmappings_registersexpectedconfiguration",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
       "source": "backend_src_test_java_group_four_nyare_nyare_nyareapplicationtests_nyareapplicationtests",
       "target": "backend_src_test_java_group_four_nyare_nyare_nyareapplicationtests_nyareapplicationtests_contextloads",
       "relation": "method",
@@ -37225,6 +37699,30 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_webconfigtest_addcorsmappings_registersexpectedconfiguration",
+      "target": "backend_src_main_java_group_four_nyare_nyare_config_webconfig_webconfig_addcorsmappings",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_webconfigtest_addcorsmappings_registersexpectedconfiguration",
+      "target": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_testcorsregistry_getcorsconfigurations",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
       "source": "agents_skills_dr_jskill_docs_vuepress_client_findcurrentsidebarlink",
       "target": "agents_skills_dr_jskill_docs_vuepress_client_iselementvisible",
       "relation": "indirect_call",
@@ -37234,6 +37732,18 @@
       "context": "argument",
       "source_file": ".agents/skills/dr-jskill/docs/.vuepress/client.js",
       "source_location": "L164",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_webconfigtest_addcorsmappings_registersexpectedconfiguration",
+      "target": "backend_src_main_java_group_four_nyare_nyare_config_webconfig_webconfig",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -39325,5 +39835,5 @@
       "source_file": ".agents/skills/dr-jskill/references/SPRING-BOOT-4.md"
     }
   ],
-  "built_at_commit": "dc38f06b7c297e218ccd3553a544a4cd3476be48"
+  "built_at_commit": "4a9e77733b9e2b9b5accf462c45da9e1c690ad31"
 }
