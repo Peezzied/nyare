@@ -9,4 +9,4 @@ This document is the root directory for Nyare backend design patterns and conven
 5. [Canonical Exceptions](conventions/exceptions.md) — No custom exception explosion policy and RFC 7807 matrix.
 6. [REST API & Controllers](conventions/controllers-and-rest.md) — Paths, verbs, status codes, and unversioned endpoints.
 7. [Persistence & SQLite](conventions/persistence-sqlite.md) — Hikari pool settings and open-in-view rules.
-8. [Testing Standards](conventions/testing-standards.md) — Unit, WebMvc, and DataJpa test slices.
+8. [Testing Standards](conventions/testing-standards.md) — Unit and WebMvc test slices.

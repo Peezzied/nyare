@@ -132,10 +132,10 @@
     "semantic_hash": "48babd29e7e72bfb304754b938e9d522"
   },
   "docs/conventions.md": {
-    "mtime": 1789378726.1843512,
-    "seen": 1789379696.003316,
-    "ast_hash": "b12e7526c2f47357df6eeaea8572b163",
-    "semantic_hash": "b12e7526c2f47357df6eeaea8572b163"
+    "mtime": 1789409356.5909526,
+    "seen": 1789409366.7879457,
+    "ast_hash": "dd520fb3f1b8bad1b5d5347726443bea",
+    "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java": {
     "mtime": 1789376983.8897471,
@@ -216,16 +216,16 @@
     "semantic_hash": "1e9fad67539d277ca6698c1bc16769c0"
   },
   "docs/conventions/services-and-tx.md": {
-    "mtime": 1789378706.4591973,
-    "seen": 1789379696.003325,
-    "ast_hash": "e28beb15781d1efa4098ea4235c4a14b",
-    "semantic_hash": "e28beb15781d1efa4098ea4235c4a14b"
+    "mtime": 1789409717.4726527,
+    "seen": 1789409726.8787205,
+    "ast_hash": "449ac117e14876779225a2f984462d44",
+    "semantic_hash": ""
   },
   "docs/conventions/testing-standards.md": {
-    "mtime": 1789378722.992787,
-    "seen": 1789379696.0033262,
-    "ast_hash": "948c1f4be5656f1c2cc87aa549cd8e72",
-    "semantic_hash": "948c1f4be5656f1c2cc87aa549cd8e72"
+    "mtime": 1789409720.1889117,
+    "seen": 1789409726.8787222,
+    "ast_hash": "3682e3d4ee48425cb03c70d2528137e3",
+    "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/dto/ImageMetadataUpdateRequest.java": {
     "mtime": 1789382632.6430185,
@@ -372,15 +372,531 @@
     "semantic_hash": ""
   },
   "build.gradle": {
-    "mtime": 1789407079.7416513,
-    "seen": 1789407089.6577792,
-    "ast_hash": "57451997b95804b6b70860109a136429",
+    "mtime": 1789407237.367172,
+    "seen": 1789409366.7878537,
+    "ast_hash": "c14ca4dddd6a1936b32291b112457f42",
     "semantic_hash": ""
   },
   "settings.gradle": {
     "mtime": 1789395585.319839,
     "seen": 1789407089.6577857,
     "ast_hash": "ceac6392a093be1fcc23ef9c9a7436da",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/member-search-index.js": {
+    "mtime": 1789407325.8121297,
+    "seen": 1789409366.7878568,
+    "ast_hash": "1bc643a0bc07134be370b4d12c47dbdd",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/module-search-index.js": {
+    "mtime": 1789407325.8046162,
+    "seen": 1789409366.7878585,
+    "ast_hash": "a33da0f469acbd03f77bf407bac505f5",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/package-search-index.js": {
+    "mtime": 1789407325.8066156,
+    "seen": 1789409366.7878597,
+    "ast_hash": "b55706dfd81121ac424debe849f8f9e4",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/script-files/jquery-3.7.1.min.js": {
+    "mtime": 1789407325.9605331,
+    "seen": 1789409366.787861,
+    "ast_hash": "2c872dbe60f4ba70fb85356113d8b35e",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/script-files/jquery-ui.min.js": {
+    "mtime": 1789407325.9625347,
+    "seen": 1789409366.7878625,
+    "ast_hash": "ab481ee8cd3ebac4edfcbd2cae5b0dde",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/script-files/script.js": {
+    "mtime": 1789407325.9433124,
+    "seen": 1789409366.7878635,
+    "ast_hash": "ce0f6ef5824b7fa9d8a935e4af88f8cc",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/script-files/search-page.js": {
+    "mtime": 1789407325.9545019,
+    "seen": 1789409366.787865,
+    "ast_hash": "24ff51c85d25d282a060e55ffd4f85e1",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/script-files/search.js": {
+    "mtime": 1789407325.9525046,
+    "seen": 1789409366.787866,
+    "ast_hash": "3dff7bb7f9908b8bb691f85f0136b8aa",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/tag-search-index.js": {
+    "mtime": 1789407325.8141406,
+    "seen": 1789409366.787867,
+    "ast_hash": "353a48fc779fcfa76e8c03d767ad579d",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/type-search-index.js": {
+    "mtime": 1789407325.808648,
+    "seen": 1789409366.7878685,
+    "ast_hash": "d6eeb98ae5363f93676774a4318f702f",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/allclasses-index.html": {
+    "mtime": 1789407325.7978444,
+    "seen": 1789409366.787958,
+    "ast_hash": "93ea41e0fb575fbe6d43f47e5f72d8dd",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/allpackages-index.html": {
+    "mtime": 1789407325.8016076,
+    "seen": 1789409366.7879596,
+    "ast_hash": "0363e603689b0836e34fd6d7134db2d7",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/NyareApplication.html": {
+    "mtime": 1789407325.455269,
+    "seen": 1789409366.7879605,
+    "ast_hash": "0a5734b7bb15fff2bb9fb09315d374a3",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/config/WebConfig.html": {
+    "mtime": 1789407325.609472,
+    "seen": 1789409366.7879615,
+    "ast_hash": "de877e887d426143b4fec10c6bc61e05",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/config/package-summary.html": {
+    "mtime": 1789407325.6271718,
+    "seen": 1789409366.7879627,
+    "ast_hash": "f439e2c445de2f8bf20221561732928a",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/config/package-tree.html": {
+    "mtime": 1789407325.633203,
+    "seen": 1789409366.7879639,
+    "ast_hash": "5392a49d2359e8abe9ef969a3c6833cf",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/controller/GlobalExceptionHandler.html": {
+    "mtime": 1789407325.301964,
+    "seen": 1789409366.7879648,
+    "ast_hash": "5a8d5d7decaff1f399dcf4d1893f9d87",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/controller/package-summary.html": {
+    "mtime": 1789407325.637361,
+    "seen": 1789409366.787966,
+    "ast_hash": "8aa7a24db9c246ec9535a8e33f0b260c",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/controller/package-tree.html": {
+    "mtime": 1789407325.6428728,
+    "seen": 1789409366.787967,
+    "ast_hash": "19716984cac87c48901e36c4fcb47115",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/dto/AcademicEventRequest.html": {
+    "mtime": 1789407325.2038558,
+    "seen": 1789409366.787968,
+    "ast_hash": "08a8d708ede790b4e87d20464c52db7e",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/dto/AcademicEventResponse.html": {
+    "mtime": 1789407325.2234066,
+    "seen": 1789409366.787969,
+    "ast_hash": "4a4d5435eaa492a45fe819112905a290",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/dto/ImageMetadataUpdateRequest.html": {
+    "mtime": 1789407325.3200755,
+    "seen": 1789409366.7879703,
+    "ast_hash": "cdeddbc6cb40a70ab0b05c5b5667f737",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/dto/NoteRequest.html": {
+    "mtime": 1789407325.4193654,
+    "seen": 1789409366.787973,
+    "ast_hash": "21b717b3d3ac0b4698babd50829e0f53",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/dto/NoteResponse.html": {
+    "mtime": 1789407325.434959,
+    "seen": 1789409366.7879739,
+    "ast_hash": "244d5ae5296dc53df264329170175a64",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/dto/ScheduleRequest.html": {
+    "mtime": 1789407325.4905794,
+    "seen": 1789409366.787975,
+    "ast_hash": "a65728e56071266371cf0eda7fca151d",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/dto/ScheduleResponse.html": {
+    "mtime": 1789407325.4995868,
+    "seen": 1789409366.7879763,
+    "ast_hash": "5e64b6135a3b22efde2b6d5ee3c5dad3",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/dto/TaskRequest.html": {
+    "mtime": 1789407325.5435915,
+    "seen": 1789409366.7879772,
+    "ast_hash": "b16b222d57c2bce072e33b4eb761b574",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/dto/TaskResponse.html": {
+    "mtime": 1789407325.5536342,
+    "seen": 1789409366.7879782,
+    "ast_hash": "68acb1358481b79eba339610b7a780b7",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/dto/TaskStatusRequest.html": {
+    "mtime": 1789407325.5899627,
+    "seen": 1789409366.7879794,
+    "ast_hash": "8e445bbca901dfcfe19e30690918986d",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/dto/package-summary.html": {
+    "mtime": 1789407325.6470222,
+    "seen": 1789409366.7879803,
+    "ast_hash": "f85f35bd2e23f02b900c4c1f85ade7b2",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/dto/package-tree.html": {
+    "mtime": 1789407325.6531549,
+    "seen": 1789409366.7879813,
+    "ast_hash": "c84fc9cd9eea23f93810368de69d0e5b",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/exception/BadRequestException.html": {
+    "mtime": 1789407325.260509,
+    "seen": 1789409366.787982,
+    "ast_hash": "76780bef0ed17bbddf086f7be76800b6",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/exception/ResourceNotFoundException.html": {
+    "mtime": 1789407325.4613848,
+    "seen": 1789409366.7879834,
+    "ast_hash": "61ec8f0cc9b7963de9c7249727966e17",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/exception/package-summary.html": {
+    "mtime": 1789407325.6556728,
+    "seen": 1789409366.7879844,
+    "ast_hash": "afd29577efe92ca7f56fb4a8509cec30",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/exception/package-tree.html": {
+    "mtime": 1789407325.6602573,
+    "seen": 1789409366.7879853,
+    "ast_hash": "1e48e5290f8e6b5f288b32d5de351be5",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/AcademicContext.html": {
+    "mtime": 1789407325.1186228,
+    "seen": 1789409366.7879865,
+    "ast_hash": "86eddacc657042f69cf249f6726bc2a4",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/AcademicEvent.html": {
+    "mtime": 1789407325.1484902,
+    "seen": 1789409366.7879875,
+    "ast_hash": "2f4a8f082ab7f2d20e5972ef2fb9f838",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/Course.html": {
+    "mtime": 1789407325.2746072,
+    "seen": 1789409366.7879884,
+    "ast_hash": "8b79ef2d4d5d8ce25663041b38b1e3d6",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/ImageMetadata.html": {
+    "mtime": 1789407325.310048,
+    "seen": 1789409366.7879896,
+    "ast_hash": "4d02aba597910866923be2bcbb014a6a",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/Note.html": {
+    "mtime": 1789407325.3544729,
+    "seen": 1789409366.7879906,
+    "ast_hash": "37ccab6c828ae5294880c2ab693a8e2e",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/NoteContent.html": {
+    "mtime": 1789407325.3693216,
+    "seen": 1789409366.7879918,
+    "ast_hash": "d64e187fc6ed08735596eeedafd8db74",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/Schedule.html": {
+    "mtime": 1789407325.4729342,
+    "seen": 1789409366.7879925,
+    "ast_hash": "4e8ec3b4622efd919f96a1fcf7264a28",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/Task.html": {
+    "mtime": 1789407325.5238128,
+    "seen": 1789409366.787994,
+    "ast_hash": "abd16cec795232e1fa6c0c9f4a887217",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/converter/NoteContentConverter.html": {
+    "mtime": 1789407325.3901086,
+    "seen": 1789409366.7879949,
+    "ast_hash": "a6480d498b69edaa955a25c34ef003b6",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/converter/package-summary.html": {
+    "mtime": 1789407325.6733928,
+    "seen": 1789409366.7879958,
+    "ast_hash": "81cd84cccd8a6e7aa3cddc5069ba0047",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/converter/package-tree.html": {
+    "mtime": 1789407325.6779006,
+    "seen": 1789409366.787997,
+    "ast_hash": "8fbe66d18e207e665fc65c9aebf3cb3d",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/enums/TaskStatus.html": {
+    "mtime": 1789407325.5839553,
+    "seen": 1789409366.7879982,
+    "ast_hash": "e87ac7eef3da60e88348cecfacd8b742",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/enums/package-summary.html": {
+    "mtime": 1789407325.6799037,
+    "seen": 1789409366.7879992,
+    "ast_hash": "abe244b127d95021e985731189d6e5f6",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/enums/package-tree.html": {
+    "mtime": 1789407325.684988,
+    "seen": 1789409366.7880003,
+    "ast_hash": "4b06f45ca0b214c5acb24bd2498627f1",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/package-summary.html": {
+    "mtime": 1789407325.6632545,
+    "seen": 1789409366.7880013,
+    "ast_hash": "a02ef5feb1651b5c656eac4c5b460721",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/package-tree.html": {
+    "mtime": 1789407325.6703942,
+    "seen": 1789409366.7880025,
+    "ast_hash": "b8c8afd1492d2f4e8852439dfa3fdb27",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/validation/ImageReferencesValidator.html": {
+    "mtime": 1789407325.3348787,
+    "seen": 1789409366.7880037,
+    "ast_hash": "05c0b493bfe4e808d99e20d094763f07",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/validation/ValidImageReferences.html": {
+    "mtime": 1789407325.598324,
+    "seen": 1789409366.7880046,
+    "ast_hash": "a0ab5f17128c6e4054ec58ae9f292023",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/validation/package-summary.html": {
+    "mtime": 1789407325.6880863,
+    "seen": 1789409366.7880054,
+    "ast_hash": "d5e96080e3fce36205120914c6cdffbe",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/model/validation/package-tree.html": {
+    "mtime": 1789407325.6940994,
+    "seen": 1789409366.7880063,
+    "ast_hash": "69b59dbf9075ff6cc92006b4b19a087e",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/package-summary.html": {
+    "mtime": 1789407325.616496,
+    "seen": 1789409366.7880075,
+    "ast_hash": "a412434b1925600d857524e09041378f",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/package-tree.html": {
+    "mtime": 1789407325.6230683,
+    "seen": 1789409366.7880085,
+    "ast_hash": "b12266bcdb0b73dd02f378ac23b6af3a",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/repository/AcademicEventRepository.html": {
+    "mtime": 1789407325.1861355,
+    "seen": 1789409366.7880094,
+    "ast_hash": "c1a5d393f8da49e19e3e349a31636434",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/repository/CourseRepository.html": {
+    "mtime": 1789407325.2852464,
+    "seen": 1789409366.7880108,
+    "ast_hash": "5238f019da0835759b24d64612dee8a8",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/repository/NoteRepository.html": {
+    "mtime": 1789407325.4102285,
+    "seen": 1789409366.7880118,
+    "ast_hash": "58dfbddcc00d266dd51572d01ac81307",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/repository/ScheduleRepository.html": {
+    "mtime": 1789407325.4830656,
+    "seen": 1789409366.7880127,
+    "ast_hash": "313cb994e294f71dceeb72874b835f62",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/repository/TaskRepository.html": {
+    "mtime": 1789407325.532946,
+    "seen": 1789409366.788014,
+    "ast_hash": "1a126b16723d6beda4ddd2ae82d76cda",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/repository/package-summary.html": {
+    "mtime": 1789407325.697663,
+    "seen": 1789409366.7880147,
+    "ast_hash": "ad2f402f783c95d3a5e02891f061903d",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/repository/package-tree.html": {
+    "mtime": 1789407325.7061818,
+    "seen": 1789409366.7880156,
+    "ast_hash": "686d5cf5bf43ac3ff29c14c10dca9595",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/service/AcademicEventService.html": {
+    "mtime": 1789407325.2392263,
+    "seen": 1789409366.7880166,
+    "ast_hash": "7938668370c4439a217d88dd4e75f9e4",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/service/NoteService.html": {
+    "mtime": 1789407325.4456456,
+    "seen": 1789409366.7880177,
+    "ast_hash": "fee0d7c1cc2d976a97c8c2b2a236737d",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/service/ScheduleService.html": {
+    "mtime": 1789407325.5081358,
+    "seen": 1789409366.7880187,
+    "ast_hash": "4f1174ff938411324148211727ffbcef",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/service/TaskService.html": {
+    "mtime": 1789407325.5641527,
+    "seen": 1789409366.7880197,
+    "ast_hash": "556b2320853ed6bed646502cfded14c0",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/service/package-summary.html": {
+    "mtime": 1789407325.744971,
+    "seen": 1789409366.7880208,
+    "ast_hash": "1740b919f525a1e0bf6c21860cce1aa1",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/group/four/nyare/nyare/service/package-tree.html": {
+    "mtime": 1789407325.7505505,
+    "seen": 1789409366.7880218,
+    "ast_hash": "b651777d4af384ea5fa1385e6cf1dc22",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/help-doc.html": {
+    "mtime": 1789407325.8590388,
+    "seen": 1789409366.7880228,
+    "ast_hash": "6979ea0df97391b86d450cdafca26d0b",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/index-all.html": {
+    "mtime": 1789407325.8509066,
+    "seen": 1789409366.7880237,
+    "ast_hash": "fc44b77d1be2080da04b23dc4f1d3bf3",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/index.html": {
+    "mtime": 1789407325.7675874,
+    "seen": 1789409366.788025,
+    "ast_hash": "8946eab653b57de7281b690822684117",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/legal/dejavufonts.md": {
+    "mtime": 1789407325.9696462,
+    "seen": 1789409366.7880259,
+    "ast_hash": "f610bca50c5feba0999e82e25491359c",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/legal/jquery.md": {
+    "mtime": 1789407325.9706526,
+    "seen": 1789409366.7880268,
+    "ast_hash": "5daa40e32e181acdfb0ed07d207d4414",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/legal/jqueryUI.md": {
+    "mtime": 1789407325.9716525,
+    "seen": 1789409366.788028,
+    "ast_hash": "a07db8d2f2b8833bd33e64750bb1019b",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/overview-summary.html": {
+    "mtime": 1789407325.8560398,
+    "seen": 1789409366.788029,
+    "ast_hash": "f4de70ced1c2cb385e29a623fa1c823a",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/overview-tree.html": {
+    "mtime": 1789407325.7640648,
+    "seen": 1789409366.7880301,
+    "ast_hash": "7dca2663d66806b6285ec090f0ee4714",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/search.html": {
+    "mtime": 1789407325.854032,
+    "seen": 1789409366.7880313,
+    "ast_hash": "69020d5c2f7f5b32036f676d20d409a8",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/serialized-form.html": {
+    "mtime": 1789407325.7575512,
+    "seen": 1789409366.788032,
+    "ast_hash": "f535aa6e9d571f3e33d7311f817cf1fb",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/resource-files/copy.svg": {
+    "mtime": 1789407325.9484644,
+    "seen": 1789409366.788035,
+    "ast_hash": "38635c17779a6a608ca59e9c5dd072ab",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/resource-files/glass.svg": {
+    "mtime": 1789407325.957011,
+    "seen": 1789409366.7880359,
+    "ast_hash": "29c43e6d86cbc38e12dec7522a170a3c",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/resource-files/left.svg": {
+    "mtime": 1789407325.9453132,
+    "seen": 1789409366.7880368,
+    "ast_hash": "a04e6b16edd7c8c87d41bd2643865845",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/resource-files/link.svg": {
+    "mtime": 1789407325.9505014,
+    "seen": 1789409366.7880378,
+    "ast_hash": "f999847c01f244db2781fa4cef61b13d",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/resource-files/right.svg": {
+    "mtime": 1789407325.9463127,
+    "seen": 1789409366.788039,
+    "ast_hash": "791f75fce9d74511d86e2a94c96cbc41",
+    "semantic_hash": ""
+  },
+  "docs/javadoc/resource-files/x.svg": {
+    "mtime": 1789407325.9585268,
+    "seen": 1789409366.7880402,
+    "ast_hash": "6cffaa1ea4903bdcc90b284caaca3fa7",
     "semantic_hash": ""
   }
 }

@@ -3993,14 +3993,14 @@
       "source_location": "L94"
     },
     {
-      "id": "build_gradle",
-      "label": "build.gradle.kts",
+      "id": "build",
+      "label": "build.gradle",
       "_origin": "ast",
       "community": 19,
-      "community_name": "build.gradle.kts",
+      "community_name": "build.gradle",
       "file_type": "code",
-      "norm_label": "build.gradle.kts",
-      "source_file": "build.gradle.kts",
+      "norm_label": "build.gradle",
+      "source_file": "build.gradle",
       "source_location": "L1"
     },
     {
@@ -4026,14 +4026,14 @@
       "source_location": "L1"
     },
     {
-      "id": "settings_gradle",
-      "label": "settings.gradle.kts",
+      "id": "settings",
+      "label": "settings.gradle",
       "_origin": "ast",
       "community": 27,
-      "community_name": "settings.gradle.kts",
+      "community_name": "settings.gradle",
       "file_type": "code",
-      "norm_label": "settings.gradle.kts",
-      "source_file": "settings.gradle.kts",
+      "norm_label": "settings.gradle",
+      "source_file": "settings.gradle",
       "source_location": "L1"
     },
     {
@@ -15779,5 +15779,5 @@
       "source_file": "docs/superpowers/plans/2026-09-13-task-manager-service.md"
     }
   ],
-  "built_at_commit": "dc38f06b7c297e218ccd3553a544a4cd3476be48"
+  "built_at_commit": "4a9e77733b9e2b9b5accf462c45da9e1c690ad31"
 }
