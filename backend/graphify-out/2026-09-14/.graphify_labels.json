@@ -3,10 +3,10 @@
   "1": "NyareApplicationTests.java",
   "2": "gradlew",
   "3": "NyareApplication",
-  "4": "Task",
+  "4": "TaskStatus",
   "5": "jakarta.persistence.Entity",
   "6": "Model Craft",
-  "7": "AGENTS.md",
+  "7": "Backend Agent Guide (Nyare)",
   "8": "IntelliJ MCP Backend Workflow & Static Analysis Rule",
   "9": "build.gradle.kts",
   "10": "settings.gradle.kts",
@@ -15,11 +15,10 @@
   "13": "AcademicContext",
   "14": "Task Manager Service Implementation Plan",
   "15": "AcademicEventResponse",
-  "16": "GlobalExceptionHandler.java",
+  "16": "TaskServiceImpl.java",
   "17": "Note",
   "18": "Schedule",
   "19": "Course",
-  "20": "Nyare Task Management Service API Specification",
-  "21": "Foundation 2: Core Domain Invariants",
-  "22": "Domain Entity Guidelines"
+  "20": "Nyare Backend Conventions and Standards",
+  "21": "Foundation 2: Core Domain Invariants"
 }

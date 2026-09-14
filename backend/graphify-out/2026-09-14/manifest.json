@@ -48,9 +48,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1789378730.6748765,
-    "seen": 1789378736.319099,
-    "ast_hash": "f5713ac78e8374d444e7e56ab5d4c209",
+    "mtime": 1789308241.7214592,
+    "seen": 1789308644.136495,
+    "ast_hash": "7b0aad98d8e483839feb6d2092cf8bf7",
     "semantic_hash": ""
   },
   "docs/api/openapi.yaml": {
@@ -155,10 +155,16 @@
     "ast_hash": "48babd29e7e72bfb304754b938e9d522",
     "semantic_hash": ""
   },
+  "src/main/java/group/four/nyare/nyare/service/impl/TaskServiceImpl.java": {
+    "mtime": 1789308424.6543336,
+    "seen": 1789308644.1364892,
+    "ast_hash": "8e26e18a8053d02c6aa2cfcc4cb9cee1",
+    "semantic_hash": ""
+  },
   "docs/conventions.md": {
-    "mtime": 1789378726.1843512,
-    "seen": 1789378736.3191032,
-    "ast_hash": "b12e7526c2f47357df6eeaea8572b163",
+    "mtime": 1789308220.2897005,
+    "seen": 1789308644.1364992,
+    "ast_hash": "8ead0f9ec4f3752507e3fe510abffdff",
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java": {
@@ -195,60 +201,6 @@
     "mtime": 1789310864.6407578,
     "seen": 1789377040.0527263,
     "ast_hash": "9bfc044e525e38cd53b5b8adef74e9d6",
-    "semantic_hash": ""
-  },
-  "src/main/java/group/four/nyare/nyare/controller/GlobalExceptionHandler.java": {
-    "mtime": 1789378327.2463095,
-    "seen": 1789378736.319063,
-    "ast_hash": "466d1c2ebbddb6e1189b9652f5f383ab",
-    "semantic_hash": ""
-  },
-  "docs/conventions/architecture.md": {
-    "mtime": 1789378688.914137,
-    "seen": 1789378736.3191044,
-    "ast_hash": "b2e507c4e2a0d59ac2685658f4455194",
-    "semantic_hash": ""
-  },
-  "docs/conventions/controllers-and-rest.md": {
-    "mtime": 1789378715.4088044,
-    "seen": 1789378736.3191059,
-    "ast_hash": "a8138efab5e987942425df3943bbd43a",
-    "semantic_hash": ""
-  },
-  "docs/conventions/dtos-and-validation.md": {
-    "mtime": 1789378702.8198748,
-    "seen": 1789378736.3191068,
-    "ast_hash": "aec132eb1fd06b33833e4d5a45434de4",
-    "semantic_hash": ""
-  },
-  "docs/conventions/entities.md": {
-    "mtime": 1789378696.3637154,
-    "seen": 1789378736.3191078,
-    "ast_hash": "b8a7496bf2d6b0ee16eb92d8f91f6c25",
-    "semantic_hash": ""
-  },
-  "docs/conventions/exceptions.md": {
-    "mtime": 1789378712.1717434,
-    "seen": 1789378736.319109,
-    "ast_hash": "35fde35ae3df34508ded34df029d0d87",
-    "semantic_hash": ""
-  },
-  "docs/conventions/persistence-sqlite.md": {
-    "mtime": 1789378719.6767516,
-    "seen": 1789378736.31911,
-    "ast_hash": "1e9fad67539d277ca6698c1bc16769c0",
-    "semantic_hash": ""
-  },
-  "docs/conventions/services-and-tx.md": {
-    "mtime": 1789378706.4591973,
-    "seen": 1789378736.3191109,
-    "ast_hash": "e28beb15781d1efa4098ea4235c4a14b",
-    "semantic_hash": ""
-  },
-  "docs/conventions/testing-standards.md": {
-    "mtime": 1789378722.992787,
-    "seen": 1789378736.3191123,
-    "ast_hash": "948c1f4be5656f1c2cc87aa549cd8e72",
     "semantic_hash": ""
   }
 }

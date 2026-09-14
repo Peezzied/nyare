@@ -1,12 +1,12 @@
 # Graph Report - backend  (2026-09-14)
 
 ## Corpus Check
-- 41 files · ~17,743 words
+- 33 files · ~17,918 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 379 nodes · 502 edges · 23 communities (16 shown, 5 thin omitted)
-- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
+- 350 nodes · 544 edges · 22 communities (15 shown, 5 thin omitted)
+- Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 46 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
@@ -19,37 +19,38 @@
 - NyareApplicationTests.java
 - gradlew
 - NyareApplication
-- Task
+- TaskStatus
 - jakarta.persistence.Entity
 - Model Craft
-- AGENTS.md
+- Backend Agent Guide (Nyare)
 - IntelliJ MCP Backend Workflow & Static Analysis Rule
 - AcademicEvent
 - 4. Endpoints Specification
 - AcademicContext
 - Task Manager Service Implementation Plan
 - AcademicEventResponse
-- GlobalExceptionHandler.java
+- TaskServiceImpl.java
 - Note
 - Schedule
 - Course
-- Nyare Task Management Service API Specification
+- Nyare Backend Conventions and Standards
 - Foundation 2: Core Domain Invariants
-- Domain Entity Guidelines
 
 ## God Nodes (most connected - your core abstractions)
-1. `Course` - 32 edges
-2. `Task` - 32 edges
-3. `TaskResponse` - 29 edges
-4. `AcademicEvent` - 28 edges
-5. `Note` - 28 edges
-6. `TaskStatus` - 27 edges
+1. `TaskResponse` - 36 edges
+2. `Task` - 35 edges
+3. `Course` - 33 edges
+4. `TaskStatus` - 29 edges
+5. `AcademicEvent` - 28 edges
+6. `Note` - 28 edges
 7. `AcademicEventResponse` - 21 edges
-8. `TaskRequest` - 18 edges
+8. `TaskRequest` - 21 edges
 9. `AcademicContext` - 18 edges
 10. `AcademicEventRequest` - 15 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `TaskResponse` --references--> `TaskStatus`  [EXTRACTED]
+  src/main/java/group/four/nyare/nyare/dto/TaskResponse.java → src/main/java/group/four/nyare/nyare/model/enums/TaskStatus.java
 - `AcademicContext` --references--> `Course`  [EXTRACTED]
   src/main/java/group/four/nyare/nyare/model/AcademicContext.java → src/main/java/group/four/nyare/nyare/model/Course.java
 - `AcademicContext` --references--> `Note`  [EXTRACTED]
@@ -58,17 +59,15 @@
   src/main/java/group/four/nyare/nyare/model/AcademicEvent.java → src/main/java/group/four/nyare/nyare/model/Course.java
 - `AcademicEvent` --references--> `Note`  [EXTRACTED]
   src/main/java/group/four/nyare/nyare/model/AcademicEvent.java → src/main/java/group/four/nyare/nyare/model/Note.java
-- `Note` --references--> `Course`  [EXTRACTED]
-  src/main/java/group/four/nyare/nyare/model/Note.java → src/main/java/group/four/nyare/nyare/model/Course.java
 
 ## Import Cycles
 - None detected.
 
-## Communities (23 total, 5 thin omitted)
+## Communities (22 total, 5 thin omitted)
 
 ### Community 0 - "TaskResponse"
-Cohesion: 0.05
-Nodes (8): TaskRequest, TaskResponse, TaskStatusRequest, TaskStatus, COMPLETED, IN_PROGRESS, TODO, TaskService
+Cohesion: 0.07
+Nodes (4): TaskResponse, Override, Task, TaskService
 
 ### Community 1 - "NyareApplicationTests.java"
 Cohesion: 0.60
@@ -82,6 +81,10 @@ Nodes (3): gradlew script, die(), warn()
 Cohesion: 0.60
 Nodes (3): org.springframework.boot.autoconfigure.SpringBootApplication, org.springframework.data.jpa.repository.config.EnableJpaAuditing, NyareApplication
 
+### Community 4 - "TaskStatus"
+Cohesion: 0.11
+Nodes (7): TaskRequest, TaskStatusRequest, TaskStatus, COMPLETED, IN_PROGRESS, TODO, Override
+
 ### Community 5 - "jakarta.persistence.Entity"
 Cohesion: 0.44
 Nodes (4): jakarta.persistence.Entity, jakarta.persistence.EntityListeners, jakarta.persistence.Table, org.springframework.data.jpa.domain.support.AuditingEntityListener
@@ -90,21 +93,17 @@ Nodes (4): jakarta.persistence.Entity, jakarta.persistence.EntityListeners, jaka
 Cohesion: 0.13
 Nodes (14): 1. JPA & Persistence Annotations, 2. Bean Validation Constraints, 3. Constructors & Accessors, 4. YAGNI Identity (No `equals()` / `hashCode()` Bloat), 5. Domain Javadoc, 6. Canonical Reference Example, Auditing & Temporal Fields, Entity & Table Declarations (+6 more)
 
-### Community 7 - "AGENTS.md"
-Cohesion: 0.05
-Nodes (35): Backend Agent Guide (Nyare), Core Architecture & Invariants, Domain Model (`group.four.nyare.nyare.model`), Knowledge Graph (`graphify`), Tech Stack, Verification & Build Tiering, 1. Layered Architecture, 2. Layer Isolation Rules (+27 more)
+### Community 7 - "Backend Agent Guide (Nyare)"
+Cohesion: 0.29
+Nodes (6): Backend Agent Guide (Nyare), Core Architecture & Guidelines, Domain Model (`group.four.nyare.nyare.model`), Knowledge Graph Workflows (`graphify`), Tech Stack, Verification & Build Tiering
 
 ### Community 8 - "IntelliJ MCP Backend Workflow & Static Analysis Rule"
 Cohesion: 0.29
 Nodes (6): 1. Tool Discovery & Dynamic Capability Inspection, 2. Pre-Build Verification (Immediate Post-Edit Validation), 3. Token-Efficient Code Navigation, 4. Build Tiering & Execution Hierarchy, 5. Unavailability & Fallback Handling, IntelliJ MCP Backend Workflow & Static Analysis Rule
 
-### Community 11 - "AcademicEvent"
-Cohesion: 0.09
-Nodes (7): org.springframework.data.jpa.repository.JpaRepository, org.springframework.data.jpa.repository.Query, AcademicEvent, Override, AcademicEventRepository, CourseRepository, TaskRepository
-
 ### Community 12 - "4. Endpoints Specification"
-Cohesion: 0.07
-Nodes (29): 4.1 Create Task, 4.2 List Tasks, 4.3 Get Task by ID, 4.4 Full Update of Task, 4.5 Update Task Status Only, 4.6 Delete Task, 4. Endpoints Specification, Example Request (+21 more)
+Cohesion: 0.05
+Nodes (38): 1. Overview & Domain Architecture, 2.1 TaskStatus Enum, 2.2 Task Schema Overview, 2. Data Models & Enums, 3.1 400 Bad Request Example (Validation Failure), 3.2 404 Not Found Example, 3. Error Handling (RFC 7807 Problem Details), 4.1 Create Task (+30 more)
 
 ### Community 14 - "Task Manager Service Implementation Plan"
 Cohesion: 0.14
@@ -112,43 +111,39 @@ Nodes (13): File Map, Global Constraints, Placeholder Scan, Self-Review Checklis
 
 ### Community 15 - "AcademicEventResponse"
 Cohesion: 0.06
-Nodes (3): AcademicEventRequest, AcademicEventResponse, AcademicEventService
+Nodes (5): AcademicEventRequest, AcademicEventResponse, BadRequestException, ResourceNotFoundException, AcademicEventService
 
-### Community 16 - "GlobalExceptionHandler.java"
-Cohesion: 0.22
-Nodes (7): org.springframework.http.ProblemDetail, org.springframework.web.bind.annotation.ExceptionHandler, org.springframework.web.bind.annotation.RestControllerAdvice, org.springframework.web.bind.MethodArgumentNotValidException, GlobalExceptionHandler, BadRequestException, ResourceNotFoundException
+### Community 16 - "TaskServiceImpl.java"
+Cohesion: 0.21
+Nodes (8): org.springframework.data.jpa.repository.JpaRepository, org.springframework.data.jpa.repository.Query, org.springframework.stereotype.Service, org.springframework.transaction.annotation.Transactional, AcademicEventRepository, CourseRepository, TaskRepository, TaskServiceImpl
 
-### Community 20 - "Nyare Task Management Service API Specification"
-Cohesion: 0.20
-Nodes (9): 1. Overview & Domain Architecture, 2.1 TaskStatus Enum, 2.2 Task Schema Overview, 2. Data Models & Enums, 3.1 400 Bad Request Example (Validation Failure), 3.2 404 Not Found Example, 3. Error Handling (RFC 7807 Problem Details), Nyare Task Management Service API Specification (+1 more)
+### Community 20 - "Nyare Backend Conventions and Standards"
+Cohesion: 0.18
+Nodes (10): 1. Architecture Overview, 2. Package Structure & Naming, 3. Domain Entity Guidelines, 4. DTO & Validation Guidelines, 5. Service & Transaction Guidelines, 6. REST API & Controller Guidelines, 7. Persistence & SQLite Guidelines, 8. Verification & Testing Standards (+2 more)
 
 ### Community 21 - "Foundation 2: Core Domain Invariants"
 Cohesion: 0.11
 Nodes (17): 1. `Course` is the Root Organizational Anchor, 2. Rigid Constraints vs. Flexible Recommendations, 3. Virtual Study Plan (Zero Persistence Entity), 4. Tri-State Study Plan Recommendations, 5. Append-Only Materialization (No Auto-Reconciliation), 6. Strict Scoping of AI Extraction, 7. Dynamic Holistic Reasoning (No Deterministic Scoring), 8. Preserve Uncertainty (Zero Data Fabrication) (+9 more)
 
-### Community 22 - "Domain Entity Guidelines"
-Cohesion: 0.33
-Nodes (6): 1. Identifier Strategy, 2. Naming & Column Annotations, 3. Auditing Fields, 4. Association Fetching, 5. Identity & Lifecycle, Domain Entity Guidelines
-
 ## Knowledge Gaps
-- **105 isolated node(s):** `TODO`, `IN_PROGRESS`, `COMPLETED`, `1. Tool Discovery & Dynamic Capability Inspection`, `2. Pre-Build Verification (Immediate Post-Edit Validation)` (+100 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 231 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **86 isolated node(s):** `TODO`, `IN_PROGRESS`, `COMPLETED`, `1. Tool Discovery & Dynamic Capability Inspection`, `2. Pre-Build Verification (Immediate Post-Edit Validation)` (+81 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 187 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `TaskStatus` connect `TaskResponse` to `AcademicEvent`, `Task`, `jakarta.persistence.Entity`?**
-  _High betweenness centrality (0.095) - this node is a cross-community bridge._
-- **Why does `Task` connect `Task` to `TaskResponse`, `jakarta.persistence.Entity`, `AcademicEvent`, `Note`, `Course`?**
-  _High betweenness centrality (0.093) - this node is a cross-community bridge._
-- **Why does `Course` connect `Course` to `Task`, `jakarta.persistence.Entity`, `AcademicEvent`, `AcademicContext`, `Note`, `Schedule`?**
-  _High betweenness centrality (0.050) - this node is a cross-community bridge._
+- **Why does `Course` connect `Course` to `TaskResponse`, `jakarta.persistence.Entity`, `AcademicEvent`, `AcademicContext`, `TaskServiceImpl.java`, `Note`, `Schedule`?**
+  _High betweenness centrality (0.134) - this node is a cross-community bridge._
+- **Why does `Task` connect `TaskResponse` to `TaskStatus`, `jakarta.persistence.Entity`, `TaskServiceImpl.java`, `Note`, `Course`?**
+  _High betweenness centrality (0.105) - this node is a cross-community bridge._
+- **Why does `ResourceNotFoundException` connect `AcademicEventResponse` to `TaskServiceImpl.java`?**
+  _High betweenness centrality (0.063) - this node is a cross-community bridge._
 - **What connects `TODO`, `IN_PROGRESS`, `COMPLETED` to the rest of the system?**
-  _105 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _86 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `TaskResponse` be split into smaller, more focused modules?**
-  _Cohesion score 0.0512987012987013 - nodes in this community are weakly interconnected._
-- **Should `Task` be split into smaller, more focused modules?**
-  _Cohesion score 0.1111111111111111 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06570048309178744 - nodes in this community are weakly interconnected._
+- **Should `TaskStatus` be split into smaller, more focused modules?**
+  _Cohesion score 0.1140819964349376 - nodes in this community are weakly interconnected._
 - **Should `Model Craft` be split into smaller, more focused modules?**
   _Cohesion score 0.13333333333333333 - nodes in this community are weakly interconnected._
