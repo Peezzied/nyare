@@ -1,16 +1,16 @@
 # Graph Report - nyare  (2026-09-14)
 
 ## Corpus Check
-- 184 files · ~171,744 words
+- 189 files · ~175,595 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1388 nodes · 1765 edges · 138 communities (94 shown, 41 thin omitted)
+- 1461 nodes · 1848 edges · 140 communities (94 shown, 43 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 36 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a14d0d16`
+- Built from commit: `dc38f06b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -72,11 +72,11 @@
 - 06 — Testing
 - 00 — Introduction
 - GitHub Copilot CLI + Java workshop, using Dr JSkill
-- Canonical Exception Strategy
+- conventions.md
 - AcademicEventResponse
 - REST API & Controller Guidelines
 - GitHub Copilot CLI
-- 3. Important Domain Distinctions
+- 4. Endpoints Specification
 - __init__.py
 - checkpoint-and-run.sh
 - Graphify Knowledge Graph Rule
@@ -87,7 +87,7 @@
 - DTO & Validation Guidelines
 - 05 — A more professional front-end
 - 4. Endpoints Specification
-- conventions.md
+- Persistence & SQLite Guidelines
 - Docker Prerequisite
 - Java 25 Prerequisite
 - Node.js 24 & npm 11 Prerequisite
@@ -131,7 +131,7 @@
 - Foundation 2: Core Domain Invariants
 - Workflow Directory
 - 2. Core Entities & Hierarchy
-- Nyare Conceptual Model & Domain Dictionary
+- temp/README.md
 - 4.5 AI Image Metadata Update
 - 4.1 Create Note
 - 2. Detailed Entity Specifications
@@ -150,6 +150,8 @@
 - TaskStatus
 - TaskRequest
 - TaskService
+- ScheduleResponse
+- ScheduleRepository
 
 ## God Nodes (most connected - your core abstractions)
 1. `Task` - 32 edges
@@ -192,7 +194,7 @@
 - **Graphify Query & Knowledge Retrieval Flow** — _agents_skills_graphify_skill_fast_path_query, _agents_skills_graphify_references_query_query_expansion, _agents_skills_graphify_references_query_traversal_modes, _agents_skills_graphify_references_query_work_memory_reflections [INFERRED 0.95]
 - **Spring Boot 4 Testing Ecosystem Modernization** — _agents_skills_dr_jskill_references_spring_boot_4_mockito_bean, _agents_skills_dr_jskill_references_spring_boot_4_webmvc_test_starter, _agents_skills_dr_jskill_references_test_testcontainers_service_connection, _agents_skills_dr_jskill_references_test_rest_test_client [INFERRED 0.95]
 
-## Communities (138 total, 41 thin omitted)
+## Communities (140 total, 43 thin omitted)
 
 ### Community 0 - "versions.mjs"
 Cohesion: 0.06
@@ -323,7 +325,7 @@ Cohesion: 0.40
 Nodes (5): Bluesky Icon, Discord Icon, GitHub Icon, Social Icon, X Icon
 
 ### Community 33 - "Appendix A — Prompt cheat sheet"
-Cohesion: 0.15
+Cohesion: 0.17
 Nodes (12): Appendix A — Prompt cheat sheet, Controlling the agent, Debugging & diagnostics, Docs & commits, Dr JSkill meta-prompts, Feature additions, Performance, Project creation (+4 more)
 
 ### Community 34 - "Spring Boot Testing Best Practices Guide"
@@ -395,16 +397,16 @@ Cohesion: 0.20
 Nodes (10): 06 — Testing, 1. Why test AI-generated code?, 2. The two test styles, 3. Add unit tests for the controller, 4. Add an integration test with Testcontainers, 5. Run the full suite, 6. Speed up the feedback loop, 7. Run a single test (+2 more)
 
 ### Community 56 - "00 — Introduction"
-Cohesion: 0.25
+Cohesion: 0.29
 Nodes (7): 00 — Introduction, 1. What is an Agent Skill?, 2. What Dr JSkill is, 3. How this differs from Spring Initializr, 4. The mindset shift, 5. What you'll learn, 6. Tested models
 
 ### Community 57 - "GitHub Copilot CLI + Java workshop, using Dr JSkill"
 Cohesion: 0.33
 Nodes (6): Chapters, GitHub Copilot CLI + Java workshop, using Dr JSkill, How to use this workshop, Prerequisites, Reference material, What you'll build
 
-### Community 58 - "Canonical Exception Strategy"
-Cohesion: 0.40
-Nodes (4): 1. Core Policy: No Custom Exception Explosion, 2. Canonical Exception Matrix, 3. RFC 7807 Problem Details Response, Canonical Exception Strategy
+### Community 58 - "conventions.md"
+Cohesion: 0.28
+Nodes (5): 1. Core Policy: No Custom Exception Explosion, 2. Canonical Exception Matrix, 3. RFC 7807 Problem Details Response, Canonical Exception Strategy, Nyare Backend Conventions and Standards (Index)
 
 ### Community 59 - "AcademicEventResponse"
 Cohesion: 0.06
@@ -414,9 +416,9 @@ Nodes (10): GlobalExceptionHandler, AcademicEventRequest, AcademicEventResponse,
 Cohesion: 0.33
 Nodes (5): 1. Paths & Endpoints, 2. HTTP Verb & Status Code Matrix, 3. No Paging (MVP Boundary), 4. Problem Details (RFC 7807), REST API & Controller Guidelines
 
-### Community 62 - "3. Important Domain Distinctions"
-Cohesion: 0.22
-Nodes (9): 1. Academic Event vs. Deadline, 2. Task vs. Academic Event, 3. Academic Context vs. Task, 3. Important Domain Distinctions, 4. Academic Context vs. Academic Event, 5. Recommended Date vs. Deadline, 6. Extractability vs. Plannability, 7. Source Information vs. Extracted Information (Materialization) (+1 more)
+### Community 62 - "4. Endpoints Specification"
+Cohesion: 0.05
+Nodes (36): 1. Overview & Domain Architecture, 2.1 DayOfWeek Enum, 2.2 Schedule Schema Overview, 2. Data Models & Schemas, 3.1 400 Bad Request Example (Validation Failure), 3.2 400 Bad Request Example (Time Integrity Violation), 3.3 404 Not Found Example (Course Not Found), 3.4 404 Not Found Example (Schedule Not Found) (+28 more)
 
 ### Community 68 - "Domain Entity Guidelines"
 Cohesion: 0.33
@@ -438,9 +440,9 @@ Nodes (9): 05 — A more professional front-end, 1. What "professional-looking" 
 Cohesion: 0.05
 Nodes (38): 1. Overview & Domain Architecture, 2.1 TaskStatus Enum, 2.2 Task Schema Overview, 2. Data Models & Enums, 3.1 400 Bad Request Example (Validation Failure), 3.2 404 Not Found Example, 3. Error Handling (RFC 7807 Problem Details), 4.1 Create Task (+30 more)
 
-### Community 73 - "conventions.md"
-Cohesion: 0.28
-Nodes (5): Nyare Backend Conventions and Standards (Index), 1. Single-Writer Connection Pool, 2. Schema Management, 3. Open-In-View Disabled, Persistence & SQLite Guidelines
+### Community 73 - "Persistence & SQLite Guidelines"
+Cohesion: 0.40
+Nodes (4): 1. Single-Writer Connection Pool, 2. Schema Management, 3. Open-In-View Disabled, Persistence & SQLite Guidelines
 
 ### Community 92 - "Backend Agent Guide (Nyare)"
 Cohesion: 0.33
@@ -480,11 +482,11 @@ Nodes (3): Override, Note, Course
 
 ### Community 113 - "Course"
 Cohesion: 0.09
-Nodes (4): Course, Override, Override, Schedule
+Nodes (5): Course, Override, Override, Schedule, CourseRepository
 
 ### Community 114 - "org.springframework.data.jpa.repository.JpaRepository"
-Cohesion: 0.21
-Nodes (6): AcademicEventRepository, CourseRepository, NoteRepository, TaskRepository, org.springframework.data.jpa.repository.JpaRepository, org.springframework.data.jpa.repository.Query
+Cohesion: 0.24
+Nodes (5): AcademicEventRepository, NoteRepository, TaskRepository, org.springframework.data.jpa.repository.JpaRepository, org.springframework.data.jpa.repository.Query
 
 ### Community 115 - "Foundation 3: Core Domain Invariants"
 Cohesion: 0.11
@@ -499,12 +501,8 @@ Cohesion: 0.20
 Nodes (10): 1. System Overview, 2. Core Academic Model, 3. Journal Processing Workflow, 4. AI Planning Workflow, 5. Study Plan and Calendar Relationship, 6. Information and Planning Boundaries, 7. Handling Missing Information, 8. User Interface and Navigation (+2 more)
 
 ### Community 118 - "2. Core Entities & Hierarchy"
-Cohesion: 0.20
-Nodes (10): 2. Core Entities & Hierarchy, `Academic Context`, `Academic Event`, `Academic Term`, `Course`, Entity Definitions, `Journal Entry` (`Note`), `Schedule` (+2 more)
-
-### Community 119 - "Nyare Conceptual Model & Domain Dictionary"
-Cohesion: 0.22
-Nodes (5): 1. Core Concept & Pipeline, 4. Preserving Uncertainty & Incomplete Information, Nyare Conceptual Model & Domain Dictionary, Contents, Temporary Architectural Notes (Backend & AI Architecture Drafts)
+Cohesion: 0.09
+Nodes (22): 1. Academic Event vs. Deadline, 1. Core Concept & Pipeline, 2. Core Entities & Hierarchy, 2. Task vs. Academic Event, 3. Academic Context vs. Task, 3. Important Domain Distinctions, 4. Academic Context vs. Academic Event, 4. Preserving Uncertainty & Incomplete Information (+14 more)
 
 ### Community 120 - "4.5 AI Image Metadata Update"
 Cohesion: 0.25
@@ -570,22 +568,26 @@ Nodes (34): 1. Overview & Domain Architecture, 2.1 AcademicEvent Schema Overview
 Cohesion: 0.15
 Nodes (5): TaskStatusRequest, TaskStatus, COMPLETED, IN_PROGRESS, TODO
 
+### Community 138 - "ScheduleResponse"
+Cohesion: 0.07
+Nodes (3): ScheduleRequest, ScheduleResponse, ScheduleService
+
 ## Knowledge Gaps
-- **592 isolated node(s):** `1. Overview & Domain Architecture`, `2.1 AcademicEvent Schema Overview`, `Problem Details Schema`, `3.1 400 Bad Request Example (Cross-Entity Course Mismatch)`, `3.2 400 Bad Request Example (Validation Failure)` (+587 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 803 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **41 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **619 isolated node(s):** `1. Overview & Domain Architecture`, `2.1 DayOfWeek Enum`, `2.2 Schedule Schema Overview`, `Problem Details Schema`, `3.1 400 Bad Request Example (Validation Failure)` (+614 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 854 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **43 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `NoteContent` connect `NoteContent` to `NoteResponse`, `ImageMetadata`, `ImageReferencesValidator`, `Note`, `NoteContentConverter`, `ValidImageReferences`?**
-  _High betweenness centrality (0.025) - this node is a cross-community bridge._
 - **Why does `Note` connect `Note` to `jakarta.persistence.Entity`, `Task`, `ImageMetadata`, `NoteContent`, `AcademicContext`, `org.springframework.data.jpa.repository.JpaRepository`?**
-  _High betweenness centrality (0.023) - this node is a cross-community bridge._
+  _High betweenness centrality (0.027) - this node is a cross-community bridge._
+- **Why does `NoteContent` connect `NoteContent` to `NoteResponse`, `ImageMetadata`, `ImageReferencesValidator`, `Note`, `NoteContentConverter`, `ValidImageReferences`?**
+  _High betweenness centrality (0.027) - this node is a cross-community bridge._
 - **Why does `Task` connect `Task` to `jakarta.persistence.Entity`, `TaskStatus`, `Note`, `Course`, `org.springframework.data.jpa.repository.JpaRepository`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
-- **What connects `1. Overview & Domain Architecture`, `2.1 AcademicEvent Schema Overview`, `Problem Details Schema` to the rest of the system?**
-  _592 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _High betweenness centrality (0.022) - this node is a cross-community bridge._
+- **What connects `1. Overview & Domain Architecture`, `2.1 DayOfWeek Enum`, `2.2 Schedule Schema Overview` to the rest of the system?**
+  _619 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `versions.mjs` be split into smaller, more focused modules?**
   _Cohesion score 0.05707762557077625 - nodes in this community are weakly interconnected._
 - **Should `compress.py` be split into smaller, more focused modules?**

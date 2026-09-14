@@ -370,5 +370,17 @@
     "seen": 1789389136.706719,
     "ast_hash": "5a4abfacb7dbecc2ce1ac405bbf6cf88",
     "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/config/WebConfig.java": {
+    "mtime": 1789391933.502718,
+    "seen": 1789392069.0910811,
+    "ast_hash": "0cd0568f586e141a7df2f88900453894",
+    "semantic_hash": ""
+  },
+  "src/test/java/group/four/nyare/nyare/config/WebConfigTest.java": {
+    "mtime": 1789392040.2745473,
+    "seen": 1789392069.0911841,
+    "ast_hash": "43e74aaadfd575880fa79464cfe115bc",
+    "semantic_hash": ""
   }
 }

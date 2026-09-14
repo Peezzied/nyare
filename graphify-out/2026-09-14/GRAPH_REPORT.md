@@ -1,16 +1,16 @@
 # Graph Report - nyare  (2026-09-14)
 
 ## Corpus Check
-- 183 files · ~168,927 words
+- 184 files · ~171,744 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1353 nodes · 1731 edges · 134 communities (93 shown, 38 thin omitted)
+- 1388 nodes · 1765 edges · 138 communities (94 shown, 41 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 36 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `493a84e4`
+- Built from commit: `a14d0d16`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -146,6 +146,10 @@
 - 4.6 Delete Note
 - Nyare System Overview
 - 3. Error Handling (RFC 7807 Problem Details)
+- 4. Endpoints Specification
+- TaskStatus
+- TaskRequest
+- TaskService
 
 ## God Nodes (most connected - your core abstractions)
 1. `Task` - 32 edges
@@ -188,7 +192,7 @@
 - **Graphify Query & Knowledge Retrieval Flow** — _agents_skills_graphify_skill_fast_path_query, _agents_skills_graphify_references_query_query_expansion, _agents_skills_graphify_references_query_traversal_modes, _agents_skills_graphify_references_query_work_memory_reflections [INFERRED 0.95]
 - **Spring Boot 4 Testing Ecosystem Modernization** — _agents_skills_dr_jskill_references_spring_boot_4_mockito_bean, _agents_skills_dr_jskill_references_spring_boot_4_webmvc_test_starter, _agents_skills_dr_jskill_references_test_testcontainers_service_connection, _agents_skills_dr_jskill_references_test_rest_test_client [INFERRED 0.95]
 
-## Communities (134 total, 38 thin omitted)
+## Communities (138 total, 41 thin omitted)
 
 ### Community 0 - "versions.mjs"
 Cohesion: 0.06
@@ -319,7 +323,7 @@ Cohesion: 0.40
 Nodes (5): Bluesky Icon, Discord Icon, GitHub Icon, Social Icon, X Icon
 
 ### Community 33 - "Appendix A — Prompt cheat sheet"
-Cohesion: 0.17
+Cohesion: 0.15
 Nodes (12): Appendix A — Prompt cheat sheet, Controlling the agent, Debugging & diagnostics, Docs & commits, Dr JSkill meta-prompts, Feature additions, Performance, Project creation (+4 more)
 
 ### Community 34 - "Spring Boot Testing Best Practices Guide"
@@ -391,7 +395,7 @@ Cohesion: 0.20
 Nodes (10): 06 — Testing, 1. Why test AI-generated code?, 2. The two test styles, 3. Add unit tests for the controller, 4. Add an integration test with Testcontainers, 5. Run the full suite, 6. Speed up the feedback loop, 7. Run a single test (+2 more)
 
 ### Community 56 - "00 — Introduction"
-Cohesion: 0.29
+Cohesion: 0.25
 Nodes (7): 00 — Introduction, 1. What is an Agent Skill?, 2. What Dr JSkill is, 3. How this differs from Spring Initializr, 4. The mindset shift, 5. What you'll learn, 6. Tested models
 
 ### Community 57 - "GitHub Copilot CLI + Java workshop, using Dr JSkill"
@@ -461,10 +465,6 @@ Nodes (13): File Map, Global Constraints, Placeholder Scan, Self-Review Checklis
 ### Community 105 - "ImageReferencesValidator"
 Cohesion: 0.29
 Nodes (5): ImageReferencesValidator, Override, jakarta.validation.ConstraintValidator, jakarta.validation.ConstraintValidatorContext, java.util.regex.Pattern
-
-### Community 108 - "TaskResponse"
-Cohesion: 0.05
-Nodes (8): TaskRequest, TaskResponse, TaskStatusRequest, TaskStatus, COMPLETED, IN_PROGRESS, TODO, TaskService
 
 ### Community 109 - "4. Endpoints Specification"
 Cohesion: 0.25
@@ -562,22 +562,30 @@ Nodes (3): Nyare MVP Boundaries, Nyare System Overview, Nyare System Workflows &
 Cohesion: 0.40
 Nodes (5): 3.1 400 Bad Request Example (Reference Mismatch), 3.2 400 Bad Request Example (Missing Required Fields), 3.3 404 Not Found Example, 3. Error Handling (RFC 7807 Problem Details), Problem Details Schema
 
+### Community 134 - "4. Endpoints Specification"
+Cohesion: 0.06
+Nodes (34): 1. Overview & Domain Architecture, 2.1 AcademicEvent Schema Overview, 2. Data Models & Schemas, 3.1 400 Bad Request Example (Cross-Entity Course Mismatch), 3.2 400 Bad Request Example (Validation Failure), 3.3 404 Not Found Example, 3. Error Handling (RFC 7807 Problem Details), 4.1 Create Academic Event (+26 more)
+
+### Community 135 - "TaskStatus"
+Cohesion: 0.15
+Nodes (5): TaskStatusRequest, TaskStatus, COMPLETED, IN_PROGRESS, TODO
+
 ## Knowledge Gaps
-- **567 isolated node(s):** `1. Overview & Domain Architecture`, `2.1 Note Schema Overview`, `2.2 NoteContent Object`, `2.3 ImageMetadata Object`, `Problem Details Schema` (+562 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 777 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **38 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **592 isolated node(s):** `1. Overview & Domain Architecture`, `2.1 AcademicEvent Schema Overview`, `Problem Details Schema`, `3.1 400 Bad Request Example (Cross-Entity Course Mismatch)`, `3.2 400 Bad Request Example (Validation Failure)` (+587 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 803 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **41 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Note` connect `Note` to `jakarta.persistence.Entity`, `Task`, `ImageMetadata`, `NoteContent`, `AcademicContext`, `org.springframework.data.jpa.repository.JpaRepository`?**
-  _High betweenness centrality (0.028) - this node is a cross-community bridge._
 - **Why does `NoteContent` connect `NoteContent` to `NoteResponse`, `ImageMetadata`, `ImageReferencesValidator`, `Note`, `NoteContentConverter`, `ValidImageReferences`?**
-  _High betweenness centrality (0.026) - this node is a cross-community bridge._
-- **Why does `Dr JSkill Specification` connect `Dr JSkill Specification` to `Spring Boot Testing Best Practices Guide`, `Azure Deployment Guide`, `Dr JSkill Agent Guidelines`, `Dr JSkill`, `Angular Frontend Integration Guide`, `Docker Guide for Spring Boot`, `Spring Security Best Practices Guide`?**
-  _High betweenness centrality (0.022) - this node is a cross-community bridge._
-- **What connects `1. Overview & Domain Architecture`, `2.1 Note Schema Overview`, `2.2 NoteContent Object` to the rest of the system?**
-  _567 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _High betweenness centrality (0.025) - this node is a cross-community bridge._
+- **Why does `Note` connect `Note` to `jakarta.persistence.Entity`, `Task`, `ImageMetadata`, `NoteContent`, `AcademicContext`, `org.springframework.data.jpa.repository.JpaRepository`?**
+  _High betweenness centrality (0.023) - this node is a cross-community bridge._
+- **Why does `Task` connect `Task` to `jakarta.persistence.Entity`, `TaskStatus`, `Note`, `Course`, `org.springframework.data.jpa.repository.JpaRepository`?**
+  _High betweenness centrality (0.017) - this node is a cross-community bridge._
+- **What connects `1. Overview & Domain Architecture`, `2.1 AcademicEvent Schema Overview`, `Problem Details Schema` to the rest of the system?**
+  _592 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `versions.mjs` be split into smaller, more focused modules?**
   _Cohesion score 0.05707762557077625 - nodes in this community are weakly interconnected._
 - **Should `compress.py` be split into smaller, more focused modules?**
