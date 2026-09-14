@@ -1,0 +1,386 @@
+openapi: 3.1.0
+info:
+  title: Nyare Academic Events API
+  description: |
+    REST API specification for the Nyare Academic Events Management Service.
+    Nyare is a calendar-first academic planning assistant. This service enables creating,
+    querying, updating, and deleting rigid academic events, exams, quizzes, and deadlines
+    linked to courses.
+  version: 1.0.0
+  contact:
+    name: Nyare Development Team
+servers:
+  - url: http://localhost:8080
+    description: Local Development Server
+
+paths:
+  /api/academic-events:
+    get:
+      summary: List academic events
+      description: |
+        Retrieves a list of academic events ordered chronologically by deadline ascending.
+        Supports optional filtering by course ID and upcoming status.
+      operationId: listAcademicEvents
+      tags:
+        - Academic Events
+      parameters:
+        - name: courseId
+          in: query
+          required: false
+          description: Filter events belonging to a specific course ID.
+          schema:
+            type: integer
+            format: int64
+            example: 101
+        - name: upcoming
+          in: query
+          required: false
+          description: Filter events with deadline greater than or equal to current time.
+          schema:
+            type: boolean
+            example: true
+      responses:
+        '200':
+          description: List of academic events matching the filter criteria.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AcademicEventResponse'
+              examples:
+                eventListExample:
+                  summary: Example academic event list
+                  value:
+                    - id: 550e8400-e29b-41d4-a716-446655440000
+                      courseId: 101
+                      noteId: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+                      title: CS101 Midterm Examination
+                      description: Comprehensive exam covering Units 1 through 4.
+                      deadline: '2026-09-25T09:30:00'
+                      createdAt: '2026-09-14T11:20:00Z'
+                    - id: 771e8400-e29b-41d4-a716-446655440111
+                      courseId: 101
+                      noteId: null
+                      title: Problem Set 3 Submission Deadline
+                      description: Final submission window for Graph Theory problem set.
+                      deadline: '2026-09-30T23:59:00'
+                      createdAt: '2026-09-14T11:25:00Z'
+        '400':
+          description: Bad request / Invalid filter parameter format.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+    post:
+      summary: Create an academic event
+      description: Creates a new rigid academic event or deadline associated with a course.
+      operationId: createAcademicEvent
+      tags:
+        - Academic Events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcademicEventRequest'
+            example:
+              courseId: 101
+              noteId: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+              title: CS101 Midterm Examination
+              description: Comprehensive exam covering Units 1 through 4: asymptotic notation, sorting algorithms, and binary trees.
+              deadline: '2026-09-25T09:30:00'
+      responses:
+        '201':
+          description: Academic event successfully created.
+          headers:
+            Location:
+              description: URI of the newly created academic event resource.
+              schema:
+                type: string
+                example: /api/academic-events/550e8400-e29b-41d4-a716-446655440000
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcademicEventResponse'
+              example:
+                id: 550e8400-e29b-41d4-a716-446655440000
+                courseId: 101
+                noteId: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+                title: CS101 Midterm Examination
+                description: Comprehensive exam covering Units 1 through 4: asymptotic notation, sorting algorithms, and binary trees.
+                deadline: '2026-09-25T09:30:00'
+                createdAt: '2026-09-14T11:20:00Z'
+        '400':
+          description: Validation error or Note does not belong to the specified Course.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: about:blank
+                title: Bad Request
+                status: 400
+                detail: Note a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d does not belong to course 101
+                instance: /api/academic-events
+        '404':
+          description: Course not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: about:blank
+                title: Resource Not Found
+                status: 404
+                detail: Course not found with ID: 101
+                instance: /api/academic-events
+
+  /api/academic-events/{id}:
+    get:
+      summary: Get academic event by ID
+      description: Retrieves a single academic event by its unique UUID.
+      operationId: getAcademicEventById
+      tags:
+        - Academic Events
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the academic event.
+          schema:
+            type: string
+            format: uuid
+            example: 550e8400-e29b-41d4-a716-446655440000
+      responses:
+        '200':
+          description: Academic event found and returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcademicEventResponse'
+              example:
+                id: 550e8400-e29b-41d4-a716-446655440000
+                courseId: 101
+                noteId: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+                title: CS101 Midterm Examination
+                description: Comprehensive exam covering Units 1 through 4.
+                deadline: '2026-09-25T09:30:00'
+                createdAt: '2026-09-14T11:20:00Z'
+        '404':
+          description: Academic event not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: about:blank
+                title: Resource Not Found
+                status: 404
+                detail: Academic event not found with ID: 550e8400-e29b-41d4-a716-446655440000
+                instance: /api/academic-events/550e8400-e29b-41d4-a716-446655440000
+
+    put:
+      summary: Update academic event
+      description: Performs a full update of an existing academic event with replacement payload data.
+      operationId: updateAcademicEvent
+      tags:
+        - Academic Events
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the academic event to update.
+          schema:
+            type: string
+            format: uuid
+            example: 550e8400-e29b-41d4-a716-446655440000
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcademicEventRequest'
+            example:
+              courseId: 101
+              noteId: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+              title: CS101 Midterm Examination (Rescheduled)
+              description: Rescheduled to Room 402.
+              deadline: '2026-09-28T10:00:00'
+      responses:
+        '200':
+          description: Academic event successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcademicEventResponse'
+              example:
+                id: 550e8400-e29b-41d4-a716-446655440000
+                courseId: 101
+                noteId: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+                title: CS101 Midterm Examination (Rescheduled)
+                description: Rescheduled to Room 402.
+                deadline: '2026-09-28T10:00:00'
+                createdAt: '2026-09-14T11:20:00Z'
+        '400':
+          description: Validation error or Note does not belong to specified Course.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '404':
+          description: Academic event or Course not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+    delete:
+      summary: Delete academic event
+      description: Permanently deletes an academic event by its UUID.
+      operationId: deleteAcademicEvent
+      tags:
+        - Academic Events
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the academic event to delete.
+          schema:
+            type: string
+            format: uuid
+            example: 550e8400-e29b-41d4-a716-446655440000
+      responses:
+        '204':
+          description: Academic event successfully deleted. No content returned.
+        '404':
+          description: Academic event not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+              example:
+                type: about:blank
+                title: Resource Not Found
+                status: 404
+                detail: Academic event not found with ID: 550e8400-e29b-41d4-a716-446655440000
+                instance: /api/academic-events/550e8400-e29b-41d4-a716-446655440000
+
+components:
+  schemas:
+    AcademicEventRequest:
+      type: object
+      required:
+        - courseId
+        - title
+        - deadline
+      properties:
+        courseId:
+          type: integer
+          format: int64
+          description: ID of the associated Course offering.
+          example: 101
+        noteId:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: Optional UUID of the source Note (must belong to courseId).
+          example: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Title of the academic event or deadline.
+          example: CS101 Midterm Examination
+        description:
+          type:
+            - string
+            - 'null'
+          maxLength: 2048
+          description: Detailed instructions, topics covered, or notes.
+          example: Comprehensive exam covering Units 1 through 4.
+        deadline:
+          type: string
+          format: date-time
+          description: Rigid date and time constraint in ISO-8601 format (YYYY-MM-DDTHH:mm:ss).
+          example: '2026-09-25T09:30:00'
+
+    AcademicEventResponse:
+      type: object
+      required:
+        - id
+        - courseId
+        - title
+        - deadline
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the academic event.
+          example: 550e8400-e29b-41d4-a716-446655440000
+        courseId:
+          type: integer
+          format: int64
+          description: ID of the associated Course.
+          example: 101
+        noteId:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: UUID of the source Note if linked, otherwise null.
+          example: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+        title:
+          type: string
+          description: Title of the academic event.
+          example: CS101 Midterm Examination
+        description:
+          type:
+            - string
+            - 'null'
+          description: Detailed description or notes.
+          example: Comprehensive exam covering Units 1 through 4.
+        deadline:
+          type: string
+          format: date-time
+          description: Rigid date and time constraint in ISO-8601 format.
+          example: '2026-09-25T09:30:00'
+        createdAt:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          description: UTC creation timestamp in ISO-8601 format.
+          example: '2026-09-14T11:20:00Z'
+
+    ProblemDetail:
+      type: object
+      required:
+        - type
+        - title
+        - status
+        - detail
+      properties:
+        type:
+          type: string
+          format: uri
+          description: A URI reference identifying the problem type.
+          example: about:blank
+        title:
+          type: string
+          description: Short, human-readable summary of the problem.
+          example: Resource Not Found
+        status:
+          type: integer
+          description: HTTP status code.
+          example: 404
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence.
+          example: Academic event not found with ID: 550e8400-e29b-41d4-a716-446655440000
+        instance:
+          type: string
+          description: URI identifying the specific request/resource.
+          example: /api/academic-events/550e8400-e29b-41d4-a716-446655440000
