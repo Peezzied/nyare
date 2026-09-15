@@ -1,16 +1,16 @@
-# Graph Report - nyare  (2026-09-14)
+# Graph Report - nyare  (2026-09-15)
 
 ## Corpus Check
-- 191 files · ~175,727 words
+- 204 files · ~238,996 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1476 nodes · 1874 edges · 139 communities (94 shown, 42 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 39 edges (avg confidence: 0.85)
+- 1622 nodes · 2132 edges · 151 communities (98 shown, 45 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 65 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `4a9e7773`
+- Built from commit: `3bb3c9e8`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -99,6 +99,8 @@
 - graphify URL Ingestion
 - Dr. JSkill Doctor Duke Mascot
 - Graphify Workflow
+- jquery-3.7.1.min.js
+- script.js
 - Nyare Favicon Icon
 - Documentation Icon
 - Hero Graphic
@@ -119,7 +121,7 @@
 - ImageMetadata
 - ImageReferencesValidator
 - NoteContent
-- NoteService.java
+- search.js
 - TaskResponse
 - 4. Endpoints Specification
 - AcademicEvent
@@ -131,7 +133,7 @@
 - Foundation 2: Core Domain Invariants
 - Workflow Directory
 - 2. Core Entities & Hierarchy
-- Nyare Conceptual Model & Domain Dictionary
+- temp/README.md
 - 4.5 AI Image Metadata Update
 - 4.1 Create Note
 - 2. Detailed Entity Specifications
@@ -139,11 +141,12 @@
 - NoteContentConverter
 - Candidate Additions for `backend/AGENTS.md`
 - ValidImageReferences
-- 3. Important Domain Distinctions
+- search-page.js
 - Nyare Notes Management Service API Specification
 - 4.2 List Notes by Course
 - 4.4 Full Update of Note
 - 4.6 Delete Note
+- Nyare MVP Boundaries & Non-Goals
 - 3. Error Handling (RFC 7807 Problem Details)
 - 4. Endpoints Specification
 - TaskStatus
@@ -151,6 +154,10 @@
 - TaskService
 - ScheduleResponse
 - ScheduleRepository
+- Nyare System Overview
+- DejaVu fonts v2.37
+- jQuery v3.7.1
+- jQuery UI v1.14.1
 
 ## God Nodes (most connected - your core abstractions)
 1. `Task` - 32 edges
@@ -193,7 +200,7 @@
 - **Graphify Query & Knowledge Retrieval Flow** — _agents_skills_graphify_skill_fast_path_query, _agents_skills_graphify_references_query_query_expansion, _agents_skills_graphify_references_query_traversal_modes, _agents_skills_graphify_references_query_work_memory_reflections [INFERRED 0.95]
 - **Spring Boot 4 Testing Ecosystem Modernization** — _agents_skills_dr_jskill_references_spring_boot_4_mockito_bean, _agents_skills_dr_jskill_references_spring_boot_4_webmvc_test_starter, _agents_skills_dr_jskill_references_test_testcontainers_service_connection, _agents_skills_dr_jskill_references_test_rest_test_client [INFERRED 0.95]
 
-## Communities (139 total, 42 thin omitted)
+## Communities (151 total, 45 thin omitted)
 
 ### Community 0 - "versions.mjs"
 Cohesion: 0.06
@@ -324,7 +331,7 @@ Cohesion: 0.40
 Nodes (5): Bluesky Icon, Discord Icon, GitHub Icon, Social Icon, X Icon
 
 ### Community 33 - "Appendix A — Prompt cheat sheet"
-Cohesion: 0.17
+Cohesion: 0.15
 Nodes (12): Appendix A — Prompt cheat sheet, Controlling the agent, Debugging & diagnostics, Docs & commits, Dr JSkill meta-prompts, Feature additions, Performance, Project creation (+4 more)
 
 ### Community 34 - "Spring Boot Testing Best Practices Guide"
@@ -396,7 +403,7 @@ Cohesion: 0.20
 Nodes (10): 06 — Testing, 1. Why test AI-generated code?, 2. The two test styles, 3. Add unit tests for the controller, 4. Add an integration test with Testcontainers, 5. Run the full suite, 6. Speed up the feedback loop, 7. Run a single test (+2 more)
 
 ### Community 56 - "00 — Introduction"
-Cohesion: 0.29
+Cohesion: 0.25
 Nodes (7): 00 — Introduction, 1. What is an Agent Skill?, 2. What Dr JSkill is, 3. How this differs from Spring Initializr, 4. The mindset shift, 5. What you'll learn, 6. Tested models
 
 ### Community 57 - "GitHub Copilot CLI + Java workshop, using Dr JSkill"
@@ -443,6 +450,14 @@ Nodes (38): 1. Overview & Domain Architecture, 2.1 TaskStatus Enum, 2.2 Task Sch
 Cohesion: 0.40
 Nodes (4): 1. Single-Writer Connection Pool, 2. Schema Management, 3. Open-In-View Disabled, Persistence & SQLite Guidelines
 
+### Community 85 - "jquery-3.7.1.min.js"
+Cohesion: 0.07
+Nodes (40): Ae(), B(), Be(), c(), $e(), ee(), F(), fe() (+32 more)
+
+### Community 86 - "script.js"
+Cohesion: 0.11
+Nodes (20): copySnippet(), copyToClipboard(), createElem(), expand(), getVisibleFilterInput(), handleScroll(), initSectionData(), loadScripts() (+12 more)
+
 ### Community 92 - "Backend Agent Guide (Nyare)"
 Cohesion: 0.33
 Nodes (6): Backend Agent Guide (Nyare), Core Architecture & Invariants, Domain Model (`group.four.nyare.nyare.model`), Knowledge Graph (`graphify`), Tech Stack, Verification & Build Tiering
@@ -466,6 +481,10 @@ Nodes (13): File Map, Global Constraints, Placeholder Scan, Self-Review Checklis
 ### Community 105 - "ImageReferencesValidator"
 Cohesion: 0.29
 Nodes (5): ImageReferencesValidator, Override, jakarta.validation.ConstraintValidator, jakarta.validation.ConstraintValidatorContext, java.util.regex.Pattern
+
+### Community 107 - "search.js"
+Cohesion: 0.14
+Nodes (26): categories, checkUnnamed(), createMatcher(), doSearch(), getClassPrefix(), getPrefix(), searchIndex(), escapeHtml() (+18 more)
 
 ### Community 109 - "4. Endpoints Specification"
 Cohesion: 0.25
@@ -496,16 +515,12 @@ Cohesion: 0.11
 Nodes (17): 1. `Course` is the Root Organizational Anchor, 2. Rigid Constraints vs. Flexible Recommendations, 3. Virtual Study Plan (Zero Persistence Entity), 4. Tri-State Study Plan Recommendations, 5. Append-Only Materialization (No Auto-Reconciliation), 6. Strict Scoping of AI Extraction, 7. Dynamic Holistic Reasoning (No Deterministic Scoring), 8. Preserve Uncertainty (Zero Data Fabrication) (+9 more)
 
 ### Community 117 - "Workflow Directory"
-Cohesion: 0.09
-Nodes (21): Nyare MVP Boundaries, Nyare System Overview, 1. No Micro-Scheduling / Time-Blocking, 2. No Automated Task Reconciliation, Merging, or Splitting, 3. No Deterministic Priority Scoring Engine, 4. No Mandatory Recurring Availability Calendars, 5. No Study Plan Persistence Entity, 6. Strict Uncertainty Preservation (Zero Hallucination) (+13 more)
+Cohesion: 0.20
+Nodes (10): 1. System Overview, 2. Core Academic Model, 3. Journal Processing Workflow, 4. AI Planning Workflow, 5. Study Plan and Calendar Relationship, 6. Information and Planning Boundaries, 7. Handling Missing Information, 8. User Interface and Navigation (+2 more)
 
 ### Community 118 - "2. Core Entities & Hierarchy"
-Cohesion: 0.20
-Nodes (10): 2. Core Entities & Hierarchy, `Academic Context`, `Academic Event`, `Academic Term`, `Course`, Entity Definitions, `Journal Entry` (`Note`), `Schedule` (+2 more)
-
-### Community 119 - "Nyare Conceptual Model & Domain Dictionary"
-Cohesion: 0.40
-Nodes (3): 1. Core Concept & Pipeline, 4. Preserving Uncertainty & Incomplete Information, Nyare Conceptual Model & Domain Dictionary
+Cohesion: 0.09
+Nodes (22): 1. Academic Event vs. Deadline, 1. Core Concept & Pipeline, 2. Core Entities & Hierarchy, 2. Task vs. Academic Event, 3. Academic Context vs. Task, 3. Important Domain Distinctions, 4. Academic Context vs. Academic Event, 4. Preserving Uncertainty & Incomplete Information (+14 more)
 
 ### Community 120 - "4.5 AI Image Metadata Update"
 Cohesion: 0.25
@@ -520,7 +535,7 @@ Cohesion: 0.22
 Nodes (9): 1. Entity Overview & Persistence Strategy, 2. Detailed Entity Specifications, 3. The Virtual Study Plan DTO (Non-Persisted), A. `Course` (`courses`), B. `AcademicEvent` (`academic_events`), Backend Domain Model & JPA Mapping Draft, C. `Task` (`tasks`), D. `AcademicContext` (`academic_contexts`) (+1 more)
 
 ### Community 123 - "AI Processing & Planning API Workflows Draft"
-Cohesion: 0.22
+Cohesion: 0.25
 Nodes (8): 1. AI Processing Workflow (`POST /api/ai/process-today`), 2. AI Planning Workflow (`POST /api/ai/plan`), 3. The Student Feedback & Reconsideration Loop, AI Processing & Planning API Workflows Draft, Overview, Overview, Proposed Request / Response Contract, Proposed Request / Response Contract
 
 ### Community 124 - "NoteContentConverter"
@@ -528,16 +543,16 @@ Cohesion: 0.39
 Nodes (5): Override, NoteContentConverter, jakarta.persistence.AttributeConverter, jakarta.persistence.Converter, tools.jackson.databind.ObjectMapper
 
 ### Community 125 - "Candidate Additions for `backend/AGENTS.md`"
-Cohesion: 0.22
-Nodes (7): 1. Domain Modeling Rules, 2. Service Layer & AI Processing Rules, 3. Verification & Conventions, Backend Agent Guide Candidate Updates Draft, Candidate Additions for `backend/AGENTS.md`, Contents, Temporary Architectural Notes (Backend & AI Architecture Drafts)
+Cohesion: 0.33
+Nodes (5): 1. Domain Modeling Rules, 2. Service Layer & AI Processing Rules, 3. Verification & Conventions, Backend Agent Guide Candidate Updates Draft, Candidate Additions for `backend/AGENTS.md`
 
 ### Community 126 - "ValidImageReferences"
 Cohesion: 0.43
 Nodes (6): ValidImageReferences, jakarta.validation.Constraint, jakarta.validation.Payload, java.lang.annotation.Documented, java.lang.annotation.Retention, java.lang.annotation.Target
 
-### Community 127 - "3. Important Domain Distinctions"
-Cohesion: 0.22
-Nodes (9): 1. Academic Event vs. Deadline, 2. Task vs. Academic Event, 3. Academic Context vs. Task, 3. Important Domain Distinctions, 4. Academic Context vs. Academic Event, 5. Recommended Date vs. Deadline, 6. Extractability vs. Plannability, 7. Source Information vs. Extracted Information (Materialization) (+1 more)
+### Community 127 - "search-page.js"
+Cohesion: 0.24
+Nodes (10): doPageSearch(), renderItem(), renderResults(), renderResult(), renderTable(), schedulePageSearch(), select(), setSearchUrl() (+2 more)
 
 ### Community 128 - "Nyare Notes Management Service API Specification"
 Cohesion: 0.29
@@ -555,6 +570,10 @@ Nodes (7): `200 OK`, `400 Bad Request`, `404 Not Found`, 4.4 Full Update of Note
 Cohesion: 0.33
 Nodes (6): `204 No Content`, `404 Not Found`, 4.6 Delete Note, Example Request, Path Parameters, Responses
 
+### Community 132 - "Nyare MVP Boundaries & Non-Goals"
+Cohesion: 0.25
+Nodes (8): 1. No Micro-Scheduling / Time-Blocking, 2. No Automated Task Reconciliation, Merging, or Splitting, 3. No Deterministic Priority Scoring Engine, 4. No Mandatory Recurring Availability Calendars, 5. No Study Plan Persistence Entity, 6. Strict Uncertainty Preservation (Zero Hallucination), 7. Strict Processing Scope (Today's Notes Only), Nyare MVP Boundaries & Non-Goals
+
 ### Community 133 - "3. Error Handling (RFC 7807 Problem Details)"
 Cohesion: 0.40
 Nodes (5): 3.1 400 Bad Request Example (Reference Mismatch), 3.2 400 Bad Request Example (Missing Required Fields), 3.3 404 Not Found Example, 3. Error Handling (RFC 7807 Problem Details), Problem Details Schema
@@ -569,24 +588,28 @@ Nodes (5): TaskStatusRequest, TaskStatus, COMPLETED, IN_PROGRESS, TODO
 
 ### Community 138 - "ScheduleResponse"
 Cohesion: 0.07
-Nodes (3): ScheduleRequest, ScheduleResponse, ScheduleService
+Nodes (4): ScheduleRequest, ScheduleResponse, ResourceNotFoundException, ScheduleService
+
+### Community 140 - "Nyare System Overview"
+Cohesion: 0.40
+Nodes (3): Nyare MVP Boundaries, Nyare System Overview, Nyare System Workflows & Architecture Diagrams
 
 ## Knowledge Gaps
-- **619 isolated node(s):** `{ flags, positional }`, `outputDir`, `{ flags, positional }`, `outputDir`, `DEFAULT_BOOT_FALLBACK` (+614 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 856 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **42 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **626 isolated node(s):** `DejaVu License`, `jQuery License`, `jQuery UI License`, `messages`, `categories` (+621 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 902 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **45 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `NoteContent` connect `NoteContent` to `NoteResponse`, `ImageMetadata`, `ImageReferencesValidator`, `Note`, `NoteContentConverter`, `ValidImageReferences`?**
-  _High betweenness centrality (0.030) - this node is a cross-community bridge._
+  _High betweenness centrality (0.023) - this node is a cross-community bridge._
 - **Why does `Note` connect `Note` to `jakarta.persistence.Entity`, `Task`, `ImageMetadata`, `NoteContent`, `AcademicContext`, `org.springframework.data.jpa.repository.JpaRepository`?**
-  _High betweenness centrality (0.027) - this node is a cross-community bridge._
-- **Why does `Task` connect `Task` to `jakarta.persistence.Entity`, `TaskStatus`, `Note`, `Course`, `org.springframework.data.jpa.repository.JpaRepository`?**
   _High betweenness centrality (0.021) - this node is a cross-community bridge._
-- **What connects `{ flags, positional }`, `outputDir`, `{ flags, positional }` to the rest of the system?**
-  _619 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Why does `TaskStatus` connect `TaskStatus` to `jakarta.persistence.Entity`, `Task`, `TaskRequest`, `TaskService`, `TaskResponse`, `org.springframework.data.jpa.repository.JpaRepository`?**
+  _High betweenness centrality (0.015) - this node is a cross-community bridge._
+- **What connects `DejaVu License`, `jQuery License`, `jQuery UI License` to the rest of the system?**
+  _626 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `versions.mjs` be split into smaller, more focused modules?**
   _Cohesion score 0.05707762557077625 - nodes in this community are weakly interconnected._
 - **Should `compress.py` be split into smaller, more focused modules?**

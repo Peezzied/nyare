@@ -929,18 +929,6 @@
     "ast_hash": "85572e6668b743937862cdb2eb31604e",
     "semantic_hash": ""
   },
-  "docs/openapi.yaml": {
-    "mtime": 1789300542.4998546,
-    "seen": 1789302032.5991623,
-    "ast_hash": "40a76386fb3eadf9ae89d216219bbda5",
-    "semantic_hash": ""
-  },
-  "docs/tasks-api.md": {
-    "mtime": 1789300507.6694252,
-    "seen": 1789302032.5991662,
-    "ast_hash": "910df0563648987ccf231f10799399a6",
-    "semantic_hash": ""
-  },
   "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java": {
     "mtime": 1789308394.432639,
     "seen": 1789309047.579746,
@@ -1026,9 +1014,9 @@
     "semantic_hash": ""
   },
   "backend/docs/conventions.md": {
-    "mtime": 1789378726.1843512,
-    "seen": 1789378866.904005,
-    "ast_hash": "b12e7526c2f47357df6eeaea8572b163",
+    "mtime": 1789409356.5909526,
+    "seen": 1789410131.1945891,
+    "ast_hash": "dd520fb3f1b8bad1b5d5347726443bea",
     "semantic_hash": ""
   },
   ".agents/skills/architect-craft/SKILL.md": {
@@ -1158,15 +1146,15 @@
     "semantic_hash": ""
   },
   "backend/docs/conventions/services-and-tx.md": {
-    "mtime": 1789378706.4591973,
-    "seen": 1789378866.904032,
-    "ast_hash": "e28beb15781d1efa4098ea4235c4a14b",
+    "mtime": 1789409717.4726527,
+    "seen": 1789410131.1946,
+    "ast_hash": "449ac117e14876779225a2f984462d44",
     "semantic_hash": ""
   },
   "backend/docs/conventions/testing-standards.md": {
-    "mtime": 1789378722.992787,
-    "seen": 1789378866.904035,
-    "ast_hash": "948c1f4be5656f1c2cc87aa549cd8e72",
+    "mtime": 1789409720.1889117,
+    "seen": 1789410131.1946015,
+    "ast_hash": "3682e3d4ee48425cb03c70d2528137e3",
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/dto/ImageMetadataUpdateRequest.java": {
@@ -1839,6 +1827,12 @@
     "mtime": 1789407325.9585268,
     "seen": 1789407482.389077,
     "ast_hash": "6cffaa1ea4903bdcc90b284caaca3fa7",
+    "semantic_hash": ""
+  },
+  ".agents/skills/tldr-nyare/SKILL.md": {
+    "mtime": 1789410026.790925,
+    "seen": 1789410131.1945615,
+    "ast_hash": "4e78c19e9f50151f457ff6e6761d9ee4",
     "semantic_hash": ""
   }
 }
