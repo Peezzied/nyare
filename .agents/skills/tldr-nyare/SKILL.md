@@ -1,36 +1,36 @@
 ---
 name: tldr-nyare
 description: >
-  Aggregates everything about Nyare (domain model, system workflows, architecture,
-  conventions, MVP boundaries) and core project skills (dr-jskill, caveman-commit,
-  ponytail, intellij-mcp, graphify). Answers questions in one-shot Caveman style
-  using fast graphify lookups without persisting caveman mode.
+  Provides information about Nyare domain models, backend architecture,
+  conventions, workflows, MVP boundaries, and skills. Answers questions in
+  Caveman style with fast graphify lookups without persisting caveman mode.
 ---
 
-# TL;DR Nyare — Knowledge Base & Fast Lookup
+# TL;DR Nyare — Knowledge Base and Fast Lookup
 
-Use this skill to answer questions about Nyare's domain model, backend architecture, conventions, workflows, MVP boundaries, and companion skills.
+Use this skill to answer questions about the Nyare domain model, backend architecture, conventions, workflows, MVP boundaries, and companion skills.
 
 ---
 
-## 1. Execution & Response Rules
+## 1. Execution and Response Rules
 
-1. **Fast Context Lookup with Graphify**:
-   - First check `graphify-out/` knowledge graph using `graphify query "<question>"` or `graphify explain "<concept>"` (executed with `BypassSandbox: true` and `Cwd` set to backend or project root).
-   - Consult relevant docs under `docs/` and `backend/docs/conventions/` for authoritative details.
+1. **Context Lookup with Graphify**:
+   - Query the `graphify-out/` knowledge graph with `graphify query "<question>"` or `graphify explain "<concept>"`.
+   - Set `BypassSandbox: true` and set `Cwd` to the backend or project root directory.
+   - Read documentation in `docs/` and `backend/docs/conventions/` for authoritative details.
 2. **One-Shot Caveman Response**:
-   - Compose the entire response in **Caveman (Full)** style:
-     - Drop articles (a/an/the), pleasantries, hedging, and filler words.
-     - Keep fragments, short sentences (≤20 words), active voice, present tense.
-     - Retain exact technical terms, entity names, file paths, and clickable markdown links.
-     - Retain exact code blocks, schemas, and HTTP endpoints.
+   - Write the entire response in **Caveman (Full)** style:
+     - Remove articles (a, an, the), pleasantries, hedges, and filler words.
+     - Use sentence fragments, short sentences (≤20 words), active voice, and present tense.
+     - Keep exact technical terms, entity names, file paths, and markdown links.
+     - Keep exact code blocks, schemas, and HTTP endpoints.
 3. **No State Persistence**:
-   - **CRITICAL**: Caveman state applies **only to the immediate response** generated for `tldr-nyare`.
-   - **Do NOT persist caveman mode** across subsequent user turns unless the user explicitly requested global caveman mode (`/caveman`).
+   - **CRITICAL**: Apply Caveman style **only to the immediate response** for `tldr-nyare`.
+   - **Do not keep Caveman mode active** for subsequent turns unless the user requests `/caveman`.
 
 ---
 
-## 2. Nyare Core Architecture & Domain Summary
+## 2. Nyare Core Architecture and Domain Summary
 
 ### Core Flow
 ```text
@@ -41,86 +41,86 @@ Course Schedule → Course-linked Journal (JSON) → AI Processing (Today's Note
 ```
 
 ### Domain Entities ([`docs/conceptual-model.md`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/docs/conceptual-model.md))
-- **`Course`**: Root organizational container. Every note, task, event, and context item belongs to exactly one course.
+- **`Course`**: Root organizational container. Every note, task, event, and context item belongs to one course.
 - **`Schedule`**: Recurring weekly class meeting times (`dayOfWeek`, `startTime`, `endTime`).
-- **`Note` (Journal Entry)**: Raw student-written notes in JSON format. **Immutable source of truth**.
-- **`Task`**: Actionable work item (`TODO`, `IN_PROGRESS`, `COMPLETED`), optional estimated duration, flexible recommended date.
+- **`Note` (Journal Entry)**: Raw student notes in JSON format. This is the **immutable source of truth**.
+- **`Task`**: Actionable work item (`TODO`, `IN_PROGRESS`, `COMPLETED`), optional estimated duration, and flexible recommended date.
 - **`AcademicEvent`**: Rigid time constraint or deadline (`Exam`, `Quiz`, `Presentation`, `Class Activity`, `Deadline`).
-- **`AcademicContext`**: Temporal descriptive background facts (syllabus scope, pacing, progress).
-- **`StudyPlan`**: Virtual presentation-layer construct; **NEVER persisted in database**.
+- **`AcademicContext`**: Temporal background facts such as syllabus scope, pacing, and progress.
+- **`StudyPlan`**: Virtual presentation construct. The database **never stores this construct**.
   - **Tri-State**: `Scheduled` (dated), `Flexible / Later` (undated backlog), `Needs Context` (uncertain).
 
-### Key Domain Invariants & MVP Boundaries ([`docs/mvp-boundaries.md`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/docs/mvp-boundaries.md))
-- **No Automatic Reconciliation**: Never automatically mutate, merge, split, or deduplicate existing tasks from new notes.
-- **Preserve Uncertainty**: Never invent deadlines, durations, or priority scores. Unknown stays null/unassigned.
-- **Append-Only Materialization**: AI extracts fresh records without rewriting history.
-- **Virtual Plan**: Study Plan calculated dynamically; no database table.
-- **High-Level Planning**: Day-level task recommendations; no granular hourly time-blocking.
+### Key Domain Invariants and MVP Boundaries ([`docs/mvp-boundaries.md`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/docs/mvp-boundaries.md))
+- **No Automatic Reconciliation**: Never mutate, merge, split, or deduplicate existing tasks from new notes.
+- **Preserve Uncertainty**: Never create estimated deadlines, durations, or priority scores. Leave unknown fields empty.
+- **Append-Only Materialization**: AI extracts new records without modifying past records.
+- **Virtual Plan**: The system generates the study plan dynamically. No database table exists for study plans.
+- **High-Level Planning**: Recommend tasks at the day level. Do not generate hourly time-blocks.
 
 ---
 
 ## 3. Backend Conventions Summary ([`backend/docs/conventions/`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/backend/docs/conventions.md))
 
-- **Stack**: Java 25, Spring Boot 4.1.1 (`webmvc`, `data-jpa`, `validation`), SQLite (`nyare.db`), Gradle Kotlin DSL.
+- **Stack**: Java 25, Spring Boot 4.1.1 (`webmvc`, `data-jpa`, `validation`), SQLite (`nyare.db`), and Gradle Kotlin DSL.
 - **Layer Isolation**:
   - `controller` $\rightarrow$ calls `service` interface $\rightarrow$ maps entities to `dto` $\rightarrow$ `repository` $\rightarrow$ SQLite.
-  - Controllers never touch repositories; Entities never escape service layer (DTOs only).
+  - Controllers never access repositories directly. Entities never leave the service layer (DTOs only).
 - **Dependency Injection**:
-  - **Constructor Injection**: All dependencies declared as `private final` fields and injected via explicit constructor.
-  - **No Field Injection**: Avoid `@Autowired` on fields to allow direct unit testing without Spring overhead.
+  - **Constructor Injection**: Declare all dependencies as `private final` fields. Inject dependencies through an explicit constructor.
+  - **No Field Injection**: Do not use `@Autowired` on fields. This rule allows direct unit testing without Spring overhead.
 - **Transactions**:
-  - Class-level `@Transactional(readOnly = true)` on service implementations.
-  - Mutating methods (`create`, `update`, `delete`) explicitly marked `@Transactional`.
+  - Annotate service classes with `@Transactional(readOnly = true)`.
+  - Annotate mutating methods (`create`, `update`, `delete`) with `@Transactional`.
 - **Error Handling**:
-  - Canonical exceptions only: `ResourceNotFoundException` (404), `BadRequestException` (400).
-  - RFC 7807 `ProblemDetail` generated by `GlobalExceptionHandler`.
+  - Use canonical exceptions only: `ResourceNotFoundException` (404) and `BadRequestException` (400).
+  - `GlobalExceptionHandler` returns `ProblemDetail` responses (RFC 7807).
 - **Testing Standards ([`backend/docs/conventions/testing-standards.md`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/backend/docs/conventions/testing-standards.md))**:
-  - **Service Tests**: Pure unit tests with JUnit 5 + Mockito (`@ExtendWith(MockitoExtension.class)`). Dependencies mocked with `@Mock`, injected via `@InjectMocks` or constructor.
-  - **Controller Tests**: `@WebMvcTest` + `MockMvc`. Service dependencies mocked using `@MockitoBean` on **service interfaces**.
-  - **AssertJ & Given-When-Then**: `assertThat(...)` with `// given`, `// when`, `// then`.
+  - **Service Tests**: Write unit tests with JUnit 5 and Mockito (`@ExtendWith(MockitoExtension.class)`). Mock dependencies with `@Mock`. Inject them through constructors or `@InjectMocks`.
+  - **Controller Tests**: Write controller tests with `@WebMvcTest` and `MockMvc`. Mock service interfaces with `@MockitoBean`.
+  - **AssertJ and Given-When-Then**: Structure tests with `// given`, `// when`, and `// then` blocks. Use `assertThat(...)` assertions.
 
 ---
 
-## 4. Basic Skills & Tools Guide
+## 4. Basic Skills and Tools Guide
 
 ### 1. `dr-jskill` ([`dr-jskill/SKILL.md`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/.agents/skills/dr-jskill/SKILL.md))
-- **Role**: Java & Spring Boot enterprise craftsmanship.
-- **Usage**: Clean layered design, standard DTO validation, RESTful API conventions, JPA mapping, production-grade Spring patterns.
+- **Role**: Java and Spring Boot architecture practices.
+- **Usage**: Clean layered design, standard DTO validation, REST API conventions, JPA mapping, and Spring patterns.
 
 ### 2. `caveman-commit` ([`caveman-commit/SKILL.md`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/.agents/skills/caveman-commit/SKILL.md))
-- **Role**: Terse, intent-only Conventional Commits (`feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `chore`).
-- **Usage**: Imperative mood, ≤50-72 chars subject, explain *why* over *what*, zero AI attribution fluff.
+- **Role**: Concise, intent-only Conventional Commits (`feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `chore`).
+- **Usage**: Use imperative mood, limit subjects to 50-72 characters, explain *why* over *what*, and omit AI attribution text.
 
 ### 3. `ponytail` ([`ponytail/SKILL.md`](file:///C:/Users/karol/.gemini/config/plugins/ponytail/skills/ponytail/SKILL.md))
-- **Role**: Ruthless minimalism and anti-over-engineering.
-- **Usage**: YAGNI, standard library over external dependencies, native platform features, smallest working code diff.
+- **Role**: Code minimalism and prevention of over-engineering.
+- **Usage**: Follow YAGNI, choose standard libraries over dependencies, use native platform features, and write minimal code changes.
 
 ### 4. `intellij-mcp` ([`.agents/rules/intellij-mcp.md`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/backend/.agents/rules/intellij-mcp.md))
-- **Role**: Primary Tier-1 code intelligence engine.
-- **Usage**: Symbol resolution, find usages, diagnostics, in-memory compilation. Use before any heavy CLI builds.
+- **Role**: Primary tool for code intelligence.
+- **Usage**: Resolve symbols, find usages, inspect diagnostics, and compile code in memory before running CLI builds.
 
 ### 5. `graphify` ([`graphify/SKILL.md`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/.agents/skills/graphify/SKILL.md))
 - **Role**: Codebase knowledge graph in `graphify-out/`.
-- **Usage**: Query relationships (`graphify query "..."`), explain concepts (`graphify explain "..."`), update graph (`graphify update .`) with `BypassSandbox: true`.
+- **Usage**: Query relationships (`graphify query "..."`), explain concepts (`graphify explain "..."`), and update graph (`graphify update .`) with `BypassSandbox: true`.
 
 ---
 
 ## 5. Output Format Example for `tldr-nyare`
 
-When answering user questions under this skill, produce responses structured like this:
+When answering user questions with this skill, format responses like this:
 
 ```markdown
 Nyare calendar-first academic planning assistant.
 
 Core pipeline:
-- Class schedule anchor calendar navigation.
-- Student write course-linked journal note (`Note` = raw JSON, immutable source of truth).
-- AI extract `Task`, `AcademicEvent`, `AcademicContext` from today notes.
-- Virtual `StudyPlan` generated dynamically (tri-state: scheduled, flexible, needs context). Never persisted DB table.
+- Class schedule anchors calendar navigation.
+- Student writes course-linked journal note (`Note` = raw JSON, immutable source of truth).
+- AI extracts `Task`, `AcademicEvent`, and `AcademicContext` from today's notes.
+- System dynamically generates virtual `StudyPlan` (tri-state: scheduled, flexible, needs context). Database does not persist study plans.
 
 Key backend rules:
 - Java 25, Spring Boot 4.1.1, SQLite.
 - Constructor injection with `private final` fields. No `@Autowired` field injection.
-- Controller mock service interface via `@MockitoBean`. Unit test use `@ExtendWith(MockitoExtension.class)`.
+- Controller tests mock service interfaces with `@MockitoBean`. Unit tests use `@ExtendWith(MockitoExtension.class)`.
 - Canonical exceptions only: `ResourceNotFoundException` (404), `BadRequestException` (400).
 ```
