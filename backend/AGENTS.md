@@ -38,6 +38,9 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 3. **Conventions Directory**:
    - Read focused modular guides under [`docs/conventions/`](docs/conventions.md) before implementing changes:
      - [Architecture](docs/conventions/architecture.md) · [Entities](docs/conventions/entities.md) · [DTOs](docs/conventions/dtos-and-validation.md) · [Services](docs/conventions/services-and-tx.md) · [Exceptions](docs/conventions/exceptions.md) · [REST API](docs/conventions/controllers-and-rest.md) · [Persistence](docs/conventions/persistence-sqlite.md) · [Testing](docs/conventions/testing-standards.md)
+4. **Skills & MCP Documentation**:
+   - Always consult the `dr-jskill` skill before designing or refactoring backend features.
+   - Query `spring-docs` MCP tools for official Spring APIs, reference docs, and configurations.
 
 ---
 
