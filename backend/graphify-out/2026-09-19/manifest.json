@@ -917,10 +917,16 @@
     "ast_hash": "694bfd24b708ee683e27ae7a1bc13002",
     "semantic_hash": ""
   },
-  "src/main/java/group/four/nyare/nyare/ai/advisor/PromptAroundXmlAdvisor.java": {
-    "mtime": 1789826984.708087,
-    "seen": 1789827240.0332103,
-    "ast_hash": "c65620cc9582bed903ca94215967e0cc",
+  "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java": {
+    "mtime": 1789828569.517937,
+    "seen": 1789828922.1694603,
+    "ast_hash": "c261720abc8c2abc52e96c44803ae6a3",
+    "semantic_hash": ""
+  },
+  "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java": {
+    "mtime": 1789828895.38863,
+    "seen": 1789828922.1695144,
+    "ast_hash": "6c448d2b7c6ee605f8d5291109075f4c",
     "semantic_hash": ""
   }
 }
