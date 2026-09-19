@@ -6,8 +6,8 @@
     "semantic_hash": "a43be8432bac3ffd05b3769aa42fe996"
   },
   "src/main/java/group/four/nyare/nyare/NyareApplication.java": {
-    "mtime": 1789288349.656134,
-    "seen": 1789379696.003277,
+    "mtime": 1789807639.2011015,
+    "seen": 1789809431.2995563,
     "ast_hash": "a212f1792d3651be469da0506d5a7010",
     "semantic_hash": "a212f1792d3651be469da0506d5a7010"
   },
@@ -18,10 +18,10 @@
     "semantic_hash": "4ccb1d1d570ce8b82a10b6e4ba4702ca"
   },
   ".agents/mcp_config.json.example.json": {
-    "mtime": 1789287855.5516546,
-    "seen": 1789379696.0032647,
-    "ast_hash": "66cfec128306226510b8fa62fa3c82d1",
-    "semantic_hash": "66cfec128306226510b8fa62fa3c82d1"
+    "mtime": 1789834372.785298,
+    "seen": 1789834405.9908578,
+    "ast_hash": "a3ef672679c3773eb6f7fca1e3c78d46",
+    "semantic_hash": ""
   },
   ".agents/rules/intellij-mcp.md": {
     "mtime": 1789280620.791634,
@@ -36,17 +36,10 @@
     "semantic_hash": "3dda2c113eec4d669a7da472ff73d723"
   },
   "AGENTS.md": {
-<<<<<<< HEAD
-    "mtime": 1789378730.6748765,
-    "seen": 1789379696.0033119,
-    "ast_hash": "f5713ac78e8374d444e7e56ab5d4c209",
-    "semantic_hash": "f5713ac78e8374d444e7e56ab5d4c209"
-=======
-    "mtime": 1789838332.7569146,
-    "seen": 1789838340.3301067,
-    "ast_hash": "23b3b54a7ca297ea9832b1d76596c9a3",
+    "mtime": 1789832313.0730271,
+    "seen": 1789833383.0386295,
+    "ast_hash": "1628d847185fb17fe7fcbc247e83a535",
     "semantic_hash": ""
->>>>>>> 42e0e94 (docs(conventions): add deprecation policy)
   },
   "docs/superpowers/plans/2026-09-13-task-manager-service.md": {
     "mtime": 1789297414.172243,
@@ -79,16 +72,16 @@
     "semantic_hash": "f8efd1875b3cb750ceaef1079bef6e82"
   },
   "src/main/java/group/four/nyare/nyare/model/AcademicContext.java": {
-    "mtime": 1789308385.5862758,
-    "seen": 1789379696.003291,
-    "ast_hash": "d1d1346aafde724b6a7615d362ca0043",
-    "semantic_hash": "d1d1346aafde724b6a7615d362ca0043"
+    "mtime": 1789836608.7783506,
+    "seen": 1789836662.4804738,
+    "ast_hash": "ff395014fc5e38bb8eb2b2fac89f21f9",
+    "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/model/AcademicEvent.java": {
-    "mtime": 1789376963.7345874,
-    "seen": 1789379696.0032923,
-    "ast_hash": "f022a94e693afbf69f2c8fb5534587f1",
-    "semantic_hash": "f022a94e693afbf69f2c8fb5534587f1"
+    "mtime": 1789836602.1147015,
+    "seen": 1789836662.4804769,
+    "ast_hash": "e25414dc2b435892ad6e6e2acdc5a782",
+    "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/model/Course.java": {
     "mtime": 1789308362.2980895,
@@ -97,16 +90,16 @@
     "semantic_hash": "b6f8d6bbc27460a1a0bda16ecaadafe4"
   },
   "src/main/java/group/four/nyare/nyare/model/Note.java": {
-    "mtime": 1789382213.9643173,
-    "seen": 1789384775.60975,
-    "ast_hash": "fcca81104b3ac426b985bfa2c1e89917",
+    "mtime": 1789836594.425228,
+    "seen": 1789836662.4804847,
+    "ast_hash": "ba1077acc1fbcfeac62ae72054e70106",
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/model/Schedule.java": {
-    "mtime": 1789308390.4731493,
-    "seen": 1789379696.0032961,
-    "ast_hash": "ca24fc0ba825b41500f285370ae40c15",
-    "semantic_hash": "ca24fc0ba825b41500f285370ae40c15"
+    "mtime": 1789836614.8668182,
+    "seen": 1789836662.4804878,
+    "ast_hash": "3985a4cbee61ddf55a19ffa04584539e",
+    "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/model/Task.java": {
     "mtime": 1789392700.3472,
@@ -139,9 +132,9 @@
     "semantic_hash": "48babd29e7e72bfb304754b938e9d522"
   },
   "docs/conventions.md": {
-    "mtime": 1789838325.3938003,
-    "seen": 1789838340.3301191,
-    "ast_hash": "13b754f08155ce03d850abe251235232",
+    "mtime": 1789409356.5909526,
+    "seen": 1789409366.7879457,
+    "ast_hash": "dd520fb3f1b8bad1b5d5347726443bea",
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java": {
@@ -175,10 +168,10 @@
     "semantic_hash": "441e514e7824b98c3891e2d4523b659b"
   },
   ".agents/skills/architect-craft/SKILL.md": {
-    "mtime": 1789310864.6407578,
-    "seen": 1789379696.0033092,
-    "ast_hash": "9bfc044e525e38cd53b5b8adef74e9d6",
-    "semantic_hash": "9bfc044e525e38cd53b5b8adef74e9d6"
+    "mtime": 1789833484.1506495,
+    "seen": 1789833681.0897117,
+    "ast_hash": "59cfd3ac477eb9e3d22db02d992fe138",
+    "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/controller/GlobalExceptionHandler.java": {
     "mtime": 1789378327.2463095,
@@ -187,10 +180,10 @@
     "semantic_hash": "466d1c2ebbddb6e1189b9652f5f383ab"
   },
   "docs/conventions/architecture.md": {
-    "mtime": 1789838312.4158657,
-    "seen": 1789838340.33012,
-    "ast_hash": "79a8ad6dcb321e05f1fbd03484fc7155",
-    "semantic_hash": ""
+    "mtime": 1789378688.914137,
+    "seen": 1789379696.0033174,
+    "ast_hash": "b2e507c4e2a0d59ac2685658f4455194",
+    "semantic_hash": "b2e507c4e2a0d59ac2685658f4455194"
   },
   "docs/conventions/controllers-and-rest.md": {
     "mtime": 1789378715.4088044,
@@ -379,9 +372,9 @@
     "semantic_hash": ""
   },
   "build.gradle": {
-    "mtime": 1789407237.367172,
-    "seen": 1789409366.7878537,
-    "ast_hash": "c14ca4dddd6a1936b32291b112457f42",
+    "mtime": 1789837199.4891443,
+    "seen": 1789837408.312098,
+    "ast_hash": "f81e0358aa02701450ec30002d2fd902",
     "semantic_hash": ""
   },
   "settings.gradle": {
@@ -905,8 +898,6 @@
     "seen": 1789409366.7880402,
     "ast_hash": "6cffaa1ea4903bdcc90b284caaca3fa7",
     "semantic_hash": ""
-<<<<<<< HEAD
-=======
   },
   "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java": {
     "mtime": 1789832336.5242393,
@@ -951,9 +942,9 @@
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java": {
-    "mtime": 1789838158.90722,
-    "seen": 1789838340.3300343,
-    "ast_hash": "2c27cc8e6aa921301e3470dd4e72436a",
+    "mtime": 1789837864.093102,
+    "seen": 1789837896.823617,
+    "ast_hash": "c037b5edb0cf8fabb410cd69b29db105",
     "semantic_hash": ""
   },
   "src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java": {
@@ -961,6 +952,5 @@
     "seen": 1789837896.8236818,
     "ast_hash": "f448cac2d7eba4c4a104f2563b2d7edf",
     "semantic_hash": ""
->>>>>>> 42e0e94 (docs(conventions): add deprecation policy)
   }
 }
