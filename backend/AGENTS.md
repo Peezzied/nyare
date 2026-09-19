@@ -41,6 +41,9 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 4. **Skills & MCP Documentation**:
    - Always consult the `dr-jskill` skill before designing or refactoring backend features.
    - Query `spring-docs` MCP tools for official Spring APIs, reference docs, and configurations.
+5. **Modern Standards & Deprecation**:
+   - Avoid deprecated classes, methods, annotations, and APIs.
+   - Use modern features supported by Java 25 and Spring Boot.
 
 ---
 
