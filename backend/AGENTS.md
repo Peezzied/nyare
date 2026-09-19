@@ -6,8 +6,9 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 
 - **Runtime**: Java 25
 - **Framework**: Spring Boot 4.1.1 (`webmvc`, `data-jpa`, `validation`)
+- **AI Integration**: Spring AI 2.0.0 (`spring-ai-starter-model-google-genai`)
 - **Persistence**: JPA / Hibernate with SQLite
-- **Build Tool**: Gradle (Kotlin DSL `build.gradle.kts`)
+- **Build Tool**: Gradle (`build.gradle`)
 - **Code Intelligence**: graphify (`graphify-out/`)
 
 ---
@@ -37,12 +38,16 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 3. **Conventions Directory**:
    - Read focused modular guides under [`docs/conventions/`](docs/conventions.md) before implementing changes:
      - [Architecture](docs/conventions/architecture.md) · [Entities](docs/conventions/entities.md) · [DTOs](docs/conventions/dtos-and-validation.md) · [Services](docs/conventions/services-and-tx.md) · [Exceptions](docs/conventions/exceptions.md) · [REST API](docs/conventions/controllers-and-rest.md) · [Persistence](docs/conventions/persistence-sqlite.md) · [Testing](docs/conventions/testing-standards.md)
+4. **Skills & MCP Documentation**:
+   - Always consult the `dr-jskill` skill before designing or refactoring backend features.
+   - Query `spring-docs` MCP tools for official Spring APIs, reference docs, and configurations.
 
 ---
 
 ## Knowledge Graph (`graphify`)
 
 `graphify` tracks codebase topology in `graphify-out/`.
+- Prioritize using graphify for project lookup or searching.
 - Query before navigating: `graphify query "<question>"` or `graphify explain "<concept>"`.
 - Update after edits: `graphify update .` (run outside sandbox with `BypassSandbox: true` and `Cwd` set to backend root).
 
