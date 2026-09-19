@@ -6,6 +6,7 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 
 - **Runtime**: Java 25
 - **Framework**: Spring Boot 4.1.1 (`webmvc`, `data-jpa`, `validation`)
+- **AI Integration**: Spring AI 2.0.0 (`spring-ai-starter-model-google-genai`)
 - **Persistence**: JPA / Hibernate with SQLite
 - **Build Tool**: Gradle (`build.gradle`)
 - **Code Intelligence**: graphify (`graphify-out/`)
