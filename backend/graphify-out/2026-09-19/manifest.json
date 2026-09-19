@@ -372,9 +372,9 @@
     "semantic_hash": ""
   },
   "build.gradle": {
-    "mtime": 1789811691.192141,
-    "seen": 1789812206.5646262,
-    "ast_hash": "20d967d62b52525dec0559be5978775e",
+    "mtime": 1789808523.3798847,
+    "seen": 1789809431.2995317,
+    "ast_hash": "6e3f88e3c95018088b8e1e09cc3de3fd",
     "semantic_hash": ""
   },
   "settings.gradle": {
@@ -900,15 +900,9 @@
     "semantic_hash": ""
   },
   "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java": {
-    "mtime": 1789811538.2357917,
-    "seen": 1789812206.5647054,
-    "ast_hash": "9ad39879db69ae1b3f9c35c3f5d5563e",
-    "semantic_hash": ""
-  },
-  ".agents/skills/test-intellij-mcp/SKILL.md": {
-    "mtime": 1789812194.4196465,
-    "seen": 1789812206.5647128,
-    "ast_hash": "2cead4591558655fe314f29b695b3932",
+    "mtime": 1789809731.9986098,
+    "seen": 1789809760.1661718,
+    "ast_hash": "8e8c2f655b35aba5116cb3f43a919a78",
     "semantic_hash": ""
   }
 }

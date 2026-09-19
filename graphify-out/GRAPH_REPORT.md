@@ -1,16 +1,16 @@
-# Graph Report - nyare  (2026-09-15)
+# Graph Report - nyare  (2026-09-19)
 
 ## Corpus Check
-- 212 files · ~245,054 words
+- 214 files · ~244,790 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1666 nodes · 2181 edges · 160 communities (105 shown, 47 thin omitted)
+- 1680 nodes · 2193 edges · 158 communities (107 shown, 43 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 65 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `7d316acb`
+- Built from commit: `fb970b8c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -113,7 +113,7 @@
 - 4. Basic Skills and Tools Guide
 - Task Manager Service Implementation Plan
 - org.springframework.stereotype.Service
-- ponytail.md
+- Ponytail Rules
 - org.springframework.transaction.annotation.Transactional
 - Override
 - NoteResponse
@@ -161,10 +161,8 @@
 - Canonical Exception Strategy
 - NoteService.java
 - Simplified Technical English (ASD-STE100)
-- GlobalExceptionHandler.java
-- AcademicEventRequest
-- ScheduleRequest
-- 3. GraalVM native image
+- Test IntelliJ MCP
+- Java and Gradle Sandbox Execution Rule
 - ASD-STE100 Rules
 - Linter Edge Cases
 
@@ -209,7 +207,7 @@
 - **Graphify Query & Knowledge Retrieval Flow** — _agents_skills_graphify_skill_fast_path_query, _agents_skills_graphify_references_query_query_expansion, _agents_skills_graphify_references_query_traversal_modes, _agents_skills_graphify_references_query_work_memory_reflections [INFERRED 0.95]
 - **Spring Boot 4 Testing Ecosystem Modernization** — _agents_skills_dr_jskill_references_spring_boot_4_mockito_bean, _agents_skills_dr_jskill_references_spring_boot_4_webmvc_test_starter, _agents_skills_dr_jskill_references_test_testcontainers_service_connection, _agents_skills_dr_jskill_references_test_rest_test_client [INFERRED 0.95]
 
-## Communities (160 total, 47 thin omitted)
+## Communities (158 total, 43 thin omitted)
 
 ### Community 0 - "versions.mjs"
 Cohesion: 0.06
@@ -296,8 +294,8 @@ Cohesion: 0.06
 Nodes (34): A POST returns 400 and the log says "Cannot map `null` into type `boolean`", Agent behavior, Appendix B — Troubleshooting, Copilot CLI doesn't see the Dr JSkill skill, `copilot` command not found, Docker build fails downloading Node/npm: "SSL peer shut down incorrectly", Docker: `Cannot connect to the Docker daemon`, `docker compose up` builds slowly every time (+26 more)
 
 ### Community 22 - "08 — Deployment"
-Cohesion: 0.15
-Nodes (13): 08 — Deployment, 1. Build a production JAR, 2. Run the whole stack in Docker, 4. Production config — the one property you must change, 5. A word on secrets, 6. (Optional) Deploy to Azure Container Apps, Add a PostgreSQL database, Build and start (+5 more)
+Cohesion: 0.11
+Nodes (18): 08 — Deployment, 1. Build a production JAR, 2. Run the whole stack in Docker, 3. GraalVM native image, 4. Production config — the one property you must change, 5. A word on secrets, 6. (Optional) Deploy to Azure Container Apps, Add a PostgreSQL database (+10 more)
 
 ### Community 23 - "03 — Anatomy of the generated application"
 Cohesion: 0.14
@@ -340,7 +338,7 @@ Cohesion: 0.40
 Nodes (5): Bluesky Icon, Discord Icon, GitHub Icon, Social Icon, X Icon
 
 ### Community 33 - "Appendix A — Prompt cheat sheet"
-Cohesion: 0.17
+Cohesion: 0.15
 Nodes (12): Appendix A — Prompt cheat sheet, Controlling the agent, Debugging & diagnostics, Docs & commits, Dr JSkill meta-prompts, Feature additions, Performance, Project creation (+4 more)
 
 ### Community 34 - "Spring Boot Testing Best Practices Guide"
@@ -412,12 +410,16 @@ Cohesion: 0.20
 Nodes (10): 06 — Testing, 1. Why test AI-generated code?, 2. The two test styles, 3. Add unit tests for the controller, 4. Add an integration test with Testcontainers, 5. Run the full suite, 6. Speed up the feedback loop, 7. Run a single test (+2 more)
 
 ### Community 56 - "00 — Introduction"
-Cohesion: 0.29
+Cohesion: 0.25
 Nodes (7): 00 — Introduction, 1. What is an Agent Skill?, 2. What Dr JSkill is, 3. How this differs from Spring Initializr, 4. The mindset shift, 5. What you'll learn, 6. Tested models
 
 ### Community 57 - "GitHub Copilot CLI + Java workshop, using Dr JSkill"
 Cohesion: 0.33
 Nodes (6): Chapters, GitHub Copilot CLI + Java workshop, using Dr JSkill, How to use this workshop, Prerequisites, Reference material, What you'll build
+
+### Community 59 - "AcademicEventResponse"
+Cohesion: 0.06
+Nodes (10): GlobalExceptionHandler, AcademicEventRequest, AcademicEventResponse, BadRequestException, AcademicEventService, group.four.nyare.nyare.exception.ResourceNotFoundException, org.springframework.http.ProblemDetail, org.springframework.web.bind.annotation.ExceptionHandler (+2 more)
 
 ### Community 60 - "REST API & Controller Guidelines"
 Cohesion: 0.40
@@ -479,6 +481,10 @@ Nodes (14): 1. `dr-jskill` ([`dr-jskill/SKILL.md`](file:///D:/General%20Project%
 Cohesion: 0.14
 Nodes (13): File Map, Global Constraints, Placeholder Scan, Self-Review Checklist, Spec Coverage, Task 1: DTOs — Request and Response Records, Task 2: Repositories — TaskRepository and CourseRepository, Task 3: Service Layer — TaskService (+5 more)
 
+### Community 99 - "Ponytail Rules"
+Cohesion: 0.40
+Nodes (4): Development Rules, Evaluation Steps, Mandatory Quality Standards, Ponytail Rules
+
 ### Community 105 - "ImageReferencesValidator"
 Cohesion: 0.29
 Nodes (5): ImageReferencesValidator, Override, jakarta.validation.ConstraintValidator, jakarta.validation.ConstraintValidatorContext, java.util.regex.Pattern
@@ -528,8 +534,8 @@ Cohesion: 0.20
 Nodes (10): 2. Core Entities & Hierarchy, `Academic Context`, `Academic Event`, `Academic Term`, `Course`, Entity Definitions, `Journal Entry` (`Note`), `Schedule` (+2 more)
 
 ### Community 119 - "Nyare Conceptual Model & Domain Dictionary"
-Cohesion: 0.40
-Nodes (3): 1. Core Concept & Pipeline, 4. Preserving Uncertainty & Incomplete Information, Nyare Conceptual Model & Domain Dictionary
+Cohesion: 0.22
+Nodes (5): 1. Core Concept & Pipeline, 4. Preserving Uncertainty & Incomplete Information, Nyare Conceptual Model & Domain Dictionary, Contents, Temporary Architectural Notes (Backend & AI Architecture Drafts)
 
 ### Community 120 - "4.5 AI Image Metadata Update"
 Cohesion: 0.25
@@ -552,8 +558,8 @@ Cohesion: 0.39
 Nodes (5): Override, NoteContentConverter, jakarta.persistence.AttributeConverter, jakarta.persistence.Converter, tools.jackson.databind.ObjectMapper
 
 ### Community 125 - "Candidate Additions for `backend/AGENTS.md`"
-Cohesion: 0.20
-Nodes (7): 1. Domain Modeling Rules, 2. Service Layer & AI Processing Rules, 3. Verification & Conventions, Backend Agent Guide Candidate Updates Draft, Candidate Additions for `backend/AGENTS.md`, Contents, Temporary Architectural Notes (Backend & AI Architecture Drafts)
+Cohesion: 0.33
+Nodes (5): 1. Domain Modeling Rules, 2. Service Layer & AI Processing Rules, 3. Verification & Conventions, Backend Agent Guide Candidate Updates Draft, Candidate Additions for `backend/AGENTS.md`
 
 ### Community 126 - "ValidImageReferences"
 Cohesion: 0.43
@@ -603,6 +609,10 @@ Nodes (6): AcademicEventRepository, CourseRepository, NoteRepository, TaskReposi
 Cohesion: 0.25
 Nodes (13): _dangling_conjunction_findings(), _is_list_continuation(), _leading_spaces(), lint(), main(), _markdown_table_cells(), Map ordinary Markdown table rows to their prose cells. The separator row…, Deterministic linter for the structural STE rules in SKILL.md. Checks only… (+5 more)
 
+### Community 138 - "ScheduleResponse"
+Cohesion: 0.07
+Nodes (3): ScheduleRequest, ScheduleResponse, ScheduleService
+
 ### Community 140 - "Nyare System Overview"
 Cohesion: 0.40
 Nodes (3): Nyare MVP Boundaries, Nyare System Overview, Nyare System Workflows & Architecture Diagrams
@@ -615,13 +625,9 @@ Nodes (4): 1. Core Policy: No Custom Exception Explosion, 2. Canonical Exception
 Cohesion: 0.14
 Nodes (13): Additional Resources, Boundaries, Core Rewrite Rules, Lexical rules — direction of travel only, Output Format, Process, Scan Checklist, Simple tenses — apply with one exception (+5 more)
 
-### Community 154 - "GlobalExceptionHandler.java"
-Cohesion: 0.29
-Nodes (7): GlobalExceptionHandler, BadRequestException, group.four.nyare.nyare.exception.ResourceNotFoundException, org.springframework.http.ProblemDetail, org.springframework.web.bind.annotation.ExceptionHandler, org.springframework.web.bind.annotation.RestControllerAdvice, org.springframework.web.bind.MethodArgumentNotValidException
-
-### Community 157 - "3. GraalVM native image"
-Cohesion: 0.40
-Nodes (5): 3. GraalVM native image, Build and run, Compare image sizes, Compare startup times, Stop native
+### Community 154 - "Test IntelliJ MCP"
+Cohesion: 0.25
+Nodes (7): Available Tools Reference, Diagnostic Check Status, Step 1: Query Project Modules, Step 2: Search Files or Symbols, Step 3: Check File Diagnostics, Test IntelliJ MCP, Test Verification Workflow
 
 ### Community 158 - "ASD-STE100 Rules"
 Cohesion: 0.50
@@ -632,21 +638,21 @@ Cohesion: 0.50
 Nodes (3): Fenced code, Incomplete list items, Linter Edge Cases
 
 ## Knowledge Gaps
-- **647 isolated node(s):** `Structural Rules`, `Lexical Rules`, `Why STE, and Why for Agents`, `Before / After`, `What This Skill Does` (+642 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 929 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **47 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **655 isolated node(s):** `Requirements`, `Available Tools Reference`, `Step 1: Query Project Modules`, `Step 2: Search Files or Symbols`, `Step 3: Check File Diagnostics` (+650 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 939 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **43 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Note` connect `Note` to `jakarta.persistence.Entity`, `Task`, `ImageMetadata`, `org.springframework.data.jpa.repository.JpaRepository`, `NoteContent`, `AcademicContext`?**
-  _High betweenness centrality (0.022) - this node is a cross-community bridge._
 - **Why does `NoteContent` connect `NoteContent` to `NoteResponse`, `ImageMetadata`, `ImageReferencesValidator`, `Note`, `NoteContentConverter`, `ValidImageReferences`?**
   _High betweenness centrality (0.022) - this node is a cross-community bridge._
+- **Why does `Note` connect `Note` to `jakarta.persistence.Entity`, `Task`, `ImageMetadata`, `org.springframework.data.jpa.repository.JpaRepository`, `NoteContent`, `AcademicContext`?**
+  _High betweenness centrality (0.019) - this node is a cross-community bridge._
 - **Why does `Task` connect `Task` to `jakarta.persistence.Entity`, `org.springframework.data.jpa.repository.JpaRepository`, `TaskResponse`, `Note`, `Course`?**
   _High betweenness centrality (0.015) - this node is a cross-community bridge._
-- **What connects `Structural Rules`, `Lexical Rules`, `Why STE, and Why for Agents` to the rest of the system?**
-  _647 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **What connects `Requirements`, `Available Tools Reference`, `Step 1: Query Project Modules` to the rest of the system?**
+  _655 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `versions.mjs` be split into smaller, more focused modules?**
   _Cohesion score 0.05707762557077625 - nodes in this community are weakly interconnected._
 - **Should `compress.py` be split into smaller, more focused modules?**

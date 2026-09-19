@@ -1,10 +1,4 @@
 {
-  ".agents/.skill-lock.json": {
-    "mtime": 1788778830.9540875,
-    "seen": 1789125311.3910086,
-    "ast_hash": "9686f5c4adddd12d578ecb91ae85d92d",
-    "semantic_hash": "9686f5c4adddd12d578ecb91ae85d92d"
-  },
   ".agents/skills/caveman-compress/scripts/__init__.py": {
     "mtime": 1788778730.9398146,
     "seen": 1789125311.3910198,
@@ -186,8 +180,8 @@
     "semantic_hash": "a43be8432bac3ffd05b3769aa42fe996"
   },
   "backend/src/main/java/group/four/nyare/nyare/NyareApplication.java": {
-    "mtime": 1789288349.656134,
-    "seen": 1789288668.8893852,
+    "mtime": 1789807639.2011015,
+    "seen": 1789818014.4218745,
     "ast_hash": "a212f1792d3651be469da0506d5a7010",
     "semantic_hash": ""
   },
@@ -888,14 +882,14 @@
     "semantic_hash": "081c348d068770af78fcd90980521318"
   },
   "backend/AGENTS.md": {
-    "mtime": 1789378730.6748765,
-    "seen": 1789378866.9039872,
-    "ast_hash": "f5713ac78e8374d444e7e56ab5d4c209",
+    "mtime": 1789809387.0024447,
+    "seen": 1789818014.4221034,
+    "ast_hash": "b68127774d56673e66eb6abf32c7d979",
     "semantic_hash": ""
   },
   "backend/.agents/mcp_config.json.example.json": {
-    "mtime": 1789287855.5516546,
-    "seen": 1789288668.8893695,
+    "mtime": 1789817871.1719947,
+    "seen": 1789818014.4218512,
     "ast_hash": "66cfec128306226510b8fa62fa3c82d1",
     "semantic_hash": ""
   },
@@ -918,9 +912,9 @@
     "semantic_hash": ""
   },
   ".agents/rules/ponytail.md": {
-    "mtime": 1789297124.7576902,
-    "seen": 1789302032.5986512,
-    "ast_hash": "c015b34524a6b541eb95b792e6e61626",
+    "mtime": 1789434387.9288118,
+    "seen": 1789434776.3032432,
+    "ast_hash": "ccd45fa0d6d072ace1a32749c17f1215",
     "semantic_hash": ""
   },
   "backend/docs/superpowers/plans/2026-09-13-task-manager-service.md": {
@@ -1302,9 +1296,9 @@
     "semantic_hash": ""
   },
   "backend/build.gradle": {
-    "mtime": 1789407237.367172,
-    "seen": 1789407482.3887026,
-    "ast_hash": "c14ca4dddd6a1936b32291b112457f42",
+    "mtime": 1789812438.476668,
+    "seen": 1789818014.4218545,
+    "ast_hash": "20d967d62b52525dec0559be5978775e",
     "semantic_hash": ""
   },
   "backend/docs/javadoc/member-search-index.js": {
@@ -1842,15 +1836,15 @@
     "semantic_hash": ""
   },
   "skills-lock.json": {
-    "mtime": 1789433050.866584,
-    "seen": 1789433814.4262006,
-    "ast_hash": "defb4922f1acbdf77e36e6ee082ed298",
+    "mtime": 1789817971.9577456,
+    "seen": 1789818014.4219456,
+    "ast_hash": "2f097ee132255dbaf1494e37d83dc05d",
     "semantic_hash": ""
   },
   ".agents/rules/asd-ste100.md": {
-    "mtime": 1789433462.9759352,
-    "seen": 1789433814.4262073,
-    "ast_hash": "f0b716ed5a348a533b29c04510ea7b79",
+    "mtime": 1789434385.4278533,
+    "seen": 1789434776.3032334,
+    "ast_hash": "4c8d0060ca14a815c33e0be6e302a814",
     "semantic_hash": ""
   },
   ".agents/skills/asd-ste100/README.md": {
@@ -1881,6 +1875,24 @@
     "mtime": 1789432929.374266,
     "seen": 1789433814.4262533,
     "ast_hash": "8292153eb7f39cb74a1b62a22ed5b74c",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java": {
+    "mtime": 1789811538.2357917,
+    "seen": 1789818014.4219306,
+    "ast_hash": "9ad39879db69ae1b3f9c35c3f5d5563e",
+    "semantic_hash": ""
+  },
+  ".agents/rules/gradle-java-sandbox.md": {
+    "mtime": 1789809793.8444738,
+    "seen": 1789818014.421949,
+    "ast_hash": "1a67710bf25b8cd0cb5bbef89f03e2aa",
+    "semantic_hash": ""
+  },
+  "backend/.agents/skills/test-intellij-mcp/SKILL.md": {
+    "mtime": 1789812194.4196465,
+    "seen": 1789818014.4221017,
+    "ast_hash": "2cead4591558655fe314f29b695b3932",
     "semantic_hash": ""
   }
 }

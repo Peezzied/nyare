@@ -98,7 +98,7 @@
   "96": "4. Basic Skills and Tools Guide",
   "97": "Task Manager Service Implementation Plan",
   "98": "org.springframework.stereotype.Service",
-  "99": "ponytail.md",
+  "99": "Ponytail Rules",
   "100": "org.springframework.transaction.annotation.Transactional",
   "101": "Override",
   "102": "NoteResponse",
@@ -153,10 +153,8 @@
   "151": "Canonical Exception Strategy",
   "152": "NoteService.java",
   "153": "Simplified Technical English (ASD-STE100)",
-  "154": "GlobalExceptionHandler.java",
-  "155": "AcademicEventRequest",
-  "156": "ScheduleRequest",
-  "157": "3. GraalVM native image",
+  "154": "Test IntelliJ MCP",
+  "155": "Java and Gradle Sandbox Execution Rule",
   "158": "ASD-STE100 Rules",
   "159": "Linter Edge Cases"
 }
