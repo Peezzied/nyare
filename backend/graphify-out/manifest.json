@@ -18,9 +18,9 @@
     "semantic_hash": "4ccb1d1d570ce8b82a10b6e4ba4702ca"
   },
   ".agents/mcp_config.json.example.json": {
-    "mtime": 1789486096.209094,
-    "seen": 1789809431.2995265,
-    "ast_hash": "ba524967ac97ea169f30e2ff035bc8d1",
+    "mtime": 1789817871.1719947,
+    "seen": 1789818998.370368,
+    "ast_hash": "66cfec128306226510b8fa62fa3c82d1",
     "semantic_hash": ""
   },
   ".agents/rules/intellij-mcp.md": {
@@ -372,8 +372,8 @@
     "semantic_hash": ""
   },
   "build.gradle": {
-    "mtime": 1789811691.192141,
-    "seen": 1789812206.5646262,
+    "mtime": 1789812438.476668,
+    "seen": 1789818998.370377,
     "ast_hash": "20d967d62b52525dec0559be5978775e",
     "semantic_hash": ""
   },
@@ -909,6 +909,12 @@
     "mtime": 1789812194.4196465,
     "seen": 1789812206.5647128,
     "ast_hash": "2cead4591558655fe314f29b695b3932",
+    "semantic_hash": ""
+  },
+  ".agents/skills/spring-ai-google-genai/SKILL.md": {
+    "mtime": 1789819191.1682525,
+    "seen": 1789819199.0384455,
+    "ast_hash": "694bfd24b708ee683e27ae7a1bc13002",
     "semantic_hash": ""
   }
 }

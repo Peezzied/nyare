@@ -18,9 +18,9 @@
     "semantic_hash": "4ccb1d1d570ce8b82a10b6e4ba4702ca"
   },
   ".agents/mcp_config.json.example.json": {
-    "mtime": 1789486096.209094,
-    "seen": 1789809431.2995265,
-    "ast_hash": "ba524967ac97ea169f30e2ff035bc8d1",
+    "mtime": 1789817871.1719947,
+    "seen": 1789818998.370368,
+    "ast_hash": "66cfec128306226510b8fa62fa3c82d1",
     "semantic_hash": ""
   },
   ".agents/rules/intellij-mcp.md": {
@@ -372,9 +372,9 @@
     "semantic_hash": ""
   },
   "build.gradle": {
-    "mtime": 1789808523.3798847,
-    "seen": 1789809431.2995317,
-    "ast_hash": "6e3f88e3c95018088b8e1e09cc3de3fd",
+    "mtime": 1789812438.476668,
+    "seen": 1789818998.370377,
+    "ast_hash": "20d967d62b52525dec0559be5978775e",
     "semantic_hash": ""
   },
   "settings.gradle": {
@@ -900,9 +900,21 @@
     "semantic_hash": ""
   },
   "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java": {
-    "mtime": 1789809731.9986098,
-    "seen": 1789809760.1661718,
-    "ast_hash": "8e8c2f655b35aba5116cb3f43a919a78",
+    "mtime": 1789811538.2357917,
+    "seen": 1789812206.5647054,
+    "ast_hash": "9ad39879db69ae1b3f9c35c3f5d5563e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/test-intellij-mcp/SKILL.md": {
+    "mtime": 1789812194.4196465,
+    "seen": 1789812206.5647128,
+    "ast_hash": "2cead4591558655fe314f29b695b3932",
+    "semantic_hash": ""
+  },
+  ".agents/skills/spring-ai-google-genai/SKILL.md": {
+    "mtime": 1789818988.122697,
+    "seen": 1789818998.3704758,
+    "ast_hash": "22587bda91d8d7220039fb697f4b5e4e",
     "semantic_hash": ""
   }
 }

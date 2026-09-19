@@ -123,7 +123,7 @@
       "file_type": "code",
       "norm_label": "springaiintegrationtest",
       "source_file": "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L13"
+      "source_location": "L11"
     },
     {
       "id": "src_test_java_group_four_nyare_nyare_config_webconfigtest_testcorsregistry",
@@ -1179,13 +1179,13 @@
             "callee": "call",
             "receiver_type": "ChatModel",
             "lang": "java",
-            "line": "L34"
+            "line": "L28"
           }
         ]
       },
       "norm_label": ".executelivechatprompt()",
       "source_file": "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L28"
+      "source_location": "L23"
     },
     {
       "id": "src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest_verifychatmodelbeanloads",
@@ -1197,7 +1197,7 @@
       "file_type": "code",
       "norm_label": ".verifychatmodelbeanloads()",
       "source_file": "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L22"
+      "source_location": "L17"
     },
     {
       "id": "src_test_java_group_four_nyare_nyare_config_webconfigtest_testcorsregistry_getcorsconfigurations",
@@ -5181,17 +5181,6 @@
       "source_location": "L1"
     },
     {
-      "id": "org_junit_jupiter_api_condition_enabledifenvironmentvariable",
-      "label": "org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable",
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "org.junit.jupiter.api.condition.enabledifenvironmentvariable",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "org_junit_jupiter_api_displayname",
       "label": "org.junit.jupiter.api.DisplayName",
       "_origin": "ast",
@@ -5243,17 +5232,6 @@
       "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "org.springframework.context.annotation.configuration",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "org_springframework_test_context_testpropertysource",
-      "label": "org.springframework.test.context.TestPropertySource",
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": "org.springframework.test.context.testpropertysource",
       "source_file": "",
       "source_location": ""
     },
@@ -7894,6 +7872,338 @@
       "source_location": ""
     },
     {
+      "id": "agents_skills_test_intellij_mcp_skill",
+      "label": "test-intellij-mcp/SKILL.md",
+      "_origin": "ast",
+      "community": 61,
+      "community_name": "Test IntelliJ MCP",
+      "file_type": "document",
+      "frontmatter": {
+        "name": "test-intellij-mcp",
+        "description": "Tests connectivity and functionality of the IntelliJ MCP server tools."
+      },
+      "node_kind": "page",
+      "norm_label": "test-intellij-mcp/skill.md",
+      "source_file": ".agents/skills/test-intellij-mcp/SKILL.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "agents_skills_test_intellij_mcp_skill_available_tools_reference",
+      "label": "Available Tools Reference",
+      "_origin": "ast",
+      "community": 61,
+      "community_name": "Test IntelliJ MCP",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "available tools reference",
+      "source_file": ".agents/skills/test-intellij-mcp/SKILL.md",
+      "source_location": "L10"
+    },
+    {
+      "id": "agents_skills_test_intellij_mcp_skill_diagnostic_check_status",
+      "label": "Diagnostic Check Status",
+      "_origin": "ast",
+      "community": 61,
+      "community_name": "Test IntelliJ MCP",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "diagnostic check status",
+      "source_file": ".agents/skills/test-intellij-mcp/SKILL.md",
+      "source_location": "L61"
+    },
+    {
+      "id": "agents_skills_test_intellij_mcp_skill_step_1_query_project_modules",
+      "label": "Step 1: Query Project Modules",
+      "_origin": "ast",
+      "community": 61,
+      "community_name": "Test IntelliJ MCP",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "step 1: query project modules",
+      "source_file": ".agents/skills/test-intellij-mcp/SKILL.md",
+      "source_location": "L25"
+    },
+    {
+      "id": "agents_skills_test_intellij_mcp_skill_step_2_search_files_or_symbols",
+      "label": "Step 2: Search Files or Symbols",
+      "_origin": "ast",
+      "community": 61,
+      "community_name": "Test IntelliJ MCP",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "step 2: search files or symbols",
+      "source_file": ".agents/skills/test-intellij-mcp/SKILL.md",
+      "source_location": "L35"
+    },
+    {
+      "id": "agents_skills_test_intellij_mcp_skill_step_3_check_file_diagnostics",
+      "label": "Step 3: Check File Diagnostics",
+      "_origin": "ast",
+      "community": 61,
+      "community_name": "Test IntelliJ MCP",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "step 3: check file diagnostics",
+      "source_file": ".agents/skills/test-intellij-mcp/SKILL.md",
+      "source_location": "L47"
+    },
+    {
+      "id": "agents_skills_test_intellij_mcp_skill_test_intellij_mcp",
+      "label": "Test IntelliJ MCP",
+      "_origin": "ast",
+      "community": 61,
+      "community_name": "Test IntelliJ MCP",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "test intellij mcp",
+      "source_file": ".agents/skills/test-intellij-mcp/SKILL.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "agents_skills_test_intellij_mcp_skill_test_verification_workflow",
+      "label": "Test Verification Workflow",
+      "_origin": "ast",
+      "community": 61,
+      "community_name": "Test IntelliJ MCP",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "test verification workflow",
+      "source_file": ".agents/skills/test-intellij-mcp/SKILL.md",
+      "source_location": "L21"
+    },
+    {
+      "id": "agents_skills_spring_ai_google_genai_skill",
+      "label": "spring-ai-google-genai/SKILL.md",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Core Architectural Components",
+      "file_type": "document",
+      "frontmatter": {
+        "name": "spring-ai-google-genai",
+        "description": "Use when integrating Google GenAI (Gemini) models, configuring Spring AI chat clients, implementing function calling tools, processing multimodal inputs, or configuring Gemini context caching in Spring Boot applications."
+      },
+      "node_kind": "page",
+      "norm_label": "spring-ai-google-genai/skill.md",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "agents_skills_spring_ai_google_genai_skill_1_googlegenaichatmodel",
+      "label": "1. `GoogleGenAiChatModel`",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Core Architectural Components",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "1. `googlegenaichatmodel`",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L96"
+    },
+    {
+      "id": "agents_skills_spring_ai_google_genai_skill_2_high_level_chatclient_usage",
+      "label": "2. High-Level `ChatClient` Usage",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Core Architectural Components",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "2. high-level `chatclient` usage",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L126"
+    },
+    {
+      "id": "agents_skills_spring_ai_google_genai_skill_3_structured_output_extraction",
+      "label": "3. Structured Output Extraction",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Core Architectural Components",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "3. structured output extraction",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L158"
+    },
+    {
+      "id": "agents_skills_spring_ai_google_genai_skill_4_multimodal_inputs",
+      "label": "4. Multimodal Inputs",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Core Architectural Components",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4. multimodal inputs",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L194"
+    },
+    {
+      "id": "agents_skills_spring_ai_google_genai_skill_5_function_calling_with_tool",
+      "label": "5. Function Calling with `@Tool`",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Core Architectural Components",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "5. function calling with `@tool`",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L228"
+    },
+    {
+      "id": "agents_skills_spring_ai_google_genai_skill_6_dynamic_googlegenaichatoptions",
+      "label": "6. Dynamic `GoogleGenAiChatOptions`",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Core Architectural Components",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "6. dynamic `googlegenaichatoptions`",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L266"
+    },
+    {
+      "id": "agents_skills_spring_ai_google_genai_skill_7_context_caching_management",
+      "label": "7. Context Caching Management",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Core Architectural Components",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "7. context caching management",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L316"
+    },
+    {
+      "id": "agents_skills_spring_ai_google_genai_skill_application_properties",
+      "label": "Application Properties",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Core Architectural Components",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "application properties",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L76"
+    },
+    {
+      "id": "agents_skills_spring_ai_google_genai_skill_common_mistakes_resolutions",
+      "label": "Common Mistakes & Resolutions",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Core Architectural Components",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "common mistakes & resolutions",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L353"
+    },
+    {
+      "id": "agents_skills_spring_ai_google_genai_skill_core_architectural_components",
+      "label": "Core Architectural Components",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Core Architectural Components",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "core architectural components",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L94"
+    },
+    {
+      "id": "agents_skills_spring_ai_google_genai_skill_dependency_configuration",
+      "label": "Dependency Configuration",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Core Architectural Components",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "dependency configuration",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L33"
+    },
+    {
+      "id": "agents_skills_spring_ai_google_genai_skill_gradle_build_gradle",
+      "label": "Gradle (`build.gradle`)",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Core Architectural Components",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "gradle (`build.gradle`)",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L60"
+    },
+    {
+      "id": "agents_skills_spring_ai_google_genai_skill_maven_pom_xml",
+      "label": "Maven (`pom.xml`)",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Core Architectural Components",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "maven (`pom.xml`)",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L37"
+    },
+    {
+      "id": "agents_skills_spring_ai_google_genai_skill_overview",
+      "label": "Overview",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Core Architectural Components",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "overview",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L8"
+    },
+    {
+      "id": "agents_skills_spring_ai_google_genai_skill_quick_reference",
+      "label": "Quick Reference",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Core Architectural Components",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "quick reference",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L365"
+    },
+    {
+      "id": "agents_skills_spring_ai_google_genai_skill_spring_ai_google_genai_gemini",
+      "label": "Spring AI Google GenAI (Gemini)",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Core Architectural Components",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "spring ai google genai (gemini)",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "agents_skills_spring_ai_google_genai_skill_when_not_to_use",
+      "label": "When NOT to Use",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Core Architectural Components",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "when not to use",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L25"
+    },
+    {
+      "id": "agents_skills_spring_ai_google_genai_skill_when_to_use",
+      "label": "When to Use",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Core Architectural Components",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "when to use",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L16"
+    },
+    {
       "id": "docs_api_academic_events_api_academic_events_api",
       "label": "academic-events-api.md",
       "_origin": "ast",
@@ -9500,31 +9810,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L13",
-      "weight": 1.0
-    },
-    {
-      "source": "src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest",
-      "target": "org_springframework_test_context_testpropertysource",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "attribute",
-      "source_file": "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L13",
-      "weight": 1.0
-    },
-    {
-      "source": "src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest_executelivechatprompt",
-      "target": "org_junit_jupiter_api_condition_enabledifenvironmentvariable",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "attribute",
-      "source_file": "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L28",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -9536,7 +9822,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L28",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -9548,7 +9834,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L28",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -9560,7 +9846,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L22",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -9572,7 +9858,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L22",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -11156,7 +11442,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L19",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -12553,7 +12839,7 @@
     },
     {
       "source": "src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest",
-      "target": "org_junit_jupiter_api_condition_enabledifenvironmentvariable",
+      "target": "org_springframework_ai_chat_model_chatmodel",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -12565,18 +12851,6 @@
     },
     {
       "source": "src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest",
-      "target": "org_springframework_ai_chat_model_chatmodel",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L6",
-      "weight": 1.0
-    },
-    {
-      "source": "src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest",
       "target": "org_springframework_boot_test_context_springboottest",
       "relation": "imports",
       "_origin": "ast",
@@ -12584,19 +12858,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L8",
-      "weight": 1.0
-    },
-    {
-      "source": "src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest",
-      "target": "org_springframework_test_context_testpropertysource",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L9",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -13626,6 +13888,281 @@
       "confidence_score": 1.0,
       "source_file": "src/main/java/group/four/nyare/nyare/model/enums/TaskStatus.java",
       "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_spring_ai_google_genai_skill",
+      "target": "agents_skills_spring_ai_google_genai_skill_spring_ai_google_genai_gemini",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_spring_ai_google_genai_skill_core_architectural_components",
+      "target": "agents_skills_spring_ai_google_genai_skill_2_high_level_chatclient_usage",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L126",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_spring_ai_google_genai_skill_core_architectural_components",
+      "target": "agents_skills_spring_ai_google_genai_skill_3_structured_output_extraction",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L158",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_spring_ai_google_genai_skill_core_architectural_components",
+      "target": "agents_skills_spring_ai_google_genai_skill_4_multimodal_inputs",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L194",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_spring_ai_google_genai_skill_core_architectural_components",
+      "target": "agents_skills_spring_ai_google_genai_skill_5_function_calling_with_tool",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L228",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_spring_ai_google_genai_skill_core_architectural_components",
+      "target": "agents_skills_spring_ai_google_genai_skill_6_dynamic_googlegenaichatoptions",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L266",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_spring_ai_google_genai_skill_core_architectural_components",
+      "target": "agents_skills_spring_ai_google_genai_skill_7_context_caching_management",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L316",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_spring_ai_google_genai_skill_core_architectural_components",
+      "target": "agents_skills_spring_ai_google_genai_skill_1_googlegenaichatmodel",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L96",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_spring_ai_google_genai_skill_dependency_configuration",
+      "target": "agents_skills_spring_ai_google_genai_skill_maven_pom_xml",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_spring_ai_google_genai_skill_dependency_configuration",
+      "target": "agents_skills_spring_ai_google_genai_skill_gradle_build_gradle",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_spring_ai_google_genai_skill_spring_ai_google_genai_gemini",
+      "target": "agents_skills_spring_ai_google_genai_skill_when_to_use",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_spring_ai_google_genai_skill_spring_ai_google_genai_gemini",
+      "target": "agents_skills_spring_ai_google_genai_skill_dependency_configuration",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_spring_ai_google_genai_skill_spring_ai_google_genai_gemini",
+      "target": "agents_skills_spring_ai_google_genai_skill_common_mistakes_resolutions",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L353",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_spring_ai_google_genai_skill_spring_ai_google_genai_gemini",
+      "target": "agents_skills_spring_ai_google_genai_skill_quick_reference",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L365",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_spring_ai_google_genai_skill_spring_ai_google_genai_gemini",
+      "target": "agents_skills_spring_ai_google_genai_skill_application_properties",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L76",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_spring_ai_google_genai_skill_spring_ai_google_genai_gemini",
+      "target": "agents_skills_spring_ai_google_genai_skill_overview",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_spring_ai_google_genai_skill_spring_ai_google_genai_gemini",
+      "target": "agents_skills_spring_ai_google_genai_skill_core_architectural_components",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L94",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_spring_ai_google_genai_skill_when_to_use",
+      "target": "agents_skills_spring_ai_google_genai_skill_when_not_to_use",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_test_intellij_mcp_skill",
+      "target": "agents_skills_test_intellij_mcp_skill_test_intellij_mcp",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/test-intellij-mcp/SKILL.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_test_intellij_mcp_skill_test_intellij_mcp",
+      "target": "agents_skills_test_intellij_mcp_skill_available_tools_reference",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/test-intellij-mcp/SKILL.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_test_intellij_mcp_skill_test_intellij_mcp",
+      "target": "agents_skills_test_intellij_mcp_skill_test_verification_workflow",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/test-intellij-mcp/SKILL.md",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_test_intellij_mcp_skill_test_intellij_mcp",
+      "target": "agents_skills_test_intellij_mcp_skill_diagnostic_check_status",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/test-intellij-mcp/SKILL.md",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_test_intellij_mcp_skill_test_verification_workflow",
+      "target": "agents_skills_test_intellij_mcp_skill_step_1_query_project_modules",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/test-intellij-mcp/SKILL.md",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_test_intellij_mcp_skill_test_verification_workflow",
+      "target": "agents_skills_test_intellij_mcp_skill_step_2_search_files_or_symbols",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/test-intellij-mcp/SKILL.md",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_test_intellij_mcp_skill_test_verification_workflow",
+      "target": "agents_skills_test_intellij_mcp_skill_step_3_check_file_diagnostics",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/test-intellij-mcp/SKILL.md",
+      "source_location": "L47",
       "weight": 1.0
     },
     {
@@ -17244,7 +17781,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L13",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -19961,7 +20498,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L22",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -19972,7 +20509,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L28",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -20777,5 +21314,5 @@
       "source_file": "docs/superpowers/plans/2026-09-13-task-manager-service.md"
     }
   ],
-  "built_at_commit": "c92750f82f20c5ae3908dceaa216299272c069e8"
+  "built_at_commit": "a8e1bd1c9327d70a9ff6e983477e5de0420f9219"
 }

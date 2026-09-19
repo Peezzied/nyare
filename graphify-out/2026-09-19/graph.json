@@ -294,6 +294,19 @@
       "source_location": "L14"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest",
+      "label": "TaskRequest",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": "taskrequest",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
+      "source_location": "L14"
+    },
+    {
       "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskresponse_taskresponse",
       "label": "TaskResponse",
       "_callable": true,
@@ -305,6 +318,45 @@
       "norm_label": "taskresponse",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskResponse.java",
       "source_location": "L13"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskstatusrequest_taskstatusrequest",
+      "label": "TaskStatusRequest",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": "taskstatusrequest",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskStatusRequest.java",
+      "source_location": "L9"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_model_enums_taskstatus_taskstatus",
+      "label": "TaskStatus",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": "taskstatus",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/enums/TaskStatus.java",
+      "source_location": "L6"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_service_taskservice_taskservice",
+      "label": "TaskService",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": "taskservice",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
+      "source_location": "L14"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_academicevent_academicevent",
@@ -372,19 +424,6 @@
       "source_location": "L22"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_repository_courserepository_courserepository",
-      "label": "CourseRepository",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 113,
-      "community_name": "Course",
-      "file_type": "code",
-      "norm_label": "courserepository",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/CourseRepository.java",
-      "source_location": "L10"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_converter_notecontentconverter_notecontentconverter",
       "label": "NoteContentConverter",
       "_callable": true,
@@ -411,32 +450,6 @@
       "source_location": "L16"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskstatusrequest_taskstatusrequest",
-      "label": "TaskStatusRequest",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 132,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": "taskstatusrequest",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskStatusRequest.java",
-      "source_location": "L9"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_model_enums_taskstatus_taskstatus",
-      "label": "TaskStatus",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 132,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": "taskstatus",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/enums/TaskStatus.java",
-      "source_location": "L6"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_repository_academiceventrepository_academiceventrepository",
       "label": "AcademicEventRepository",
       "_callable": true,
@@ -448,6 +461,19 @@
       "norm_label": "academiceventrepository",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java",
       "source_location": "L16"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repository_courserepository_courserepository",
+      "label": "CourseRepository",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 136,
+      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "file_type": "code",
+      "norm_label": "courserepository",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/CourseRepository.java",
+      "source_location": "L10"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_repository_noterepository_noterepository",
@@ -528,19 +554,6 @@
       "source_location": "L13"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest",
-      "label": "TaskRequest",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 140,
-      "community_name": "TaskRequest",
-      "file_type": "code",
-      "norm_label": "taskrequest",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
-      "source_location": "L14"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_exception_resourcenotfoundexception_resourcenotfoundexception",
       "label": "ResourceNotFoundException",
       "_callable": true,
@@ -554,19 +567,6 @@
       "source_location": "L6"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_service_taskservice_taskservice",
-      "label": "TaskService",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 156,
-      "community_name": "TaskService",
-      "file_type": "code",
-      "norm_label": "taskservice",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
-      "source_location": "L14"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_config_webconfig_webconfig",
       "label": "WebConfig",
       "_callable": true,
@@ -578,19 +578,6 @@
       "norm_label": "webconfig",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/config/WebConfig.java",
       "source_location": "L10"
-    },
-    {
-      "id": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest",
-      "label": "SpringAiIntegrationTest",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
-      "file_type": "code",
-      "norm_label": "springaiintegrationtest",
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L11"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_testcorsregistry",
@@ -1983,6 +1970,18 @@
       "source_location": "L158"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_model_task_task_getstatus",
+      "label": ".getStatus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": ".getstatus()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Task.java",
+      "source_location": "L174"
+    },
+    {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_task_task_gettitle",
       "label": ".getTitle()",
       "_callable": true,
@@ -2053,6 +2052,18 @@
       "norm_label": ".setscheduleddate()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Task.java",
       "source_location": "L162"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_model_task_task_setstatus",
+      "label": ".setStatus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": ".setstatus()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Task.java",
+      "source_location": "L178"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_task_task_settitle",
@@ -2663,6 +2674,162 @@
       "source_location": "L278"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_getcourseid",
+      "label": ".getCourseId()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".getcourseid()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
+      "source_location": "L44"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_getdescription",
+      "label": ".getDescription()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".getdescription()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
+      "source_location": "L60"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_getduration",
+      "label": ".getDuration()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".getduration()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
+      "source_location": "L76"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_getscheduleddate",
+      "label": ".getScheduledDate()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".getscheduleddate()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
+      "source_location": "L68"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_getstatus",
+      "label": ".getStatus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".getstatus()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
+      "source_location": "L84"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_gettitle",
+      "label": ".getTitle()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".gettitle()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
+      "source_location": "L52"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_setcourseid",
+      "label": ".setCourseId()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".setcourseid()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
+      "source_location": "L48"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_setdescription",
+      "label": ".setDescription()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".setdescription()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
+      "source_location": "L64"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_setduration",
+      "label": ".setDuration()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".setduration()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
+      "source_location": "L80"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_setscheduleddate",
+      "label": ".setScheduledDate()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".setscheduleddate()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
+      "source_location": "L72"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_setstatus",
+      "label": ".setStatus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".setstatus()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
+      "source_location": "L88"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_settitle",
+      "label": ".setTitle()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".settitle()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
+      "source_location": "L56"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_taskrequest",
+      "label": ".TaskRequest()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".taskrequest()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
+      "source_location": "L32"
+    },
+    {
       "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskresponse_taskresponse_getcourseid",
       "label": ".getCourseId()",
       "_callable": true,
@@ -2745,6 +2912,18 @@
       "norm_label": ".getscheduleddate()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskResponse.java",
       "source_location": "L84"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskresponse_taskresponse_getstatus",
+      "label": ".getStatus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".getstatus()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskResponse.java",
+      "source_location": "L100"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskresponse_taskresponse_gettitle",
@@ -2855,6 +3034,18 @@
       "source_location": "L88"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskresponse_taskresponse_setstatus",
+      "label": ".setStatus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".setstatus()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskResponse.java",
+      "source_location": "L104"
+    },
+    {
       "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskresponse_taskresponse_settitle",
       "label": ".setTitle()",
       "_callable": true,
@@ -2877,6 +3068,126 @@
       "norm_label": ".setupdatedat()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskResponse.java",
       "source_location": "L120"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskresponse_taskresponse_taskresponse",
+      "label": ".TaskResponse()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".taskresponse()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskResponse.java",
+      "source_location": "L26"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskstatusrequest_taskstatusrequest_getstatus",
+      "label": ".getStatus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".getstatus()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskStatusRequest.java",
+      "source_location": "L21"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskstatusrequest_taskstatusrequest_setstatus",
+      "label": ".setStatus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".setstatus()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskStatusRequest.java",
+      "source_location": "L25"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskstatusrequest_taskstatusrequest_taskstatusrequest",
+      "label": ".TaskStatusRequest()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".taskstatusrequest()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskStatusRequest.java",
+      "source_location": "L14"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_service_taskservice_taskservice_createtask",
+      "label": ".createTask()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".createtask()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
+      "source_location": "L22"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_service_taskservice_taskservice_deletetask",
+      "label": ".deleteTask()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".deletetask()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
+      "source_location": "L66"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_service_taskservice_taskservice_gettask",
+      "label": ".getTask()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".gettask()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
+      "source_location": "L41"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_service_taskservice_taskservice_listtasks",
+      "label": ".listTasks()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".listtasks()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
+      "source_location": "L33"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_service_taskservice_taskservice_updatetask",
+      "label": ".updateTask()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".updatetask()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
+      "source_location": "L50"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_service_taskservice_taskservice_updatetaskstatus",
+      "label": ".updateTaskStatus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": ".updatetaskstatus()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
+      "source_location": "L59"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_academicevent_academicevent_academicevent",
@@ -3847,102 +4158,6 @@
       "source_location": "L130"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskresponse_taskresponse_getstatus",
-      "label": ".getStatus()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 132,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": ".getstatus()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskResponse.java",
-      "source_location": "L100"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskresponse_taskresponse_setstatus",
-      "label": ".setStatus()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 132,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": ".setstatus()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskResponse.java",
-      "source_location": "L104"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskresponse_taskresponse_taskresponse",
-      "label": ".TaskResponse()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 132,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": ".taskresponse()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskResponse.java",
-      "source_location": "L26"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskstatusrequest_taskstatusrequest_getstatus",
-      "label": ".getStatus()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 132,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": ".getstatus()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskStatusRequest.java",
-      "source_location": "L21"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskstatusrequest_taskstatusrequest_setstatus",
-      "label": ".setStatus()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 132,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": ".setstatus()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskStatusRequest.java",
-      "source_location": "L25"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskstatusrequest_taskstatusrequest_taskstatusrequest",
-      "label": ".TaskStatusRequest()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 132,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": ".taskstatusrequest()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskStatusRequest.java",
-      "source_location": "L14"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_model_task_task_getstatus",
-      "label": ".getStatus()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 132,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": ".getstatus()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Task.java",
-      "source_location": "L174"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_model_task_task_setstatus",
-      "label": ".setStatus()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 132,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": ".setstatus()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Task.java",
-      "source_location": "L178"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_repository_academiceventrepository_academiceventrepository_findallfiltered",
       "label": ".findAllFiltered()",
       "_callable": true,
@@ -4459,162 +4674,6 @@
       "source_location": "L21"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_getcourseid",
-      "label": ".getCourseId()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 140,
-      "community_name": "TaskRequest",
-      "file_type": "code",
-      "norm_label": ".getcourseid()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
-      "source_location": "L44"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_getdescription",
-      "label": ".getDescription()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 140,
-      "community_name": "TaskRequest",
-      "file_type": "code",
-      "norm_label": ".getdescription()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
-      "source_location": "L60"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_getduration",
-      "label": ".getDuration()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 140,
-      "community_name": "TaskRequest",
-      "file_type": "code",
-      "norm_label": ".getduration()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
-      "source_location": "L76"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_getscheduleddate",
-      "label": ".getScheduledDate()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 140,
-      "community_name": "TaskRequest",
-      "file_type": "code",
-      "norm_label": ".getscheduleddate()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
-      "source_location": "L68"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_getstatus",
-      "label": ".getStatus()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 140,
-      "community_name": "TaskRequest",
-      "file_type": "code",
-      "norm_label": ".getstatus()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
-      "source_location": "L84"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_gettitle",
-      "label": ".getTitle()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 140,
-      "community_name": "TaskRequest",
-      "file_type": "code",
-      "norm_label": ".gettitle()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
-      "source_location": "L52"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_setcourseid",
-      "label": ".setCourseId()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 140,
-      "community_name": "TaskRequest",
-      "file_type": "code",
-      "norm_label": ".setcourseid()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
-      "source_location": "L48"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_setdescription",
-      "label": ".setDescription()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 140,
-      "community_name": "TaskRequest",
-      "file_type": "code",
-      "norm_label": ".setdescription()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
-      "source_location": "L64"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_setduration",
-      "label": ".setDuration()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 140,
-      "community_name": "TaskRequest",
-      "file_type": "code",
-      "norm_label": ".setduration()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
-      "source_location": "L80"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_setscheduleddate",
-      "label": ".setScheduledDate()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 140,
-      "community_name": "TaskRequest",
-      "file_type": "code",
-      "norm_label": ".setscheduleddate()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
-      "source_location": "L72"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_setstatus",
-      "label": ".setStatus()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 140,
-      "community_name": "TaskRequest",
-      "file_type": "code",
-      "norm_label": ".setstatus()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
-      "source_location": "L88"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_settitle",
-      "label": ".setTitle()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 140,
-      "community_name": "TaskRequest",
-      "file_type": "code",
-      "norm_label": ".settitle()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
-      "source_location": "L56"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_taskrequest",
-      "label": ".TaskRequest()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 140,
-      "community_name": "TaskRequest",
-      "file_type": "code",
-      "norm_label": ".taskrequest()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
-      "source_location": "L32"
-    },
-    {
       "id": "agents_skills_dr_jskill_scripts_normalize_vue_frontend_main",
       "label": "main()",
       "_callable": true,
@@ -4697,78 +4756,6 @@
       "norm_label": ".resourcenotfoundexception()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/exception/ResourceNotFoundException.java",
       "source_location": "L8"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_service_taskservice_taskservice_createtask",
-      "label": ".createTask()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 156,
-      "community_name": "TaskService",
-      "file_type": "code",
-      "norm_label": ".createtask()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
-      "source_location": "L22"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_service_taskservice_taskservice_deletetask",
-      "label": ".deleteTask()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 156,
-      "community_name": "TaskService",
-      "file_type": "code",
-      "norm_label": ".deletetask()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
-      "source_location": "L66"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_service_taskservice_taskservice_gettask",
-      "label": ".getTask()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 156,
-      "community_name": "TaskService",
-      "file_type": "code",
-      "norm_label": ".gettask()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
-      "source_location": "L41"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_service_taskservice_taskservice_listtasks",
-      "label": ".listTasks()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 156,
-      "community_name": "TaskService",
-      "file_type": "code",
-      "norm_label": ".listtasks()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
-      "source_location": "L33"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_service_taskservice_taskservice_updatetask",
-      "label": ".updateTask()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 156,
-      "community_name": "TaskService",
-      "file_type": "code",
-      "norm_label": ".updatetask()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
-      "source_location": "L50"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_service_taskservice_taskservice_updatetaskstatus",
-      "label": ".updateTaskStatus()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 156,
-      "community_name": "TaskService",
-      "file_type": "code",
-      "norm_label": ".updatetaskstatus()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
-      "source_location": "L59"
     },
     {
       "id": "agents_skills_dr_jskill_scripts_sync_workshop_docs_findbrokenlinks",
@@ -5019,40 +5006,6 @@
       "norm_label": ".addcorsmappings()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/config/WebConfig.java",
       "source_location": "L13"
-    },
-    {
-      "id": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest_executelivechatprompt",
-      "label": ".executeLiveChatPrompt()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "call",
-            "receiver_type": "ChatModel",
-            "lang": "java",
-            "line": "L28"
-          }
-        ]
-      },
-      "norm_label": ".executelivechatprompt()",
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L23"
-    },
-    {
-      "id": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest_verifychatmodelbeanloads",
-      "label": ".verifyChatModelBeanLoads()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
-      "file_type": "code",
-      "norm_label": ".verifychatmodelbeanloads()",
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L17"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_testcorsregistry_getcorsconfigurations",
@@ -7957,6 +7910,94 @@
       "source_location": "L60"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest",
+      "label": "TaskRequest.java",
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": "taskrequest.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskresponse",
+      "label": "TaskResponse.java",
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": "taskresponse.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskResponse.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskstatusrequest",
+      "label": "TaskStatusRequest.java",
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": "taskstatusrequest.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskStatusRequest.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_model_enums_taskstatus",
+      "label": "TaskStatus.java",
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": "taskstatus.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/enums/TaskStatus.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_model_enums_taskstatus_taskstatus_completed",
+      "label": "COMPLETED",
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": "completed",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/enums/TaskStatus.java",
+      "source_location": "L9"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_model_enums_taskstatus_taskstatus_in_progress",
+      "label": "IN_PROGRESS",
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": "in_progress",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/enums/TaskStatus.java",
+      "source_location": "L8"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_model_enums_taskstatus_taskstatus_todo",
+      "label": "TODO",
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": "todo",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/enums/TaskStatus.java",
+      "source_location": "L7"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_service_taskservice",
+      "label": "TaskService.java",
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TaskResponse",
+      "file_type": "code",
+      "norm_label": "taskservice.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
+      "source_location": "L1"
+    },
+    {
       "id": "backend_docs_api_notes_api_notes_api_200_ok_278",
       "label": "`200 OK`",
       "_origin": "ast",
@@ -8238,17 +8279,6 @@
       "norm_label": "override",
       "source_file": "",
       "source_location": ""
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_repository_courserepository",
-      "label": "CourseRepository.java",
-      "_origin": "ast",
-      "community": 113,
-      "community_name": "Course",
-      "file_type": "code",
-      "norm_label": "courserepository.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/CourseRepository.java",
-      "source_location": "L1"
     },
     {
       "id": "docs_conceptual_model_1_academic_event_vs_deadline",
@@ -8811,126 +8841,6 @@
       "source_location": "L16"
     },
     {
-      "id": "docs_mvp_boundaries",
-      "label": "mvp-boundaries.md",
-      "_origin": "ast",
-      "community": 117,
-      "community_name": "Workflow Directory",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "mvp-boundaries.md",
-      "source_file": "docs/mvp-boundaries.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "docs_mvp_boundaries_1_no_micro_scheduling_time_blocking",
-      "label": "1. No Micro-Scheduling / Time-Blocking",
-      "_origin": "ast",
-      "community": 117,
-      "community_name": "Workflow Directory",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "1. no micro-scheduling / time-blocking",
-      "source_file": "docs/mvp-boundaries.md",
-      "source_location": "L7"
-    },
-    {
-      "id": "docs_mvp_boundaries_2_no_automated_task_reconciliation_merging_or_splitting",
-      "label": "2. No Automated Task Reconciliation, Merging, or Splitting",
-      "_origin": "ast",
-      "community": 117,
-      "community_name": "Workflow Directory",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "2. no automated task reconciliation, merging, or splitting",
-      "source_file": "docs/mvp-boundaries.md",
-      "source_location": "L18"
-    },
-    {
-      "id": "docs_mvp_boundaries_3_no_deterministic_priority_scoring_engine",
-      "label": "3. No Deterministic Priority Scoring Engine",
-      "_origin": "ast",
-      "community": 117,
-      "community_name": "Workflow Directory",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "3. no deterministic priority scoring engine",
-      "source_file": "docs/mvp-boundaries.md",
-      "source_location": "L30"
-    },
-    {
-      "id": "docs_mvp_boundaries_4_no_mandatory_recurring_availability_calendars",
-      "label": "4. No Mandatory Recurring Availability Calendars",
-      "_origin": "ast",
-      "community": 117,
-      "community_name": "Workflow Directory",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "4. no mandatory recurring availability calendars",
-      "source_file": "docs/mvp-boundaries.md",
-      "source_location": "L41"
-    },
-    {
-      "id": "docs_mvp_boundaries_5_no_study_plan_persistence_entity",
-      "label": "5. No Study Plan Persistence Entity",
-      "_origin": "ast",
-      "community": 117,
-      "community_name": "Workflow Directory",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "5. no study plan persistence entity",
-      "source_file": "docs/mvp-boundaries.md",
-      "source_location": "L51"
-    },
-    {
-      "id": "docs_mvp_boundaries_6_strict_uncertainty_preservation_zero_hallucination",
-      "label": "6. Strict Uncertainty Preservation (Zero Hallucination)",
-      "_origin": "ast",
-      "community": 117,
-      "community_name": "Workflow Directory",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "6. strict uncertainty preservation (zero hallucination)",
-      "source_file": "docs/mvp-boundaries.md",
-      "source_location": "L62"
-    },
-    {
-      "id": "docs_mvp_boundaries_7_strict_processing_scope_today_s_notes_only",
-      "label": "7. Strict Processing Scope (Today's Notes Only)",
-      "_origin": "ast",
-      "community": 117,
-      "community_name": "Workflow Directory",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "7. strict processing scope (today's notes only)",
-      "source_file": "docs/mvp-boundaries.md",
-      "source_location": "L73"
-    },
-    {
-      "id": "docs_mvp_boundaries_nyare_mvp_boundaries_non_goals",
-      "label": "Nyare MVP Boundaries & Non-Goals",
-      "_origin": "ast",
-      "community": 117,
-      "community_name": "Workflow Directory",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "nyare mvp boundaries & non-goals",
-      "source_file": "docs/mvp-boundaries.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "docs_system_workflows",
-      "label": "system-workflows.md",
-      "_origin": "ast",
-      "community": 117,
-      "community_name": "Workflow Directory",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "system-workflows.md",
-      "source_file": "docs/system-workflows.md",
-      "source_location": "L1"
-    },
-    {
       "id": "docs_system_workflows_1_system_overview",
       "label": "1. System Overview",
       "_origin": "ast",
@@ -9037,18 +8947,6 @@
       "norm_label": "9. complete mvp workflow",
       "source_file": "docs/system-workflows.md",
       "source_location": "L289"
-    },
-    {
-      "id": "docs_system_workflows_nyare_system_workflows_architecture_diagrams",
-      "label": "Nyare System Workflows & Architecture Diagrams",
-      "_origin": "ast",
-      "community": 117,
-      "community_name": "Workflow Directory",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "nyare system workflows & architecture diagrams",
-      "source_file": "docs/system-workflows.md",
-      "source_location": "L1"
     },
     {
       "id": "docs_system_workflows_workflow_directory",
@@ -9231,6 +9129,18 @@
       "source_location": "L1"
     },
     {
+      "id": "docs_temp_ai_workflows_draft",
+      "label": "ai-workflows-draft.md",
+      "_origin": "ast",
+      "community": 119,
+      "community_name": "Nyare Conceptual Model & Domain Dictionary",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "ai-workflows-draft.md",
+      "source_file": "docs/temp/ai-workflows-draft.md",
+      "source_location": "L1"
+    },
+    {
       "id": "docs_temp_backend_domain_model_draft",
       "label": "backend-domain-model-draft.md",
       "_origin": "ast",
@@ -9240,6 +9150,42 @@
       "node_kind": "page",
       "norm_label": "backend-domain-model-draft.md",
       "source_file": "docs/temp/backend-domain-model-draft.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "docs_temp_readme",
+      "label": "temp/README.md",
+      "_origin": "ast",
+      "community": 119,
+      "community_name": "Nyare Conceptual Model & Domain Dictionary",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "temp/readme.md",
+      "source_file": "docs/temp/README.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "docs_temp_readme_contents",
+      "label": "Contents",
+      "_origin": "ast",
+      "community": 119,
+      "community_name": "Nyare Conceptual Model & Domain Dictionary",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "contents",
+      "source_file": "docs/temp/README.md",
+      "source_location": "L9"
+    },
+    {
+      "id": "docs_temp_readme_temporary_architectural_notes_backend_ai_architecture_drafts",
+      "label": "Temporary Architectural Notes (Backend & AI Architecture Drafts)",
+      "_origin": "ast",
+      "community": 119,
+      "community_name": "Nyare Conceptual Model & Domain Dictionary",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "temporary architectural notes (backend & ai architecture drafts)",
+      "source_file": "docs/temp/README.md",
       "source_location": "L1"
     },
     {
@@ -9631,18 +9577,6 @@
       "source_location": "L114"
     },
     {
-      "id": "docs_temp_ai_workflows_draft",
-      "label": "ai-workflows-draft.md",
-      "_origin": "ast",
-      "community": 123,
-      "community_name": "AI Processing & Planning API Workflows Draft",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "ai-workflows-draft.md",
-      "source_file": "docs/temp/ai-workflows-draft.md",
-      "source_location": "L1"
-    },
-    {
       "id": "docs_temp_ai_workflows_draft_1_ai_processing_workflow_post_api_ai_process_today",
       "label": "1. AI Processing Workflow (`POST /api/ai/process-today`)",
       "_origin": "ast",
@@ -9864,42 +9798,6 @@
       "norm_label": "candidate additions for `backend/agents.md`",
       "source_file": "docs/temp/backend-agents-guide-draft.md",
       "source_location": "L11"
-    },
-    {
-      "id": "docs_temp_readme",
-      "label": "temp/README.md",
-      "_origin": "ast",
-      "community": 125,
-      "community_name": "Candidate Additions for `backend/AGENTS.md`",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "temp/readme.md",
-      "source_file": "docs/temp/README.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "docs_temp_readme_contents",
-      "label": "Contents",
-      "_origin": "ast",
-      "community": 125,
-      "community_name": "Candidate Additions for `backend/AGENTS.md`",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "contents",
-      "source_file": "docs/temp/README.md",
-      "source_location": "L9"
-    },
-    {
-      "id": "docs_temp_readme_temporary_architectural_notes_backend_ai_architecture_drafts",
-      "label": "Temporary Architectural Notes (Backend & AI Architecture Drafts)",
-      "_origin": "ast",
-      "community": 125,
-      "community_name": "Candidate Additions for `backend/AGENTS.md`",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "temporary architectural notes (backend & ai architecture drafts)",
-      "source_file": "docs/temp/README.md",
-      "source_location": "L1"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_notecontent",
@@ -10402,80 +10300,99 @@
       "source_location": "L396"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskresponse",
-      "label": "TaskResponse.java",
+      "id": "docs_mvp_boundaries_1_no_micro_scheduling_time_blocking",
+      "label": "1. No Micro-Scheduling / Time-Blocking",
       "_origin": "ast",
       "community": 132,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": "taskresponse.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskResponse.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskstatusrequest",
-      "label": "TaskStatusRequest.java",
-      "_origin": "ast",
-      "community": 132,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": "taskstatusrequest.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskStatusRequest.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_model_enums_taskstatus",
-      "label": "TaskStatus.java",
-      "_origin": "ast",
-      "community": 132,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": "taskstatus.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/enums/TaskStatus.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_model_enums_taskstatus_taskstatus_completed",
-      "label": "COMPLETED",
-      "_origin": "ast",
-      "community": 132,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": "completed",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/enums/TaskStatus.java",
-      "source_location": "L9"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_model_enums_taskstatus_taskstatus_in_progress",
-      "label": "IN_PROGRESS",
-      "_origin": "ast",
-      "community": 132,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": "in_progress",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/enums/TaskStatus.java",
-      "source_location": "L8"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_model_enums_taskstatus_taskstatus_todo",
-      "label": "TODO",
-      "_origin": "ast",
-      "community": 132,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": "todo",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/enums/TaskStatus.java",
+      "community_name": "Nyare MVP Boundaries & Non-Goals",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "1. no micro-scheduling / time-blocking",
+      "source_file": "docs/mvp-boundaries.md",
       "source_location": "L7"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_service_taskservice",
-      "label": "TaskService.java",
+      "id": "docs_mvp_boundaries_2_no_automated_task_reconciliation_merging_or_splitting",
+      "label": "2. No Automated Task Reconciliation, Merging, or Splitting",
       "_origin": "ast",
       "community": 132,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": "taskservice.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
+      "community_name": "Nyare MVP Boundaries & Non-Goals",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "2. no automated task reconciliation, merging, or splitting",
+      "source_file": "docs/mvp-boundaries.md",
+      "source_location": "L18"
+    },
+    {
+      "id": "docs_mvp_boundaries_3_no_deterministic_priority_scoring_engine",
+      "label": "3. No Deterministic Priority Scoring Engine",
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "Nyare MVP Boundaries & Non-Goals",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "3. no deterministic priority scoring engine",
+      "source_file": "docs/mvp-boundaries.md",
+      "source_location": "L30"
+    },
+    {
+      "id": "docs_mvp_boundaries_4_no_mandatory_recurring_availability_calendars",
+      "label": "4. No Mandatory Recurring Availability Calendars",
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "Nyare MVP Boundaries & Non-Goals",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4. no mandatory recurring availability calendars",
+      "source_file": "docs/mvp-boundaries.md",
+      "source_location": "L41"
+    },
+    {
+      "id": "docs_mvp_boundaries_5_no_study_plan_persistence_entity",
+      "label": "5. No Study Plan Persistence Entity",
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "Nyare MVP Boundaries & Non-Goals",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "5. no study plan persistence entity",
+      "source_file": "docs/mvp-boundaries.md",
+      "source_location": "L51"
+    },
+    {
+      "id": "docs_mvp_boundaries_6_strict_uncertainty_preservation_zero_hallucination",
+      "label": "6. Strict Uncertainty Preservation (Zero Hallucination)",
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "Nyare MVP Boundaries & Non-Goals",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "6. strict uncertainty preservation (zero hallucination)",
+      "source_file": "docs/mvp-boundaries.md",
+      "source_location": "L62"
+    },
+    {
+      "id": "docs_mvp_boundaries_7_strict_processing_scope_today_s_notes_only",
+      "label": "7. Strict Processing Scope (Today's Notes Only)",
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "Nyare MVP Boundaries & Non-Goals",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "7. strict processing scope (today's notes only)",
+      "source_file": "docs/mvp-boundaries.md",
+      "source_location": "L73"
+    },
+    {
+      "id": "docs_mvp_boundaries_nyare_mvp_boundaries_non_goals",
+      "label": "Nyare MVP Boundaries & Non-Goals",
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "Nyare MVP Boundaries & Non-Goals",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "nyare mvp boundaries & non-goals",
+      "source_file": "docs/mvp-boundaries.md",
       "source_location": "L1"
     },
     {
@@ -11306,6 +11223,17 @@
       "source_location": "L1"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repository_courserepository",
+      "label": "CourseRepository.java",
+      "_origin": "ast",
+      "community": 136,
+      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "file_type": "code",
+      "norm_label": "courserepository.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/CourseRepository.java",
+      "source_location": "L1"
+    },
+    {
       "id": "backend_src_main_java_group_four_nyare_nyare_repository_noterepository",
       "label": "NoteRepository.java",
       "_origin": "ast",
@@ -11460,14 +11388,39 @@
       "source_location": ""
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest",
-      "label": "TaskRequest.java",
+      "id": "docs_mvp_boundaries",
+      "label": "mvp-boundaries.md",
       "_origin": "ast",
       "community": 140,
-      "community_name": "TaskRequest",
-      "file_type": "code",
-      "norm_label": "taskrequest.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
+      "community_name": "Nyare System Overview",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "mvp-boundaries.md",
+      "source_file": "docs/mvp-boundaries.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "docs_system_workflows",
+      "label": "system-workflows.md",
+      "_origin": "ast",
+      "community": 140,
+      "community_name": "Nyare System Overview",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "system-workflows.md",
+      "source_file": "docs/system-workflows.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "docs_system_workflows_nyare_system_workflows_architecture_diagrams",
+      "label": "Nyare System Workflows & Architecture Diagrams",
+      "_origin": "ast",
+      "community": 140,
+      "community_name": "Nyare System Overview",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "nyare system workflows & architecture diagrams",
+      "source_file": "docs/system-workflows.md",
       "source_location": "L1"
     },
     {
@@ -13625,17 +13578,6 @@
       "source_location": ""
     },
     {
-      "id": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest",
-      "label": "SpringAiIntegrationTest.java",
-      "_origin": "ast",
-      "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
-      "file_type": "code",
-      "norm_label": "springaiintegrationtest.java",
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L1"
-    },
-    {
       "id": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest",
       "label": "WebConfigTest.java",
       "_origin": "ast",
@@ -13687,17 +13629,6 @@
       "community_name": ".addCorsMappings_registersExpectedConfiguration",
       "file_type": "code",
       "norm_label": "org.junit.jupiter.api.test",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "org_springframework_ai_chat_model_chatmodel",
-      "label": "org.springframework.ai.chat.model.ChatModel",
-      "_origin": "ast",
-      "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
-      "file_type": "code",
-      "norm_label": "org.springframework.ai.chat.model.chatmodel",
       "source_file": "",
       "source_location": ""
     },
@@ -18039,36 +17970,6 @@
       "source_url": null
     },
     {
-      "id": "agents_nyare_overview",
-      "label": "Nyare System Overview",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 117,
-      "community_name": "Workflow Directory",
-      "contributor": null,
-      "file_type": "document",
-      "norm_label": "nyare system overview",
-      "source_file": "AGENTS.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
-      "id": "agents_mvp_boundaries",
-      "label": "Nyare MVP Boundaries",
-      "_origin": "semantic",
-      "author": null,
-      "captured_at": null,
-      "community": 117,
-      "community_name": "Workflow Directory",
-      "contributor": null,
-      "file_type": "rationale",
-      "norm_label": "nyare mvp boundaries",
-      "source_file": "AGENTS.md",
-      "source_location": null,
-      "source_url": null
-    },
-    {
       "id": "agents_skills_lean_build_skill_narrow_slice",
       "label": "Narrow Feature Slice",
       "_origin": "semantic",
@@ -18215,6 +18116,36 @@
       "file_type": "rationale",
       "norm_label": "behavior preservation",
       "source_file": ".agents/skills/safe-refactor/SKILL.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "agents_nyare_overview",
+      "label": "Nyare System Overview",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 140,
+      "community_name": "Nyare System Overview",
+      "contributor": null,
+      "file_type": "document",
+      "norm_label": "nyare system overview",
+      "source_file": "AGENTS.md",
+      "source_location": null,
+      "source_url": null
+    },
+    {
+      "id": "agents_mvp_boundaries",
+      "label": "Nyare MVP Boundaries",
+      "_origin": "semantic",
+      "author": null,
+      "captured_at": null,
+      "community": 140,
+      "community_name": "Nyare System Overview",
+      "contributor": null,
+      "file_type": "rationale",
+      "norm_label": "nyare mvp boundaries",
+      "source_file": "AGENTS.md",
       "source_location": null,
       "source_url": null
     },
@@ -21641,66 +21572,6 @@
       "context": "attribute",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/TaskRepository.java",
       "source_location": "L28",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest",
-      "target": "org_springframework_boot_test_context_springboottest",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "attribute",
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L11",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest_executelivechatprompt",
-      "target": "org_junit_jupiter_api_displayname",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "attribute",
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L23",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest_executelivechatprompt",
-      "target": "org_junit_jupiter_api_test",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "attribute",
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L23",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest_verifychatmodelbeanloads",
-      "target": "org_junit_jupiter_api_displayname",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "attribute",
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L17",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest_verifychatmodelbeanloads",
-      "target": "org_junit_jupiter_api_test",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "attribute",
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -25220,18 +25091,6 @@
       "weight": 1.0
     },
     {
-      "source": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest",
-      "target": "org_springframework_ai_chat_model_chatmodel",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "field",
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L14",
-      "weight": 1.0
-    },
-    {
       "source": "backend_src_main_java_group_four_nyare_nyare_dto_imagemetadataupdaterequest_imagemetadataupdaterequest",
       "target": "backend_src_main_java_group_four_nyare_nyare_model_imagemetadata_imagemetadata",
       "relation": "references",
@@ -27113,54 +26972,6 @@
       "context": "import",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
       "source_location": "L6",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest",
-      "target": "org_junit_jupiter_api_displayname",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L3",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest",
-      "target": "org_junit_jupiter_api_test",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L4",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest",
-      "target": "org_springframework_ai_chat_model_chatmodel",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L5",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest",
-      "target": "org_springframework_boot_test_context_springboottest",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -38507,17 +38318,6 @@
       "weight": 1.0
     },
     {
-      "source": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest",
-      "target": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L11",
-      "weight": 1.0
-    },
-    {
       "source": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest",
       "target": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_webconfigtest",
       "relation": "contains",
@@ -42178,28 +41978,6 @@
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
       "source_location": "L66",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest",
-      "target": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest_verifychatmodelbeanloads",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L17",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest",
-      "target": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest_executelivechatprompt",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
-      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -46161,5 +45939,5 @@
       "source_file": ".agents/skills/dr-jskill/references/SPRING-BOOT-4.md"
     }
   ],
-  "built_at_commit": "a8e1bd1c9327d70a9ff6e983477e5de0420f9219"
+  "built_at_commit": "fb970b8cd03d72a0636cc3a123c5365551c8dd38"
 }
