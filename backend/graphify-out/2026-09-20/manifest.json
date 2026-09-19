@@ -72,16 +72,16 @@
     "semantic_hash": "f8efd1875b3cb750ceaef1079bef6e82"
   },
   "src/main/java/group/four/nyare/nyare/model/AcademicContext.java": {
-    "mtime": 1789308385.5862758,
-    "seen": 1789379696.003291,
-    "ast_hash": "d1d1346aafde724b6a7615d362ca0043",
-    "semantic_hash": "d1d1346aafde724b6a7615d362ca0043"
+    "mtime": 1789836608.7783506,
+    "seen": 1789836662.4804738,
+    "ast_hash": "ff395014fc5e38bb8eb2b2fac89f21f9",
+    "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/model/AcademicEvent.java": {
-    "mtime": 1789376963.7345874,
-    "seen": 1789379696.0032923,
-    "ast_hash": "f022a94e693afbf69f2c8fb5534587f1",
-    "semantic_hash": "f022a94e693afbf69f2c8fb5534587f1"
+    "mtime": 1789836602.1147015,
+    "seen": 1789836662.4804769,
+    "ast_hash": "e25414dc2b435892ad6e6e2acdc5a782",
+    "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/model/Course.java": {
     "mtime": 1789308362.2980895,
@@ -90,16 +90,16 @@
     "semantic_hash": "b6f8d6bbc27460a1a0bda16ecaadafe4"
   },
   "src/main/java/group/four/nyare/nyare/model/Note.java": {
-    "mtime": 1789382213.9643173,
-    "seen": 1789384775.60975,
-    "ast_hash": "fcca81104b3ac426b985bfa2c1e89917",
+    "mtime": 1789836594.425228,
+    "seen": 1789836662.4804847,
+    "ast_hash": "ba1077acc1fbcfeac62ae72054e70106",
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/model/Schedule.java": {
-    "mtime": 1789308390.4731493,
-    "seen": 1789379696.0032961,
-    "ast_hash": "ca24fc0ba825b41500f285370ae40c15",
-    "semantic_hash": "ca24fc0ba825b41500f285370ae40c15"
+    "mtime": 1789836614.8668182,
+    "seen": 1789836662.4804878,
+    "ast_hash": "3985a4cbee61ddf55a19ffa04584539e",
+    "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/model/Task.java": {
     "mtime": 1789392700.3472,
@@ -372,9 +372,9 @@
     "semantic_hash": ""
   },
   "build.gradle": {
-    "mtime": 1789832336.4692688,
-    "seen": 1789833383.0385394,
-    "ast_hash": "20d967d62b52525dec0559be5978775e",
+    "mtime": 1789837199.4891443,
+    "seen": 1789837408.312098,
+    "ast_hash": "f81e0358aa02701450ec30002d2fd902",
     "semantic_hash": ""
   },
   "settings.gradle": {
@@ -939,6 +939,30 @@
     "mtime": 1789836270.3732977,
     "seen": 1789836335.0705855,
     "ast_hash": "c0165af2db99457e94a5e5017f835668",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/ai/parser/AcademicContextCsvParser.java": {
+    "mtime": 1789837828.8291776,
+    "seen": 1789837896.8236144,
+    "ast_hash": "c28a22cba76c481d9ee917a3a0c61323",
+    "semantic_hash": ""
+  },
+  "src/test/java/group/four/nyare/nyare/ai/parser/AcademicContextCsvParserTest.java": {
+    "mtime": 1789837264.9992514,
+    "seen": 1789837408.312179,
+    "ast_hash": "c6b6dcf76e77da65132cd04d5205462b",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java": {
+    "mtime": 1789837864.093102,
+    "seen": 1789837896.823617,
+    "ast_hash": "c037b5edb0cf8fabb410cd69b29db105",
+    "semantic_hash": ""
+  },
+  "src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java": {
+    "mtime": 1789837834.468812,
+    "seen": 1789837896.8236818,
+    "ast_hash": "f448cac2d7eba4c4a104f2563b2d7edf",
     "semantic_hash": ""
   }
 }

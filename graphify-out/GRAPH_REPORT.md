@@ -5,12 +5,12 @@
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1730 nodes · 2282 edges · 161 communities (109 shown, 44 thin omitted)
+- 1730 nodes · 2282 edges · 161 communities (108 shown, 45 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 70 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0c65dd07`
+- Built from commit: `c4fc2f8f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -153,7 +153,7 @@
 - Nyare MVP Boundaries & Non-Goals
 - ste-lint.py
 - ScheduleResponse
-- sync-versions-in-docs.mjs
+- group.four.nyare.nyare.model.AcademicContext
 - TaskService
 - DejaVu fonts v2.37
 - jQuery v3.7.1
@@ -178,8 +178,8 @@
 6. `NoteContent` - 25 edges
 7. `Dr JSkill Specification` - 24 edges
 8. `getVersionValue()` - 23 edges
-9. `AcademicEventResponse` - 21 edges
-10. `Schedule` - 19 edges
+9. `AcademicContext` - 22 edges
+10. `AcademicEventResponse` - 21 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Lean Build Skill` --semantically_similar_to--> `Surgical Patch Skill`  [INFERRED] [semantically similar]
@@ -210,7 +210,7 @@
 - **Graphify Query & Knowledge Retrieval Flow** — _agents_skills_graphify_skill_fast_path_query, _agents_skills_graphify_references_query_query_expansion, _agents_skills_graphify_references_query_traversal_modes, _agents_skills_graphify_references_query_work_memory_reflections [INFERRED 0.95]
 - **Spring Boot 4 Testing Ecosystem Modernization** — _agents_skills_dr_jskill_references_spring_boot_4_mockito_bean, _agents_skills_dr_jskill_references_spring_boot_4_webmvc_test_starter, _agents_skills_dr_jskill_references_test_testcontainers_service_connection, _agents_skills_dr_jskill_references_test_rest_test_client [INFERRED 0.95]
 
-## Communities (161 total, 44 thin omitted)
+## Communities (161 total, 45 thin omitted)
 
 ### Community 0 - "versions.mjs"
 Cohesion: 0.06
@@ -233,7 +233,7 @@ Cohesion: 0.10
 Nodes (28): benchmark_pair(), count_tokens(), main(), print_table(), Path, count_bullets(), extract_code_blocks(), extract_fenced_spans() (+20 more)
 
 ### Community 5 - "jakarta.persistence.Entity"
-Cohesion: 0.44
+Cohesion: 0.57
 Nodes (4): jakarta.persistence.Entity, jakarta.persistence.EntityListeners, jakarta.persistence.Table, org.springframework.data.jpa.domain.support.AuditingEntityListener
 
 ### Community 6 - "frontend/package.json"
@@ -265,8 +265,8 @@ Cohesion: 0.29
 Nodes (6): 1. Tool Discovery & Dynamic Capability Inspection, 2. Pre-Build Verification (Immediate Post-Edit Validation), 3. Token-Efficient Code Navigation, 4. Build Tiering & Execution Hierarchy, 5. Unavailability & Fallback Handling, IntelliJ MCP Backend Workflow & Static Analysis Rule
 
 ### Community 13 - "org.springframework.data.jpa.repository.JpaRepository"
-Cohesion: 0.30
-Nodes (6): AcademicContextRepository, CourseRepository, TaskRepository, group.four.nyare.nyare.model.AcademicContext, org.springframework.data.jpa.repository.JpaRepository, org.springframework.data.jpa.repository.Query
+Cohesion: 0.29
+Nodes (5): AcademicEventRepository, CourseRepository, TaskRepository, org.springframework.data.jpa.repository.JpaRepository, org.springframework.data.jpa.repository.Query
 
 ### Community 14 - "Lean Build Skill"
 Cohesion: 0.20
@@ -453,8 +453,8 @@ Cohesion: 0.50
 Nodes (4): 1. Single-Writer Connection Pool, 2. Schema Management, 3. Open-In-View Disabled, Persistence & SQLite Guidelines
 
 ### Community 85 - "jquery-3.7.1.min.js"
-Cohesion: 0.07
-Nodes (40): Ae(), B(), Be(), c(), $e(), ee(), F(), fe() (+32 more)
+Cohesion: 0.06
+Nodes (47): assetRewrites, checkMode, __dirname, docRewrites, docs, ROOT, versions, Ae() (+39 more)
 
 ### Community 86 - "script.js"
 Cohesion: 0.11
@@ -493,7 +493,7 @@ Cohesion: 0.44
 Nodes (5): GlobalExceptionHandler, org.springframework.http.ProblemDetail, org.springframework.web.bind.annotation.ExceptionHandler, org.springframework.web.bind.annotation.RestControllerAdvice, org.springframework.web.bind.MethodArgumentNotValidException
 
 ### Community 103 - "Task"
-Cohesion: 0.08
+Cohesion: 0.07
 Nodes (4): Course, Override, Override, Task
 
 ### Community 105 - "ImageReferencesValidator"
@@ -510,18 +510,18 @@ Nodes (8): `200 OK`, `404 Not Found`, 4.3 Retrieve Note by ID, 4. Endpoints Spec
 
 ### Community 110 - "AcademicEvent"
 Cohesion: 0.12
-Nodes (4): AcademicEvent, Course, Override, AcademicEventRepository
+Nodes (3): AcademicEvent, Course, Override
 
 ### Community 111 - "AcademicContext"
-Cohesion: 0.18
-Nodes (3): AcademicContext, Course, Override
+Cohesion: 0.16
+Nodes (4): AcademicContext, Course, Override, AcademicContextRepository
 
 ### Community 112 - "Note"
-Cohesion: 0.13
+Cohesion: 0.14
 Nodes (5): Course, Override, Note, NoteRepository, NoteContent
 
 ### Community 113 - "Schedule"
-Cohesion: 0.15
+Cohesion: 0.14
 Nodes (4): Course, Override, Schedule, ScheduleRepository
 
 ### Community 114 - "man-spring: Spring AI Google GenAI (Gemini)"
@@ -616,10 +616,6 @@ Nodes (8): 1. No Micro-Scheduling / Time-Blocking, 2. No Automated Task Reconcil
 Cohesion: 0.25
 Nodes (13): _dangling_conjunction_findings(), _is_list_continuation(), _leading_spaces(), lint(), main(), _markdown_table_cells(), Map ordinary Markdown table rows to their prose cells. The separator row…, Deterministic linter for the structural STE rules in SKILL.md. Checks only… (+5 more)
 
-### Community 139 - "sync-versions-in-docs.mjs"
-Cohesion: 0.20
-Nodes (7): assetRewrites, checkMode, __dirname, docRewrites, docs, ROOT, versions
-
 ### Community 151 - "Canonical Exception Strategy"
 Cohesion: 0.50
 Nodes (4): 1. Core Policy: No Custom Exception Explosion, 2. Canonical Exception Matrix, 3. RFC 7807 Problem Details Response, Canonical Exception Strategy
@@ -650,18 +646,18 @@ Nodes (9): 1. Academic Event vs. Deadline, 2. Task vs. Academic Event, 3. Academ
 
 ## Knowledge Gaps
 - **670 isolated node(s):** `{ flags, positional }`, `outputDir`, `{ flags, positional }`, `outputDir`, `DEFAULT_BOOT_FALLBACK` (+665 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 958 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **44 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 959 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **45 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Note` connect `Note` to `jakarta.persistence.Entity`, `Task`, `AcademicEvent`, `AcademicContext`, `.updateImageMetadata`?**
-  _High betweenness centrality (0.026) - this node is a cross-community bridge._
+  _High betweenness centrality (0.022) - this node is a cross-community bridge._
 - **Why does `NoteContent` connect `NoteContent` to `NoteResponse`, `ImageMetadata`, `ImageReferencesValidator`, `.updateImageMetadata`, `NoteContentConverter`, `ValidImageReferences`?**
-  _High betweenness centrality (0.018) - this node is a cross-community bridge._
+  _High betweenness centrality (0.015) - this node is a cross-community bridge._
 - **Why does `Task` connect `Task` to `Note`, `TaskStatus`, `org.springframework.data.jpa.repository.JpaRepository`, `jakarta.persistence.Entity`?**
-  _High betweenness centrality (0.014) - this node is a cross-community bridge._
+  _High betweenness centrality (0.012) - this node is a cross-community bridge._
 - **What connects `{ flags, positional }`, `outputDir`, `{ flags, positional }` to the rest of the system?**
   _670 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `versions.mjs` be split into smaller, more focused modules?**

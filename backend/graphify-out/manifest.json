@@ -372,9 +372,9 @@
     "semantic_hash": ""
   },
   "build.gradle": {
-    "mtime": 1789832336.4692688,
-    "seen": 1789833383.0385394,
-    "ast_hash": "20d967d62b52525dec0559be5978775e",
+    "mtime": 1789837199.4891443,
+    "seen": 1789837408.312098,
+    "ast_hash": "f81e0358aa02701450ec30002d2fd902",
     "semantic_hash": ""
   },
   "settings.gradle": {
@@ -939,6 +939,18 @@
     "mtime": 1789836270.3732977,
     "seen": 1789836335.0705855,
     "ast_hash": "c0165af2db99457e94a5e5017f835668",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java": {
+    "mtime": 1789837864.093102,
+    "seen": 1789837896.823617,
+    "ast_hash": "c037b5edb0cf8fabb410cd69b29db105",
+    "semantic_hash": ""
+  },
+  "src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java": {
+    "mtime": 1789837834.468812,
+    "seen": 1789837896.8236818,
+    "ast_hash": "f448cac2d7eba4c4a104f2563b2d7edf",
     "semantic_hash": ""
   }
 }

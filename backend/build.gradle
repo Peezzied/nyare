@@ -31,8 +31,8 @@ dependencies {
     developmentOnly "me.paulschwarz:springboot4-dotenv"
     testImplementation "me.paulschwarz:springboot4-dotenv"
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    implementation 'org.apache.commons:commons-csv:1.14.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
