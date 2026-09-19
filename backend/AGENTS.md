@@ -7,7 +7,7 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 - **Runtime**: Java 25
 - **Framework**: Spring Boot 4.1.1 (`webmvc`, `data-jpa`, `validation`)
 - **Persistence**: JPA / Hibernate with SQLite
-- **Build Tool**: Gradle (Kotlin DSL `build.gradle.kts`)
+- **Build Tool**: Gradle (`build.gradle`)
 - **Code Intelligence**: graphify (`graphify-out/`)
 
 ---
@@ -43,6 +43,7 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 ## Knowledge Graph (`graphify`)
 
 `graphify` tracks codebase topology in `graphify-out/`.
+- Prioritize using graphify for project lookup or searching.
 - Query before navigating: `graphify query "<question>"` or `graphify explain "<concept>"`.
 - Update after edits: `graphify update .` (run outside sandbox with `BypassSandbox: true` and `Cwd` set to backend root).
 
