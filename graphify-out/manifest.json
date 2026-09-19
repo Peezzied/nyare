@@ -882,9 +882,9 @@
     "semantic_hash": "081c348d068770af78fcd90980521318"
   },
   "backend/AGENTS.md": {
-    "mtime": 1789809387.0024447,
-    "seen": 1789818014.4221034,
-    "ast_hash": "b68127774d56673e66eb6abf32c7d979",
+    "mtime": 1789827231.055871,
+    "seen": 1789829269.7215126,
+    "ast_hash": "3c3de4163f23aa57cb02815296cea269",
     "semantic_hash": ""
   },
   "backend/.agents/mcp_config.json.example.json": {
@@ -1899,6 +1899,18 @@
     "mtime": 1789819191.1682525,
     "seen": 1789819244.2937322,
     "ast_hash": "694bfd24b708ee683e27ae7a1bc13002",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java": {
+    "mtime": 1789828569.517937,
+    "seen": 1789829269.7210503,
+    "ast_hash": "c261720abc8c2abc52e96c44803ae6a3",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java": {
+    "mtime": 1789828895.38863,
+    "seen": 1789829269.721208,
+    "ast_hash": "6c448d2b7c6ee605f8d5291109075f4c",
     "semantic_hash": ""
   }
 }

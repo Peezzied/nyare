@@ -229,19 +229,6 @@
       "source_location": "L35"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_repository_taskrepository_taskrepository",
-      "label": "TaskRepository",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 103,
-      "community_name": "Task",
-      "file_type": "code",
-      "norm_label": "taskrepository",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/TaskRepository.java",
-      "source_location": "L16"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_dto_imagemetadataupdaterequest_imagemetadataupdaterequest",
       "label": "ImageMetadataUpdateRequest",
       "_callable": true,
@@ -333,19 +320,6 @@
       "source_location": "L30"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_repository_academiceventrepository_academiceventrepository",
-      "label": "AcademicEventRepository",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 110,
-      "community_name": "AcademicEvent",
-      "file_type": "code",
-      "norm_label": "academiceventrepository",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java",
-      "source_location": "L16"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_academiccontext_academiccontext",
       "label": "AcademicContext",
       "_callable": true,
@@ -372,19 +346,6 @@
       "source_location": "L27"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_repository_noterepository_noterepository",
-      "label": "NoteRepository",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 112,
-      "community_name": "Note",
-      "file_type": "code",
-      "norm_label": "noterepository",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/NoteRepository.java",
-      "source_location": "L17"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_course_course",
       "label": "Course",
       "_callable": true,
@@ -409,6 +370,19 @@
       "norm_label": "schedule",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Schedule.java",
       "source_location": "L22"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repository_courserepository_courserepository",
+      "label": "CourseRepository",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 113,
+      "community_name": "Course",
+      "file_type": "code",
+      "norm_label": "courserepository",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/CourseRepository.java",
+      "source_location": "L10"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_converter_notecontentconverter_notecontentconverter",
@@ -502,26 +476,13 @@
       "source_location": "L16"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_repository_courserepository_courserepository",
-      "label": "CourseRepository",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 139,
-      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
-      "file_type": "code",
-      "norm_label": "courserepository",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/CourseRepository.java",
-      "source_location": "L10"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_repository_schedulerepository_schedulerepository",
       "label": "ScheduleRepository",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 139,
-      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "community_name": "ScheduleRepository",
       "file_type": "code",
       "norm_label": "schedulerepository",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/ScheduleRepository.java",
@@ -567,17 +528,82 @@
       "source_location": "L14"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repository_academiceventrepository_academiceventrepository",
+      "label": "AcademicEventRepository",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 160,
+      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "file_type": "code",
+      "norm_label": "academiceventrepository",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java",
+      "source_location": "L16"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repository_noterepository_noterepository",
+      "label": "NoteRepository",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 160,
+      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "file_type": "code",
+      "norm_label": "noterepository",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/NoteRepository.java",
+      "source_location": "L17"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repository_taskrepository_taskrepository",
+      "label": "TaskRepository",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 160,
+      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "file_type": "code",
+      "norm_label": "taskrepository",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/TaskRepository.java",
+      "source_location": "L16"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "label": "TaggedPromptBuilder",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "taggedpromptbuilder",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L15"
+    },
+    {
       "id": "backend_src_main_java_group_four_nyare_nyare_config_webconfig_webconfig",
       "label": "WebConfig",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "webconfig",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/config/WebConfig.java",
       "source_location": "L10"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest",
+      "label": "TaggedPromptBuilderTest",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "taggedpromptbuildertest",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L11"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest",
@@ -586,7 +612,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "springaiintegrationtest",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
@@ -599,7 +625,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "testcorsregistry",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
@@ -612,7 +638,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "webconfigtest",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
@@ -625,7 +651,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "nyareapplicationtests",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/NyareApplicationTests.java",
@@ -2091,18 +2117,6 @@
       "source_location": "L198"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_repository_taskrepository_taskrepository_findallfiltered",
-      "label": ".findAllFiltered()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 103,
-      "community_name": "Task",
-      "file_type": "code",
-      "norm_label": ".findallfiltered()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/TaskRepository.java",
-      "source_location": "L28"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_dto_imagemetadataupdaterequest_imagemetadataupdaterequest_getimagemetadata",
       "label": ".getImageMetadata()",
       "_callable": true,
@@ -2397,30 +2411,6 @@
       "norm_label": ".setcourseid()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/NoteRequest.java",
       "source_location": "L31"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_model_note_note_getcontent",
-      "label": ".getContent()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 106,
-      "community_name": "NoteContent",
-      "file_type": "code",
-      "norm_label": ".getcontent()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Note.java",
-      "source_location": "L87"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_model_note_note_setcontent",
-      "label": ".setContent()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 106,
-      "community_name": "NoteContent",
-      "file_type": "code",
-      "norm_label": ".setcontent()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Note.java",
-      "source_location": "L91"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_notecontent_notecontent_setmarkdown",
@@ -3095,30 +3085,6 @@
       "source_location": "L165"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_repository_academiceventrepository_academiceventrepository_findallfiltered",
-      "label": ".findAllFiltered()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 110,
-      "community_name": "AcademicEvent",
-      "file_type": "code",
-      "norm_label": ".findallfiltered()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java",
-      "source_location": "L28"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_repository_academiceventrepository_academiceventrepository_findbycourseidorderbydeadlineasc",
-      "label": ".findByCourseIdOrderByDeadlineAsc()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 110,
-      "community_name": "AcademicEvent",
-      "file_type": "code",
-      "norm_label": ".findbycourseidorderbydeadlineasc()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java",
-      "source_location": "L48"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_academiccontext_academiccontext_academiccontext",
       "label": ".AcademicContext()",
       "_callable": true,
@@ -3275,6 +3241,18 @@
       "source_location": "L113"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_model_note_note_getcontent",
+      "label": ".getContent()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 112,
+      "community_name": "Note",
+      "file_type": "code",
+      "norm_label": ".getcontent()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Note.java",
+      "source_location": "L87"
+    },
+    {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_note_note_getcourse",
       "label": ".getCourse()",
       "_callable": true,
@@ -3333,6 +3311,18 @@
       "norm_label": ".note()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Note.java",
       "source_location": "L61"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_model_note_note_setcontent",
+      "label": ".setContent()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 112,
+      "community_name": "Note",
+      "file_type": "code",
+      "norm_label": ".setcontent()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Note.java",
+      "source_location": "L91"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_note_note_setcourse",
@@ -3405,42 +3395,6 @@
       "norm_label": ".setnote()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Task.java",
       "source_location": "L138"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_repository_noterepository_noterepository_findbycourseidorderbycreatedatdesc",
-      "label": ".findByCourseIdOrderByCreatedAtDesc()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 112,
-      "community_name": "Note",
-      "file_type": "code",
-      "norm_label": ".findbycourseidorderbycreatedatdesc()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/NoteRepository.java",
-      "source_location": "L25"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_repository_noterepository_noterepository_findnotesbycourseidandcreatedatrange",
-      "label": ".findNotesByCourseIdAndCreatedAtRange()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 112,
-      "community_name": "Note",
-      "file_type": "code",
-      "norm_label": ".findnotesbycourseidandcreatedatrange()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/NoteRepository.java",
-      "source_location": "L49"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_repository_noterepository_noterepository_findtodaynotesbycourseid",
-      "label": ".findTodayNotesByCourseId()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 112,
-      "community_name": "Note",
-      "file_type": "code",
-      "norm_label": ".findtodaynotesbycourseid()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/NoteRepository.java",
-      "source_location": "L35"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_course_course_course",
@@ -4440,7 +4394,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 139,
-      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "community_name": "ScheduleRepository",
       "file_type": "code",
       "norm_label": ".findbycourseidanddayorderbystarttimeasc()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/ScheduleRepository.java",
@@ -4452,7 +4406,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 139,
-      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "community_name": "ScheduleRepository",
       "file_type": "code",
       "norm_label": ".findbycourseidorderbydayascstarttimeasc()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/ScheduleRepository.java",
@@ -4819,6 +4773,78 @@
       "source_location": "L48"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repository_academiceventrepository_academiceventrepository_findallfiltered",
+      "label": ".findAllFiltered()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 160,
+      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "file_type": "code",
+      "norm_label": ".findallfiltered()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java",
+      "source_location": "L28"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repository_academiceventrepository_academiceventrepository_findbycourseidorderbydeadlineasc",
+      "label": ".findByCourseIdOrderByDeadlineAsc()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 160,
+      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "file_type": "code",
+      "norm_label": ".findbycourseidorderbydeadlineasc()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java",
+      "source_location": "L48"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repository_noterepository_noterepository_findbycourseidorderbycreatedatdesc",
+      "label": ".findByCourseIdOrderByCreatedAtDesc()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 160,
+      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "file_type": "code",
+      "norm_label": ".findbycourseidorderbycreatedatdesc()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/NoteRepository.java",
+      "source_location": "L25"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repository_noterepository_noterepository_findnotesbycourseidandcreatedatrange",
+      "label": ".findNotesByCourseIdAndCreatedAtRange()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 160,
+      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "file_type": "code",
+      "norm_label": ".findnotesbycourseidandcreatedatrange()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/NoteRepository.java",
+      "source_location": "L49"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repository_noterepository_noterepository_findtodaynotesbycourseid",
+      "label": ".findTodayNotesByCourseId()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 160,
+      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "file_type": "code",
+      "norm_label": ".findtodaynotesbycourseid()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/NoteRepository.java",
+      "source_location": "L35"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repository_taskrepository_taskrepository_findallfiltered",
+      "label": ".findAllFiltered()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 160,
+      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "file_type": "code",
+      "norm_label": ".findallfiltered()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/TaskRepository.java",
+      "source_location": "L28"
+    },
+    {
       "id": "agents_skills_dr_jskill_docs_vuepress_config_cleandocspermalinksplugin",
       "label": "cleanDocsPermalinksPlugin()",
       "_callable": true,
@@ -4999,12 +5025,148 @@
       "source_location": "L51"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_builder",
+      "label": ".builder()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".builder()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L40"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildprompt",
+      "label": ".buildPrompt()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".buildprompt()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L130"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildtext",
+      "label": ".buildText()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".buildtext()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L112"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildusermessage",
+      "label": ".buildUserMessage()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".buildusermessage()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L121"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_create",
+      "label": ".create()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".create()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L31"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_system",
+      "label": ".system()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".system()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L50"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_tag",
+      "label": ".tag()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "render",
+            "receiver_type": "PromptTemplate",
+            "lang": "java",
+            "line": "L68"
+          },
+          {
+            "callee": "of",
+            "receiver_type": "Map",
+            "lang": "java",
+            "line": "L68"
+          }
+        ]
+      },
+      "norm_label": ".tag()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L62"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_taggedpromptbuilder",
+      "label": ".TaggedPromptBuilder()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".taggedpromptbuilder()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L23"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_tagifpresent",
+      "label": ".tagIfPresent()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".tagifpresent()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L84"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_text",
+      "label": ".text()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".text()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L97"
+    },
+    {
       "id": "backend_src_main_java_group_four_nyare_nyare_config_webconfig_webconfig_addcorsmappings",
       "label": ".addCorsMappings()",
       "_callable": true,
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -5021,12 +5183,70 @@
       "source_location": "L13"
     },
     {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_blanktagname_throwsexception",
+      "label": ".taggedPromptBuilder_blankTagName_throwsException()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".taggedpromptbuilder_blanktagname_throwsexception()",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L88"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_buildprompt_createssystemandusermessages",
+      "label": ".taggedPromptBuilder_buildPrompt_createsSystemAndUserMessages()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "getInstructions",
+            "receiver_type": "Prompt",
+            "lang": "java",
+            "line": "L76"
+          }
+        ]
+      },
+      "norm_label": ".taggedpromptbuilder_buildprompt_createssystemandusermessages()",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L63"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_multipletags_assemblesformattedtext",
+      "label": ".taggedPromptBuilder_multipleTags_assemblesFormattedText()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".taggedpromptbuilder_multipletags_assemblesformattedtext()",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L13"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_tagifpresent_skipsblankcontent",
+      "label": ".taggedPromptBuilder_tagIfPresent_skipsBlankContent()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".taggedpromptbuilder_tagifpresent_skipsblankcontent()",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L36"
+    },
+    {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest_executelivechatprompt",
       "label": ".executeLiveChatPrompt()",
       "_callable": true,
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -5048,7 +5268,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": ".verifychatmodelbeanloads()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
@@ -5060,7 +5280,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": ".getcorsconfigurations()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
@@ -5072,7 +5292,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -5106,7 +5326,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": ".contextloads()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/NyareApplicationTests.java",
@@ -7814,28 +8034,6 @@
       "source_location": ""
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_repository_taskrepository",
-      "label": "TaskRepository.java",
-      "_origin": "ast",
-      "community": 103,
-      "community_name": "Task",
-      "file_type": "code",
-      "norm_label": "taskrepository.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/TaskRepository.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "org_springframework_data_jpa_repository_query",
-      "label": "org.springframework.data.jpa.repository.Query",
-      "_origin": "ast",
-      "community": 103,
-      "community_name": "Task",
-      "file_type": "code",
-      "norm_label": "org.springframework.data.jpa.repository.query",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_dto_imagemetadataupdaterequest",
       "label": "ImageMetadataUpdateRequest.java",
       "_origin": "ast",
@@ -8185,17 +8383,6 @@
       "source_location": "L3"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_repository_academiceventrepository",
-      "label": "AcademicEventRepository.java",
-      "_origin": "ast",
-      "community": 110,
-      "community_name": "AcademicEvent",
-      "file_type": "code",
-      "norm_label": "academiceventrepository.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java",
-      "source_location": "L1"
-    },
-    {
       "id": "note",
       "label": "Note",
       "_origin": "ast",
@@ -8240,17 +8427,6 @@
       "source_location": ""
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_repository_noterepository",
-      "label": "NoteRepository.java",
-      "_origin": "ast",
-      "community": 112,
-      "community_name": "Note",
-      "file_type": "code",
-      "norm_label": "noterepository.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/NoteRepository.java",
-      "source_location": "L1"
-    },
-    {
       "id": "course",
       "label": "Course",
       "_origin": "ast",
@@ -8282,6 +8458,17 @@
       "norm_label": "override",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repository_courserepository",
+      "label": "CourseRepository.java",
+      "_origin": "ast",
+      "community": 113,
+      "community_name": "Course",
+      "file_type": "code",
+      "norm_label": "courserepository.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/CourseRepository.java",
+      "source_location": "L1"
     },
     {
       "id": "backend_agents_skills_spring_ai_google_genai_skill",
@@ -9100,30 +9287,6 @@
       "source_location": "L7"
     },
     {
-      "id": "docs_conceptual_model_1_academic_event_vs_deadline",
-      "label": "1. Academic Event vs. Deadline",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "1. academic event vs. deadline",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L96"
-    },
-    {
-      "id": "docs_conceptual_model_1_core_concept_pipeline",
-      "label": "1. Core Concept & Pipeline",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "1. core concept & pipeline",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L7"
-    },
-    {
       "id": "docs_conceptual_model_2_core_entities_hierarchy",
       "label": "2. Core Entities & Hierarchy",
       "_origin": "ast",
@@ -9134,114 +9297,6 @@
       "norm_label": "2. core entities & hierarchy",
       "source_file": "docs/conceptual-model.md",
       "source_location": "L29"
-    },
-    {
-      "id": "docs_conceptual_model_2_task_vs_academic_event",
-      "label": "2. Task vs. Academic Event",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "2. task vs. academic event",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L100"
-    },
-    {
-      "id": "docs_conceptual_model_3_academic_context_vs_task",
-      "label": "3. Academic Context vs. Task",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "3. academic context vs. task",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L104"
-    },
-    {
-      "id": "docs_conceptual_model_3_important_domain_distinctions",
-      "label": "3. Important Domain Distinctions",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "3. important domain distinctions",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L94"
-    },
-    {
-      "id": "docs_conceptual_model_4_academic_context_vs_academic_event",
-      "label": "4. Academic Context vs. Academic Event",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "4. academic context vs. academic event",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L110"
-    },
-    {
-      "id": "docs_conceptual_model_4_preserving_uncertainty_incomplete_information",
-      "label": "4. Preserving Uncertainty & Incomplete Information",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "4. preserving uncertainty & incomplete information",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L138"
-    },
-    {
-      "id": "docs_conceptual_model_5_recommended_date_vs_deadline",
-      "label": "5. Recommended Date vs. Deadline",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "5. recommended date vs. deadline",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L116"
-    },
-    {
-      "id": "docs_conceptual_model_6_extractability_vs_plannability",
-      "label": "6. Extractability vs. Plannability",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "6. extractability vs. plannability",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L120"
-    },
-    {
-      "id": "docs_conceptual_model_7_source_information_vs_extracted_information_materialization",
-      "label": "7. Source Information vs. Extracted Information (Materialization)",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "7. source information vs. extracted information (materialization)",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L126"
-    },
-    {
-      "id": "docs_conceptual_model_8_task_consideration_vs_task_updating",
-      "label": "8. Task Consideration vs. Task Updating",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "8. task consideration vs. task updating",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L130"
     },
     {
       "id": "docs_conceptual_model_academic_context",
@@ -9316,18 +9371,6 @@
       "source_location": "L55"
     },
     {
-      "id": "docs_conceptual_model_nyare_conceptual_model_domain_dictionary",
-      "label": "Nyare Conceptual Model & Domain Dictionary",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "2. Core Entities & Hierarchy",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "nyare conceptual model & domain dictionary",
-      "source_file": "docs/conceptual-model.md",
-      "source_location": "L1"
-    },
-    {
       "id": "docs_conceptual_model_schedule",
       "label": "`Schedule`",
       "_origin": "ast",
@@ -9368,10 +9411,46 @@
       "label": "conceptual-model.md",
       "_origin": "ast",
       "community": 119,
-      "community_name": "temp/README.md",
+      "community_name": "Nyare Conceptual Model & Domain Dictionary",
       "file_type": "document",
       "node_kind": "page",
       "norm_label": "conceptual-model.md",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "docs_conceptual_model_1_core_concept_pipeline",
+      "label": "1. Core Concept & Pipeline",
+      "_origin": "ast",
+      "community": 119,
+      "community_name": "Nyare Conceptual Model & Domain Dictionary",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "1. core concept & pipeline",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "docs_conceptual_model_4_preserving_uncertainty_incomplete_information",
+      "label": "4. Preserving Uncertainty & Incomplete Information",
+      "_origin": "ast",
+      "community": 119,
+      "community_name": "Nyare Conceptual Model & Domain Dictionary",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4. preserving uncertainty & incomplete information",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L138"
+    },
+    {
+      "id": "docs_conceptual_model_nyare_conceptual_model_domain_dictionary",
+      "label": "Nyare Conceptual Model & Domain Dictionary",
+      "_origin": "ast",
+      "community": 119,
+      "community_name": "Nyare Conceptual Model & Domain Dictionary",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "nyare conceptual model & domain dictionary",
       "source_file": "docs/conceptual-model.md",
       "source_location": "L1"
     },
@@ -9380,7 +9459,7 @@
       "label": "ai-workflows-draft.md",
       "_origin": "ast",
       "community": 119,
-      "community_name": "temp/README.md",
+      "community_name": "Nyare Conceptual Model & Domain Dictionary",
       "file_type": "document",
       "node_kind": "page",
       "norm_label": "ai-workflows-draft.md",
@@ -9392,7 +9471,7 @@
       "label": "backend-domain-model-draft.md",
       "_origin": "ast",
       "community": 119,
-      "community_name": "temp/README.md",
+      "community_name": "Nyare Conceptual Model & Domain Dictionary",
       "file_type": "document",
       "node_kind": "page",
       "norm_label": "backend-domain-model-draft.md",
@@ -9404,7 +9483,7 @@
       "label": "temp/README.md",
       "_origin": "ast",
       "community": 119,
-      "community_name": "temp/README.md",
+      "community_name": "Nyare Conceptual Model & Domain Dictionary",
       "file_type": "document",
       "node_kind": "page",
       "norm_label": "temp/readme.md",
@@ -9416,7 +9495,7 @@
       "label": "Contents",
       "_origin": "ast",
       "community": 119,
-      "community_name": "temp/README.md",
+      "community_name": "Nyare Conceptual Model & Domain Dictionary",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "contents",
@@ -9428,7 +9507,7 @@
       "label": "Temporary Architectural Notes (Backend & AI Architecture Drafts)",
       "_origin": "ast",
       "community": 119,
-      "community_name": "temp/README.md",
+      "community_name": "Nyare Conceptual Model & Domain Dictionary",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "temporary architectural notes (backend & ai architecture drafts)",
@@ -11624,22 +11703,11 @@
       "source_location": "L1"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_repository_courserepository",
-      "label": "CourseRepository.java",
-      "_origin": "ast",
-      "community": 139,
-      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
-      "file_type": "code",
-      "norm_label": "courserepository.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/CourseRepository.java",
-      "source_location": "L1"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_repository_schedulerepository",
       "label": "ScheduleRepository.java",
       "_origin": "ast",
       "community": 139,
-      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "community_name": "ScheduleRepository",
       "file_type": "code",
       "norm_label": "schedulerepository.java",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/ScheduleRepository.java",
@@ -11650,20 +11718,9 @@
       "label": "group.four.nyare.nyare.model.Schedule",
       "_origin": "ast",
       "community": 139,
-      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "community_name": "ScheduleRepository",
       "file_type": "code",
       "norm_label": "group.four.nyare.nyare.model.schedule",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "org_springframework_data_jpa_repository_jparepository",
-      "label": "org.springframework.data.jpa.repository.JpaRepository",
-      "_origin": "ast",
-      "community": 139,
-      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
-      "file_type": "code",
-      "norm_label": "org.springframework.data.jpa.repository.jparepository",
       "source_file": "",
       "source_location": ""
     },
@@ -12471,6 +12528,181 @@
       "source_location": "L26"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repository_academiceventrepository",
+      "label": "AcademicEventRepository.java",
+      "_origin": "ast",
+      "community": 160,
+      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "file_type": "code",
+      "norm_label": "academiceventrepository.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repository_noterepository",
+      "label": "NoteRepository.java",
+      "_origin": "ast",
+      "community": 160,
+      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "file_type": "code",
+      "norm_label": "noterepository.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/NoteRepository.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_repository_taskrepository",
+      "label": "TaskRepository.java",
+      "_origin": "ast",
+      "community": 160,
+      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "file_type": "code",
+      "norm_label": "taskrepository.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/TaskRepository.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "org_springframework_data_jpa_repository_jparepository",
+      "label": "org.springframework.data.jpa.repository.JpaRepository",
+      "_origin": "ast",
+      "community": 160,
+      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "file_type": "code",
+      "norm_label": "org.springframework.data.jpa.repository.jparepository",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_springframework_data_jpa_repository_query",
+      "label": "org.springframework.data.jpa.repository.Query",
+      "_origin": "ast",
+      "community": 160,
+      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
+      "file_type": "code",
+      "norm_label": "org.springframework.data.jpa.repository.query",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "docs_conceptual_model_1_academic_event_vs_deadline",
+      "label": "1. Academic Event vs. Deadline",
+      "_origin": "ast",
+      "community": 161,
+      "community_name": "3. Important Domain Distinctions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "1. academic event vs. deadline",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L96"
+    },
+    {
+      "id": "docs_conceptual_model_2_task_vs_academic_event",
+      "label": "2. Task vs. Academic Event",
+      "_origin": "ast",
+      "community": 161,
+      "community_name": "3. Important Domain Distinctions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "2. task vs. academic event",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L100"
+    },
+    {
+      "id": "docs_conceptual_model_3_academic_context_vs_task",
+      "label": "3. Academic Context vs. Task",
+      "_origin": "ast",
+      "community": 161,
+      "community_name": "3. Important Domain Distinctions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "3. academic context vs. task",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L104"
+    },
+    {
+      "id": "docs_conceptual_model_3_important_domain_distinctions",
+      "label": "3. Important Domain Distinctions",
+      "_origin": "ast",
+      "community": 161,
+      "community_name": "3. Important Domain Distinctions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "3. important domain distinctions",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L94"
+    },
+    {
+      "id": "docs_conceptual_model_4_academic_context_vs_academic_event",
+      "label": "4. Academic Context vs. Academic Event",
+      "_origin": "ast",
+      "community": 161,
+      "community_name": "3. Important Domain Distinctions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4. academic context vs. academic event",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L110"
+    },
+    {
+      "id": "docs_conceptual_model_5_recommended_date_vs_deadline",
+      "label": "5. Recommended Date vs. Deadline",
+      "_origin": "ast",
+      "community": 161,
+      "community_name": "3. Important Domain Distinctions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "5. recommended date vs. deadline",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L116"
+    },
+    {
+      "id": "docs_conceptual_model_6_extractability_vs_plannability",
+      "label": "6. Extractability vs. Plannability",
+      "_origin": "ast",
+      "community": 161,
+      "community_name": "3. Important Domain Distinctions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "6. extractability vs. plannability",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L120"
+    },
+    {
+      "id": "docs_conceptual_model_7_source_information_vs_extracted_information_materialization",
+      "label": "7. Source Information vs. Extracted Information (Materialization)",
+      "_origin": "ast",
+      "community": 161,
+      "community_name": "3. Important Domain Distinctions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "7. source information vs. extracted information (materialization)",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L126"
+    },
+    {
+      "id": "docs_conceptual_model_8_task_consideration_vs_task_updating",
+      "label": "8. Task Consideration vs. Task Updating",
+      "_origin": "ast",
+      "community": 161,
+      "community_name": "3. Important Domain Distinctions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "8. task consideration vs. task updating",
+      "source_file": "docs/conceptual-model.md",
+      "source_location": "L130"
+    },
+    {
+      "id": "agents_skills_dr_jskill_docs_workshop_00_introduction",
+      "label": "00-introduction.md",
+      "_origin": "ast",
+      "community": 18,
+      "community_name": "workshop/README.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "00-introduction.md",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/00-introduction.md",
+      "source_location": "L1"
+    },
+    {
       "id": "agents_skills_dr_jskill_docs_workshop_01_setup",
       "label": "01-setup.md",
       "_origin": "ast",
@@ -12576,6 +12808,18 @@
       "node_kind": "page",
       "norm_label": "09-going-further.md",
       "source_file": ".agents/skills/dr-jskill/docs/workshop/09-going-further.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "agents_skills_dr_jskill_docs_workshop_appendix_a_prompts",
+      "label": "appendix-a-prompts.md",
+      "_origin": "ast",
+      "community": 18,
+      "community_name": "workshop/README.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "appendix-a-prompts.md",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-a-prompts.md",
       "source_location": "L1"
     },
     {
@@ -13847,11 +14091,22 @@
       "source_location": "L34"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder",
+      "label": "TaggedPromptBuilder.java",
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "taggedpromptbuilder.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L1"
+    },
+    {
       "id": "backend_src_main_java_group_four_nyare_nyare_config_webconfig",
       "label": "WebConfig.java",
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "webconfig.java",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/config/WebConfig.java",
@@ -13862,18 +14117,29 @@
       "label": "Override",
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "override",
       "source_file": "",
       "source_location": ""
     },
     {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest",
+      "label": "TaggedPromptBuilderTest.java",
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "taggedpromptbuildertest.java",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L1"
+    },
+    {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest",
       "label": "SpringAiIntegrationTest.java",
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "springaiintegrationtest.java",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
@@ -13884,7 +14150,7 @@
       "label": "WebConfigTest.java",
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "webconfigtest.java",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
@@ -13895,7 +14161,7 @@
       "label": "Override",
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "override",
       "source_file": "",
@@ -13906,7 +14172,7 @@
       "label": "NyareApplicationTests.java",
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "nyareapplicationtests.java",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/NyareApplicationTests.java",
@@ -13917,7 +14183,7 @@
       "label": "org.junit.jupiter.api.DisplayName",
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "org.junit.jupiter.api.displayname",
       "source_file": "",
@@ -13928,9 +14194,20 @@
       "label": "org.junit.jupiter.api.Test",
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "org.junit.jupiter.api.test",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_springframework_ai_chat_messages_usermessage",
+      "label": "org.springframework.ai.chat.messages.UserMessage",
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "org.springframework.ai.chat.messages.usermessage",
       "source_file": "",
       "source_location": ""
     },
@@ -13939,9 +14216,20 @@
       "label": "org.springframework.ai.chat.model.ChatModel",
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "org.springframework.ai.chat.model.chatmodel",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_springframework_ai_chat_prompt_prompt",
+      "label": "org.springframework.ai.chat.prompt.Prompt",
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "org.springframework.ai.chat.prompt.prompt",
       "source_file": "",
       "source_location": ""
     },
@@ -13950,7 +14238,7 @@
       "label": "org.springframework.boot.test.context.SpringBootTest",
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "org.springframework.boot.test.context.springboottest",
       "source_file": "",
@@ -13961,7 +14249,7 @@
       "label": "org.springframework.context.annotation.Configuration",
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "org.springframework.context.annotation.configuration",
       "source_file": "",
@@ -13972,7 +14260,7 @@
       "label": "org.springframework.web.cors.CorsConfiguration",
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "org.springframework.web.cors.corsconfiguration",
       "source_file": "",
@@ -13983,7 +14271,7 @@
       "label": "org.springframework.web.servlet.config.annotation.CorsRegistry",
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "org.springframework.web.servlet.config.annotation.corsregistry",
       "source_file": "",
@@ -13994,23 +14282,33 @@
       "label": "org.springframework.web.servlet.config.annotation.WebMvcConfigurer",
       "_origin": "ast",
       "community": 31,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
+      "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "org.springframework.web.servlet.config.annotation.webmvcconfigurer",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "agents_skills_dr_jskill_docs_workshop_appendix_a_prompts",
-      "label": "appendix-a-prompts.md",
+      "id": "prompt",
+      "label": "Prompt",
       "_origin": "ast",
-      "community": 33,
-      "community_name": "Appendix A \u2014 Prompt cheat sheet",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "appendix-a-prompts.md",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-a-prompts.md",
-      "source_location": "L1"
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "prompt",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "usermessage",
+      "label": "UserMessage",
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "usermessage",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "agents_skills_dr_jskill_docs_workshop_appendix_a_prompts_appendix_a_prompt_cheat_sheet",
@@ -15396,18 +15694,6 @@
       "norm_label": "when to write tests yourself vs. ask the agent",
       "source_file": ".agents/skills/dr-jskill/docs/workshop/06-testing.md",
       "source_location": "L171"
-    },
-    {
-      "id": "agents_skills_dr_jskill_docs_workshop_00_introduction",
-      "label": "00-introduction.md",
-      "_origin": "ast",
-      "community": 56,
-      "community_name": "00 \u2014 Introduction",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "00-introduction.md",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/00-introduction.md",
-      "source_location": "L1"
     },
     {
       "id": "agents_skills_dr_jskill_docs_workshop_00_introduction_00_introduction",
@@ -17452,7 +17738,7 @@
       "node_kind": "heading",
       "norm_label": "core architecture & invariants",
       "source_file": "backend/AGENTS.md",
-      "source_location": "L27"
+      "source_location": "L28"
     },
     {
       "id": "backend_agents_domain_model_group_four_nyare_nyare_model",
@@ -17464,7 +17750,7 @@
       "node_kind": "heading",
       "norm_label": "domain model (`group.four.nyare.nyare.model`)",
       "source_file": "backend/AGENTS.md",
-      "source_location": "L15"
+      "source_location": "L16"
     },
     {
       "id": "backend_agents_knowledge_graph_graphify",
@@ -17476,7 +17762,7 @@
       "node_kind": "heading",
       "norm_label": "knowledge graph (`graphify`)",
       "source_file": "backend/AGENTS.md",
-      "source_location": "L43"
+      "source_location": "L44"
     },
     {
       "id": "backend_agents_tech_stack",
@@ -17500,7 +17786,7 @@
       "node_kind": "heading",
       "norm_label": "verification & build tiering",
       "source_file": "backend/AGENTS.md",
-      "source_location": "L52"
+      "source_location": "L53"
     },
     {
       "id": "backend_docs_conventions_services_and_tx_1_interface_implementation_structure",
@@ -21888,6 +22174,102 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_blanktagname_throwsexception",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_blanktagname_throwsexception",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_buildprompt_createssystemandusermessages",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_buildprompt_createssystemandusermessages",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_multipletags_assemblesformattedtext",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_multipletags_assemblesformattedtext",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_tagifpresent_skipsblankcontent",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_tagifpresent_skipsblankcontent",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
       "source": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest",
       "target": "org_springframework_boot_test_context_springboottest",
       "relation": "references",
@@ -25152,6 +25534,90 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_builder",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_taggedpromptbuilder",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildprompt",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildusermessage",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L135",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildprompt",
+      "target": "prompt",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L136",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildusermessage",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildtext",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildusermessage",
+      "target": "usermessage",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_create",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_taggedpromptbuilder",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_tagifpresent",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_tag",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L86",
+      "weight": 1.0
+    },
+    {
       "source": "backend_src_main_java_group_four_nyare_nyare_model_validation_imagereferencesvalidator_imagereferencesvalidator_isvalid",
       "target": "backend_src_main_java_group_four_nyare_nyare_model_validation_imagereferencesvalidator_imagereferencesvalidator_extractmarkdownimagereferences",
       "relation": "calls",
@@ -25173,6 +25639,42 @@
       "context": "call",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/NoteRepository.java",
       "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_buildprompt_createssystemandusermessages",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_create",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_multipletags_assemblesformattedtext",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_create",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_tagifpresent_skipsblankcontent",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_builder",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -26364,6 +26866,30 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder",
+      "target": "org_springframework_ai_chat_messages_usermessage",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder",
+      "target": "org_springframework_ai_chat_prompt_prompt",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
       "source": "backend_src_main_java_group_four_nyare_nyare_config_webconfig",
       "target": "org_springframework_context_annotation_configuration",
       "relation": "imports",
@@ -27356,6 +27882,42 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest",
+      "target": "org_springframework_ai_chat_prompt_prompt",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
       "source_location": "L6",
       "weight": 1.0
     },
@@ -28485,6 +29047,30 @@
       "context": "return_type",
       "source_file": ".agents/skills/caveman-compress/scripts/compress.py",
       "source_location": "L117",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildprompt",
+      "target": "org_springframework_ai_chat_prompt_prompt",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "return_type",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildusermessage",
+      "target": "org_springframework_ai_chat_messages_usermessage",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "return_type",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -34039,7 +34625,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/AGENTS.md",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -34050,7 +34636,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/AGENTS.md",
-      "source_location": "L27",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
@@ -34061,7 +34647,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/AGENTS.md",
-      "source_location": "L43",
+      "source_location": "L44",
       "weight": 1.0
     },
     {
@@ -34083,7 +34669,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/AGENTS.md",
-      "source_location": "L52",
+      "source_location": "L53",
       "weight": 1.0
     },
     {
@@ -38564,6 +39150,17 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
       "source": "backend_src_main_java_group_four_nyare_nyare_config_webconfig",
       "target": "backend_src_main_java_group_four_nyare_nyare_config_webconfig_webconfig",
       "relation": "contains",
@@ -38957,6 +39554,17 @@
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
       "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest",
+      "target": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -40079,6 +40687,116 @@
       "confidence_score": 1.0,
       "source_file": ".agents/skills/caveman-compress/scripts/validate.py",
       "source_location": "L53",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildtext",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L112",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildusermessage",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L121",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildprompt",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_taggedpromptbuilder",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_create",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_builder",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_system",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_tag",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_tagifpresent",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_text",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -42634,6 +43352,50 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest",
+      "target": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_multipletags_assemblesformattedtext",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest",
+      "target": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_tagifpresent_skipsblankcontent",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest",
+      "target": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_buildprompt_createssystemandusermessages",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest",
+      "target": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_blanktagname_throwsexception",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
       "source": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest",
       "target": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest_verifychatmodelbeanloads",
       "relation": "method",
@@ -43895,7 +44657,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/AGENTS.md",
-      "source_location": "L38",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -43906,7 +44668,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/AGENTS.md",
-      "source_location": "L39",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -43917,7 +44679,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/AGENTS.md",
-      "source_location": "L39",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -43928,7 +44690,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/AGENTS.md",
-      "source_location": "L39",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -43939,7 +44701,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/AGENTS.md",
-      "source_location": "L39",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -43950,7 +44712,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/AGENTS.md",
-      "source_location": "L39",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -43961,7 +44723,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/AGENTS.md",
-      "source_location": "L39",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -43972,7 +44734,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/AGENTS.md",
-      "source_location": "L39",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -43983,7 +44745,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/AGENTS.md",
-      "source_location": "L39",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -44163,6 +44925,54 @@
       "context": "call",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/model/validation/ImageReferencesValidator.java",
       "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_blanktagname_throwsexception",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_tag",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L92",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_buildprompt_createssystemandusermessages",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildprompt",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L73",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_multipletags_assemblesformattedtext",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildtext",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_tagifpresent_skipsblankcontent",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildtext",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -46614,5 +47424,5 @@
       "source_file": ".agents/skills/dr-jskill/references/SPRING-BOOT-4.md"
     }
   ],
-  "built_at_commit": "7eac70df96d8604ca30c3733bf268838bd6d43b6"
+  "built_at_commit": "1e1bf621330a9a85f1a9bbd4dc0f35869728c325"
 }

@@ -1,0 +1,25 @@
+# TaskController Specification
+
+> 1 nodes
+
+## Key Concepts
+
+- **TaskController Specification** (0 connections) — `docs/superpowers/plans/2026-09-13-task-manager-service.md`
+
+## Relationships
+
+- No strong cross-community connections detected
+
+## Source Files
+
+- `docs/superpowers/plans/2026-09-13-task-manager-service.md`
+
+## Audit Trail
+
+- EXTRACTED: 0 (0%)
+- INFERRED: 0 (0%)
+- AMBIGUOUS: 0 (0%)
+
+---
+
+*Part of the graphify knowledge wiki. See [index](index.md) to navigate.*
