@@ -43,3 +43,11 @@ All subpackages are **strictly lowercase**:
 - `group.four.nyare.nyare.model.enums`
 - `group.four.nyare.nyare.dto`
 - `group.four.nyare.nyare.exception`
+
+## 4. Modern Standards & Deprecation Policy
+
+1. Do not use deprecated classes, methods, annotations, or APIs.
+2. Replace deprecated elements with current alternatives supported by Java 25 and Spring Boot.
+3. Review official documentation before you use framework features.
+4. Avoid obsolete programming practices in all application layers.
+

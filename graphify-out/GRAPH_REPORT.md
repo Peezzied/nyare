@@ -1,16 +1,16 @@
 # Graph Report - nyare  (2026-09-20)
 
 ## Corpus Check
-- 218 files · ~246,426 words
+- 220 files · ~247,204 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1730 nodes · 2282 edges · 161 communities (108 shown, 45 thin omitted)
+- 1747 nodes · 2327 edges · 161 communities (108 shown, 45 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 70 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c4fc2f8f`
+- Built from commit: `33ba1916`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -333,8 +333,8 @@ Cohesion: 0.40
 Nodes (5): graphify Watch Mode, graphify Git Post-Commit Hook, graphify Whisper Audio/Video Transcription, graphify Cluster-Only Mode, graphify Incremental Update (--update)
 
 ### Community 31 - "org.junit.jupiter.api.Test"
-Cohesion: 0.08
-Nodes (21): TaggedPromptBuilder, Override, WebConfig, TaggedPromptBuilderTest, SpringAiIntegrationTest, Override, TestCorsRegistry, WebConfigTest (+13 more)
+Cohesion: 0.07
+Nodes (26): CsvParser, TaggedPromptBuilder, Override, WebConfig, CsvParserTest, SampleTask, TaggedPromptBuilderTest, SpringAiIntegrationTest (+18 more)
 
 ### Community 32 - "Social Icon"
 Cohesion: 0.40
@@ -646,18 +646,18 @@ Nodes (9): 1. Academic Event vs. Deadline, 2. Task vs. Academic Event, 3. Academ
 
 ## Knowledge Gaps
 - **670 isolated node(s):** `{ flags, positional }`, `outputDir`, `{ flags, positional }`, `outputDir`, `DEFAULT_BOOT_FALLBACK` (+665 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 959 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 960 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **45 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Note` connect `Note` to `jakarta.persistence.Entity`, `Task`, `AcademicEvent`, `AcademicContext`, `.updateImageMetadata`?**
-  _High betweenness centrality (0.022) - this node is a cross-community bridge._
-- **Why does `NoteContent` connect `NoteContent` to `NoteResponse`, `ImageMetadata`, `ImageReferencesValidator`, `.updateImageMetadata`, `NoteContentConverter`, `ValidImageReferences`?**
-  _High betweenness centrality (0.015) - this node is a cross-community bridge._
+  _High betweenness centrality (0.021) - this node is a cross-community bridge._
 - **Why does `Task` connect `Task` to `Note`, `TaskStatus`, `org.springframework.data.jpa.repository.JpaRepository`, `jakarta.persistence.Entity`?**
-  _High betweenness centrality (0.012) - this node is a cross-community bridge._
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
+- **Why does `NoteContent` connect `NoteContent` to `NoteResponse`, `ImageMetadata`, `ImageReferencesValidator`, `.updateImageMetadata`, `NoteContentConverter`, `ValidImageReferences`?**
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **What connects `{ flags, positional }`, `outputDir`, `{ flags, positional }` to the rest of the system?**
   _670 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `versions.mjs` be split into smaller, more focused modules?**

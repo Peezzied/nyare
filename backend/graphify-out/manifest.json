@@ -36,9 +36,9 @@
     "semantic_hash": "3dda2c113eec4d669a7da472ff73d723"
   },
   "AGENTS.md": {
-    "mtime": 1789832313.0730271,
-    "seen": 1789833383.0386295,
-    "ast_hash": "1628d847185fb17fe7fcbc247e83a535",
+    "mtime": 1789838332.7569146,
+    "seen": 1789838340.3301067,
+    "ast_hash": "23b3b54a7ca297ea9832b1d76596c9a3",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-09-13-task-manager-service.md": {
@@ -132,9 +132,9 @@
     "semantic_hash": "48babd29e7e72bfb304754b938e9d522"
   },
   "docs/conventions.md": {
-    "mtime": 1789409356.5909526,
-    "seen": 1789409366.7879457,
-    "ast_hash": "dd520fb3f1b8bad1b5d5347726443bea",
+    "mtime": 1789838325.3938003,
+    "seen": 1789838340.3301191,
+    "ast_hash": "13b754f08155ce03d850abe251235232",
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java": {
@@ -180,10 +180,10 @@
     "semantic_hash": "466d1c2ebbddb6e1189b9652f5f383ab"
   },
   "docs/conventions/architecture.md": {
-    "mtime": 1789378688.914137,
-    "seen": 1789379696.0033174,
-    "ast_hash": "b2e507c4e2a0d59ac2685658f4455194",
-    "semantic_hash": "b2e507c4e2a0d59ac2685658f4455194"
+    "mtime": 1789838312.4158657,
+    "seen": 1789838340.33012,
+    "ast_hash": "79a8ad6dcb321e05f1fbd03484fc7155",
+    "semantic_hash": ""
   },
   "docs/conventions/controllers-and-rest.md": {
     "mtime": 1789378715.4088044,
@@ -942,9 +942,9 @@
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java": {
-    "mtime": 1789837864.093102,
-    "seen": 1789837896.823617,
-    "ast_hash": "c037b5edb0cf8fabb410cd69b29db105",
+    "mtime": 1789838158.90722,
+    "seen": 1789838340.3300343,
+    "ast_hash": "2c27cc8e6aa921301e3470dd4e72436a",
     "semantic_hash": ""
   },
   "src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java": {

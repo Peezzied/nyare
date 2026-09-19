@@ -941,18 +941,6 @@
     "ast_hash": "c0165af2db99457e94a5e5017f835668",
     "semantic_hash": ""
   },
-  "src/main/java/group/four/nyare/nyare/ai/parser/AcademicContextCsvParser.java": {
-    "mtime": 1789837828.8291776,
-    "seen": 1789837896.8236144,
-    "ast_hash": "c28a22cba76c481d9ee917a3a0c61323",
-    "semantic_hash": ""
-  },
-  "src/test/java/group/four/nyare/nyare/ai/parser/AcademicContextCsvParserTest.java": {
-    "mtime": 1789837264.9992514,
-    "seen": 1789837408.312179,
-    "ast_hash": "c6b6dcf76e77da65132cd04d5205462b",
-    "semantic_hash": ""
-  },
   "src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java": {
     "mtime": 1789837864.093102,
     "seen": 1789837896.823617,

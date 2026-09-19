@@ -580,6 +580,19 @@
       "source_location": "L6"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser",
+      "label": "CsvParser",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "csvparser",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
+      "source_location": "L20"
+    },
+    {
       "id": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
       "label": "TaggedPromptBuilder",
       "_callable": true,
@@ -604,6 +617,32 @@
       "norm_label": "webconfig",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/config/WebConfig.java",
       "source_location": "L10"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest",
+      "label": "CsvParserTest",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "csvparsertest",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L12"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_sampletask",
+      "label": "SampleTask",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "sampletask",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L14"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest",
@@ -5050,6 +5089,108 @@
       "source_location": "L51"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_csvparser",
+      "label": ".CsvParser()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".csvparser()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
+      "source_location": "L30"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_getvalue",
+      "label": ".getValue()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "isMapped",
+            "receiver_type": "CSVRecord",
+            "lang": "java",
+            "line": "L127"
+          },
+          {
+            "callee": "get",
+            "receiver_type": "CSVRecord",
+            "lang": "java",
+            "line": "L128"
+          }
+        ]
+      },
+      "norm_label": ".getvalue()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
+      "source_location": "L126"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_parse",
+      "label": ".parse()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "emptyList",
+            "receiver_type": "Collections",
+            "lang": "java",
+            "line": "L85"
+          },
+          {
+            "callee": "builder",
+            "receiver_type": "CSVParser",
+            "lang": "java",
+            "line": "L107"
+          }
+        ]
+      },
+      "norm_label": ".parse()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
+      "source_location": "L83"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_tocsv",
+      "label": ".toCsv()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "builder",
+            "receiver_type": "CSVFormat",
+            "lang": "java",
+            "line": "L57"
+          },
+          {
+            "callee": "print",
+            "receiver_type": "CSVFormat",
+            "lang": "java",
+            "line": "L61"
+          },
+          {
+            "callee": "toString",
+            "receiver_type": "StringWriter",
+            "lang": "java",
+            "line": "L69"
+          }
+        ]
+      },
+      "norm_label": ".tocsv()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
+      "source_location": "L42"
+    },
+    {
       "id": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_builder",
       "label": ".builder()",
       "_callable": true,
@@ -5206,6 +5347,118 @@
       "norm_label": ".addcorsmappings()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/config/WebConfig.java",
       "source_location": "L13"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_getvalue_unmappedcolumn_returnsnull",
+      "label": ".getValue_unmappedColumn_returnsNull()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".getvalue_unmappedcolumn_returnsnull()",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L97"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_nullorblank_returnsemptylist",
+      "label": ".parse_nullOrBlank_returnsEmptyList()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".parse_nullorblank_returnsemptylist()",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L88"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_reader_convertsstream",
+      "label": ".parse_reader_convertsStream()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "parseInt",
+            "receiver_type": "Integer",
+            "lang": "java",
+            "line": "L78"
+          }
+        ]
+      },
+      "norm_label": ".parse_reader_convertsstream()",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L67"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_validcsvtext_returnsmappedobjects",
+      "label": ".parse_validCsvText_returnsMappedObjects()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "parseInt",
+            "receiver_type": "Integer",
+            "lang": "java",
+            "line": "L56"
+          }
+        ]
+      },
+      "norm_label": ".parse_validcsvtext_returnsmappedobjects()",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L44"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_tocsv_customitems_producesvalidcsv",
+      "label": ".toCsv_customItems_producesValidCsv()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "of",
+            "receiver_type": "List",
+            "lang": "java",
+            "line": "L21"
+          }
+        ]
+      },
+      "norm_label": ".tocsv_customitems_producesvalidcsv()",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L16"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_tocsv_nullorempty_returnsemptystring",
+      "label": ".toCsv_nullOrEmpty_returnsEmptyString()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "emptyList",
+            "receiver_type": "Collections",
+            "lang": "java",
+            "line": "L41"
+          }
+        ]
+      },
+      "norm_label": ".tocsv_nullorempty_returnsemptystring()",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L36"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_blanktagname_throwsexception",
@@ -14084,6 +14337,17 @@
       "source_location": "L34"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser",
+      "label": "CsvParser.java",
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "csvparser.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
+      "source_location": "L1"
+    },
+    {
       "id": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder",
       "label": "TaggedPromptBuilder.java",
       "_origin": "ast",
@@ -14115,6 +14379,17 @@
       "norm_label": "override",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest",
+      "label": "CsvParserTest.java",
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "csvparsertest.java",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L1"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest",
@@ -14170,6 +14445,28 @@
       "norm_label": "nyareapplicationtests.java",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/NyareApplicationTests.java",
       "source_location": "L1"
+    },
+    {
+      "id": "org_apache_commons_csv_csvformat",
+      "label": "org.apache.commons.csv.CSVFormat",
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "org.apache.commons.csv.csvformat",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_apache_commons_csv_csvrecord",
+      "label": "org.apache.commons.csv.CSVRecord",
+      "_origin": "ast",
+      "community": 31,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "org.apache.commons.csv.csvrecord",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "org_junit_jupiter_api_displayname",
@@ -22223,6 +22520,150 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_getvalue_unmappedcolumn_returnsnull",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L97",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_getvalue_unmappedcolumn_returnsnull",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L97",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_nullorblank_returnsemptylist",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_nullorblank_returnsemptylist",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_reader_convertsstream",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_reader_convertsstream",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_validcsvtext_returnsmappedobjects",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_validcsvtext_returnsmappedobjects",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_tocsv_customitems_producesvalidcsv",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_tocsv_customitems_producesvalidcsv",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_tocsv_nullorempty_returnsemptystring",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_tocsv_nullorempty_returnsemptystring",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
       "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_blanktagname_throwsexception",
       "target": "org_junit_jupiter_api_displayname",
       "relation": "references",
@@ -25583,6 +26024,18 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_parse",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_parse",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
       "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_builder",
       "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_taggedpromptbuilder",
       "relation": "calls",
@@ -25688,6 +26141,150 @@
       "context": "call",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/repository/NoteRepository.java",
       "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_getvalue_unmappedcolumn_returnsnull",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_getvalue",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L105",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_getvalue_unmappedcolumn_returnsnull",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_parse",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L105",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_nullorblank_returnsemptylist",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_parse",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_reader_convertsstream",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_parse",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_reader_convertsstream",
+      "target": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_sampletask",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_reader_convertsstream",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_getvalue",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_validcsvtext_returnsmappedobjects",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_parse",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L55",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_validcsvtext_returnsmappedobjects",
+      "target": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_sampletask",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L55",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_validcsvtext_returnsmappedobjects",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_getvalue",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_tocsv_customitems_producesvalidcsv",
+      "target": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_sampletask",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_tocsv_customitems_producesvalidcsv",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_tocsv",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_tocsv_nullorempty_returnsemptystring",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_tocsv",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -25808,6 +26405,18 @@
       "context": "call",
       "source_file": "backend/docs/javadoc/script-files/search-page.js",
       "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser",
+      "target": "org_apache_commons_csv_csvformat",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -26024,6 +26633,18 @@
       "context": "field",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java",
       "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_parse",
+      "target": "org_apache_commons_csv_csvrecord",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
+      "source_location": "L98",
       "weight": 1.0
     },
     {
@@ -26948,6 +27569,30 @@
       "context": "import",
       "source_file": ".agents/skills/dr-jskill/scripts/create-web-project.mjs",
       "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser",
+      "target": "org_apache_commons_csv_csvformat",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser",
+      "target": "org_apache_commons_csv_csvrecord",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -28007,6 +28652,30 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
       "source": "backend_src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest",
       "target": "org_junit_jupiter_api_displayname",
       "relation": "imports",
@@ -28616,6 +29285,18 @@
       "context": "parameter_type",
       "source_file": ".agents/skills/caveman-compress/scripts/validate.py",
       "source_location": "L382",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_getvalue",
+      "target": "org_apache_commons_csv_csvrecord",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
+      "source_location": "L126",
       "weight": 1.0
     },
     {
@@ -39271,6 +39952,17 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
       "source": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder",
       "target": "backend_src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
       "relation": "contains",
@@ -39685,6 +40377,28 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest",
+      "target": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest",
+      "target": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_sampletask",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
       "source_location": "L14",
       "weight": 1.0
     },
@@ -40830,6 +41544,50 @@
       "confidence_score": 1.0,
       "source_file": ".agents/skills/caveman-compress/scripts/validate.py",
       "source_location": "L53",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_getvalue",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
+      "source_location": "L126",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_csvparser",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_tocsv",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_parse",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
+      "source_location": "L98",
       "weight": 1.0
     },
     {
@@ -43514,6 +44272,72 @@
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java",
       "source_location": "L66",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest",
+      "target": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_tocsv_customitems_producesvalidcsv",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest",
+      "target": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_tocsv_nullorempty_returnsemptystring",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest",
+      "target": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_validcsvtext_returnsmappedobjects",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest",
+      "target": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_reader_convertsstream",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest",
+      "target": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_nullorblank_returnsemptylist",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest",
+      "target": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_getvalue_unmappedcolumn_returnsnull",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -47601,5 +48425,5 @@
       "source_file": ".agents/skills/dr-jskill/references/SPRING-BOOT-4.md"
     }
   ],
-  "built_at_commit": "c4fc2f8f3bb5c2bafab4e094dde47a561950b7be"
+  "built_at_commit": "33ba1916ed7ef46f3c9e34883066a04e023725e9"
 }
