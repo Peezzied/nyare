@@ -1,38 +1,42 @@
 ---
-name: spring-ai-google-genai
-description: Use when integrating Google GenAI (Gemini) models, configuring Spring AI chat clients, implementing function calling tools, processing multimodal inputs, or configuring Gemini context caching in Spring Boot applications.
+name: man-spring
+description: Integrate Google GenAI (Gemini) models, configure Spring AI chat clients, implement tool calling, process multimodal inputs, manage context caching in Spring Boot.
 ---
 
-# Spring AI Google GenAI (Gemini)
+# man-spring: Spring AI Google GenAI (Gemini)
 
 ## Overview
 
-This skill guides development with the Spring AI Google GenAI module. It provides patterns to integrate Google Gemini models into Spring Boot applications.
+Skill guide development with Spring AI Google GenAI module. Integrate Google Gemini models into Spring Boot.
 
-**REQUIRED SUB-SKILL:** Use `dr-jskill` for base Spring Boot configuration, Java 25 setup, and project architecture.
+> [!IMPORTANT]
+> Query `spring-docs` MCP server first for Spring AI docs and reference.
+> Use `search_spring_docs`, `get_spring_reference`, `search_spring_concepts` before web search.
+
+**Sub-skill:** Use `dr-jskill` for base Spring Boot setup, Java 25 config, project architecture.
 
 ---
 
 ## When to Use
 
 - Configure `GoogleGenAiChatModel` or `ChatClient` for Gemini models.
-- Send multimodal prompts containing text, images, or audio.
-- Execute tool calls with Spring AI `@Tool` annotations.
-- Extract structured records from model responses.
-- Manage Gemini cached content with `GoogleGenAiCachedContentService`.
-- Configure model safety settings, thinking levels, or search retrieval.
+- Send multimodal prompts with text, images, audio.
+- Execute tool calls with Spring AI `@Tool`.
+- Extract structured records from model output.
+- Manage Gemini cache with `GoogleGenAiCachedContentService`.
+- Set safety rules, thinking levels, search retrieval.
 
 ### When NOT to Use
 
-- Use standard REST controllers without AI integration (use `dr-jskill`).
-- Modify JPA domain entities without AI logic (use `model-craft`).
-- Integrate OpenAI or Anthropic models directly.
+- Standard REST endpoints without AI (use `dr-jskill`).
+- JPA domain entity edits without AI logic (use `model-craft`).
+- Direct OpenAI or Anthropic integrations.
 
 ---
 
-## Dependency Configuration
+## Dependencies
 
-Configure the Spring AI Bill of Materials (BOM) and Google GenAI starter in your build file.
+Add Spring AI BOM and Google GenAI starter to build file.
 
 ### Maven (`pom.xml`)
 
@@ -75,7 +79,7 @@ dependencies {
 
 ## Application Properties
 
-Store your API key in environment variables. Define model parameters in `application.properties`.
+Store API key in environment variable. Set model config in `application.properties`.
 
 ```properties
 # Google GenAI Authentication
@@ -91,11 +95,11 @@ spring.ai.google.genai.chat.options.top-k=40
 
 ---
 
-## Core Architectural Components
+## Core Components
 
 ### 1. `GoogleGenAiChatModel`
 
-`GoogleGenAiChatModel` implements the Spring AI `ChatModel` and `StreamingChatModel` interfaces. Spring Boot auto-configures a bean for this class.
+`GoogleGenAiChatModel` implement Spring AI `ChatModel` and `StreamingChatModel`. Spring Boot auto-configure bean.
 
 ```java
 package group.four.nyare.nyare.service;
@@ -123,9 +127,9 @@ public class GeminiAssistantService {
 
 ---
 
-### 2. High-Level `ChatClient` Usage
+### 2. High-Level `ChatClient`
 
-`ChatClient` provides a fluent API for prompt construction, system instructions, and entity extraction.
+`ChatClient` provide fluent API for prompts, system instructions, entity extraction.
 
 ```java
 package group.four.nyare.nyare.service;
@@ -157,7 +161,7 @@ public class StudyPlannerAiService {
 
 ### 3. Structured Output Extraction
 
-Extract structured Java records directly from Gemini responses.
+Extract Java records direct from Gemini responses.
 
 ```java
 package group.four.nyare.nyare.service;
@@ -193,7 +197,7 @@ public class TaskExtractorService {
 
 ### 4. Multimodal Inputs
 
-Pass media attachments such as images or documents to Gemini models.
+Pass media attachments (images, audio, documents) to Gemini models.
 
 ```java
 package group.four.nyare.nyare.service;
@@ -227,7 +231,7 @@ public class SyllabusAnalysisService {
 
 ### 5. Function Calling with `@Tool`
 
-Register Java methods as tools for Gemini model execution.
+Register Java methods as tools for model execution.
 
 ```java
 package group.four.nyare.nyare.tool;
@@ -265,7 +269,7 @@ public String planDayWithTools(String request) {
 
 ### 6. Dynamic `GoogleGenAiChatOptions`
 
-Configure request-specific options including safety settings, thinking levels, and search retrieval.
+Set per-request options: safety filters, thinking level, search grounding.
 
 ```java
 package group.four.nyare.nyare.service;
@@ -313,9 +317,9 @@ public class AdvancedGenAiService {
 
 ---
 
-### 7. Context Caching Management
+### 7. Context Caching
 
-Use `GoogleGenAiCachedContentService` to cache large static contexts across multiple calls.
+Use `GoogleGenAiCachedContentService` to cache large static tokens across calls.
 
 ```java
 package group.four.nyare.nyare.service;
@@ -350,36 +354,42 @@ public class CourseMaterialCacheService {
 
 ---
 
-## Common Mistakes & Resolutions
+## Common Pitfalls
 
-| Mistake | Cause | Resolution |
+| Mistake | Cause | Fix |
 | :--- | :--- | :--- |
-| Hardcoded API keys in repository files | Secret exposure risk | Externalize key to `GEMINI_API_KEY` environment variable. |
-| Missing BOM import | Version conflicts across Spring AI modules | Import `spring-ai-bom` in `<dependencyManagement>`. |
-| Modifying domain entities inside AI services | Entity layer violation | Keep AI inputs and outputs as DTOs or Java records. |
-| Incompatible media MIME types | Unsupported multimodal format | Validate image and audio MIME types with `MimeTypeDetector`. |
-| Unhandled API rate limits | Rapid sequential requests | Configure retry templates and backoff periods. |
+| Hardcoded API key in code | Secret leak risk | Store key in `GEMINI_API_KEY` env var. |
+| Missing BOM import | Version conflict across modules | Import `spring-ai-bom` in `<dependencyManagement>`. |
+| Mutate domain entity in AI service | Architecture layer violation | Use DTO or Java record for AI input/output. |
+| Invalid media MIME type | Unsupported format | Check MIME type with `MimeTypeDetector`. |
+| Unhandled API rate limit | Fast sequential calls | Add retry template with exponential backoff. |
 
 ---
 
 ## Quick Reference
 
-| Class / Component | Package | Primary Responsibility |
+| Class / Component | Package | Role |
 | :--- | :--- | :--- |
-| `GoogleGenAiChatModel` | `org.springframework.ai.google.genai` | Executes chat interactions with Gemini models. |
-| `GoogleGenAiChatOptions` | `org.springframework.ai.google.genai` | Configures model runtime options and parameters. |
-| `GoogleGenAiSafetySetting` | `org.springframework.ai.google.genai.common` | Defines content moderation thresholds and categories. |
-| `GoogleGenAiCachedContentService` | `org.springframework.ai.google.genai.cache` | Creates and manages reusable cached content tokens. |
-| `GoogleGenAiUsage` | `org.springframework.ai.google.genai.metadata` | Reports token usage including thinking and cache tokens. |
-| `GoogleGenAiToolCallingManager` | `org.springframework.ai.google.genai.schema` | Manages tool execution and schema conversions. |
+| `GoogleGenAiChatModel` | `org.springframework.ai.google.genai` | Run chat calls with Gemini models. |
+| `GoogleGenAiChatOptions` | `org.springframework.ai.google.genai` | Configure runtime model options. |
+| `GoogleGenAiSafetySetting` | `org.springframework.ai.google.genai.common` | Set safety filter threshold and category. |
+| `GoogleGenAiCachedContentService` | `org.springframework.ai.google.genai.cache` | Manage reusable cached context tokens. |
+| `GoogleGenAiUsage` | `org.springframework.ai.google.genai.metadata` | Token usage report (standard, thinking, cache). |
+| `GoogleGenAiToolCallingManager` | `org.springframework.ai.google.genai.schema` | Tool execution and schema map. |
 
 ---
 
-## External References
+## Documentation & References
 
-Consult these official links for additional API details and reference documentation:
+Query `spring-docs` MCP server first for official Spring AI docs, guides, best practices.
 
+MCP tools:
+- `search_spring_docs`: Search Spring AI docs by keyword.
+- `get_spring_reference`: Fetch specific Spring AI reference page.
+- `search_spring_concepts`: Search Spring AI architecture concepts.
+- `get_spring_best_practices`: Fetch recommended patterns for Spring AI.
+
+External links:
 - [Spring AI Google GenAI Javadoc](https://javadoc.io/doc/org.springframework.ai/spring-ai-google-genai/latest/index.html)
 - [Spring AI Getting Started Guide](https://docs.spring.io/spring-ai/reference/getting-started.html)
 - [Spring AI Google GenAI Chat Reference](https://docs.spring.io/spring-ai/reference/api/chat/google-genai-chat.html)
-
