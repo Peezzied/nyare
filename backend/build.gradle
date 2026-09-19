@@ -22,9 +22,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation platform("org.springframework.ai:spring-ai-bom:2.0.0")
+    implementation platform("me.paulschwarz:spring-dotenv-bom:5.1.0")
+    implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
     implementation 'org.xerial:sqlite-jdbc'
     implementation 'org.hibernate.orm:hibernate-community-dialects'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    developmentOnly "me.paulschwarz:springboot4-dotenv"
+    testImplementation "me.paulschwarz:springboot4-dotenv"
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
