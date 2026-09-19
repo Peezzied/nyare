@@ -61,5 +61,6 @@
   "59": "Course",
   "60": "TaskService",
   "61": "Test IntelliJ MCP",
-  "62": "Core Architectural Components"
+  "62": "Spring AI Google GenAI (Gemini)",
+  "63": "org.springframework.ai.chat.client.advisor.api.CallAdvisor"
 }

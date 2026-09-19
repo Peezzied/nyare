@@ -33,7 +33,6 @@
   "31": "4. Endpoints Specification",
   "32": "AcademicContext",
   "33": "Note",
-  "34": "org.springframework.data.jpa.repository.JpaRepository",
   "35": "jakarta.persistence.Entity",
   "36": "ScheduleResponse",
   "37": "search.js",

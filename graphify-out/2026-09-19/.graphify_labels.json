@@ -131,7 +131,7 @@
   "129": "4.2 List Notes by Course",
   "130": "4.4 Full Update of Note",
   "131": "4.6 Delete Note",
-  "132": "Nyare MVP Boundaries & Non-Goals",
+  "132": "TaskStatus",
   "133": "3. Error Handling (RFC 7807 Problem Details)",
   "134": "4. Endpoints Specification",
   "135": "ASD-STE100 Skill — Simplified Technical English for Agent Output",
@@ -139,7 +139,7 @@
   "137": "ste-lint.py",
   "138": "ScheduleResponse",
   "139": "ScheduleRepository",
-  "140": "Nyare System Overview",
+  "140": "TaskRequest",
   "141": "DejaVu fonts v2.37",
   "142": "jQuery v3.7.1",
   "143": "jQuery UI v1.14.1",
@@ -155,6 +155,7 @@
   "153": "Simplified Technical English (ASD-STE100)",
   "154": "Test IntelliJ MCP",
   "155": "Java and Gradle Sandbox Execution Rule",
+  "156": "TaskService",
   "158": "ASD-STE100 Rules",
   "159": "Linter Edge Cases"
 }

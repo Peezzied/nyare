@@ -48,6 +48,19 @@
   },
   "nodes": [
     {
+      "id": "src_main_java_group_four_nyare_nyare_controller_globalexceptionhandler_globalexceptionhandler",
+      "label": "GlobalExceptionHandler",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "AcademicEventResponse",
+      "file_type": "code",
+      "norm_label": "globalexceptionhandler",
+      "source_file": "src/main/java/group/four/nyare/nyare/controller/GlobalExceptionHandler.java",
+      "source_location": "L16"
+    },
+    {
       "id": "src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest",
       "label": "AcademicEventRequest",
       "_callable": true,
@@ -72,6 +85,32 @@
       "norm_label": "academiceventresponse",
       "source_file": "src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java",
       "source_location": "L10"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_exception_badrequestexception_badrequestexception",
+      "label": "BadRequestException",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "AcademicEventResponse",
+      "file_type": "code",
+      "norm_label": "badrequestexception",
+      "source_file": "src/main/java/group/four/nyare/nyare/exception/BadRequestException.java",
+      "source_location": "L16"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_exception_resourcenotfoundexception_resourcenotfoundexception",
+      "label": "ResourceNotFoundException",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "AcademicEventResponse",
+      "file_type": "code",
+      "norm_label": "resourcenotfoundexception",
+      "source_file": "src/main/java/group/four/nyare/nyare/exception/ResourceNotFoundException.java",
+      "source_location": "L6"
     },
     {
       "id": "src_main_java_group_four_nyare_nyare_service_academiceventservice_academiceventservice",
@@ -308,19 +347,6 @@
       "source_location": "L16"
     },
     {
-      "id": "src_main_java_group_four_nyare_nyare_controller_globalexceptionhandler_globalexceptionhandler",
-      "label": "GlobalExceptionHandler",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "ScheduleResponse",
-      "file_type": "code",
-      "norm_label": "globalexceptionhandler",
-      "source_file": "src/main/java/group/four/nyare/nyare/controller/GlobalExceptionHandler.java",
-      "source_location": "L16"
-    },
-    {
       "id": "src_main_java_group_four_nyare_nyare_dto_schedulerequest_schedulerequest",
       "label": "ScheduleRequest",
       "_callable": true,
@@ -345,32 +371,6 @@
       "norm_label": "scheduleresponse",
       "source_file": "src/main/java/group/four/nyare/nyare/dto/ScheduleResponse.java",
       "source_location": "L9"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_exception_badrequestexception_badrequestexception",
-      "label": "BadRequestException",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "ScheduleResponse",
-      "file_type": "code",
-      "norm_label": "badrequestexception",
-      "source_file": "src/main/java/group/four/nyare/nyare/exception/BadRequestException.java",
-      "source_location": "L16"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_exception_resourcenotfoundexception_resourcenotfoundexception",
-      "label": "ResourceNotFoundException",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "ScheduleResponse",
-      "file_type": "code",
-      "norm_label": "resourcenotfoundexception",
-      "source_file": "src/main/java/group/four/nyare/nyare/exception/ResourceNotFoundException.java",
-      "source_location": "L6"
     },
     {
       "id": "src_main_java_group_four_nyare_nyare_service_scheduleservice_scheduleservice",
@@ -542,6 +542,19 @@
       "source_location": "L14"
     },
     {
+      "id": "src_main_java_group_four_nyare_nyare_ai_advisor_promptaroundxmladvisor_promptaroundxmladvisor",
+      "label": "PromptAroundXmlAdvisor",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 63,
+      "community_name": "org.springframework.ai.chat.client.advisor.api.CallAdvisor",
+      "file_type": "code",
+      "norm_label": "promptaroundxmladvisor",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/advisor/PromptAroundXmlAdvisor.java",
+      "source_location": "L5"
+    },
+    {
       "id": "src_main_java_group_four_nyare_nyare_dto_imagemetadataupdaterequest_imagemetadataupdaterequest",
       "label": "ImageMetadataUpdateRequest",
       "_callable": true,
@@ -566,6 +579,102 @@
       "norm_label": "imagemetadata",
       "source_file": "src/main/java/group/four/nyare/nyare/model/ImageMetadata.java",
       "source_location": "L8"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_controller_globalexceptionhandler_globalexceptionhandler_handlebadrequest",
+      "label": ".handleBadRequest()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "AcademicEventResponse",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "forStatusAndDetail",
+            "receiver_type": "ProblemDetail",
+            "lang": "java",
+            "line": "L28"
+          },
+          {
+            "callee": "setTitle",
+            "receiver_type": "ProblemDetail",
+            "lang": "java",
+            "line": "L29"
+          }
+        ]
+      },
+      "norm_label": ".handlebadrequest()",
+      "source_file": "src/main/java/group/four/nyare/nyare/controller/GlobalExceptionHandler.java",
+      "source_location": "L26"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_controller_globalexceptionhandler_globalexceptionhandler_handleresourcenotfound",
+      "label": ".handleResourceNotFound()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "AcademicEventResponse",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "forStatusAndDetail",
+            "receiver_type": "ProblemDetail",
+            "lang": "java",
+            "line": "L21"
+          },
+          {
+            "callee": "setTitle",
+            "receiver_type": "ProblemDetail",
+            "lang": "java",
+            "line": "L22"
+          }
+        ]
+      },
+      "norm_label": ".handleresourcenotfound()",
+      "source_file": "src/main/java/group/four/nyare/nyare/controller/GlobalExceptionHandler.java",
+      "source_location": "L19"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_controller_globalexceptionhandler_globalexceptionhandler_handlevalidation",
+      "label": ".handleValidation()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "AcademicEventResponse",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "getBindingResult",
+            "receiver_type": "MethodArgumentNotValidException",
+            "lang": "java",
+            "line": "L35"
+          },
+          {
+            "callee": "joining",
+            "receiver_type": "Collectors",
+            "lang": "java",
+            "line": "L37"
+          },
+          {
+            "callee": "forStatusAndDetail",
+            "receiver_type": "ProblemDetail",
+            "lang": "java",
+            "line": "L38"
+          },
+          {
+            "callee": "setTitle",
+            "receiver_type": "ProblemDetail",
+            "lang": "java",
+            "line": "L39"
+          }
+        ]
+      },
+      "norm_label": ".handlevalidation()",
+      "source_file": "src/main/java/group/four/nyare/nyare/controller/GlobalExceptionHandler.java",
+      "source_location": "L33"
     },
     {
       "id": "src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_academiceventrequest",
@@ -878,6 +987,30 @@
       "norm_label": ".settitle()",
       "source_file": "src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java",
       "source_location": "L62"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_exception_badrequestexception_badrequestexception_badrequestexception",
+      "label": ".BadRequestException()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "AcademicEventResponse",
+      "file_type": "code",
+      "norm_label": ".badrequestexception()",
+      "source_file": "src/main/java/group/four/nyare/nyare/exception/BadRequestException.java",
+      "source_location": "L23"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_exception_resourcenotfoundexception_resourcenotfoundexception_resourcenotfoundexception",
+      "label": ".ResourceNotFoundException()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "AcademicEventResponse",
+      "file_type": "code",
+      "norm_label": ".resourcenotfoundexception()",
+      "source_file": "src/main/java/group/four/nyare/nyare/exception/ResourceNotFoundException.java",
+      "source_location": "L8"
     },
     {
       "id": "src_main_java_group_four_nyare_nyare_service_academiceventservice_academiceventservice_createevent",
@@ -1928,102 +2061,6 @@
       "source_location": "L28"
     },
     {
-      "id": "src_main_java_group_four_nyare_nyare_controller_globalexceptionhandler_globalexceptionhandler_handlebadrequest",
-      "label": ".handleBadRequest()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "ScheduleResponse",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "forStatusAndDetail",
-            "receiver_type": "ProblemDetail",
-            "lang": "java",
-            "line": "L28"
-          },
-          {
-            "callee": "setTitle",
-            "receiver_type": "ProblemDetail",
-            "lang": "java",
-            "line": "L29"
-          }
-        ]
-      },
-      "norm_label": ".handlebadrequest()",
-      "source_file": "src/main/java/group/four/nyare/nyare/controller/GlobalExceptionHandler.java",
-      "source_location": "L26"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_controller_globalexceptionhandler_globalexceptionhandler_handleresourcenotfound",
-      "label": ".handleResourceNotFound()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "ScheduleResponse",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "forStatusAndDetail",
-            "receiver_type": "ProblemDetail",
-            "lang": "java",
-            "line": "L21"
-          },
-          {
-            "callee": "setTitle",
-            "receiver_type": "ProblemDetail",
-            "lang": "java",
-            "line": "L22"
-          }
-        ]
-      },
-      "norm_label": ".handleresourcenotfound()",
-      "source_file": "src/main/java/group/four/nyare/nyare/controller/GlobalExceptionHandler.java",
-      "source_location": "L19"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_controller_globalexceptionhandler_globalexceptionhandler_handlevalidation",
-      "label": ".handleValidation()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "ScheduleResponse",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "getBindingResult",
-            "receiver_type": "MethodArgumentNotValidException",
-            "lang": "java",
-            "line": "L35"
-          },
-          {
-            "callee": "joining",
-            "receiver_type": "Collectors",
-            "lang": "java",
-            "line": "L37"
-          },
-          {
-            "callee": "forStatusAndDetail",
-            "receiver_type": "ProblemDetail",
-            "lang": "java",
-            "line": "L38"
-          },
-          {
-            "callee": "setTitle",
-            "receiver_type": "ProblemDetail",
-            "lang": "java",
-            "line": "L39"
-          }
-        ]
-      },
-      "norm_label": ".handlevalidation()",
-      "source_file": "src/main/java/group/four/nyare/nyare/controller/GlobalExceptionHandler.java",
-      "source_location": "L33"
-    },
-    {
       "id": "src_main_java_group_four_nyare_nyare_dto_schedulerequest_schedulerequest_getcourseid",
       "label": ".getCourseId()",
       "_callable": true,
@@ -2262,30 +2299,6 @@
       "norm_label": ".setstarttime()",
       "source_file": "src/main/java/group/four/nyare/nyare/dto/ScheduleResponse.java",
       "source_location": "L56"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_exception_badrequestexception_badrequestexception_badrequestexception",
-      "label": ".BadRequestException()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "ScheduleResponse",
-      "file_type": "code",
-      "norm_label": ".badrequestexception()",
-      "source_file": "src/main/java/group/four/nyare/nyare/exception/BadRequestException.java",
-      "source_location": "L23"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_exception_resourcenotfoundexception_resourcenotfoundexception_resourcenotfoundexception",
-      "label": ".ResourceNotFoundException()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "ScheduleResponse",
-      "file_type": "code",
-      "norm_label": ".resourcenotfoundexception()",
-      "source_file": "src/main/java/group/four/nyare/nyare/exception/ResourceNotFoundException.java",
-      "source_location": "L8"
     },
     {
       "id": "src_main_java_group_four_nyare_nyare_service_scheduleservice_scheduleservice_createschedule",
@@ -5064,6 +5077,61 @@
       "source_location": "L64"
     },
     {
+      "id": "org_springframework_http_problemdetail",
+      "label": "org.springframework.http.ProblemDetail",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "AcademicEventResponse",
+      "file_type": "code",
+      "norm_label": "org.springframework.http.problemdetail",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_springframework_web_bind_annotation_exceptionhandler",
+      "label": "org.springframework.web.bind.annotation.ExceptionHandler",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "AcademicEventResponse",
+      "file_type": "code",
+      "norm_label": "org.springframework.web.bind.annotation.exceptionhandler",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_springframework_web_bind_annotation_restcontrolleradvice",
+      "label": "org.springframework.web.bind.annotation.RestControllerAdvice",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "AcademicEventResponse",
+      "file_type": "code",
+      "norm_label": "org.springframework.web.bind.annotation.restcontrolleradvice",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_springframework_web_bind_methodargumentnotvalidexception",
+      "label": "org.springframework.web.bind.MethodArgumentNotValidException",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "AcademicEventResponse",
+      "file_type": "code",
+      "norm_label": "org.springframework.web.bind.methodargumentnotvalidexception",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_controller_globalexceptionhandler",
+      "label": "GlobalExceptionHandler.java",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "AcademicEventResponse",
+      "file_type": "code",
+      "norm_label": "globalexceptionhandler.java",
+      "source_file": "src/main/java/group/four/nyare/nyare/controller/GlobalExceptionHandler.java",
+      "source_location": "L1"
+    },
+    {
       "id": "src_main_java_group_four_nyare_nyare_dto_academiceventrequest",
       "label": "AcademicEventRequest.java",
       "_origin": "ast",
@@ -5083,6 +5151,61 @@
       "file_type": "code",
       "norm_label": "academiceventresponse.java",
       "source_file": "src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_exception_badrequestexception",
+      "label": "BadRequestException.java",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "AcademicEventResponse",
+      "file_type": "code",
+      "norm_label": "badrequestexception.java",
+      "source_file": "src/main/java/group/four/nyare/nyare/exception/BadRequestException.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_exception_resourcenotfoundexception",
+      "label": "ResourceNotFoundException.java",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "AcademicEventResponse",
+      "file_type": "code",
+      "norm_label": "resourcenotfoundexception.java",
+      "source_file": "src/main/java/group/four/nyare/nyare/exception/ResourceNotFoundException.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_service_academiceventservice",
+      "label": "AcademicEventService.java",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "AcademicEventResponse",
+      "file_type": "code",
+      "norm_label": "academiceventservice.java",
+      "source_file": "src/main/java/group/four/nyare/nyare/service/AcademicEventService.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_service_noteservice",
+      "label": "NoteService.java",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "AcademicEventResponse",
+      "file_type": "code",
+      "norm_label": "noteservice.java",
+      "source_file": "src/main/java/group/four/nyare/nyare/service/NoteService.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_service_scheduleservice",
+      "label": "ScheduleService.java",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "AcademicEventResponse",
+      "file_type": "code",
+      "norm_label": "scheduleservice.java",
+      "source_file": "src/main/java/group/four/nyare/nyare/service/ScheduleService.java",
       "source_location": "L1"
     },
     {
@@ -6689,61 +6812,6 @@
       "source_location": "L1"
     },
     {
-      "id": "org_springframework_http_problemdetail",
-      "label": "org.springframework.http.ProblemDetail",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "ScheduleResponse",
-      "file_type": "code",
-      "norm_label": "org.springframework.http.problemdetail",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "org_springframework_web_bind_annotation_exceptionhandler",
-      "label": "org.springframework.web.bind.annotation.ExceptionHandler",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "ScheduleResponse",
-      "file_type": "code",
-      "norm_label": "org.springframework.web.bind.annotation.exceptionhandler",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "org_springframework_web_bind_annotation_restcontrolleradvice",
-      "label": "org.springframework.web.bind.annotation.RestControllerAdvice",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "ScheduleResponse",
-      "file_type": "code",
-      "norm_label": "org.springframework.web.bind.annotation.restcontrolleradvice",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "org_springframework_web_bind_methodargumentnotvalidexception",
-      "label": "org.springframework.web.bind.MethodArgumentNotValidException",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "ScheduleResponse",
-      "file_type": "code",
-      "norm_label": "org.springframework.web.bind.methodargumentnotvalidexception",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_controller_globalexceptionhandler",
-      "label": "GlobalExceptionHandler.java",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "ScheduleResponse",
-      "file_type": "code",
-      "norm_label": "globalexceptionhandler.java",
-      "source_file": "src/main/java/group/four/nyare/nyare/controller/GlobalExceptionHandler.java",
-      "source_location": "L1"
-    },
-    {
       "id": "src_main_java_group_four_nyare_nyare_dto_schedulerequest",
       "label": "ScheduleRequest.java",
       "_origin": "ast",
@@ -6763,61 +6831,6 @@
       "file_type": "code",
       "norm_label": "scheduleresponse.java",
       "source_file": "src/main/java/group/four/nyare/nyare/dto/ScheduleResponse.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_exception_badrequestexception",
-      "label": "BadRequestException.java",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "ScheduleResponse",
-      "file_type": "code",
-      "norm_label": "badrequestexception.java",
-      "source_file": "src/main/java/group/four/nyare/nyare/exception/BadRequestException.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_exception_resourcenotfoundexception",
-      "label": "ResourceNotFoundException.java",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "ScheduleResponse",
-      "file_type": "code",
-      "norm_label": "resourcenotfoundexception.java",
-      "source_file": "src/main/java/group/four/nyare/nyare/exception/ResourceNotFoundException.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_service_academiceventservice",
-      "label": "AcademicEventService.java",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "ScheduleResponse",
-      "file_type": "code",
-      "norm_label": "academiceventservice.java",
-      "source_file": "src/main/java/group/four/nyare/nyare/service/AcademicEventService.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_service_noteservice",
-      "label": "NoteService.java",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "ScheduleResponse",
-      "file_type": "code",
-      "norm_label": "noteservice.java",
-      "source_file": "src/main/java/group/four/nyare/nyare/service/NoteService.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_service_scheduleservice",
-      "label": "ScheduleService.java",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "ScheduleResponse",
-      "file_type": "code",
-      "norm_label": "scheduleservice.java",
-      "source_file": "src/main/java/group/four/nyare/nyare/service/ScheduleService.java",
       "source_location": "L1"
     },
     {
@@ -7976,7 +7989,7 @@
       "label": "spring-ai-google-genai/SKILL.md",
       "_origin": "ast",
       "community": 62,
-      "community_name": "Core Architectural Components",
+      "community_name": "Spring AI Google GenAI (Gemini)",
       "file_type": "document",
       "frontmatter": {
         "name": "spring-ai-google-genai",
@@ -7992,7 +8005,7 @@
       "label": "1. `GoogleGenAiChatModel`",
       "_origin": "ast",
       "community": 62,
-      "community_name": "Core Architectural Components",
+      "community_name": "Spring AI Google GenAI (Gemini)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "1. `googlegenaichatmodel`",
@@ -8004,7 +8017,7 @@
       "label": "2. High-Level `ChatClient` Usage",
       "_origin": "ast",
       "community": 62,
-      "community_name": "Core Architectural Components",
+      "community_name": "Spring AI Google GenAI (Gemini)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "2. high-level `chatclient` usage",
@@ -8016,7 +8029,7 @@
       "label": "3. Structured Output Extraction",
       "_origin": "ast",
       "community": 62,
-      "community_name": "Core Architectural Components",
+      "community_name": "Spring AI Google GenAI (Gemini)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "3. structured output extraction",
@@ -8028,7 +8041,7 @@
       "label": "4. Multimodal Inputs",
       "_origin": "ast",
       "community": 62,
-      "community_name": "Core Architectural Components",
+      "community_name": "Spring AI Google GenAI (Gemini)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "4. multimodal inputs",
@@ -8040,7 +8053,7 @@
       "label": "5. Function Calling with `@Tool`",
       "_origin": "ast",
       "community": 62,
-      "community_name": "Core Architectural Components",
+      "community_name": "Spring AI Google GenAI (Gemini)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "5. function calling with `@tool`",
@@ -8052,7 +8065,7 @@
       "label": "6. Dynamic `GoogleGenAiChatOptions`",
       "_origin": "ast",
       "community": 62,
-      "community_name": "Core Architectural Components",
+      "community_name": "Spring AI Google GenAI (Gemini)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "6. dynamic `googlegenaichatoptions`",
@@ -8064,7 +8077,7 @@
       "label": "7. Context Caching Management",
       "_origin": "ast",
       "community": 62,
-      "community_name": "Core Architectural Components",
+      "community_name": "Spring AI Google GenAI (Gemini)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "7. context caching management",
@@ -8076,7 +8089,7 @@
       "label": "Application Properties",
       "_origin": "ast",
       "community": 62,
-      "community_name": "Core Architectural Components",
+      "community_name": "Spring AI Google GenAI (Gemini)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "application properties",
@@ -8088,7 +8101,7 @@
       "label": "Common Mistakes & Resolutions",
       "_origin": "ast",
       "community": 62,
-      "community_name": "Core Architectural Components",
+      "community_name": "Spring AI Google GenAI (Gemini)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "common mistakes & resolutions",
@@ -8100,7 +8113,7 @@
       "label": "Core Architectural Components",
       "_origin": "ast",
       "community": 62,
-      "community_name": "Core Architectural Components",
+      "community_name": "Spring AI Google GenAI (Gemini)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "core architectural components",
@@ -8112,7 +8125,7 @@
       "label": "Dependency Configuration",
       "_origin": "ast",
       "community": 62,
-      "community_name": "Core Architectural Components",
+      "community_name": "Spring AI Google GenAI (Gemini)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "dependency configuration",
@@ -8120,11 +8133,23 @@
       "source_location": "L33"
     },
     {
+      "id": "agents_skills_spring_ai_google_genai_skill_external_references",
+      "label": "External References",
+      "_origin": "ast",
+      "community": 62,
+      "community_name": "Spring AI Google GenAI (Gemini)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "external references",
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L378"
+    },
+    {
       "id": "agents_skills_spring_ai_google_genai_skill_gradle_build_gradle",
       "label": "Gradle (`build.gradle`)",
       "_origin": "ast",
       "community": 62,
-      "community_name": "Core Architectural Components",
+      "community_name": "Spring AI Google GenAI (Gemini)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "gradle (`build.gradle`)",
@@ -8136,7 +8161,7 @@
       "label": "Maven (`pom.xml`)",
       "_origin": "ast",
       "community": 62,
-      "community_name": "Core Architectural Components",
+      "community_name": "Spring AI Google GenAI (Gemini)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "maven (`pom.xml`)",
@@ -8148,7 +8173,7 @@
       "label": "Overview",
       "_origin": "ast",
       "community": 62,
-      "community_name": "Core Architectural Components",
+      "community_name": "Spring AI Google GenAI (Gemini)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "overview",
@@ -8160,7 +8185,7 @@
       "label": "Quick Reference",
       "_origin": "ast",
       "community": 62,
-      "community_name": "Core Architectural Components",
+      "community_name": "Spring AI Google GenAI (Gemini)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "quick reference",
@@ -8172,7 +8197,7 @@
       "label": "Spring AI Google GenAI (Gemini)",
       "_origin": "ast",
       "community": 62,
-      "community_name": "Core Architectural Components",
+      "community_name": "Spring AI Google GenAI (Gemini)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "spring ai google genai (gemini)",
@@ -8184,7 +8209,7 @@
       "label": "When NOT to Use",
       "_origin": "ast",
       "community": 62,
-      "community_name": "Core Architectural Components",
+      "community_name": "Spring AI Google GenAI (Gemini)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "when not to use",
@@ -8196,12 +8221,34 @@
       "label": "When to Use",
       "_origin": "ast",
       "community": 62,
-      "community_name": "Core Architectural Components",
+      "community_name": "Spring AI Google GenAI (Gemini)",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "when to use",
       "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
       "source_location": "L16"
+    },
+    {
+      "id": "org_springframework_ai_chat_client_advisor_api_calladvisor",
+      "label": "org.springframework.ai.chat.client.advisor.api.CallAdvisor",
+      "_origin": "ast",
+      "community": 63,
+      "community_name": "org.springframework.ai.chat.client.advisor.api.CallAdvisor",
+      "file_type": "code",
+      "norm_label": "org.springframework.ai.chat.client.advisor.api.calladvisor",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_ai_advisor_promptaroundxmladvisor",
+      "label": "PromptAroundXmlAdvisor.java",
+      "_origin": "ast",
+      "community": 63,
+      "community_name": "org.springframework.ai.chat.client.advisor.api.CallAdvisor",
+      "file_type": "code",
+      "norm_label": "promptaroundxmladvisor.java",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/advisor/PromptAroundXmlAdvisor.java",
+      "source_location": "L1"
     },
     {
       "id": "docs_api_academic_events_api_academic_events_api",
@@ -11818,6 +11865,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_main_java_group_four_nyare_nyare_ai_advisor_promptaroundxmladvisor",
+      "target": "org_springframework_ai_chat_client_advisor_api_calladvisor",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/advisor/PromptAroundXmlAdvisor.java",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
       "source": "src_main_java_group_four_nyare_nyare_config_webconfig",
       "target": "org_springframework_context_annotation_configuration",
       "relation": "imports",
@@ -14042,6 +14101,17 @@
       "confidence_score": 1.0,
       "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
       "source_location": "L365",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_skills_spring_ai_google_genai_skill_spring_ai_google_genai_gemini",
+      "target": "agents_skills_spring_ai_google_genai_skill_external_references",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/skills/spring-ai-google-genai/SKILL.md",
+      "source_location": "L378",
       "weight": 1.0
     },
     {
@@ -17378,6 +17448,17 @@
       "weight": 1.0
     },
     {
+      "source": "src_main_java_group_four_nyare_nyare_ai_advisor_promptaroundxmladvisor",
+      "target": "src_main_java_group_four_nyare_nyare_ai_advisor_promptaroundxmladvisor_promptaroundxmladvisor",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/advisor/PromptAroundXmlAdvisor.java",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
       "source": "src_main_java_group_four_nyare_nyare_config_webconfig",
       "target": "src_main_java_group_four_nyare_nyare_config_webconfig_webconfig",
       "relation": "contains",
@@ -17837,6 +17918,17 @@
       "confidence_score": 1.0,
       "source_file": "gradlew",
       "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_advisor_promptaroundxmladvisor_promptaroundxmladvisor",
+      "target": "org_springframework_ai_chat_client_advisor_api_calladvisor",
+      "relation": "implements",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/advisor/PromptAroundXmlAdvisor.java",
+      "source_location": "L5",
       "weight": 1.0
     },
     {
@@ -21314,5 +21406,5 @@
       "source_file": "docs/superpowers/plans/2026-09-13-task-manager-service.md"
     }
   ],
-  "built_at_commit": "a8e1bd1c9327d70a9ff6e983477e5de0420f9219"
+  "built_at_commit": "7eac70df96d8604ca30c3733bf268838bd6d43b6"
 }

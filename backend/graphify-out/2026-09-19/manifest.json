@@ -36,9 +36,9 @@
     "semantic_hash": "3dda2c113eec4d669a7da472ff73d723"
   },
   "AGENTS.md": {
-    "mtime": 1789809387.0024447,
-    "seen": 1789809431.2996197,
-    "ast_hash": "b68127774d56673e66eb6abf32c7d979",
+    "mtime": 1789827231.055871,
+    "seen": 1789827240.0332773,
+    "ast_hash": "3c3de4163f23aa57cb02815296cea269",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-09-13-task-manager-service.md": {
@@ -912,9 +912,15 @@
     "semantic_hash": ""
   },
   ".agents/skills/spring-ai-google-genai/SKILL.md": {
-    "mtime": 1789818988.122697,
-    "seen": 1789818998.3704758,
-    "ast_hash": "22587bda91d8d7220039fb697f4b5e4e",
+    "mtime": 1789819191.1682525,
+    "seen": 1789819199.0384455,
+    "ast_hash": "694bfd24b708ee683e27ae7a1bc13002",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/ai/advisor/PromptAroundXmlAdvisor.java": {
+    "mtime": 1789826984.708087,
+    "seen": 1789827240.0332103,
+    "ast_hash": "c65620cc9582bed903ca94215967e0cc",
     "semantic_hash": ""
   }
 }

@@ -100,6 +100,32 @@
       "source_location": "L30"
     },
     {
+      "id": "src_main_java_group_four_nyare_nyare_repository_academiceventrepository_academiceventrepository",
+      "label": "AcademicEventRepository",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "AcademicEvent",
+      "file_type": "code",
+      "norm_label": "academiceventrepository",
+      "source_file": "src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java",
+      "source_location": "L16"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "label": "TaggedPromptBuilder",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "taggedpromptbuilder",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L15"
+    },
+    {
       "id": "src_main_java_group_four_nyare_nyare_config_webconfig_webconfig",
       "label": "WebConfig",
       "_callable": true,
@@ -111,6 +137,19 @@
       "norm_label": "webconfig",
       "source_file": "src/main/java/group/four/nyare/nyare/config/WebConfig.java",
       "source_location": "L10"
+    },
+    {
+      "id": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest",
+      "label": "TaggedPromptBuilderTest",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "taggedpromptbuildertest",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L11"
     },
     {
       "id": "src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest",
@@ -191,6 +230,19 @@
       "source_location": "L22"
     },
     {
+      "id": "src_main_java_group_four_nyare_nyare_repository_courserepository_courserepository",
+      "label": "CourseRepository",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "Schedule",
+      "file_type": "code",
+      "norm_label": "courserepository",
+      "source_file": "src/main/java/group/four/nyare/nyare/repository/CourseRepository.java",
+      "source_location": "L10"
+    },
+    {
       "id": "src_main_java_group_four_nyare_nyare_repository_schedulerepository_schedulerepository",
       "label": "ScheduleRepository",
       "_callable": true,
@@ -267,45 +319,6 @@
       "norm_label": "noterepository",
       "source_file": "src/main/java/group/four/nyare/nyare/repository/NoteRepository.java",
       "source_location": "L17"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_repository_academiceventrepository_academiceventrepository",
-      "label": "AcademicEventRepository",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 34,
-      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
-      "file_type": "code",
-      "norm_label": "academiceventrepository",
-      "source_file": "src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java",
-      "source_location": "L16"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_repository_courserepository_courserepository",
-      "label": "CourseRepository",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 34,
-      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
-      "file_type": "code",
-      "norm_label": "courserepository",
-      "source_file": "src/main/java/group/four/nyare/nyare/repository/CourseRepository.java",
-      "source_location": "L10"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_repository_taskrepository_taskrepository",
-      "label": "TaskRepository",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 34,
-      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
-      "file_type": "code",
-      "norm_label": "taskrepository",
-      "source_file": "src/main/java/group/four/nyare/nyare/repository/TaskRepository.java",
-      "source_location": "L16"
     },
     {
       "id": "src_main_java_group_four_nyare_nyare_controller_globalexceptionhandler_globalexceptionhandler",
@@ -462,6 +475,19 @@
       "norm_label": "task",
       "source_file": "src/main/java/group/four/nyare/nyare/model/Task.java",
       "source_location": "L35"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_repository_taskrepository_taskrepository",
+      "label": "TaskRepository",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": "taskrepository",
+      "source_file": "src/main/java/group/four/nyare/nyare/repository/TaskRepository.java",
+      "source_location": "L16"
     },
     {
       "id": "src_main_java_group_four_nyare_nyare_dto_taskstatusrequest_taskstatusrequest",
@@ -952,18 +978,6 @@
       "source_location": "L72"
     },
     {
-      "id": "src_main_java_group_four_nyare_nyare_model_academicevent_academicevent_getcourse",
-      "label": ".getCourse()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "AcademicEvent",
-      "file_type": "code",
-      "norm_label": ".getcourse()",
-      "source_file": "src/main/java/group/four/nyare/nyare/model/AcademicEvent.java",
-      "source_location": "L109"
-    },
-    {
       "id": "src_main_java_group_four_nyare_nyare_model_academicevent_academicevent_getcreatedat",
       "label": ".getCreatedAt()",
       "_callable": true,
@@ -1096,18 +1110,6 @@
       "source_location": "L137"
     },
     {
-      "id": "src_main_java_group_four_nyare_nyare_model_academicevent_academicevent_setnote",
-      "label": ".setNote()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "AcademicEvent",
-      "file_type": "code",
-      "norm_label": ".setnote()",
-      "source_file": "src/main/java/group/four/nyare/nyare/model/AcademicEvent.java",
-      "source_location": "L121"
-    },
-    {
       "id": "src_main_java_group_four_nyare_nyare_model_academicevent_academicevent_settitle",
       "label": ".setTitle()",
       "_callable": true,
@@ -1144,6 +1146,166 @@
       "source_location": "L165"
     },
     {
+      "id": "src_main_java_group_four_nyare_nyare_repository_academiceventrepository_academiceventrepository_findallfiltered",
+      "label": ".findAllFiltered()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "AcademicEvent",
+      "file_type": "code",
+      "norm_label": ".findallfiltered()",
+      "source_file": "src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java",
+      "source_location": "L28"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_repository_academiceventrepository_academiceventrepository_findbycourseidorderbydeadlineasc",
+      "label": ".findByCourseIdOrderByDeadlineAsc()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "AcademicEvent",
+      "file_type": "code",
+      "norm_label": ".findbycourseidorderbydeadlineasc()",
+      "source_file": "src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java",
+      "source_location": "L48"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_builder",
+      "label": ".builder()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".builder()",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L40"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildprompt",
+      "label": ".buildPrompt()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".buildprompt()",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L130"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildtext",
+      "label": ".buildText()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".buildtext()",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L112"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildusermessage",
+      "label": ".buildUserMessage()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".buildusermessage()",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L121"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_create",
+      "label": ".create()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".create()",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L31"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_system",
+      "label": ".system()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".system()",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L50"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_tag",
+      "label": ".tag()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "render",
+            "receiver_type": "PromptTemplate",
+            "lang": "java",
+            "line": "L68"
+          },
+          {
+            "callee": "of",
+            "receiver_type": "Map",
+            "lang": "java",
+            "line": "L68"
+          }
+        ]
+      },
+      "norm_label": ".tag()",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L62"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_taggedpromptbuilder",
+      "label": ".TaggedPromptBuilder()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".taggedpromptbuilder()",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L23"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_tagifpresent",
+      "label": ".tagIfPresent()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".tagifpresent()",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L84"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_text",
+      "label": ".text()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".text()",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L97"
+    },
+    {
       "id": "src_main_java_group_four_nyare_nyare_config_webconfig_webconfig_addcorsmappings",
       "label": ".addCorsMappings()",
       "_callable": true,
@@ -1164,6 +1326,64 @@
       "norm_label": ".addcorsmappings()",
       "source_file": "src/main/java/group/four/nyare/nyare/config/WebConfig.java",
       "source_location": "L13"
+    },
+    {
+      "id": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_blanktagname_throwsexception",
+      "label": ".taggedPromptBuilder_blankTagName_throwsException()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".taggedpromptbuilder_blanktagname_throwsexception()",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L88"
+    },
+    {
+      "id": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_buildprompt_createssystemandusermessages",
+      "label": ".taggedPromptBuilder_buildPrompt_createsSystemAndUserMessages()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "getInstructions",
+            "receiver_type": "Prompt",
+            "lang": "java",
+            "line": "L76"
+          }
+        ]
+      },
+      "norm_label": ".taggedpromptbuilder_buildprompt_createssystemandusermessages()",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L63"
+    },
+    {
+      "id": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_multipletags_assemblesformattedtext",
+      "label": ".taggedPromptBuilder_multipleTags_assemblesFormattedText()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".taggedpromptbuilder_multipletags_assemblesformattedtext()",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L13"
+    },
+    {
+      "id": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_tagifpresent_skipsblankcontent",
+      "label": ".taggedPromptBuilder_tagIfPresent_skipsBlankContent()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".taggedpromptbuilder_tagifpresent_skipsblankcontent()",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L36"
     },
     {
       "id": "src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest_executelivechatprompt",
@@ -1508,18 +1728,6 @@
       "source_location": "L19"
     },
     {
-      "id": "src_main_java_group_four_nyare_nyare_dto_noteresponse_noteresponse_setcontent",
-      "label": ".setContent()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 28,
-      "community_name": "NoteResponse",
-      "file_type": "code",
-      "norm_label": ".setcontent()",
-      "source_file": "src/main/java/group/four/nyare/nyare/dto/NoteResponse.java",
-      "source_location": "L50"
-    },
-    {
       "id": "src_main_java_group_four_nyare_nyare_dto_noteresponse_noteresponse_setcourseid",
       "label": ".setCourseId()",
       "_callable": true,
@@ -1760,16 +1968,28 @@
       "source_location": "L126"
     },
     {
-      "id": "src_main_java_group_four_nyare_nyare_model_note_note_getcontent",
-      "label": ".getContent()",
+      "id": "src_main_java_group_four_nyare_nyare_model_academicevent_academicevent_setnote",
+      "label": ".setNote()",
       "_callable": true,
       "_origin": "ast",
       "community": 33,
       "community_name": "Note",
       "file_type": "code",
-      "norm_label": ".getcontent()",
+      "norm_label": ".setnote()",
+      "source_file": "src/main/java/group/four/nyare/nyare/model/AcademicEvent.java",
+      "source_location": "L121"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_model_note_note_getcourse",
+      "label": ".getCourse()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 33,
+      "community_name": "Note",
+      "file_type": "code",
+      "norm_label": ".getcourse()",
       "source_file": "src/main/java/group/four/nyare/nyare/model/Note.java",
-      "source_location": "L87"
+      "source_location": "L79"
     },
     {
       "id": "src_main_java_group_four_nyare_nyare_model_note_note_getcreatedat",
@@ -1808,16 +2028,16 @@
       "source_location": "L114"
     },
     {
-      "id": "src_main_java_group_four_nyare_nyare_model_note_note_setcontent",
-      "label": ".setContent()",
+      "id": "src_main_java_group_four_nyare_nyare_model_note_note_note",
+      "label": ".Note()",
       "_callable": true,
       "_origin": "ast",
       "community": 33,
       "community_name": "Note",
       "file_type": "code",
-      "norm_label": ".setcontent()",
+      "norm_label": ".note()",
       "source_file": "src/main/java/group/four/nyare/nyare/model/Note.java",
-      "source_location": "L91"
+      "source_location": "L61"
     },
     {
       "id": "src_main_java_group_four_nyare_nyare_model_note_note_setcreatedat",
@@ -1856,6 +2076,30 @@
       "source_location": "L122"
     },
     {
+      "id": "src_main_java_group_four_nyare_nyare_model_task_task_getnote",
+      "label": ".getNote()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 33,
+      "community_name": "Note",
+      "file_type": "code",
+      "norm_label": ".getnote()",
+      "source_file": "src/main/java/group/four/nyare/nyare/model/Task.java",
+      "source_location": "L134"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_model_task_task_setnote",
+      "label": ".setNote()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 33,
+      "community_name": "Note",
+      "file_type": "code",
+      "norm_label": ".setnote()",
+      "source_file": "src/main/java/group/four/nyare/nyare/model/Task.java",
+      "source_location": "L138"
+    },
+    {
       "id": "src_main_java_group_four_nyare_nyare_repository_noterepository_noterepository_findbycourseidorderbycreatedatdesc",
       "label": ".findByCourseIdOrderByCreatedAtDesc()",
       "_callable": true,
@@ -1890,42 +2134,6 @@
       "norm_label": ".findtodaynotesbycourseid()",
       "source_file": "src/main/java/group/four/nyare/nyare/repository/NoteRepository.java",
       "source_location": "L35"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_repository_academiceventrepository_academiceventrepository_findallfiltered",
-      "label": ".findAllFiltered()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 34,
-      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
-      "file_type": "code",
-      "norm_label": ".findallfiltered()",
-      "source_file": "src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java",
-      "source_location": "L28"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_repository_academiceventrepository_academiceventrepository_findbycourseidorderbydeadlineasc",
-      "label": ".findByCourseIdOrderByDeadlineAsc()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 34,
-      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
-      "file_type": "code",
-      "norm_label": ".findbycourseidorderbydeadlineasc()",
-      "source_file": "src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java",
-      "source_location": "L48"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_repository_taskrepository_taskrepository_findallfiltered",
-      "label": ".findAllFiltered()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 34,
-      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
-      "file_type": "code",
-      "norm_label": ".findallfiltered()",
-      "source_file": "src/main/java/group/four/nyare/nyare/repository/TaskRepository.java",
-      "source_location": "L28"
     },
     {
       "id": "src_main_java_group_four_nyare_nyare_controller_globalexceptionhandler_globalexceptionhandler_handlebadrequest",
@@ -3628,6 +3836,42 @@
       "source_location": "L31"
     },
     {
+      "id": "src_main_java_group_four_nyare_nyare_dto_noteresponse_noteresponse_setcontent",
+      "label": ".setContent()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 40,
+      "community_name": "NoteContent",
+      "file_type": "code",
+      "norm_label": ".setcontent()",
+      "source_file": "src/main/java/group/four/nyare/nyare/dto/NoteResponse.java",
+      "source_location": "L50"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_model_note_note_getcontent",
+      "label": ".getContent()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 40,
+      "community_name": "NoteContent",
+      "file_type": "code",
+      "norm_label": ".getcontent()",
+      "source_file": "src/main/java/group/four/nyare/nyare/model/Note.java",
+      "source_location": "L87"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_model_note_note_setcontent",
+      "label": ".setContent()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 40,
+      "community_name": "NoteContent",
+      "file_type": "code",
+      "norm_label": ".setcontent()",
+      "source_file": "src/main/java/group/four/nyare/nyare/model/Note.java",
+      "source_location": "L91"
+    },
+    {
       "id": "src_main_java_group_four_nyare_nyare_model_notecontent_notecontent_setmarkdown",
       "label": ".setMarkdown()",
       "_callable": true,
@@ -3732,18 +3976,6 @@
       "source_location": "L122"
     },
     {
-      "id": "src_main_java_group_four_nyare_nyare_model_task_task_getnote",
-      "label": ".getNote()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "Task",
-      "file_type": "code",
-      "norm_label": ".getnote()",
-      "source_file": "src/main/java/group/four/nyare/nyare/model/Task.java",
-      "source_location": "L134"
-    },
-    {
       "id": "src_main_java_group_four_nyare_nyare_model_task_task_getscheduleddate",
       "label": ".getScheduledDate()",
       "_callable": true,
@@ -3828,18 +4060,6 @@
       "source_location": "L170"
     },
     {
-      "id": "src_main_java_group_four_nyare_nyare_model_task_task_setnote",
-      "label": ".setNote()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "Task",
-      "file_type": "code",
-      "norm_label": ".setnote()",
-      "source_file": "src/main/java/group/four/nyare/nyare/model/Task.java",
-      "source_location": "L138"
-    },
-    {
       "id": "src_main_java_group_four_nyare_nyare_model_task_task_setscheduleddate",
       "label": ".setScheduledDate()",
       "_callable": true,
@@ -3876,6 +4096,18 @@
       "source_location": "L194"
     },
     {
+      "id": "src_main_java_group_four_nyare_nyare_model_task_task_task",
+      "label": ".Task()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": ".task()",
+      "source_file": "src/main/java/group/four/nyare/nyare/model/Task.java",
+      "source_location": "L91"
+    },
+    {
       "id": "src_main_java_group_four_nyare_nyare_model_task_task_tostring",
       "label": ".toString()",
       "_callable": true,
@@ -3886,6 +4118,18 @@
       "norm_label": ".tostring()",
       "source_file": "src/main/java/group/four/nyare/nyare/model/Task.java",
       "source_location": "L198"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_repository_taskrepository_taskrepository_findallfiltered",
+      "label": ".findAllFiltered()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": ".findallfiltered()",
+      "source_file": "src/main/java/group/four/nyare/nyare/repository/TaskRepository.java",
+      "source_location": "L28"
     },
     {
       "id": "src_main_java_group_four_nyare_nyare_dto_taskresponse_taskresponse_getstatus",
@@ -4140,6 +4384,18 @@
       "source_location": "L32"
     },
     {
+      "id": "src_main_java_group_four_nyare_nyare_model_academicevent_academicevent_getcourse",
+      "label": ".getCourse()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 59,
+      "community_name": "Course",
+      "file_type": "code",
+      "norm_label": ".getcourse()",
+      "source_file": "src/main/java/group/four/nyare/nyare/model/AcademicEvent.java",
+      "source_location": "L109"
+    },
+    {
       "id": "src_main_java_group_four_nyare_nyare_model_course_course_course",
       "label": ".Course()",
       "_callable": true,
@@ -4224,30 +4480,6 @@
       "source_location": "L71"
     },
     {
-      "id": "src_main_java_group_four_nyare_nyare_model_note_note_getcourse",
-      "label": ".getCourse()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 59,
-      "community_name": "Course",
-      "file_type": "code",
-      "norm_label": ".getcourse()",
-      "source_file": "src/main/java/group/four/nyare/nyare/model/Note.java",
-      "source_location": "L79"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_model_note_note_note",
-      "label": ".Note()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 59,
-      "community_name": "Course",
-      "file_type": "code",
-      "norm_label": ".note()",
-      "source_file": "src/main/java/group/four/nyare/nyare/model/Note.java",
-      "source_location": "L61"
-    },
-    {
       "id": "src_main_java_group_four_nyare_nyare_model_note_note_setcourse",
       "label": ".setCourse()",
       "_callable": true,
@@ -4270,18 +4502,6 @@
       "norm_label": ".getcourse()",
       "source_file": "src/main/java/group/four/nyare/nyare/model/Task.java",
       "source_location": "L126"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_model_task_task_task",
-      "label": ".Task()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 59,
-      "community_name": "Course",
-      "file_type": "code",
-      "norm_label": ".task()",
-      "source_file": "src/main/java/group/four/nyare/nyare/model/Task.java",
-      "source_location": "L91"
     },
     {
       "id": "src_main_java_group_four_nyare_nyare_dto_taskresponse_taskresponse_getcourseid",
@@ -5086,6 +5306,17 @@
       "source_location": "L1"
     },
     {
+      "id": "org_springframework_data_jpa_repository_query",
+      "label": "org.springframework.data.jpa.repository.Query",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "AcademicEvent",
+      "file_type": "code",
+      "norm_label": "org.springframework.data.jpa.repository.query",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "src_main_java_group_four_nyare_nyare_model_academicevent_java_override",
       "label": "Override",
       "_origin": "ast",
@@ -5095,6 +5326,28 @@
       "norm_label": "override",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_repository_academiceventrepository",
+      "label": "AcademicEventRepository.java",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "AcademicEvent",
+      "file_type": "code",
+      "norm_label": "academiceventrepository.java",
+      "source_file": "src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_repository_noterepository",
+      "label": "NoteRepository.java",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "AcademicEvent",
+      "file_type": "code",
+      "norm_label": "noterepository.java",
+      "source_file": "src/main/java/group/four/nyare/nyare/repository/NoteRepository.java",
+      "source_location": "L1"
     },
     {
       "id": "docs_api_notes_api_notes_api",
@@ -5203,6 +5456,17 @@
       "source_location": ""
     },
     {
+      "id": "org_springframework_ai_chat_messages_usermessage",
+      "label": "org.springframework.ai.chat.messages.UserMessage",
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "org.springframework.ai.chat.messages.usermessage",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "org_springframework_ai_chat_model_chatmodel",
       "label": "org.springframework.ai.chat.model.ChatModel",
       "_origin": "ast",
@@ -5210,6 +5474,17 @@
       "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "org.springframework.ai.chat.model.chatmodel",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_springframework_ai_chat_prompt_prompt",
+      "label": "org.springframework.ai.chat.prompt.Prompt",
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "org.springframework.ai.chat.prompt.prompt",
       "source_file": "",
       "source_location": ""
     },
@@ -5269,6 +5544,28 @@
       "source_location": ""
     },
     {
+      "id": "prompt",
+      "label": "Prompt",
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "prompt",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder",
+      "label": "TaggedPromptBuilder.java",
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "taggedpromptbuilder.java",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L1"
+    },
+    {
       "id": "src_main_java_group_four_nyare_nyare_config_webconfig",
       "label": "WebConfig.java",
       "_origin": "ast",
@@ -5289,6 +5586,17 @@
       "norm_label": "override",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest",
+      "label": "TaggedPromptBuilderTest.java",
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "taggedpromptbuildertest.java",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L1"
     },
     {
       "id": "src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest",
@@ -5333,6 +5641,17 @@
       "norm_label": "nyareapplicationtests.java",
       "source_file": "src/test/java/group/four/nyare/nyare/NyareApplicationTests.java",
       "source_location": "L1"
+    },
+    {
+      "id": "usermessage",
+      "label": "UserMessage",
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "usermessage",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "org_springframework_boot_autoconfigure_springbootapplication",
@@ -5439,6 +5758,17 @@
       "source_location": "L1"
     },
     {
+      "id": "org_springframework_data_jpa_repository_jparepository",
+      "label": "org.springframework.data.jpa.repository.JpaRepository",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "Schedule",
+      "file_type": "code",
+      "norm_label": "org.springframework.data.jpa.repository.jparepository",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "src_main_java_group_four_nyare_nyare_model_schedule_java_override",
       "label": "Override",
       "_origin": "ast",
@@ -5448,6 +5778,17 @@
       "norm_label": "override",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_repository_courserepository",
+      "label": "CourseRepository.java",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "Schedule",
+      "file_type": "code",
+      "norm_label": "courserepository.java",
+      "source_file": "src/main/java/group/four/nyare/nyare/repository/CourseRepository.java",
+      "source_location": "L1"
     },
     {
       "id": "src_main_java_group_four_nyare_nyare_repository_schedulerepository",
@@ -6511,72 +6852,6 @@
       "norm_label": "override",
       "source_file": "",
       "source_location": ""
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_repository_noterepository",
-      "label": "NoteRepository.java",
-      "_origin": "ast",
-      "community": 33,
-      "community_name": "Note",
-      "file_type": "code",
-      "norm_label": "noterepository.java",
-      "source_file": "src/main/java/group/four/nyare/nyare/repository/NoteRepository.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "org_springframework_data_jpa_repository_jparepository",
-      "label": "org.springframework.data.jpa.repository.JpaRepository",
-      "_origin": "ast",
-      "community": 34,
-      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
-      "file_type": "code",
-      "norm_label": "org.springframework.data.jpa.repository.jparepository",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "org_springframework_data_jpa_repository_query",
-      "label": "org.springframework.data.jpa.repository.Query",
-      "_origin": "ast",
-      "community": 34,
-      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
-      "file_type": "code",
-      "norm_label": "org.springframework.data.jpa.repository.query",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_repository_academiceventrepository",
-      "label": "AcademicEventRepository.java",
-      "_origin": "ast",
-      "community": 34,
-      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
-      "file_type": "code",
-      "norm_label": "academiceventrepository.java",
-      "source_file": "src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_repository_courserepository",
-      "label": "CourseRepository.java",
-      "_origin": "ast",
-      "community": 34,
-      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
-      "file_type": "code",
-      "norm_label": "courserepository.java",
-      "source_file": "src/main/java/group/four/nyare/nyare/repository/CourseRepository.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_main_java_group_four_nyare_nyare_repository_taskrepository",
-      "label": "TaskRepository.java",
-      "_origin": "ast",
-      "community": 34,
-      "community_name": "org.springframework.data.jpa.repository.JpaRepository",
-      "file_type": "code",
-      "norm_label": "taskrepository.java",
-      "source_file": "src/main/java/group/four/nyare/nyare/repository/TaskRepository.java",
-      "source_location": "L1"
     },
     {
       "id": "jakarta_persistence_entity",
@@ -7644,6 +7919,17 @@
       "norm_label": "override",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "src_main_java_group_four_nyare_nyare_repository_taskrepository",
+      "label": "TaskRepository.java",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": "taskrepository.java",
+      "source_file": "src/main/java/group/four/nyare/nyare/repository/TaskRepository.java",
+      "source_location": "L1"
     },
     {
       "id": "docs_javadoc_legal_jquery",
@@ -9814,6 +10100,102 @@
       "weight": 1.0
     },
     {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_blanktagname_throwsexception",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_blanktagname_throwsexception",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_buildprompt_createssystemandusermessages",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_buildprompt_createssystemandusermessages",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_multipletags_assemblesformattedtext",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_multipletags_assemblesformattedtext",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_tagifpresent_skipsblankcontent",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_tagifpresent_skipsblankcontent",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
       "source": "src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest",
       "target": "org_springframework_boot_test_context_springboottest",
       "relation": "references",
@@ -11146,6 +11528,90 @@
       "weight": 1.0
     },
     {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_builder",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_taggedpromptbuilder",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildprompt",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildusermessage",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L135",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildprompt",
+      "target": "prompt",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L136",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildusermessage",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildtext",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildusermessage",
+      "target": "usermessage",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_create",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_taggedpromptbuilder",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_tagifpresent",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_tag",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L86",
+      "weight": 1.0
+    },
+    {
       "source": "src_main_java_group_four_nyare_nyare_model_validation_imagereferencesvalidator_imagereferencesvalidator_isvalid",
       "target": "src_main_java_group_four_nyare_nyare_model_validation_imagereferencesvalidator_imagereferencesvalidator_extractmarkdownimagereferences",
       "relation": "calls",
@@ -11167,6 +11633,42 @@
       "context": "call",
       "source_file": "src/main/java/group/four/nyare/nyare/repository/NoteRepository.java",
       "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_buildprompt_createssystemandusermessages",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_create",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_multipletags_assemblesformattedtext",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_create",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_tagifpresent_skipsblankcontent",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_builder",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -11827,6 +12329,30 @@
       "context": "generic_arg",
       "source_file": "src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
       "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder",
+      "target": "org_springframework_ai_chat_messages_usermessage",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder",
+      "target": "org_springframework_ai_chat_prompt_prompt",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -12826,6 +13352,42 @@
       "weight": 1.0
     },
     {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest",
+      "target": "org_springframework_ai_chat_prompt_prompt",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
       "source": "src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest",
       "target": "org_junit_jupiter_api_displayname",
       "relation": "imports",
@@ -13471,6 +14033,30 @@
       "context": "parameter_type",
       "source_file": "src/main/java/group/four/nyare/nyare/service/TaskService.java",
       "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildprompt",
+      "target": "org_springframework_ai_chat_prompt_prompt",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "return_type",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildusermessage",
+      "target": "org_springframework_ai_chat_messages_usermessage",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "return_type",
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -17401,6 +17987,17 @@
       "weight": 1.0
     },
     {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
       "source": "src_main_java_group_four_nyare_nyare_config_webconfig",
       "target": "src_main_java_group_four_nyare_nyare_config_webconfig_webconfig",
       "relation": "contains",
@@ -17797,6 +18394,17 @@
       "weight": 1.0
     },
     {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest",
+      "target": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
       "source": "src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest",
       "target": "src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest",
       "relation": "contains",
@@ -17959,6 +18567,116 @@
       "confidence_score": 1.0,
       "source_file": "src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
       "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildtext",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L112",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildusermessage",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L121",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildprompt",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_taggedpromptbuilder",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_create",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_builder",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_system",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_tag",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_tagifpresent",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_text",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -20514,6 +21232,50 @@
       "weight": 1.0
     },
     {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest",
+      "target": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_multipletags_assemblesformattedtext",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest",
+      "target": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_tagifpresent_skipsblankcontent",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest",
+      "target": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_buildprompt_createssystemandusermessages",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest",
+      "target": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_blanktagname_throwsexception",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
       "source": "src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest",
       "target": "src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest_verifychatmodelbeanloads",
       "relation": "method",
@@ -20668,6 +21430,54 @@
       "context": "call",
       "source_file": "src/main/java/group/four/nyare/nyare/model/validation/ImageReferencesValidator.java",
       "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_blanktagname_throwsexception",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_tag",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L92",
+      "weight": 1.0
+    },
+    {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_buildprompt_createssystemandusermessages",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildprompt",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L73",
+      "weight": 1.0
+    },
+    {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_multipletags_assemblesformattedtext",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildtext",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "src_test_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuildertest_taggedpromptbuildertest_taggedpromptbuilder_tagifpresent_skipsblankcontent",
+      "target": "src_main_java_group_four_nyare_nyare_ai_prompt_taggedpromptbuilder_taggedpromptbuilder_buildtext",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -21337,5 +22147,5 @@
       "source_file": "docs/superpowers/plans/2026-09-13-task-manager-service.md"
     }
   ],
-  "built_at_commit": "a8e1bd1c9327d70a9ff6e983477e5de0420f9219"
+  "built_at_commit": "7eac70df96d8604ca30c3733bf268838bd6d43b6"
 }
