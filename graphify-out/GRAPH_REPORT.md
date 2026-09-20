@@ -1,16 +1,16 @@
 # Graph Report - nyare  (2026-09-20)
 
 ## Corpus Check
-- 220 files · ~247,279 words
+- 226 files · ~248,343 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1748 nodes · 2328 edges · 157 communities (108 shown, 41 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 70 edges (avg confidence: 0.85)
+- 1808 nodes · 2483 edges · 157 communities (112 shown, 37 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 86 edges (avg confidence: 0.84)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `42e0e946`
+- Built from commit: `25bf07a7`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -20,7 +20,7 @@
 - config.js
 - Azure Deployment Guide
 - validate.py
-- jakarta.persistence.Entity
+- Course
 - frontend/package.json
 - Dr JSkill Specification
 - client.js
@@ -72,6 +72,7 @@
 - 06 — Testing
 - 00 — Introduction
 - GitHub Copilot CLI + Java workshop, using Dr JSkill
+- TaskRequest
 - AcademicEventResponse
 - REST API & Controller Guidelines
 - GitHub Copilot CLI
@@ -108,12 +109,12 @@
 - Backend Agent Guide (Nyare)
 - Service & Transaction Guidelines
 - AGENTS.md
-- AcademicEventRequest
+- PlanCategory
 - 4. Basic Skills and Tools Guide
 - Task Manager Service Implementation Plan
+- TaskStatus
 - Ponytail Rules
-- ScheduleRequest
-- GlobalExceptionHandler.java
+- TaskService
 - NoteResponse
 - Task
 - ImageMetadata
@@ -150,7 +151,7 @@
 - Nyare MVP Boundaries & Non-Goals
 - ste-lint.py
 - ScheduleResponse
-- group.four.nyare.nyare.model.AcademicContext
+- StudyPlannerServiceTest.java
 - DejaVu fonts v2.37
 - jQuery v3.7.1
 - jQuery UI v1.14.1
@@ -158,7 +159,6 @@
 - BadRequestException
 - Simplified Technical English (ASD-STE100)
 - Test IntelliJ MCP
-- .updateImageMetadata
 - Nyare System Overview
 - ASD-STE100 Rules
 - Linter Edge Cases
@@ -166,16 +166,16 @@
 - Dr. JSkill and Spring Docs MCP Rule
 
 ## God Nodes (most connected - your core abstractions)
-1. `Note` - 35 edges
-2. `Task` - 32 edges
-3. `TaskResponse` - 29 edges
+1. `Task` - 39 edges
+2. `TaskResponse` - 32 edges
+3. `Note` - 32 edges
 4. `AcademicEvent` - 28 edges
-5. `TaskStatus` - 27 edges
-6. `NoteContent` - 25 edges
-7. `Dr JSkill Specification` - 24 edges
-8. `getVersionValue()` - 23 edges
-9. `AcademicContext` - 22 edges
-10. `AcademicEventResponse` - 21 edges
+5. `NoteContent` - 25 edges
+6. `Dr JSkill Specification` - 24 edges
+7. `getVersionValue()` - 23 edges
+8. `AcademicContext` - 22 edges
+9. `AcademicEventResponse` - 21 edges
+10. `NoteResponse` - 19 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Lean Build Skill` --semantically_similar_to--> `Surgical Patch Skill`  [INFERRED] [semantically similar]
@@ -206,7 +206,7 @@
 - **Graphify Query & Knowledge Retrieval Flow** — _agents_skills_graphify_skill_fast_path_query, _agents_skills_graphify_references_query_query_expansion, _agents_skills_graphify_references_query_traversal_modes, _agents_skills_graphify_references_query_work_memory_reflections [INFERRED 0.95]
 - **Spring Boot 4 Testing Ecosystem Modernization** — _agents_skills_dr_jskill_references_spring_boot_4_mockito_bean, _agents_skills_dr_jskill_references_spring_boot_4_webmvc_test_starter, _agents_skills_dr_jskill_references_test_testcontainers_service_connection, _agents_skills_dr_jskill_references_test_rest_test_client [INFERRED 0.95]
 
-## Communities (157 total, 41 thin omitted)
+## Communities (157 total, 37 thin omitted)
 
 ### Community 0 - "versions.mjs"
 Cohesion: 0.06
@@ -228,9 +228,9 @@ Nodes (20): AI Assistant Integration Setup, Dr JSkill Overview, Dr JSkill vs JHi
 Cohesion: 0.10
 Nodes (28): benchmark_pair(), count_tokens(), main(), print_table(), Path, count_bullets(), extract_code_blocks(), extract_fenced_spans() (+20 more)
 
-### Community 5 - "jakarta.persistence.Entity"
-Cohesion: 0.44
-Nodes (4): jakarta.persistence.Entity, jakarta.persistence.EntityListeners, jakarta.persistence.Table, org.springframework.data.jpa.domain.support.AuditingEntityListener
+### Community 5 - "Course"
+Cohesion: 0.20
+Nodes (6): Course, Override, jakarta.persistence.Entity, jakarta.persistence.EntityListeners, jakarta.persistence.Table, org.springframework.data.jpa.domain.support.AuditingEntityListener
 
 ### Community 6 - "frontend/package.json"
 Cohesion: 0.10
@@ -261,8 +261,8 @@ Cohesion: 0.29
 Nodes (6): 1. Tool Discovery & Dynamic Capability Inspection, 2. Pre-Build Verification (Immediate Post-Edit Validation), 3. Token-Efficient Code Navigation, 4. Build Tiering & Execution Hierarchy, 5. Unavailability & Fallback Handling, IntelliJ MCP Backend Workflow & Static Analysis Rule
 
 ### Community 13 - "org.springframework.data.jpa.repository.JpaRepository"
-Cohesion: 0.29
-Nodes (5): AcademicEventRepository, CourseRepository, TaskRepository, org.springframework.data.jpa.repository.JpaRepository, org.springframework.data.jpa.repository.Query
+Cohesion: 0.27
+Nodes (5): CourseRepository, NoteRepository, TaskRepository, org.springframework.data.jpa.repository.JpaRepository, org.springframework.data.jpa.repository.Query
 
 ### Community 14 - "Lean Build Skill"
 Cohesion: 0.20
@@ -329,7 +329,7 @@ Cohesion: 0.40
 Nodes (5): graphify Watch Mode, graphify Git Post-Commit Hook, graphify Whisper Audio/Video Transcription, graphify Cluster-Only Mode, graphify Incremental Update (--update)
 
 ### Community 31 - "org.junit.jupiter.api.Test"
-Cohesion: 0.07
+Cohesion: 0.06
 Nodes (26): CsvParser, TaggedPromptBuilder, Override, WebConfig, CsvParserTest, SampleTask, TaggedPromptBuilderTest, SpringAiIntegrationTest (+18 more)
 
 ### Community 32 - "Social Icon"
@@ -416,6 +416,10 @@ Nodes (7): 00 — Introduction, 1. What is an Agent Skill?, 2. What Dr JSkill is
 Cohesion: 0.33
 Nodes (6): Chapters, GitHub Copilot CLI + Java workshop, using Dr JSkill, How to use this workshop, Prerequisites, Reference material, What you'll build
 
+### Community 59 - "AcademicEventResponse"
+Cohesion: 0.06
+Nodes (3): AcademicEventRequest, AcademicEventResponse, AcademicEventService
+
 ### Community 60 - "REST API & Controller Guidelines"
 Cohesion: 0.33
 Nodes (5): 1. Paths & Endpoints, 2. HTTP Verb & Status Code Matrix, 3. No Paging (MVP Boundary), 4. Problem Details (RFC 7807), REST API & Controller Guidelines
@@ -468,6 +472,10 @@ Nodes (5): 1. Interface + Implementation Structure, 2. Dependency Injection Stan
 Cohesion: 0.25
 Nodes (6): 1. Test Slices, 2. Mocking & Service Interface Conventions, 3. Test Conventions, Controller Test Example (`@MockitoBean` on Interface), Service Unit Test Example (`@Mock` and `@InjectMocks`), Verification & Testing Standards
 
+### Community 95 - "PlanCategory"
+Cohesion: 0.15
+Nodes (5): PlanCategory, BACKLOG, LATER, SCHEDULED, group.four.nyare.nyare.model.enums.TaskStatus
+
 ### Community 96 - "4. Basic Skills and Tools Guide"
 Cohesion: 0.13
 Nodes (14): 1. `dr-jskill` ([`dr-jskill/SKILL.md`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/.agents/skills/dr-jskill/SKILL.md)), 1. Execution and Response Rules, 2. `caveman-commit` ([`caveman-commit/SKILL.md`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/.agents/skills/caveman-commit/SKILL.md)), 2. Nyare Core Architecture and Domain Summary, 3. Backend Conventions Summary ([`backend/docs/conventions/`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/backend/docs/conventions.md)), 3. `ponytail` ([`ponytail/SKILL.md`](file:///C:/Users/karol/.gemini/config/plugins/ponytail/skills/ponytail/SKILL.md)), 4. Basic Skills and Tools Guide, 4. `intellij-mcp` ([`.agents/rules/intellij-mcp.md`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/backend/.agents/rules/intellij-mcp.md)) (+6 more)
@@ -476,17 +484,21 @@ Nodes (14): 1. `dr-jskill` ([`dr-jskill/SKILL.md`](file:///D:/General%20Project%
 Cohesion: 0.14
 Nodes (13): File Map, Global Constraints, Placeholder Scan, Self-Review Checklist, Spec Coverage, Task 1: DTOs — Request and Response Records, Task 2: Repositories — TaskRepository and CourseRepository, Task 3: Service Layer — TaskService (+5 more)
 
+### Community 98 - "TaskStatus"
+Cohesion: 0.27
+Nodes (5): TaskStatusRequest, TaskStatus, COMPLETED, IN_PROGRESS, TODO
+
 ### Community 99 - "Ponytail Rules"
 Cohesion: 0.40
 Nodes (4): Development Rules, Evaluation Steps, Mandatory Quality Standards, Ponytail Rules
 
-### Community 101 - "GlobalExceptionHandler.java"
-Cohesion: 0.44
-Nodes (5): GlobalExceptionHandler, org.springframework.http.ProblemDetail, org.springframework.web.bind.annotation.ExceptionHandler, org.springframework.web.bind.annotation.RestControllerAdvice, org.springframework.web.bind.MethodArgumentNotValidException
-
 ### Community 103 - "Task"
-Cohesion: 0.08
-Nodes (4): Course, Override, Override, Task
+Cohesion: 0.11
+Nodes (4): Note, Override, Task, Course
+
+### Community 104 - "ImageMetadata"
+Cohesion: 0.16
+Nodes (3): ImageMetadataUpdateRequest, ImageMetadata, ImageMetadata
 
 ### Community 105 - "ImageReferencesValidator"
 Cohesion: 0.29
@@ -496,25 +508,21 @@ Nodes (5): ImageReferencesValidator, Override, jakarta.validation.ConstraintVali
 Cohesion: 0.14
 Nodes (26): categories, checkUnnamed(), createMatcher(), doSearch(), getClassPrefix(), getPrefix(), searchIndex(), escapeHtml() (+18 more)
 
-### Community 108 - "TaskResponse"
-Cohesion: 0.05
-Nodes (8): TaskRequest, TaskResponse, TaskStatusRequest, TaskStatus, COMPLETED, IN_PROGRESS, TODO, TaskService
-
 ### Community 109 - "4. Endpoints Specification"
 Cohesion: 0.25
 Nodes (8): `200 OK`, `404 Not Found`, 4.3 Retrieve Note by ID, 4. Endpoints Specification, Example Request, Path Parameters, Responses, Summary Table
 
 ### Community 110 - "AcademicEvent"
 Cohesion: 0.12
-Nodes (3): AcademicEvent, Course, Override
+Nodes (4): AcademicEvent, Course, Override, AcademicEventRepository
 
 ### Community 111 - "AcademicContext"
 Cohesion: 0.15
 Nodes (4): AcademicContext, Course, Override, AcademicContextRepository
 
 ### Community 112 - "Note"
-Cohesion: 0.14
-Nodes (5): Course, Override, Note, NoteRepository, NoteContent
+Cohesion: 0.16
+Nodes (4): Course, Override, Note, NoteContent
 
 ### Community 113 - "Schedule"
 Cohesion: 0.15
@@ -612,6 +620,14 @@ Nodes (8): 1. No Micro-Scheduling / Time-Blocking, 2. No Automated Task Reconcil
 Cohesion: 0.25
 Nodes (13): _dangling_conjunction_findings(), _is_list_continuation(), _leading_spaces(), lint(), main(), _markdown_table_cells(), Map ordinary Markdown table rows to their prose cells. The separator row…, Deterministic linter for the structural STE rules in SKILL.md. Checks only… (+5 more)
 
+### Community 138 - "ScheduleResponse"
+Cohesion: 0.06
+Nodes (9): GlobalExceptionHandler, ScheduleRequest, ScheduleResponse, ResourceNotFoundException, ScheduleService, org.springframework.http.ProblemDetail, org.springframework.web.bind.annotation.ExceptionHandler, org.springframework.web.bind.annotation.RestControllerAdvice (+1 more)
+
+### Community 139 - "StudyPlannerServiceTest.java"
+Cohesion: 0.09
+Nodes (26): StudyPlannerController, ProcessSummaryResponse, ExtractionResult, Override, StudyPlannerServiceImpl, StudyPlannerService, StudyPlannerServiceTest, group.four.nyare.nyare.model.AcademicContext (+18 more)
+
 ### Community 151 - "Canonical Exception Strategy"
 Cohesion: 0.40
 Nodes (4): 1. Core Policy: No Custom Exception Explosion, 2. Canonical Exception Matrix, 3. RFC 7807 Problem Details Response, Canonical Exception Strategy
@@ -641,21 +657,21 @@ Cohesion: 0.22
 Nodes (9): 1. Academic Event vs. Deadline, 2. Task vs. Academic Event, 3. Academic Context vs. Task, 3. Important Domain Distinctions, 4. Academic Context vs. Academic Event, 5. Recommended Date vs. Deadline, 6. Extractability vs. Plannability, 7. Source Information vs. Extracted Information (Materialization) (+1 more)
 
 ## Knowledge Gaps
-- **671 isolated node(s):** `Tech Stack`, `Domain Model (`group.four.nyare.nyare.model`)`, `Core Architecture & Invariants`, `Knowledge Graph (`graphify`)`, `Verification & Build Tiering` (+666 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 961 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **41 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **674 isolated node(s):** `SCHEDULED`, `LATER`, `BACKLOG`, `1. Core Concept & Pipeline`, `Entity Definitions` (+669 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 966 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **37 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Note` connect `Note` to `jakarta.persistence.Entity`, `Task`, `AcademicEvent`, `AcademicContext`, `.updateImageMetadata`?**
-  _High betweenness centrality (0.020) - this node is a cross-community bridge._
-- **Why does `NoteContent` connect `NoteContent` to `NoteResponse`, `ImageMetadata`, `ImageReferencesValidator`, `.updateImageMetadata`, `NoteContentConverter`, `ValidImageReferences`?**
-  _High betweenness centrality (0.016) - this node is a cross-community bridge._
-- **Why does `Task` connect `Task` to `Note`, `org.springframework.data.jpa.repository.JpaRepository`, `TaskResponse`, `jakarta.persistence.Entity`?**
-  _High betweenness centrality (0.014) - this node is a cross-community bridge._
-- **What connects `Tech Stack`, `Domain Model (`group.four.nyare.nyare.model`)`, `Core Architecture & Invariants` to the rest of the system?**
-  _671 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Why does `BadRequestException` connect `BadRequestException` to `ScheduleResponse`, `StudyPlannerServiceTest.java`?**
+  _High betweenness centrality (0.027) - this node is a cross-community bridge._
+- **Why does `Task` connect `Task` to `Course`, `StudyPlannerServiceTest.java`, `org.springframework.data.jpa.repository.JpaRepository`, `org.junit.jupiter.api.Test`, `PlanCategory`?**
+  _High betweenness centrality (0.026) - this node is a cross-community bridge._
+- **Why does `Note` connect `Note` to `Course`, `ImageMetadata`, `org.springframework.data.jpa.repository.JpaRepository`, `AcademicEvent`, `AcademicContext`?**
+  _High betweenness centrality (0.017) - this node is a cross-community bridge._
+- **What connects `SCHEDULED`, `LATER`, `BACKLOG` to the rest of the system?**
+  _674 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `versions.mjs` be split into smaller, more focused modules?**
   _Cohesion score 0.05707762557077625 - nodes in this community are weakly interconnected._
 - **Should `compress.py` be split into smaller, more focused modules?**

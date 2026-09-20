@@ -282,8 +282,8 @@
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/service/NoteService.java": {
-    "mtime": 1789382646.7593195,
-    "seen": 1789384775.6097674,
+    "mtime": 1789904001.593967,
+    "seen": 1789908973.4477527,
     "ast_hash": "372085a72aa4cebfc66960ead3d5bbd7",
     "semantic_hash": ""
   },
@@ -912,15 +912,9 @@
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java": {
-    "mtime": 1789838611.2755263,
-    "seen": 1789838625.8160446,
-    "ast_hash": "2f2119b4036f26dd0e81b2c7e47d6eba",
-    "semantic_hash": ""
-  },
-  "src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java": {
-    "mtime": 1789838611.2835214,
-    "seen": 1789838625.8161595,
-    "ast_hash": "7b7c0d8a1480da40e7b126a411c428fb",
+    "mtime": 1789914937.4982867,
+    "seen": 1789915074.4542556,
+    "ast_hash": "214bfb02c4f50b22ea7e06f63e53a997",
     "semantic_hash": ""
   },
   ".agents/rules/dr-jskill-and-spring-docs.md": {
@@ -942,14 +936,14 @@
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java": {
-    "mtime": 1789838611.273512,
-    "seen": 1789838625.8160412,
+    "mtime": 1789916755.9333158,
+    "seen": 1789916975.8731792,
     "ast_hash": "e1fef4f2b088cffe24f936243203ea66",
     "semantic_hash": ""
   },
   "src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java": {
-    "mtime": 1789838611.2815015,
-    "seen": 1789838625.8161566,
+    "mtime": 1789916755.9237354,
+    "seen": 1789916975.8732462,
     "ast_hash": "de4638ec3befef306e1087be6d639387",
     "semantic_hash": ""
   },
@@ -978,15 +972,39 @@
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java": {
-    "mtime": 1789903025.106761,
-    "seen": 1789903171.7349062,
-    "ast_hash": "1265a87627de25f6241fef4bee61be15",
+    "mtime": 1789912018.627717,
+    "seen": 1789913681.494269,
+    "ast_hash": "d2064005bdac6963d4790c1ac2b6e6b8",
     "semantic_hash": ""
   },
   "src/test/java/group/four/nyare/nyare/service/StudyPlannerServiceTest.java": {
-    "mtime": 1789903107.6752336,
-    "seen": 1789903171.7349153,
-    "ast_hash": "5c85797ecac2336b5bd156c8fb846bf5",
+    "mtime": 1789912018.624202,
+    "seen": 1789913681.494279,
+    "ast_hash": "f70ec16e71d9e23a8918edaf203e7b7e",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/ai/NoteProcessor.java": {
+    "mtime": 1789916886.4960585,
+    "seen": 1789916975.8731768,
+    "ast_hash": "7ccad45ecad56c88690ca14778d31c9e",
+    "semantic_hash": ""
+  },
+  "src/test/java/group/four/nyare/nyare/ai/NoteProcessorTest.java": {
+    "mtime": 1789916932.8342614,
+    "seen": 1789916975.873243,
+    "ast_hash": "59a306153d9ad289c441414b440bca5e",
+    "semantic_hash": ""
+  },
+  "src/main/java/group/four/nyare/nyare/ai/parser/StubReferenceCodec.java": {
+    "mtime": 1789916814.835071,
+    "seen": 1789916975.8731806,
+    "ast_hash": "0b80e007bfd21dbd1c100f2dff402dad",
+    "semantic_hash": ""
+  },
+  "src/test/java/group/four/nyare/nyare/ai/parser/StubReferenceCodecTest.java": {
+    "mtime": 1789916819.048771,
+    "seen": 1789916975.8732474,
+    "ast_hash": "873188115c114889d517d8f9bb7d4ae9",
     "semantic_hash": ""
   }
 }

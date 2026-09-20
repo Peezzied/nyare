@@ -56,12 +56,14 @@
   "54": "package-search-index.js",
   "55": "tag-search-index.js",
   "56": "type-search-index.js",
+  "57": "ProcessSummaryResponse",
   "58": "TaskRequest",
   "59": "AcademicContext",
   "60": "TaskService",
   "61": "Test IntelliJ MCP",
-  "62": "StudyPlannerServiceTest.java",
+  "62": "StudyPlannerServiceImpl",
   "63": "Dr. JSkill and Spring Docs MCP Rule",
   "66": "Course",
-  "69": "PlanCategory"
+  "69": "PlanCategory",
+  "71": ".addCorsMappings_registersExpectedConfiguration"
 }
