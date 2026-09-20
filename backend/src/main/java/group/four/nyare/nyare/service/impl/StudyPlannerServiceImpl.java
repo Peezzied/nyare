@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.service.impl;
 
+import group.four.nyare.nyare.ai.NoteProcessor;
 import group.four.nyare.nyare.dto.ProcessSummaryResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.model.AcademicContext;
@@ -13,16 +14,18 @@ import group.four.nyare.nyare.repository.CourseRepository;
 import group.four.nyare.nyare.repository.NoteRepository;
 import group.four.nyare.nyare.repository.TaskRepository;
 import group.four.nyare.nyare.service.StudyPlannerService;
-import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link StudyPlannerService} for processing daily notes into academic entities.
@@ -36,7 +39,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
     private final TaskRepository taskRepository;
     private final AcademicEventRepository academicEventRepository;
     private final AcademicContextRepository academicContextRepository;
-    private final ChatClient chatClient;
+    private final NoteProcessor noteProcessor;
 
     @Autowired
     public StudyPlannerServiceImpl(
@@ -45,36 +48,13 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
             TaskRepository taskRepository,
             AcademicEventRepository academicEventRepository,
             AcademicContextRepository academicContextRepository,
-            ChatClient.Builder chatClientBuilder) {
-        this(
-                courseRepository,
-                noteRepository,
-                taskRepository,
-                academicEventRepository,
-                academicContextRepository,
-                chatClientBuilder
-                        .defaultSystem("""
-                                You are an academic planning assistant for Nyare.
-                                Extract actionable tasks, rigid academic events or deadlines, and temporal academic context facts from student journal notes.
-                                Preserve uncertainty. Never hallucinate deadlines or durations.
-                                """)
-                        .build()
-        );
-    }
-
-    public StudyPlannerServiceImpl(
-            CourseRepository courseRepository,
-            NoteRepository noteRepository,
-            TaskRepository taskRepository,
-            AcademicEventRepository academicEventRepository,
-            AcademicContextRepository academicContextRepository,
-            ChatClient chatClient) {
+            NoteProcessor noteProcessor) {
         this.courseRepository = courseRepository;
         this.noteRepository = noteRepository;
         this.taskRepository = taskRepository;
         this.academicEventRepository = academicEventRepository;
         this.academicContextRepository = academicContextRepository;
-        this.chatClient = chatClient;
+        this.noteProcessor = noteProcessor;
     }
 
     @Override
@@ -109,91 +89,67 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         List<AcademicEvent> events = new ArrayList<>();
         List<AcademicContext> contexts = new ArrayList<>();
 
-        for (Note note : notes) {
-            if (note.getContent() == null || note.getContent().getMarkdown() == null || note.getContent().getMarkdown().isBlank()) {
-                continue;
-            }
+        NoteProcessor.ExtractedData extracted = this.noteProcessor.process(notes);
+        if (extracted == null) {
+            return new ExtractionResult(tasks, events, contexts);
+        }
 
-            String courseName = note.getCourse() != null ? note.getCourse().getName() : "General";
-            String prompt = "Course: " + courseName + "\n\nJournal Note:\n" + note.getContent().getMarkdown();
+        Map<UUID, Note> noteMap = notes.stream()
+                .filter(n -> n.getId() != null)
+                .collect(Collectors.toMap(Note::getId, Function.identity(), (a, b) -> a));
 
-            ExtractedData extracted = this.chatClient.prompt()
-                    .user(prompt)
-                    .call()
-                    .entity(ExtractedData.class);
+        Note defaultNote = !notes.isEmpty() ? notes.get(0) : null;
 
-            if (extracted == null) {
-                continue;
-            }
-
-            if (extracted.tasks() != null) {
-                for (ExtractedTask item : extracted.tasks()) {
-                    if (item.title() != null && !item.title().isBlank()) {
-                        Task task = new Task(note.getCourse(), item.title());
-                        task.setNote(note);
-                        task.setDescription(item.description());
-                        task.setScheduledDate(item.scheduledDate());
-                        if (item.estimatedMinutes() != null && item.estimatedMinutes() > 0) {
-                            task.setDuration(Duration.ofMinutes(item.estimatedMinutes()));
-                        }
-                        tasks.add(task);
+        if (extracted.tasks() != null) {
+            for (NoteProcessor.ExtractedTask item : extracted.tasks()) {
+                if (item.title() != null && !item.title().isBlank()) {
+                    Note note = item.noteId() != null ? noteMap.getOrDefault(item.noteId(), defaultNote) : defaultNote;
+                    Course course = note != null ? note.getCourse() : null;
+                    Task task = new Task(course, item.title());
+                    task.setNote(note);
+                    task.setDescription(item.description());
+                    task.setScheduledDate(item.scheduledDate());
+                    if (item.estimatedMinutes() != null && item.estimatedMinutes() > 0) {
+                        task.setDuration(Duration.ofMinutes(item.estimatedMinutes()));
                     }
+                    tasks.add(task);
                 }
             }
+        }
 
-            if (extracted.events() != null) {
-                for (ExtractedEvent item : extracted.events()) {
-                    if (item.title() != null && !item.title().isBlank() && item.deadline() != null) {
-                        AcademicEvent event = new AcademicEvent(
-                                note.getCourse(),
-                                note,
-                                item.title(),
-                                item.description(),
-                                item.deadline()
-                        );
-                        events.add(event);
-                    }
+        if (extracted.events() != null) {
+            for (NoteProcessor.ExtractedEvent item : extracted.events()) {
+                if (item.title() != null && !item.title().isBlank() && item.deadline() != null) {
+                    Note note = item.noteId() != null ? noteMap.getOrDefault(item.noteId(), defaultNote) : defaultNote;
+                    Course course = note != null ? note.getCourse() : null;
+                    AcademicEvent event = new AcademicEvent(
+                            course,
+                            note,
+                            item.title(),
+                            item.description(),
+                            item.deadline()
+                    );
+                    events.add(event);
                 }
             }
+        }
 
-            if (extracted.contexts() != null) {
-                for (ExtractedContext item : extracted.contexts()) {
-                    if (item.value() != null && !item.value().isBlank()) {
-                        AcademicContext context = new AcademicContext(
-                                note.getCourse(),
-                                note,
-                                item.value()
-                        );
-                        contexts.add(context);
-                    }
+        if (extracted.contexts() != null) {
+            for (NoteProcessor.ExtractedContext item : extracted.contexts()) {
+                if (item.value() != null && !item.value().isBlank()) {
+                    Note note = item.noteId() != null ? noteMap.getOrDefault(item.noteId(), defaultNote) : defaultNote;
+                    Course course = note != null ? note.getCourse() : null;
+                    AcademicContext context = new AcademicContext(
+                            course,
+                            note,
+                            item.value()
+                    );
+                    contexts.add(context);
                 }
             }
         }
 
         return new ExtractionResult(tasks, events, contexts);
-    }
-
-    public record ExtractedTask(
-            String title,
-            String description,
-            LocalDate scheduledDate,
-            Integer estimatedMinutes) {
-    }
-
-    public record ExtractedEvent(
-            String title,
-            String description,
-            LocalDateTime deadline) {
-    }
-
-    public record ExtractedContext(
-            String value) {
-    }
-
-    public record ExtractedData(
-            List<ExtractedTask> tasks,
-            List<ExtractedEvent> events,
-            List<ExtractedContext> contexts) {
     }
 
     private record ExtractionResult(

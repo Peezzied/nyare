@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.service;
 
+import group.four.nyare.nyare.ai.NoteProcessor;
 import group.four.nyare.nyare.dto.ProcessSummaryResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.model.Course;
@@ -17,15 +18,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -51,8 +53,8 @@ class StudyPlannerServiceTest {
     @Mock
     private AcademicContextRepository academicContextRepository;
 
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ChatClient chatClient;
+    @Mock
+    private NoteProcessor noteProcessor;
 
     private StudyPlannerServiceImpl studyPlannerService;
 
@@ -64,7 +66,7 @@ class StudyPlannerServiceTest {
                 taskRepository,
                 academicEventRepository,
                 academicContextRepository,
-                chatClient
+                noteProcessor
         );
     }
 
@@ -118,6 +120,11 @@ class StudyPlannerServiceTest {
 
         when(courseRepository.findAll()).thenReturn(List.of(course));
         when(noteRepository.findTodayNotesByCourseId(eq(course.getId()), any(LocalDate.class))).thenReturn(List.of(note));
+        when(noteProcessor.process(any())).thenReturn(new NoteProcessor.ExtractedData(
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList()
+        ));
         when(taskRepository.saveAll(any())).thenReturn(List.of());
         when(academicEventRepository.saveAll(any())).thenReturn(List.of());
         when(academicContextRepository.saveAll(any())).thenReturn(List.of());
@@ -131,26 +138,34 @@ class StudyPlannerServiceTest {
     }
 
     @Test
-    @DisplayName("processTodayNotes materializes entities returned by Spring AI extraction")
+    @DisplayName("processTodayNotes materializes entities returned by NoteProcessor")
     void processTodayNotesMaterializesExtractedEntities() {
         Course course = new Course("CS101", "Intro to CS");
         Note note = new Note(course, new NoteContent("Finish homework 1 and exam on Friday", null));
+        UUID noteId = UUID.randomUUID();
+        ReflectionTestUtils.setField(note, "id", noteId);
 
-        StudyPlannerServiceImpl.ExtractedTask extractedTask = new StudyPlannerServiceImpl.ExtractedTask(
+        NoteProcessor.ExtractedTask extractedTask = new NoteProcessor.ExtractedTask(
+                "n1",
+                noteId,
                 "Finish homework 1",
                 "Complete exercises 1-5",
                 LocalDate.now().plusDays(2),
                 60
         );
-        StudyPlannerServiceImpl.ExtractedEvent extractedEvent = new StudyPlannerServiceImpl.ExtractedEvent(
+        NoteProcessor.ExtractedEvent extractedEvent = new NoteProcessor.ExtractedEvent(
+                "n1",
+                noteId,
                 "CS101 Midterm Exam",
                 "Covers chapters 1 to 4",
                 LocalDateTime.now().plusDays(5)
         );
-        StudyPlannerServiceImpl.ExtractedContext extractedContext = new StudyPlannerServiceImpl.ExtractedContext(
+        NoteProcessor.ExtractedContext extractedContext = new NoteProcessor.ExtractedContext(
+                "n1",
+                noteId,
                 "Student struggled with recursion topics"
         );
-        StudyPlannerServiceImpl.ExtractedData extractedData = new StudyPlannerServiceImpl.ExtractedData(
+        NoteProcessor.ExtractedData extractedData = new NoteProcessor.ExtractedData(
                 List.of(extractedTask),
                 List.of(extractedEvent),
                 List.of(extractedContext)
@@ -158,8 +173,7 @@ class StudyPlannerServiceTest {
 
         when(courseRepository.findAll()).thenReturn(List.of(course));
         when(noteRepository.findTodayNotesByCourseId(eq(course.getId()), any(LocalDate.class))).thenReturn(List.of(note));
-        when(chatClient.prompt().user(any(String.class)).call().entity(StudyPlannerServiceImpl.ExtractedData.class))
-                .thenReturn(extractedData);
+        when(noteProcessor.process(List.of(note))).thenReturn(extractedData);
         when(taskRepository.saveAll(any())).thenAnswer(invocation -> invocation.getArgument(0));
         when(academicEventRepository.saveAll(any())).thenAnswer(invocation -> invocation.getArgument(0));
         when(academicContextRepository.saveAll(any())).thenAnswer(invocation -> invocation.getArgument(0));
