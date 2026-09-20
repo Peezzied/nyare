@@ -7,7 +7,7 @@ To maintain simplicity, predictability, and development velocity, Nyare enforces
 ## 1. No Micro-Scheduling / Time-Blocking
 
 * **Boundary**: Nyare performs **high-level planning**, not automated calendar time-blocking.
-* **What We Do**: Suggest a recommended calendar date (`Task.scheduledDate`) for working on a task, or categorize it as **Flexible / Later** or **Needs Context**.
+* **What We Do**: Suggest a recommended calendar date (`Task.scheduledDate`) for working on a task, or categorize it as **Later** or **Backlog**.
 * **What We Do NOT Do**:
   - Do NOT allocate specific hourly start and end times (e.g., *"Study calculus from 7:00 PM to 8:30 PM"*).
   - Do NOT automatically manipulate calendar blocks or rearrange open hour slots.
@@ -51,7 +51,7 @@ To maintain simplicity, predictability, and development velocity, Nyare enforces
 ## 5. No Study Plan Persistence Entity
 
 * **Boundary**: The **Study Plan is NOT a separate database entity**.
-* **What We Do**: Dynamically generate the Study Plan as a virtual response DTO that groups tasks into **Scheduled**, **Flexible / Later**, and **Needs Context**.
+* **What We Do**: Dynamically convey the Study Plan by grouping tasks into **Scheduled**, **Later**, and **Backlog** through derived task state.
 * **What We Do NOT Do**:
   - Do NOT create a `study_plans` table or database entity.
   - Do NOT persist historical snapshots of generated plans in the database.
@@ -62,7 +62,7 @@ To maintain simplicity, predictability, and development velocity, Nyare enforces
 ## 6. Strict Uncertainty Preservation (Zero Hallucination)
 
 * **Boundary**: Incomplete information must remain uncertain.
-* **What We Do**: Retain `null` or unassigned fields when deadlines, durations, or details are absent. Place ambiguous tasks in **Needs Context** or **Flexible / Later**.
+* **What We Do**: Retain `null` or unassigned fields when deadlines, durations, or details are absent. Place ambiguous tasks in **Backlog** or **Later**.
 * **What We Do NOT Do**:
   - Do NOT hallucinate or guess a deadline if one was not stated or reasonably inferred.
   - Do NOT invent estimated durations or priorities just to fit a task into a calendar slot.

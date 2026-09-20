@@ -1920,9 +1920,9 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java": {
-    "mtime": 1789837864.093102,
-    "seen": 1789838136.3496737,
-    "ast_hash": "c037b5edb0cf8fabb410cd69b29db105",
+    "mtime": 1789838158.90722,
+    "seen": 1789838179.03233,
+    "ast_hash": "2c27cc8e6aa921301e3470dd4e72436a",
     "semantic_hash": ""
   },
   "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java": {

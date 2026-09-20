@@ -882,9 +882,9 @@
     "semantic_hash": "081c348d068770af78fcd90980521318"
   },
   "backend/AGENTS.md": {
-    "mtime": 1789832313.0730271,
-    "seen": 1789833694.6723604,
-    "ast_hash": "1628d847185fb17fe7fcbc247e83a535",
+    "mtime": 1789838332.7569146,
+    "seen": 1789838384.208653,
+    "ast_hash": "23b3b54a7ca297ea9832b1d76596c9a3",
     "semantic_hash": ""
   },
   "backend/.agents/mcp_config.json.example.json": {
@@ -1008,9 +1008,9 @@
     "semantic_hash": ""
   },
   "backend/docs/conventions.md": {
-    "mtime": 1789409356.5909526,
-    "seen": 1789410131.1945891,
-    "ast_hash": "dd520fb3f1b8bad1b5d5347726443bea",
+    "mtime": 1789838325.3938003,
+    "seen": 1789838384.2086782,
+    "ast_hash": "13b754f08155ce03d850abe251235232",
     "semantic_hash": ""
   },
   ".agents/skills/architect-craft/SKILL.md": {
@@ -1104,9 +1104,9 @@
     "semantic_hash": ""
   },
   "backend/docs/conventions/architecture.md": {
-    "mtime": 1789378688.914137,
-    "seen": 1789378866.9040117,
-    "ast_hash": "b2e507c4e2a0d59ac2685658f4455194",
+    "mtime": 1789838312.4158657,
+    "seen": 1789838384.2086809,
+    "ast_hash": "79a8ad6dcb321e05f1fbd03484fc7155",
     "semantic_hash": ""
   },
   "backend/docs/conventions/controllers-and-rest.md": {
