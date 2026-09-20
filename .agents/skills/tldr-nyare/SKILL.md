@@ -44,7 +44,7 @@ Course Schedule → Course-linked Journal (JSON) → AI Processing (Today's Note
 - **`AcademicEvent`**: Rigid time constraint or deadline (`Exam`, `Quiz`, `Presentation`, `Class Activity`, `Deadline`).
 - **`AcademicContext`**: Temporal background facts such as syllabus scope, pacing, and progress.
 - **`StudyPlan`**: Virtual presentation construct. The database **never stores this construct**.
-  - **Tri-State**: `Scheduled` (dated), `Flexible / Later` (undated backlog), `Needs Context` (uncertain).
+  - **Tri-State**: `Scheduled` (dated), `Later` (duration, undated), `Backlog` (undated, no duration).
 
 ### Key Domain Invariants and MVP Boundaries ([`docs/mvp-boundaries.md`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/docs/mvp-boundaries.md))
 - **No Automatic Reconciliation**: Never mutate, merge, split, or deduplicate existing tasks from new notes.
