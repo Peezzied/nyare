@@ -72,7 +72,7 @@
   "70": "DTO & Validation Guidelines",
   "71": "05 — A more professional front-end",
   "72": "4. Endpoints Specification",
-  "73": "Persistence & SQLite Guidelines",
+  "73": "conventions.md",
   "74": "Docker Prerequisite",
   "75": "Java 25 Prerequisite",
   "76": "Node.js 24 & npm 11 Prerequisite",
@@ -93,7 +93,7 @@
   "91": "Vue Logo",
   "92": "Backend Agent Guide (Nyare)",
   "93": "Service & Transaction Guidelines",
-  "94": "Verification & Testing Standards",
+  "94": "AGENTS.md",
   "95": "PlanCategory",
   "96": "4. Basic Skills and Tools Guide",
   "97": "Task Manager Service Implementation Plan",
@@ -165,9 +165,6 @@
   "163": "AcademicEventRequest",
   "164": "GlobalExceptionHandler.java",
   "165": "org.springframework.data.jpa.repository.JpaRepository",
-  "166": "NoteProcessorTest.java",
-  "167": "Override",
-  "168": "conventions.md",
-  "169": "ResourceNotFoundException",
-  "170": "Nyare Future Considerations"
+  "166": "SpringAiIntegrationTest.java",
+  "167": "Override"
 }

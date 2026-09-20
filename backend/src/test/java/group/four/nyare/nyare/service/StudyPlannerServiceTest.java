@@ -21,6 +21,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -33,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,17 +59,26 @@ class StudyPlannerServiceTest {
     @Mock
     private NoteProcessor noteProcessor;
 
+    @Mock
+    private TransactionTemplate transactionTemplate;
+
     private StudyPlannerServiceImpl studyPlannerService;
 
     @BeforeEach
     void setUp() {
+        lenient().when(transactionTemplate.execute(any())).thenAnswer(invocation -> {
+            TransactionCallback<?> callback = invocation.getArgument(0);
+            return callback.doInTransaction(null);
+        });
+
         studyPlannerService = new StudyPlannerServiceImpl(
                 courseRepository,
                 noteRepository,
                 taskRepository,
                 academicEventRepository,
                 academicContextRepository,
-                noteProcessor
+                noteProcessor,
+                transactionTemplate
         );
     }
 

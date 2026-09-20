@@ -1,16 +1,16 @@
-# Graph Report - backend  (2026-09-21)
+# Graph Report - backend  (2026-09-20)
 
 ## Corpus Check
-- 91 files · ~98,268 words
+- 91 files · ~98,197 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 869 nodes · 1463 edges · 67 communities (35 shown, 25 thin omitted)
-- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 95 edges (avg confidence: 0.82)
+- 869 nodes · 1459 edges · 67 communities (36 shown, 24 thin omitted)
+- Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 95 edges (avg confidence: 0.82)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0de59c70`
+- Built from commit: `8c86b207`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -81,7 +81,7 @@
 2. `Task` - 37 edges
 3. `Course` - 35 edges
 4. `TaskResponse` - 32 edges
-5. `AcademicEvent` - 32 edges
+5. `AcademicEvent` - 31 edges
 6. `NoteContent` - 31 edges
 7. `TaskStatus` - 27 edges
 8. `AcademicContext` - 25 edges
@@ -108,7 +108,7 @@
 - **Layered Architecture Invariants** — docs_conventions_architecture_layered_architecture, docs_conventions_services_and_tx_guidelines, docs_conventions_controllers_and_rest_guidelines, docs_conventions_dtos_and_validation_guidelines [EXTRACTED 1.00]
 - **Task CRUD Service Stack** — docs_superpowers_plans_2026_09_13_task_manager_service_task_controller_spec, docs_superpowers_plans_2026_09_13_task_manager_service_task_service_spec, docs_superpowers_plans_2026_09_13_task_manager_service_task_repository_spec [EXTRACTED 1.00]
 
-## Communities (67 total, 25 thin omitted)
+## Communities (67 total, 24 thin omitted)
 
 ### Community 0 - "AcademicEventResponse"
 Cohesion: 0.06
@@ -147,8 +147,8 @@ Cohesion: 0.40
 Nodes (5): Append-Only Materialization, Architect Craft, Tri-State Study Plan Recommendations, Preserve Uncertainty Principle, Virtual Study Plan (Non-Persisted)
 
 ### Community 12 - "org.junit.jupiter.api.Test"
-Cohesion: 0.05
-Nodes (30): Builder, org.apache.commons.csv.CSVFormat, org.apache.commons.csv.CSVRecord, org.junit.jupiter.api.BeforeEach, org.junit.jupiter.api.DisplayName, org.junit.jupiter.api.extension.ExtendWith, org.junit.jupiter.api.Test, org.mockito.junit.jupiter.MockitoExtension (+22 more)
+Cohesion: 0.06
+Nodes (29): org.apache.commons.csv.CSVFormat, org.apache.commons.csv.CSVRecord, org.junit.jupiter.api.BeforeEach, org.junit.jupiter.api.DisplayName, org.junit.jupiter.api.extension.ExtendWith, org.junit.jupiter.api.Test, org.mockito.junit.jupiter.MockitoExtension, org.springframework.ai.chat.client.ChatClient (+21 more)
 
 ### Community 13 - "NyareApplication"
 Cohesion: 0.60
@@ -168,11 +168,15 @@ Nodes (8): `200 OK`, `404 Not Found`, 4.3 Retrieve Note by ID, 4. Endpoints Spec
 
 ### Community 31 - "4. Endpoints Specification"
 Cohesion: 0.05
-Nodes (38): 1. Overview & Domain Architecture, 2.1 TaskStatus Enum, 2.2 Task Schema Overview, 2. Data Models & Enums, 3.1 400 Bad Request Example (Validation Failure), 3.2 404 Not Found Example, 3. Error Handling (RFC 7807 Problem Details), 4.1 Create Task (+30 more)
+Nodes (39): 1. Overview & Domain Architecture, 2.1 TaskStatus Enum, 2.2 PlanCategory Enum, 2.3 Task Schema Overview, 2. Data Models & Enums, 3.1 400 Bad Request Example (Validation Failure), 3.2 404 Not Found Example, 3. Error Handling (RFC 7807 Problem Details) (+31 more)
 
 ### Community 32 - "TaskStatus"
 Cohesion: 0.17
 Nodes (5): TaskStatusRequest, TaskStatus, COMPLETED, IN_PROGRESS, TODO
+
+### Community 33 - "Note"
+Cohesion: 0.17
+Nodes (3): Override, Note, NoteRepository
 
 ### Community 34 - "man-spring: Spring AI Google GenAI (Gemini)"
 Cohesion: 0.10
@@ -239,8 +243,8 @@ Cohesion: 0.25
 Nodes (7): Available Tools Reference, Diagnostic Check Status, Step 1: Query Project Modules, Step 2: Search Files or Symbols, Step 3: Check File Diagnostics, Test IntelliJ MCP, Test Verification Workflow
 
 ### Community 62 - "StudyPlannerServiceTest.java"
-Cohesion: 0.23
-Nodes (12): org.springframework.beans.factory.annotation.Autowired, org.springframework.data.jpa.repository.JpaRepository, org.springframework.data.jpa.repository.Query, org.springframework.stereotype.Service, org.springframework.transaction.support.TransactionTemplate, AcademicContextRepository, AcademicEventRepository, CourseRepository (+4 more)
+Cohesion: 0.18
+Nodes (12): Builder, org.springframework.beans.factory.annotation.Autowired, org.springframework.data.jpa.repository.JpaRepository, org.springframework.data.jpa.repository.Query, org.springframework.stereotype.Service, org.springframework.transaction.annotation.Transactional, AcademicContextRepository, AcademicEventRepository (+4 more)
 
 ### Community 69 - "PlanCategory"
 Cohesion: 0.22
@@ -251,24 +255,24 @@ Cohesion: 0.24
 Nodes (9): org.springframework.context.annotation.Configuration, org.springframework.web.cors.CorsConfiguration, org.springframework.web.servlet.config.annotation.CorsRegistry, org.springframework.web.servlet.config.annotation.WebMvcConfigurer, Override, WebConfig, Override, TestCorsRegistry (+1 more)
 
 ## Knowledge Gaps
-- **162 isolated node(s):** `messages`, `categories`, `itemDesc`, `NO_MATCH`, `SCHEDULED` (+157 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 392 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **25 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **163 isolated node(s):** `messages`, `categories`, `itemDesc`, `NO_MATCH`, `SCHEDULED` (+158 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 393 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **24 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `BadRequestException` connect `ProcessSummaryResponse` to `org.junit.jupiter.api.Test`, `StudyPlannerServiceTest.java`?**
-  _High betweenness centrality (0.090) - this node is a cross-community bridge._
-- **Why does `NoteContent` connect `NoteContent` to `Note`, `ImageReferencesValidator`, `ImageMetadata`, `NoteContentConverter`, `ValidImageReferences`, `org.junit.jupiter.api.Test`, `NoteResponse`, `StudyPlannerServiceTest.java`?**
+- **Why does `BadRequestException` connect `ProcessSummaryResponse` to `StudyPlannerServiceTest.java`?**
+  _High betweenness centrality (0.089) - this node is a cross-community bridge._
+- **Why does `NoteContent` connect `NoteContent` to `Note`, `Course`, `ImageReferencesValidator`, `ImageMetadata`, `NoteContentConverter`, `ValidImageReferences`, `org.junit.jupiter.api.Test`, `NoteResponse`, `StudyPlannerServiceTest.java`?**
   _High betweenness centrality (0.056) - this node is a cross-community bridge._
 - **Why does `Note` connect `Note` to `AcademicEvent`, `Course`, `jakarta.persistence.Entity`, `Task`, `NoteContent`, `ImageMetadata`, `org.junit.jupiter.api.Test`, `AcademicContext`, `StudyPlannerServiceTest.java`?**
   _High betweenness centrality (0.056) - this node is a cross-community bridge._
 - **What connects `messages`, `categories`, `itemDesc` to the rest of the system?**
-  _162 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _163 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `AcademicEventResponse` be split into smaller, more focused modules?**
   _Cohesion score 0.06190476190476191 - nodes in this community are weakly interconnected._
 - **Should `AcademicEvent` be split into smaller, more focused modules?**
-  _Cohesion score 0.125 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.11764705882352941 - nodes in this community are weakly interconnected._
 - **Should `Schedule` be split into smaller, more focused modules?**
   _Cohesion score 0.13970588235294118 - nodes in this community are weakly interconnected._

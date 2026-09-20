@@ -36,9 +36,9 @@
     "semantic_hash": "3dda2c113eec4d669a7da472ff73d723"
   },
   "AGENTS.md": {
-    "mtime": 1789923366.6203997,
-    "seen": 1789925449.2149827,
-    "ast_hash": "f7160115f285820db72972d37943dced",
+    "mtime": 1789918251.7178955,
+    "seen": 1789918502.8629143,
+    "ast_hash": "be68ec54d44c67dcfa8f970d2f318186",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-09-13-task-manager-service.md": {
@@ -156,10 +156,10 @@
     "semantic_hash": "21e47ae55a529c0106460fddf7a71e5f"
   },
   "src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java": {
-    "mtime": 1789925349.8876727,
-    "seen": 1789925449.2149305,
-    "ast_hash": "4e27578a37e8c098f63b85f45d302278",
-    "semantic_hash": ""
+    "mtime": 1789376977.3570416,
+    "seen": 1789379696.0033002,
+    "ast_hash": "4fdd702ccc1c5c0b64970e0f45d2d38b",
+    "semantic_hash": "4fdd702ccc1c5c0b64970e0f45d2d38b"
   },
   "src/main/java/group/four/nyare/nyare/service/AcademicEventService.java": {
     "mtime": 1789376997.3719294,
@@ -276,9 +276,9 @@
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/repository/NoteRepository.java": {
-    "mtime": 1789925345.2025042,
-    "seen": 1789925449.214935,
-    "ast_hash": "c8cd66bc98446a34de53392db5791ef7",
+    "mtime": 1789384723.1389463,
+    "seen": 1789384775.6097634,
+    "ast_hash": "5978a6cbff343342221139d471d86bca",
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/service/NoteService.java": {
@@ -306,9 +306,9 @@
     "semantic_hash": ""
   },
   "docs/api/task-api/task-api.md": {
-    "mtime": 1789918575.2565315,
-    "seen": 1789925449.2150004,
-    "ast_hash": "edd5f7a534d9bcfd2daf840412842c42",
+    "mtime": 1789918377.0150294,
+    "seen": 1789918502.8629246,
+    "ast_hash": "ace8df06ef848e8089a26c16e562b266",
     "semantic_hash": ""
   },
   "docs/api/academic-events-api/academic-events-api.md": {
@@ -972,21 +972,21 @@
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java": {
-    "mtime": 1789925372.4389417,
-    "seen": 1789925449.214952,
-    "ast_hash": "53a0efed0abe71f3cb89fe5e3dae55e6",
+    "mtime": 1789917671.0563264,
+    "seen": 1789918502.8628945,
+    "ast_hash": "32ec0a7d1d334e2f117572e9f15a8642",
     "semantic_hash": ""
   },
   "src/test/java/group/four/nyare/nyare/service/StudyPlannerServiceTest.java": {
-    "mtime": 1789925385.2388155,
-    "seen": 1789925449.2149673,
-    "ast_hash": "ca9112f91bfb2f280c8b4661fe1be5c3",
+    "mtime": 1789917293.0032132,
+    "seen": 1789917339.316216,
+    "ast_hash": "82c8dfe24707d6e1b47e0cc9abe6d5c4",
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/ai/NoteProcessor.java": {
-    "mtime": 1789925358.2528417,
-    "seen": 1789925449.2148516,
-    "ast_hash": "f079458475a93c09466337dffb49a16b",
+    "mtime": 1789916886.4960585,
+    "seen": 1789916975.8731768,
+    "ast_hash": "7ccad45ecad56c88690ca14778d31c9e",
     "semantic_hash": ""
   },
   "src/test/java/group/four/nyare/nyare/ai/NoteProcessorTest.java": {
