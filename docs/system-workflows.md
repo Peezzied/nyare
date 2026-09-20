@@ -229,8 +229,8 @@ flowchart TD
     AcademicInfo[Structured academic information]
     Planner[AI Planner]
     Useful[Useful recommendation]
-    Flexible[Flexible / Later]
-    NeedsContext[Needs Context]
+    Later[Later]
+    Backlog[Backlog]
 
     Journal ==> AI
     AI ==> Known
@@ -243,7 +243,7 @@ flowchart TD
 
     AcademicInfo ==> Planner
     Planner ==> Useful
-    Planner ==> Flexible
+    Planner ==> Later
     Planner ==> Backlog
 ```
 

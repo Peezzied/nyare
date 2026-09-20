@@ -1,6 +1,6 @@
 # NoteResponse
 
-> 18 nodes
+> 19 nodes
 
 ## Key Concepts
 
@@ -10,6 +10,7 @@
 - **.updateNote()** (3 connections) — `src/main/java/group/four/nyare/nyare/service/NoteService.java`
 - **.getContent()** (2 connections) — `src/main/java/group/four/nyare/nyare/dto/NoteResponse.java`
 - **.NoteResponse()** (2 connections) — `src/main/java/group/four/nyare/nyare/dto/NoteResponse.java`
+- **.setContent()** (2 connections) — `src/main/java/group/four/nyare/nyare/dto/NoteResponse.java`
 - **.getNote()** (2 connections) — `src/main/java/group/four/nyare/nyare/service/NoteService.java`
 - **.listNotes()** (2 connections) — `src/main/java/group/four/nyare/nyare/service/NoteService.java`
 - **NoteResponse.java** (2 connections) — `src/main/java/group/four/nyare/nyare/dto/NoteResponse.java`
@@ -26,7 +27,7 @@
 ## Relationships
 
 - [NoteContent](NoteContent.md) (7 shared connections)
-- [ScheduleResponse](ScheduleResponse.md) (2 shared connections)
+- [ProcessSummaryResponse](ProcessSummaryResponse.md) (2 shared connections)
 - [ImageMetadata](ImageMetadata.md) (2 shared connections)
 
 ## Source Files
@@ -36,7 +37,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 31 (100%)
+- EXTRACTED: 32 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

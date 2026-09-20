@@ -1,14 +1,11 @@
 # Schedule
 
-> 20 nodes
+> 17 nodes
 
 ## Key Concepts
 
 - **Schedule** (19 connections) — `src/main/java/group/four/nyare/nyare/model/Schedule.java`
-- **org.springframework.data.jpa.repository.JpaRepository** (10 connections)
 - **ScheduleRepository** (5 connections) — `src/main/java/group/four/nyare/nyare/repository/ScheduleRepository.java`
-- **CourseRepository** (3 connections) — `src/main/java/group/four/nyare/nyare/repository/CourseRepository.java`
-- **CourseRepository.java** (3 connections) — `src/main/java/group/four/nyare/nyare/repository/CourseRepository.java`
 - **ScheduleRepository.java** (3 connections) — `src/main/java/group/four/nyare/nyare/repository/ScheduleRepository.java`
 - **.getCourse()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/Schedule.java`
 - **.Schedule()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/Schedule.java`
@@ -27,21 +24,18 @@
 
 ## Relationships
 
-- [Course](Course.md) (6 shared connections)
+- [Course](Course.md) (4 shared connections)
 - [jakarta.persistence.Entity](jakarta.persistence.Entity.md) (3 shared connections)
-- [AcademicEvent](AcademicEvent.md) (3 shared connections)
-- [Task](Task.md) (2 shared connections)
-- [Note](Note.md) (1 shared connections)
+- [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) (2 shared connections)
 
 ## Source Files
 
 - `src/main/java/group/four/nyare/nyare/model/Schedule.java`
-- `src/main/java/group/four/nyare/nyare/repository/CourseRepository.java`
 - `src/main/java/group/four/nyare/nyare/repository/ScheduleRepository.java`
 
 ## Audit Trail
 
-- EXTRACTED: 39 (100%)
+- EXTRACTED: 28 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

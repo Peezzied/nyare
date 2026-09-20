@@ -104,14 +104,14 @@ Per MVP boundaries, `StudyPlan` is **strictly a presentation-layer construct**. 
 ```java
 public record StudyPlanDto(
     LocalDate generatedForDate,
-    List<TaskSummaryDto> scheduledTasks,     // Recommended for a specific calendar date
-    List<TaskSummaryDto> flexibleTasks,      // Recommended for action without specific date
-    List<TaskSummaryDto> needsContextTasks,  // Actionable, but lacking sufficient info
+    List<TaskSummaryDto> scheduledTasks,     // Recommended for a specific calendar date (SCHEDULED)
+    List<TaskSummaryDto> laterTasks,         // Actionable with duration without specific date (LATER)
+    List<TaskSummaryDto> backlogTasks,       // Actionable, but lacks date and duration (BACKLOG)
     String plannerRationale                  // Optional explanation of planning reasoning
 ) {}
 ```
 
 ### UI Area Mapping:
 - `scheduledTasks` $\rightarrow$ Rendered on specific days in the **Calendar Grid**.
-- `flexibleTasks` $\rightarrow$ Rendered in the **Later / Undated Area**.
-- `needsContextTasks` $\rightarrow$ Rendered in the **Needs Context Area**.
+- `laterTasks` $\rightarrow$ Rendered in the **Later Area**.
+- `backlogTasks` $\rightarrow$ Rendered in the **Backlog Area**.

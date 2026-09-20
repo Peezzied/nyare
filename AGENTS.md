@@ -53,9 +53,9 @@ Calendar View
 - **Preserve Uncertainty**: Missing information must remain uncertain. Never hallucinate deadlines, durations, or priority metrics.
 - **Dynamic Reasoning**: AI reasons from the holistic academic context rather than computing deterministic priority scores.
 - **Tri-State Study Plan Recommendations**:
-  - **Scheduled**: Recommended for a specific calendar date.
-  - **Flexible / Later**: Recommended for action without a specific target date.
-  - **Needs Context**: Actionable, but lacking sufficient details for confident scheduling.
+  - **Scheduled**: Recommended for a specific calendar date (`scheduledDate != null`).
+  - **Later**: Recommended for action without a specific target date, with an estimated duration (`scheduledDate == null && duration != null`).
+  - **Backlog**: Actionable, but lacks both a target date and duration estimate (`scheduledDate == null && duration == null`).
 - **Student Feedback & Reconsideration Loop**: When students provide feedback on recommendations (e.g., *"I have no time today"*), AI reconsiders the Study Plan without mutating underlying Task or Event records.
 - **High-Level Planning**: Nyare recommends what day to work on tasks, not granular hourly time-blocks.
 
@@ -66,8 +66,8 @@ Calendar View
 - **Calendar View**: Primary interactive hub. Displays class schedules, rigid Academic Events / Deadlines, and recommended tasks. Clicking a class navigates to writing course-linked journal notes.
 - **Tri-Area Layout**:
   - *Calendar Grid*: Displays scheduled items, classes, and deadlines.
-  - *Later Area*: Backlog of flexible, undated recommendations.
-  - *Needs Context Area*: Tasks requiring additional information before confident planning.
+  - *Later Area*: Displays actionable tasks with duration but without a specific date.
+  - *Backlog Area*: Displays tasks lacking both a date and duration estimate.
 - **Notes View**: Purely read-only browser allowing students to inspect their course-linked journal entries by course.
 
 ---

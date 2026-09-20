@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **TaskResponse** (29 connections) — `src/main/java/group/four/nyare/nyare/dto/TaskResponse.java`
+- **TaskResponse** (32 connections) — `src/main/java/group/four/nyare/nyare/dto/TaskResponse.java`
 - **.getCourseId()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/TaskResponse.java`
 - **.getCreatedAt()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/TaskResponse.java`
 - **.getDescription()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/TaskResponse.java`
@@ -26,8 +26,9 @@
 
 ## Relationships
 
-- [TaskStatus](TaskStatus.md) (6 shared connections)
+- [PlanCategory](PlanCategory.md) (5 shared connections)
 - [TaskService](TaskService.md) (5 shared connections)
+- [TaskStatus](TaskStatus.md) (4 shared connections)
 
 ## Source Files
 
@@ -35,7 +36,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 29 (100%)
+- EXTRACTED: 32 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

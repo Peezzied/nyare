@@ -1,17 +1,19 @@
 # Course
 
-> 12 nodes
+> 14 nodes
 
 ## Key Concepts
 
-- **Course** (32 connections) — `src/main/java/group/four/nyare/nyare/model/Course.java`
+- **Course** (35 connections) — `src/main/java/group/four/nyare/nyare/model/Course.java`
+- **.Note()** (3 connections) — `src/main/java/group/four/nyare/nyare/model/Note.java`
 - **.getCourse()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/AcademicEvent.java`
+- **.setCourse()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/AcademicEvent.java`
 - **.toString()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/Course.java`
 - **.setCourse()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/Note.java`
 - **.getCourse()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/Task.java`
+- **.Task()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/Task.java`
 - **.Course()** (1 connections) — `src/main/java/group/four/nyare/nyare/model/Course.java`
 - **.getDescription()** (1 connections) — `src/main/java/group/four/nyare/nyare/model/Course.java`
-- **.getId()** (1 connections) — `src/main/java/group/four/nyare/nyare/model/Course.java`
 - **.getName()** (1 connections) — `src/main/java/group/four/nyare/nyare/model/Course.java`
 - **.setDescription()** (1 connections) — `src/main/java/group/four/nyare/nyare/model/Course.java`
 - **.setName()** (1 connections) — `src/main/java/group/four/nyare/nyare/model/Course.java`
@@ -19,12 +21,15 @@
 
 ## Relationships
 
-- [Schedule](Schedule.md) (6 shared connections)
+- [Task](Task.md) (5 shared connections)
 - [AcademicContext](AcademicContext.md) (4 shared connections)
-- [AcademicEvent](AcademicEvent.md) (4 shared connections)
 - [Note](Note.md) (4 shared connections)
-- [Task](Task.md) (4 shared connections)
+- [Schedule](Schedule.md) (4 shared connections)
+- [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) (4 shared connections)
 - [jakarta.persistence.Entity](jakarta.persistence.Entity.md) (3 shared connections)
+- [AcademicEvent](AcademicEvent.md) (3 shared connections)
+- [org.junit.jupiter.api.Test](org.junit.jupiter.api.Test.md) (2 shared connections)
+- [NoteContent](NoteContent.md) (1 shared connections)
 
 ## Source Files
 
@@ -35,7 +40,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 36 (100%)
+- EXTRACTED: 43 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

@@ -18,8 +18,8 @@
 - Task.java `EXTRACTED`
 - TaskRepository.java `EXTRACTED`
 - TaskService.java `EXTRACTED`
-- TaskRequest.java `EXTRACTED`
 - TaskResponse.java `EXTRACTED`
+- TaskRequest.java `EXTRACTED`
 - TaskStatusRequest.java `EXTRACTED`
 
 ### references
@@ -28,11 +28,11 @@
 - [TaskRequest](TaskRequest.md) `EXTRACTED`
 - TaskStatusRequest `EXTRACTED`
 - .findAllFiltered() `EXTRACTED`
+- .TaskResponse() `EXTRACTED`
 - .listTasks() `EXTRACTED`
 - .setStatus() `EXTRACTED`
 - .TaskRequest() `EXTRACTED`
 - .setStatus() `EXTRACTED`
-- .TaskResponse() `EXTRACTED`
 - .setStatus() `EXTRACTED`
 - .TaskStatusRequest() `EXTRACTED`
 - .setStatus() `EXTRACTED`

@@ -18,7 +18,8 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 - **`Course`**: Academic subject organizing schedules, notes, tasks, events, and context.
 - **`Schedule`**: Recurring weekly class meeting times (`day`, `startTime`, `endTime`, `course`).
 - **`Note`**: Course-linked journal entry in JSON format (`content`, `course`, `createdAt`, `updatedAt`).
-- **`Task`**: Actionable item recommended for flexible planning (`course`, `scheduledDate`, `duration`, `status`).
+- **`Task`**: Actionable item recommended for flexible planning (`course`, `scheduledDate`, `duration`, `status`, derived `planCategory`).
+- **`PlanCategory`**: Tri-state planning enum (`SCHEDULED`, `LATER`, `BACKLOG`) derived from task date and duration.
 - **`AcademicEvent`**: Rigid time constraint or deadline (`course`, `note`, `title`, `description`, `deadline`).
 - **`AcademicContext`**: Temporal academic facts extracted from journal notes.
 - **`StudyPlan`**: Virtual presentation construct; **never** persist as a database table.

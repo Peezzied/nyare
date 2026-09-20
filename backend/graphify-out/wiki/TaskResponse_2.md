@@ -1,6 +1,6 @@
 # TaskResponse
 
-> God node · 29 connections · `src/main/java/group/four/nyare/nyare/dto/TaskResponse.java`
+> God node · 32 connections · `src/main/java/group/four/nyare/nyare/dto/TaskResponse.java`
 
 **Community:** [TaskResponse](TaskResponse.md)
 
@@ -13,9 +13,13 @@
 - TaskService.java `EXTRACTED`
 
 ### method
+- .TaskResponse() `EXTRACTED`
 - .getStatus() `EXTRACTED`
 - .setStatus() `EXTRACTED`
-- .TaskResponse() `EXTRACTED`
+- .getPlanCategory() `EXTRACTED`
+- .setPlanCategory() `EXTRACTED`
+- .getDuration() `EXTRACTED`
+- .setDuration() `EXTRACTED`
 - .getCreatedAt() `EXTRACTED`
 - .setCreatedAt() `EXTRACTED`
 - .getUpdatedAt() `EXTRACTED`
@@ -29,14 +33,11 @@
 - .getTitle() `EXTRACTED`
 - .setTitle() `EXTRACTED`
 - .getDescription() `EXTRACTED`
-- .setDescription() `EXTRACTED`
-- .getScheduledDate() `EXTRACTED`
-- .setScheduledDate() `EXTRACTED`
-- .getDuration() `EXTRACTED`
-- *…and 1 more `method` connection(s) not listed (lowest-degree first to go)*
+- *…and 3 more `method` connection(s) not listed (lowest-degree first to go)*
 
 ### references
 - [TaskStatus](TaskStatus.md) `EXTRACTED`
+- [PlanCategory](PlanCategory.md) `EXTRACTED`
 - .listTasks() `EXTRACTED`
 - .createTask() `EXTRACTED`
 - .updateTask() `EXTRACTED`

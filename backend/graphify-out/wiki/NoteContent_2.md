@@ -1,6 +1,6 @@
 # NoteContent
 
-> God node · 29 connections · `src/main/java/group/four/nyare/nyare/model/NoteContent.java`
+> God node · 31 connections · `src/main/java/group/four/nyare/nyare/model/NoteContent.java`
 
 **Community:** [NoteContent](NoteContent.md)
 
@@ -10,6 +10,8 @@
 - NoteContent.java `EXTRACTED`
 
 ### imports
+- [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) `EXTRACTED`
+- NoteProcessorTest.java `EXTRACTED`
 - NoteContentConverter.java `EXTRACTED`
 - ImageReferencesValidator.java `EXTRACTED`
 - NoteRequest.java `EXTRACTED`

@@ -1,23 +1,32 @@
 # Task
 
-> God node · 32 connections · `src/main/java/group/four/nyare/nyare/model/Task.java`
+> God node · 37 connections · `src/main/java/group/four/nyare/nyare/model/Task.java`
 
 **Community:** [Task](Task.md)
 
 ## Connections by Relation
 
+### calls
+- .extractFromNotes() `EXTRACTED`
+
 ### contains
 - Task.java `EXTRACTED`
 
 ### imports
+- [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) `EXTRACTED`
+- StudyPlannerServiceImpl.java `EXTRACTED`
 - TaskRepository.java `EXTRACTED`
 
 ### method
+- .getPlanCategory() `EXTRACTED`
+- .setDuration() `EXTRACTED`
+- .setNote() `EXTRACTED`
 - .Task() `EXTRACTED`
 - .getCourse() `EXTRACTED`
 - .setCourse() `EXTRACTED`
 - .getNote() `EXTRACTED`
-- .setNote() `EXTRACTED`
+- .setDescription() `EXTRACTED`
+- .setScheduledDate() `EXTRACTED`
 - .getStatus() `EXTRACTED`
 - .setStatus() `EXTRACTED`
 - .toString() `EXTRACTED`
@@ -25,15 +34,11 @@
 - .getTitle() `EXTRACTED`
 - .setTitle() `EXTRACTED`
 - .getDescription() `EXTRACTED`
-- .setDescription() `EXTRACTED`
 - .getScheduledDate() `EXTRACTED`
-- .setScheduledDate() `EXTRACTED`
 - .getDuration() `EXTRACTED`
-- .setDuration() `EXTRACTED`
 - .getCreatedAt() `EXTRACTED`
 - .setCreatedAt() `EXTRACTED`
-- .getUpdatedAt() `EXTRACTED`
-- *…and 1 more `method` connection(s) not listed (lowest-degree first to go)*
+- *…and 2 more `method` connection(s) not listed (lowest-degree first to go)*
 
 ### references
 - [Note](Note.md) `EXTRACTED`
@@ -41,9 +46,10 @@
 - [TaskStatus](TaskStatus.md) `EXTRACTED`
 - [jakarta.persistence.Entity](jakarta.persistence.Entity.md) `EXTRACTED`
 - jakarta.persistence.Table `EXTRACTED`
+- TaskRepository `EXTRACTED`
 - jakarta.persistence.EntityListeners `EXTRACTED`
 - org.springframework.data.jpa.domain.support.AuditingEntityListener `EXTRACTED`
-- TaskRepository `EXTRACTED`
+- ExtractionResult `EXTRACTED`
 - .findAllFiltered() `EXTRACTED`
 
 ---

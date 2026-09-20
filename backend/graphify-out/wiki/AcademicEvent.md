@@ -1,18 +1,12 @@
 # AcademicEvent
 
-> 23 nodes
+> 17 nodes
 
 ## Key Concepts
 
-- **AcademicEvent** (28 connections) — `src/main/java/group/four/nyare/nyare/model/AcademicEvent.java`
-- **org.springframework.data.jpa.repository.Query** (6 connections)
-- **AcademicEventRepository** (5 connections) — `src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java`
-- **AcademicEventRepository.java** (4 connections) — `src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java`
-- **NoteRepository.java** (4 connections) — `src/main/java/group/four/nyare/nyare/repository/NoteRepository.java`
-- **.AcademicEvent()** (3 connections) — `src/main/java/group/four/nyare/nyare/model/AcademicEvent.java`
-- **.findAllFiltered()** (3 connections) — `src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java`
+- **AcademicEvent** (31 connections) — `src/main/java/group/four/nyare/nyare/model/AcademicEvent.java`
 - **.getNote()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/AcademicEvent.java`
-- **.setCourse()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/AcademicEvent.java`
+- **.setNote()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/AcademicEvent.java`
 - **.toString()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/AcademicEvent.java`
 - **.findByCourseIdOrderByDeadlineAsc()** (2 connections) — `src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java`
 - **.getCreatedAt()** (1 connections) — `src/main/java/group/four/nyare/nyare/model/AcademicEvent.java`
@@ -30,21 +24,20 @@
 
 ## Relationships
 
-- [Note](Note.md) (7 shared connections)
 - [jakarta.persistence.Entity](jakarta.persistence.Entity.md) (5 shared connections)
-- [Course](Course.md) (4 shared connections)
-- [Schedule](Schedule.md) (3 shared connections)
+- [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) (5 shared connections)
+- [Note](Note.md) (4 shared connections)
+- [Course](Course.md) (3 shared connections)
 - [Task](Task.md) (2 shared connections)
 
 ## Source Files
 
 - `src/main/java/group/four/nyare/nyare/model/AcademicEvent.java`
 - `src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java`
-- `src/main/java/group/four/nyare/nyare/repository/NoteRepository.java`
 
 ## Audit Trail
 
-- EXTRACTED: 47 (100%)
+- EXTRACTED: 35 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

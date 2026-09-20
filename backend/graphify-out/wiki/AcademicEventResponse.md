@@ -33,7 +33,7 @@
 
 ## Relationships
 
-- [ScheduleResponse](ScheduleResponse.md) (3 shared connections)
+- [ProcessSummaryResponse](ProcessSummaryResponse.md) (3 shared connections)
 
 ## Source Files
 

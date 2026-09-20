@@ -822,9 +822,9 @@
     "semantic_hash": "a831cf3669f1e6ab85d8a80ebe655f99"
   },
   "AGENTS.md": {
-    "mtime": 1789310273.0090125,
-    "seen": 1789310911.3589575,
-    "ast_hash": "84710f01eb41b219a81c6544e1466a0d",
+    "mtime": 1789918224.0380242,
+    "seen": 1789918515.8963947,
+    "ast_hash": "8bacbd708e145a2e8284266ef7510901",
     "semantic_hash": ""
   },
   "frontend/README.md": {
@@ -882,9 +882,9 @@
     "semantic_hash": "081c348d068770af78fcd90980521318"
   },
   "backend/AGENTS.md": {
-    "mtime": 1789838518.9144795,
-    "seen": 1789904886.1636195,
-    "ast_hash": "23b3b54a7ca297ea9832b1d76596c9a3",
+    "mtime": 1789918251.7178955,
+    "seen": 1789918515.896423,
+    "ast_hash": "be68ec54d44c67dcfa8f970d2f318186",
     "semantic_hash": ""
   },
   "backend/.agents/mcp_config.json.example.json": {
@@ -1014,15 +1014,15 @@
     "semantic_hash": ""
   },
   ".agents/skills/architect-craft/SKILL.md": {
-    "mtime": 1789834372.785298,
-    "seen": 1789834417.2751086,
-    "ast_hash": "2c06fdf1ddec9c2b958bdc85faa0e167",
+    "mtime": 1789918398.9347055,
+    "seen": 1789918515.8960125,
+    "ast_hash": "1b03e6e0af9fd4970bb9c66acafff6f6",
     "semantic_hash": ""
   },
   "backend/.agents/skills/architect-craft/SKILL.md": {
-    "mtime": 1789833484.1506495,
-    "seen": 1789833694.6723552,
-    "ast_hash": "59cfd3ac477eb9e3d22db02d992fe138",
+    "mtime": 1789918433.5101285,
+    "seen": 1789918515.8964076,
+    "ast_hash": "ff36084444487f1f12d48388b272a85e",
     "semantic_hash": ""
   },
   "docs/conceptual-model.md": {
@@ -1038,9 +1038,9 @@
     "semantic_hash": ""
   },
   "docs/system-workflows.md": {
-    "mtime": 1789903068.1020422,
-    "seen": 1789904886.163763,
-    "ast_hash": "f132252c21f859808bef1427970ec0e0",
+    "mtime": 1789918259.0810661,
+    "seen": 1789918515.8967576,
+    "ast_hash": "0bffc31fbd295ff2398ab6356d21468f",
     "semantic_hash": ""
   },
   "docs/temp/README.md": {
@@ -1050,9 +1050,9 @@
     "semantic_hash": ""
   },
   "docs/temp/ai-workflows-draft.md": {
-    "mtime": 1789310486.0410814,
-    "seen": 1789310911.3589792,
-    "ast_hash": "816beceffd01b5844c89ce1b6641b209",
+    "mtime": 1789918392.5380802,
+    "seen": 1789918515.8967633,
+    "ast_hash": "ab9f768bf5f72969d525af9aae8d3459",
     "semantic_hash": ""
   },
   "docs/temp/backend-agents-guide-draft.md": {
@@ -1062,9 +1062,9 @@
     "semantic_hash": ""
   },
   "docs/temp/backend-domain-model-draft.md": {
-    "mtime": 1789310480.2249105,
-    "seen": 1789310911.3589818,
-    "ast_hash": "5e1fc0024f4068a2bd6df58b8cce9c18",
+    "mtime": 1789918387.629688,
+    "seen": 1789918515.89677,
+    "ast_hash": "6c1d4608eddb3631fba88ac324529680",
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/controller/GlobalExceptionHandler.java": {
@@ -1230,9 +1230,9 @@
     "semantic_hash": ""
   },
   "backend/docs/api/task-api/task-api.md": {
-    "mtime": 1789300495.1837926,
-    "seen": 1789385541.1996462,
-    "ast_hash": "910df0563648987ccf231f10799399a6",
+    "mtime": 1789918575.2565315,
+    "seen": 1789918876.6248612,
+    "ast_hash": "edd5f7a534d9bcfd2daf840412842c42",
     "semantic_hash": ""
   },
   "backend/docs/api/academic-events-api/academic-events-api.md": {
@@ -1824,9 +1824,9 @@
     "semantic_hash": ""
   },
   ".agents/skills/tldr-nyare/SKILL.md": {
-    "mtime": 1789433291.6064017,
-    "seen": 1789433814.4268131,
-    "ast_hash": "425142bf7277c00e5ed1b5427511a198",
+    "mtime": 1789918438.4634726,
+    "seen": 1789918515.8963783,
+    "ast_hash": "4a93fe1a91f70f4eb94048e1c40eed08",
     "semantic_hash": ""
   },
   ".agents/skills/asd-ste100/scripts/ste-lint.py": {
@@ -1890,15 +1890,9 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java": {
-    "mtime": 1789838611.2755263,
-    "seen": 1789904886.1633523,
-    "ast_hash": "2f2119b4036f26dd0e81b2c7e47d6eba",
-    "semantic_hash": ""
-  },
-  "backend/src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java": {
-    "mtime": 1789838611.2835214,
-    "seen": 1789904886.1634238,
-    "ast_hash": "7b7c0d8a1480da40e7b126a411c428fb",
+    "mtime": 1789914937.4982867,
+    "seen": 1789917161.2656133,
+    "ast_hash": "214bfb02c4f50b22ea7e06f63e53a997",
     "semantic_hash": ""
   },
   "backend/.agents/skills/man-spring/SKILL.md": {
@@ -1920,14 +1914,14 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java": {
-    "mtime": 1789838611.273512,
-    "seen": 1789904886.1633503,
+    "mtime": 1789916755.9333158,
+    "seen": 1789917161.26561,
     "ast_hash": "e1fef4f2b088cffe24f936243203ea66",
     "semantic_hash": ""
   },
   "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java": {
-    "mtime": 1789838611.2815015,
-    "seen": 1789904886.163422,
+    "mtime": 1789916755.9237354,
+    "seen": 1789917161.2656763,
     "ast_hash": "de4638ec3befef306e1087be6d639387",
     "semantic_hash": ""
   },
@@ -1956,15 +1950,39 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java": {
-    "mtime": 1789903025.106761,
-    "seen": 1789904886.1634173,
-    "ast_hash": "1265a87627de25f6241fef4bee61be15",
+    "mtime": 1789917671.0563264,
+    "seen": 1789918515.8959312,
+    "ast_hash": "32ec0a7d1d334e2f117572e9f15a8642",
     "semantic_hash": ""
   },
   "backend/src/test/java/group/four/nyare/nyare/service/StudyPlannerServiceTest.java": {
-    "mtime": 1789903107.6752336,
-    "seen": 1789904886.1634269,
-    "ast_hash": "5c85797ecac2336b5bd156c8fb846bf5",
+    "mtime": 1789917293.0032132,
+    "seen": 1789918515.8959603,
+    "ast_hash": "82c8dfe24707d6e1b47e0cc9abe6d5c4",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/group/four/nyare/nyare/ai/NoteProcessor.java": {
+    "mtime": 1789916886.4960585,
+    "seen": 1789917161.2656076,
+    "ast_hash": "7ccad45ecad56c88690ca14778d31c9e",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/group/four/nyare/nyare/ai/parser/StubReferenceCodec.java": {
+    "mtime": 1789916814.835071,
+    "seen": 1789917161.2656112,
+    "ast_hash": "0b80e007bfd21dbd1c100f2dff402dad",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/group/four/nyare/nyare/ai/NoteProcessorTest.java": {
+    "mtime": 1789916932.8342614,
+    "seen": 1789917161.2656732,
+    "ast_hash": "59a306153d9ad289c441414b440bca5e",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/group/four/nyare/nyare/ai/parser/StubReferenceCodecTest.java": {
+    "mtime": 1789916819.048771,
+    "seen": 1789917161.2656775,
+    "ast_hash": "873188115c114889d517d8f9bb7d4ae9",
     "semantic_hash": ""
   }
 }

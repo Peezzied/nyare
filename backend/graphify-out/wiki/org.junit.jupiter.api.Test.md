@@ -1,53 +1,71 @@
 # org.junit.jupiter.api.Test
 
-> 47 nodes
+> 92 nodes
 
 ## Key Concepts
 
-- **org.junit.jupiter.api.Test** (12 connections)
-- **TaggedPromptBuilder** (11 connections) — `src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java`
-- **org.junit.jupiter.api.DisplayName** (10 connections)
-- **.addCorsMappings_registersExpectedConfiguration()** (7 connections) — `src/test/java/group/four/nyare/nyare/config/WebConfigTest.java`
-- **WebConfig** (5 connections) — `src/main/java/group/four/nyare/nyare/config/WebConfig.java`
-- **TaggedPromptBuilderTest** (5 connections) — `src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java`
-- **SpringAiIntegrationTest** (5 connections) — `src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java`
-- **.buildPrompt()** (5 connections) — `src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java`
-- **.buildUserMessage()** (5 connections) — `src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java`
-- **.taggedPromptBuilder_buildPrompt_createsSystemAndUserMessages()** (5 connections) — `src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java`
-- **.taggedPromptBuilder_multipleTags_assemblesFormattedText()** (5 connections) — `src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java`
-- **.taggedPromptBuilder_tagIfPresent_skipsBlankContent()** (5 connections) — `src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java`
-- **SpringAiIntegrationTest.java** (5 connections) — `src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java`
-- **WebConfigTest.java** (5 connections) — `src/test/java/group/four/nyare/nyare/config/WebConfigTest.java`
-- **TestCorsRegistry** (4 connections) — `src/test/java/group/four/nyare/nyare/config/WebConfigTest.java`
-- **.buildText()** (4 connections) — `src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java`
-- **.create()** (4 connections) — `src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java`
-- **.addCorsMappings()** (4 connections) — `src/main/java/group/four/nyare/nyare/config/WebConfig.java`
-- **.taggedPromptBuilder_blankTagName_throwsException()** (4 connections) — `src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java`
-- **.getCorsConfigurations()** (4 connections) — `src/test/java/group/four/nyare/nyare/config/WebConfigTest.java`
-- **org.springframework.boot.test.context.SpringBootTest** (4 connections)
-- **org.springframework.web.servlet.config.annotation.CorsRegistry** (4 connections)
-- **WebConfig.java** (4 connections) — `src/main/java/group/four/nyare/nyare/config/WebConfig.java`
-- **TaggedPromptBuilderTest.java** (4 connections) — `src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java`
-- **WebConfigTest** (3 connections) — `src/test/java/group/four/nyare/nyare/config/WebConfigTest.java`
-- *... and 22 more nodes in this community*
+- **org.junit.jupiter.api.Test** (33 connections)
+- **org.junit.jupiter.api.DisplayName** (31 connections)
+- **NoteProcessor** (20 connections) — `src/main/java/group/four/nyare/nyare/ai/NoteProcessor.java`
+- **.process()** (19 connections) — `src/main/java/group/four/nyare/nyare/ai/NoteProcessor.java`
+- **StudyPlannerServiceTest** (17 connections) — `src/test/java/group/four/nyare/nyare/service/StudyPlannerServiceTest.java`
+- **NoteProcessorTest.java** (16 connections) — `src/test/java/group/four/nyare/nyare/ai/NoteProcessorTest.java`
+- **.processTodayNotesMaterializesExtractedEntities()** (14 connections) — `src/test/java/group/four/nyare/nyare/service/StudyPlannerServiceTest.java`
+- **StubReferenceCodec** (12 connections) — `src/main/java/group/four/nyare/nyare/ai/parser/StubReferenceCodec.java`
+- **.processTodayNotesSucceedsWhenNotesExist()** (11 connections) — `src/test/java/group/four/nyare/nyare/service/StudyPlannerServiceTest.java`
+- **NoteProcessor.java** (11 connections) — `src/main/java/group/four/nyare/nyare/ai/NoteProcessor.java`
+- **ExtractedData** (10 connections) — `src/main/java/group/four/nyare/nyare/ai/NoteProcessor.java`
+- **NoteProcessorTest** (10 connections) — `src/test/java/group/four/nyare/nyare/ai/NoteProcessorTest.java`
+- **.decodeReferences()** (10 connections) — `src/main/java/group/four/nyare/nyare/ai/NoteProcessor.java`
+- **TaggedPromptBuilder** (8 connections) — `src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java`
+- **CsvParserTest** (8 connections) — `src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java`
+- **.parse()** (8 connections) — `src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java`
+- **.encode()** (8 connections) — `src/main/java/group/four/nyare/nyare/ai/parser/StubReferenceCodec.java`
+- **CsvParser** (7 connections) — `src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java`
+- **StubReferenceCodecTest** (7 connections) — `src/test/java/group/four/nyare/nyare/ai/parser/StubReferenceCodecTest.java`
+- **.processImagesToCsv()** (7 connections) — `src/main/java/group/four/nyare/nyare/ai/NoteProcessor.java`
+- **.processConvertsNotesToCsvAndDecodesNoteId()** (7 connections) — `src/test/java/group/four/nyare/nyare/ai/NoteProcessorTest.java`
+- **.clearResetsMappings()** (7 connections) — `src/test/java/group/four/nyare/nyare/ai/parser/StubReferenceCodecTest.java`
+- **.parse_reader_convertsStream()** (6 connections) — `src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java`
+- **.parse_validCsvText_returnsMappedObjects()** (6 connections) — `src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java`
+- **.checksMembershipCorrectly()** (6 connections) — `src/test/java/group/four/nyare/nyare/ai/parser/StubReferenceCodecTest.java`
+- *... and 67 more nodes in this community*
 
 ## Relationships
 
-- No strong cross-community connections detected
+- [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) (22 shared connections)
+- [Note](Note.md) (10 shared connections)
+- [.addCorsMappings_registersExpectedConfiguration](addCorsMappings_registersExpectedConfiguration.md) (5 shared connections)
+- [Task](Task.md) (4 shared connections)
+- [ProcessSummaryResponse](ProcessSummaryResponse.md) (4 shared connections)
+- [Course](Course.md) (2 shared connections)
+- [jakarta.persistence.Entity](jakarta.persistence.Entity.md) (2 shared connections)
+- [ImageMetadata](ImageMetadata.md) (2 shared connections)
+- [PlanCategory](PlanCategory.md) (1 shared connections)
+- [ValidImageReferences](ValidImageReferences.md) (1 shared connections)
+- [NoteContent](NoteContent.md) (1 shared connections)
 
 ## Source Files
 
+- `src/main/java/group/four/nyare/nyare/ai/NoteProcessor.java`
+- `src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java`
+- `src/main/java/group/four/nyare/nyare/ai/parser/StubReferenceCodec.java`
 - `src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java`
-- `src/main/java/group/four/nyare/nyare/config/WebConfig.java`
+- `src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java`
+- `src/main/java/group/four/nyare/nyare/model/Course.java`
+- `src/main/java/group/four/nyare/nyare/model/Task.java`
 - `src/test/java/group/four/nyare/nyare/NyareApplicationTests.java`
+- `src/test/java/group/four/nyare/nyare/ai/NoteProcessorTest.java`
 - `src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java`
-- `src/test/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilderTest.java`
+- `src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java`
+- `src/test/java/group/four/nyare/nyare/ai/parser/StubReferenceCodecTest.java`
 - `src/test/java/group/four/nyare/nyare/config/WebConfigTest.java`
+- `src/test/java/group/four/nyare/nyare/service/StudyPlannerServiceTest.java`
 
 ## Audit Trail
 
-- EXTRACTED: 83 (92%)
-- INFERRED: 7 (8%)
+- EXTRACTED: 239 (81%)
+- INFERRED: 56 (19%)
 - AMBIGUOUS: 0 (0%)
 
 ---

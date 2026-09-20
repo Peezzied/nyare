@@ -1,16 +1,16 @@
 # Graph Report - backend  (2026-09-20)
 
 ## Corpus Check
-- 91 files · ~98,834 words
+- 91 files · ~98,061 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 887 nodes · 1499 edges · 78 communities (43 shown, 27 thin omitted)
-- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 90 edges (avg confidence: 0.82)
+- 868 nodes · 1458 edges · 71 communities (36 shown, 28 thin omitted)
+- Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 95 edges (avg confidence: 0.82)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `25bf07a7`
+- Built from commit: `8c86b207`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -48,7 +48,7 @@
 - TaskStatus
 - Note
 - man-spring: Spring AI Google GenAI (Gemini)
-- StudyPlannerServiceTest.java
+- jakarta.persistence.Entity
 - ScheduleResponse
 - search.js
 - search-page.js
@@ -65,29 +65,23 @@
 - 3. Error Handling (RFC 7807 Problem Details)
 - jQuery v3.7.1
 - jQuery UI v1.14.1
-- StudyPlannerController.java
+- ProcessSummaryResponse
 - TaskRequest
 - AcademicContext
 - TaskService
 - Test IntelliJ MCP
-- StudyPlannerServiceImpl
+- StudyPlannerServiceTest.java
 - Dr. JSkill and Spring Docs MCP Rule
-- StubReferenceCodec
+- AcademicEventRequest
 - BadRequestException
 - Course
 - GlobalExceptionHandler.java
-- NoteProcessor.java
+- AcademicEventService
 - PlanCategory
-- StudyPlannerServiceTest
 - .addCorsMappings_registersExpectedConfiguration
-- NoteProcessor
-- ScheduleRequest
-- org.springframework.data.jpa.repository.JpaRepository
-- SpringAiIntegrationTest.java
-- ProcessSummaryResponse
 
 ## God Nodes (most connected - your core abstractions)
-1. `Note` - 42 edges
+1. `Note` - 43 edges
 2. `Task` - 37 edges
 3. `Course` - 35 edges
 4. `TaskResponse` - 32 edges
@@ -96,7 +90,7 @@
 7. `TaskStatus` - 27 edges
 8. `AcademicContext` - 25 edges
 9. `AcademicEventResponse` - 21 edges
-10. `StudyPlannerServiceImpl` - 21 edges
+10. `NoteProcessor` - 20 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Tier 1 Verification (IntelliJ MCP)` --semantically_similar_to--> `Three Test Slices`  [INFERRED] [semantically similar]
@@ -118,15 +112,7 @@
 - **Layered Architecture Invariants** — docs_conventions_architecture_layered_architecture, docs_conventions_services_and_tx_guidelines, docs_conventions_controllers_and_rest_guidelines, docs_conventions_dtos_and_validation_guidelines [EXTRACTED 1.00]
 - **Task CRUD Service Stack** — docs_superpowers_plans_2026_09_13_task_manager_service_task_controller_spec, docs_superpowers_plans_2026_09_13_task_manager_service_task_service_spec, docs_superpowers_plans_2026_09_13_task_manager_service_task_repository_spec [EXTRACTED 1.00]
 
-## Communities (78 total, 27 thin omitted)
-
-### Community 0 - "AcademicEventResponse"
-Cohesion: 0.06
-Nodes (3): AcademicEventRequest, AcademicEventResponse, AcademicEventService
-
-### Community 1 - "AcademicEvent"
-Cohesion: 0.12
-Nodes (3): AcademicEvent, Override, AcademicEventRepository
+## Communities (71 total, 28 thin omitted)
 
 ### Community 2 - "Schedule"
 Cohesion: 0.14
@@ -141,7 +127,7 @@ Cohesion: 0.07
 Nodes (40): Ae(), B(), Be(), c(), $e(), ee(), F(), fe() (+32 more)
 
 ### Community 5 - "Task"
-Cohesion: 0.12
+Cohesion: 0.11
 Nodes (3): Override, Task, ExtractionResult
 
 ### Community 7 - "4. Endpoints Specification"
@@ -161,8 +147,8 @@ Cohesion: 0.40
 Nodes (5): Append-Only Materialization, Architect Craft, Tri-State Study Plan Recommendations, Preserve Uncertainty Principle, Virtual Study Plan (Non-Persisted)
 
 ### Community 12 - "org.junit.jupiter.api.Test"
-Cohesion: 0.21
-Nodes (5): org.apache.commons.csv.CSVRecord, org.junit.jupiter.api.DisplayName, org.junit.jupiter.api.Test, CsvParserTest, SampleTask
+Cohesion: 0.06
+Nodes (29): Builder, org.apache.commons.csv.CSVFormat, org.apache.commons.csv.CSVRecord, org.junit.jupiter.api.BeforeEach, org.junit.jupiter.api.DisplayName, org.junit.jupiter.api.extension.ExtendWith, org.junit.jupiter.api.Test, org.mockito.junit.jupiter.MockitoExtension (+21 more)
 
 ### Community 13 - "NyareApplication"
 Cohesion: 0.60
@@ -185,20 +171,20 @@ Cohesion: 0.05
 Nodes (38): 1. Overview & Domain Architecture, 2.1 TaskStatus Enum, 2.2 Task Schema Overview, 2. Data Models & Enums, 3.1 400 Bad Request Example (Validation Failure), 3.2 404 Not Found Example, 3. Error Handling (RFC 7807 Problem Details), 4.1 Create Task (+30 more)
 
 ### Community 32 - "TaskStatus"
-Cohesion: 0.20
+Cohesion: 0.17
 Nodes (5): TaskStatusRequest, TaskStatus, COMPLETED, IN_PROGRESS, TODO
-
-### Community 33 - "Note"
-Cohesion: 0.16
-Nodes (3): Override, Note, NoteRepository
 
 ### Community 34 - "man-spring: Spring AI Google GenAI (Gemini)"
 Cohesion: 0.10
 Nodes (19): 1. `GoogleGenAiChatModel`, 2. High-Level `ChatClient`, 3. Structured Output Extraction, 4. Multimodal Inputs, 5. Function Calling with `@Tool`, 6. Dynamic `GoogleGenAiChatOptions`, 7. Context Caching, Application Properties (+11 more)
 
-### Community 35 - "StudyPlannerServiceTest.java"
-Cohesion: 0.36
+### Community 35 - "jakarta.persistence.Entity"
+Cohesion: 0.44
 Nodes (4): jakarta.persistence.Entity, jakarta.persistence.EntityListeners, jakarta.persistence.Table, org.springframework.data.jpa.domain.support.AuditingEntityListener
+
+### Community 36 - "ScheduleResponse"
+Cohesion: 0.08
+Nodes (3): ScheduleRequest, ScheduleResponse, ScheduleService
 
 ### Community 37 - "search.js"
 Cohesion: 0.14
@@ -244,73 +230,53 @@ Nodes (6): `204 No Content`, `404 Not Found`, 4.6 Delete Note, Example Request, 
 Cohesion: 0.40
 Nodes (5): 3.1 400 Bad Request Example (Reference Mismatch), 3.2 400 Bad Request Example (Missing Required Fields), 3.3 404 Not Found Example, 3. Error Handling (RFC 7807 Problem Details), Problem Details Schema
 
-### Community 57 - "StudyPlannerController.java"
-Cohesion: 0.31
-Nodes (7): org.springframework.web.bind.annotation.PostMapping, org.springframework.web.bind.annotation.RequestMapping, org.springframework.web.bind.annotation.RestController, org.springframework.web.servlet.mvc.method.annotation.SseEmitter, StudyPlannerController, StudyPlannerService, SseEmitter
+### Community 57 - "ProcessSummaryResponse"
+Cohesion: 0.18
+Nodes (8): org.springframework.web.bind.annotation.PostMapping, org.springframework.web.bind.annotation.RequestMapping, org.springframework.web.bind.annotation.RestController, org.springframework.web.servlet.mvc.method.annotation.SseEmitter, StudyPlannerController, ProcessSummaryResponse, StudyPlannerService, SseEmitter
+
+### Community 59 - "AcademicContext"
+Cohesion: 0.21
+Nodes (3): AcademicContext, Override, AcademicContextRepository
 
 ### Community 61 - "Test IntelliJ MCP"
 Cohesion: 0.25
 Nodes (7): Available Tools Reference, Diagnostic Check Status, Step 1: Query Project Modules, Step 2: Search Files or Symbols, Step 3: Check File Diagnostics, Test IntelliJ MCP, Test Verification Workflow
 
-### Community 62 - "StudyPlannerServiceImpl"
-Cohesion: 0.21
-Nodes (13): org.springframework.ai.chat.client.ChatClient, org.springframework.beans.factory.annotation.Autowired, org.springframework.stereotype.Service, org.springframework.transaction.annotation.Transactional, Builder, CourseRepository, ExtractedContext, ExtractedData (+5 more)
-
-### Community 64 - "StubReferenceCodec"
-Cohesion: 0.17
-Nodes (3): Override, StubReferenceCodec, StubReferenceCodecTest
+### Community 62 - "StudyPlannerServiceTest.java"
+Cohesion: 0.18
+Nodes (12): org.springframework.beans.factory.annotation.Autowired, org.springframework.data.jpa.repository.JpaRepository, org.springframework.data.jpa.repository.Query, org.springframework.stereotype.Service, org.springframework.transaction.annotation.Transactional, AcademicEventRepository, CourseRepository, NoteRepository (+4 more)
 
 ### Community 67 - "GlobalExceptionHandler.java"
 Cohesion: 0.44
 Nodes (5): org.springframework.http.ProblemDetail, org.springframework.web.bind.annotation.ExceptionHandler, org.springframework.web.bind.annotation.RestControllerAdvice, org.springframework.web.bind.MethodArgumentNotValidException, GlobalExceptionHandler
 
-### Community 68 - "NoteProcessor.java"
-Cohesion: 0.18
-Nodes (6): org.apache.commons.csv.CSVFormat, org.springframework.ai.chat.prompt.Prompt, org.springframework.stereotype.Component, Prompt, CsvParser, TaggedPromptBuilder
-
 ### Community 69 - "PlanCategory"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (4): PlanCategory, BACKLOG, LATER, SCHEDULED
-
-### Community 70 - "StudyPlannerServiceTest"
-Cohesion: 0.23
-Nodes (5): org.junit.jupiter.api.BeforeEach, org.junit.jupiter.api.extension.ExtendWith, org.mockito.junit.jupiter.MockitoExtension, NoteProcessorTest, StudyPlannerServiceTest
 
 ### Community 71 - ".addCorsMappings_registersExpectedConfiguration"
 Cohesion: 0.24
 Nodes (9): org.springframework.context.annotation.Configuration, org.springframework.web.cors.CorsConfiguration, org.springframework.web.servlet.config.annotation.CorsRegistry, org.springframework.web.servlet.config.annotation.WebMvcConfigurer, Override, WebConfig, Override, TestCorsRegistry (+1 more)
 
-### Community 72 - "NoteProcessor"
-Cohesion: 0.32
-Nodes (6): ExtractedContext, ExtractedData, ExtractedEvent, ExtractedTask, ImageRow, NoteProcessor
-
-### Community 74 - "org.springframework.data.jpa.repository.JpaRepository"
-Cohesion: 0.36
-Nodes (4): org.springframework.data.jpa.repository.JpaRepository, org.springframework.data.jpa.repository.Query, AcademicContextRepository, TaskRepository
-
-### Community 75 - "SpringAiIntegrationTest.java"
-Cohesion: 0.43
-Nodes (4): org.springframework.ai.chat.model.ChatModel, org.springframework.boot.test.context.SpringBootTest, SpringAiIntegrationTest, NyareApplicationTests
-
 ## Knowledge Gaps
 - **162 isolated node(s):** `messages`, `categories`, `itemDesc`, `NO_MATCH`, `SCHEDULED` (+157 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 396 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **27 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 392 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **28 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `BadRequestException` connect `BadRequestException` to `StudyPlannerController.java`, `GlobalExceptionHandler.java`, `StudyPlannerServiceImpl`, `StudyPlannerServiceTest.java`?**
+- **Why does `BadRequestException` connect `BadRequestException` to `ProcessSummaryResponse`, `GlobalExceptionHandler.java`, `StudyPlannerServiceTest.java`?**
   _High betweenness centrality (0.090) - this node is a cross-community bridge._
-- **Why does `Note` connect `Note` to `AcademicEvent`, `Course`, `StudyPlannerServiceTest.java`, `NoteProcessor.java`, `Task`, `StudyPlannerServiceTest`, `NoteProcessor`, `NoteContent`, `ImageMetadata`, `org.springframework.data.jpa.repository.JpaRepository`, `AcademicContext`, `StudyPlannerServiceImpl`?**
-  _High betweenness centrality (0.066) - this node is a cross-community bridge._
-- **Why does `NoteContent` connect `NoteContent` to `Note`, `StudyPlannerServiceTest.java`, `StudyPlannerServiceTest`, `ImageReferencesValidator`, `ImageMetadata`, `NoteContentConverter`, `ValidImageReferences`, `NoteResponse`?**
+- **Why does `NoteContent` connect `NoteContent` to `Note`, `ImageReferencesValidator`, `ImageMetadata`, `NoteContentConverter`, `ValidImageReferences`, `org.junit.jupiter.api.Test`, `NoteResponse`, `StudyPlannerServiceTest.java`?**
+  _High betweenness centrality (0.056) - this node is a cross-community bridge._
+- **Why does `Note` connect `Note` to `AcademicEvent`, `Course`, `jakarta.persistence.Entity`, `Task`, `NoteContent`, `ImageMetadata`, `org.junit.jupiter.api.Test`, `AcademicContext`, `StudyPlannerServiceTest.java`?**
   _High betweenness centrality (0.056) - this node is a cross-community bridge._
 - **What connects `messages`, `categories`, `itemDesc` to the rest of the system?**
   _162 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `AcademicEventResponse` be split into smaller, more focused modules?**
-  _Cohesion score 0.06190476190476191 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.11764705882352941 - nodes in this community are weakly interconnected._
 - **Should `AcademicEvent` be split into smaller, more focused modules?**
-  _Cohesion score 0.11695906432748537 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.11764705882352941 - nodes in this community are weakly interconnected._
 - **Should `Schedule` be split into smaller, more focused modules?**
   _Cohesion score 0.13970588235294118 - nodes in this community are weakly interconnected._
