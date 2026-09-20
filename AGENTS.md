@@ -38,7 +38,7 @@ Calendar View
 - **Course**: Academic subject organizing schedules, journal entries, tasks, academic events, and academic context. All student data belongs to exactly one course.
 - **Class Schedule**: Recurring weekly class meeting times (`dayOfWeek`, `startTime`, `endTime`) anchoring calendar navigation.
 - **Journal Entry (`Note`)**: Raw student-written notes in JSON format; the immutable source of truth.
-- **Task**: Actionable work item the student needs to do (`TODO`, `IN_PROGRESS`, `COMPLETED`), with optional estimated duration and flexible recommended date.
+- **Task**: Actionable work item (`TODO`, `IN_PROGRESS`, `COMPLETED`), with origin (`STUDENT_EXTRACTED`, `AI_GENERATED`, `MANUAL`), optional duration, and flexible recommended date.
 - **Academic Event**: Rigid time constraint or occurrence at a specific date/time.
   - Subtypes include: `Exam`, `Quiz`, `Presentation`, `Class Activity`, and `Deadline` (latest required submission time).
 - **Academic Context**: Temporal descriptive facts about the student's academic situation (syllabus coverage, progress, prerequisites, difficulty) aiding AI reasoning.
@@ -48,15 +48,18 @@ Calendar View
 
 ## AI Behavior & Planning
 
-- **Explicit Trigger**: Processing applies only to the **current day's journal entries** upon explicit user request.
-- **Append-Only Materialization**: AI extracts Tasks, Academic Events, and Academic Context as fresh records without rewriting or mutating past entities.
-- **Preserve Uncertainty**: Missing information must remain uncertain. Never hallucinate deadlines, durations, or priority metrics.
+- **Combined Processing & Planning Trigger**: When the student clicks Process, the system processes today's journal entries and generates the study plan in one transaction.
+- **Course Scope**: Planning scopes strictly to courses with notes processed today.
+- **Event-Anchored Task Generation**: The planner generates study preparation tasks (`origin = AI_GENERATED`) for upcoming academic events within a 14-day window. If open `SCHEDULED` or `LATER` tasks already exist for that course, the planner skips generation.
+- **Scheduling Persistence**: The planner persists and updates `scheduledDate` and `duration` directly on `Task` records.
+- **Backlog Promotion**: The planner promotes `BACKLOG` tasks to `SCHEDULED` or `LATER` when new academic context enables planning.
+- **Preserve Uncertainty**: Missing information must remain uncertain. Never hallucinate deadlines or priority metrics.
 - **Dynamic Reasoning**: AI reasons from the holistic academic context rather than computing deterministic priority scores.
-- **Tri-State Study Plan Recommendations**:
+- **Tri-State Study Plan Presentation**:
   - **Scheduled**: Recommended for a specific calendar date (`scheduledDate != null`).
   - **Later**: Recommended for action without a specific target date, with an estimated duration (`scheduledDate == null && duration != null`).
   - **Backlog**: Actionable, but lacks both a target date and duration estimate (`scheduledDate == null && duration == null`).
-- **Student Feedback & Reconsideration Loop**: When students provide feedback on recommendations (e.g., *"I have no time today"*), AI reconsiders the Study Plan without mutating underlying Task or Event records.
+- **Student Feedback & Reconsideration Loop**: When students provide feedback on recommendations (e.g., *"I have no time today"*), AI reconsiders the Study Plan.
 - **High-Level Planning**: Nyare recommends what day to work on tasks, not granular hourly time-blocks.
 
 ---
@@ -74,7 +77,8 @@ Calendar View
 
 ## MVP Boundaries
 
-- Do not automatically update, merge, split, or reconcile existing tasks from new information.
+- Do not automatically merge, split, or rewrite student task titles or descriptions from new information.
+- The planner only updates scheduling fields (`scheduledDate`, `duration`) and generates event-anchored study tasks.
 - Do not build a deterministic task-priority scoring system.
 - Do not require detailed recurring availability schedules.
 - Do not treat the Study Plan as a separate persistence model.
