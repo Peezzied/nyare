@@ -117,35 +117,40 @@ flowchart TD
 
 ### 4. AI Planning Workflow
 
-Shows how the AI Planner selects and orders tasks into a coherent Study Plan. The planner takes into account newly processed notes, existing tasks, academic events, class schedules, and course context.
+Shows how the AI Planner selects, generates, and orders tasks into a coherent Study Plan. The planner takes into account newly processed notes, existing tasks, academic events, class schedules, and course context.
 
 ```mermaid
 flowchart TD
-    Today["Today's processed information"]
+    Today["Today's processed notes"]
+    Courses["Involved courses"]
+    Events["Upcoming Academic Events (14-day window)"]
+    Context["Academic Context facts"]
+    Schedule["Class Schedule"]
+    OpenTasks["Existing open tasks"]
     Planner[AI Planner]
-    Existing["Existing Tasks / Events / Context"]
-    Courses[Course relationships]
-    Schedule[Class Schedule]
-    Select[Select relevant tasks]
-    Order[Order recommended tasks]
-    Plan[Study Plan]
-    Scheduled[Scheduled recommendations]
-    Later[Later recommendations]
-    Backlog[Backlog]
+    Guard{"Open tasks exist for course?"}
+    GenTasks["Generate study tasks (origin = AI_GENERATED)"]
+    UpdateDates["Update scheduledDate & duration on tasks"]
+    Plan[Study Plan Presentation]
 
-    Today ==> Planner
-    Existing -.-> Planner
-    Courses -.-> Planner
-    Schedule -.-> Planner
-
-    Planner ==> Select
-    Select ==> Order
-    Order ==> Plan
-
-    Plan ==> Scheduled
-    Plan ==> Later
-    Plan ==> Backlog
+    Today ==> Courses
+    Courses ==> Planner
+    Events ==> Planner
+    Context ==> Planner
+    Schedule ==> Planner
+    OpenTasks ==> Planner
+    Planner ==> Guard
+    Guard ==>|No open tasks| GenTasks
+    Guard ==>|Open tasks exist| UpdateDates
+    GenTasks ==> UpdateDates
+    UpdateDates ==> Plan
 ```
+
+- **Scope**: Scopes strictly to courses with notes processed today.
+- **Event Lookahead**: Inspects upcoming academic events within a 14-day window.
+- **Task Generation**: Generates study tasks for events when no `SCHEDULED` or `LATER` tasks exist for that course.
+- **Persistence**: Persists and updates `scheduledDate` and `duration` directly on `Task` records.
+- **Backlog Promotion**: Assigns dates and durations to `BACKLOG` tasks when new context enables planning.
 
 ---
 
@@ -183,9 +188,9 @@ flowchart LR
 ---
 
 ### 6. Information and Planning Boundaries
-
-Defines how the system preserves integrity by treating materialization as append-only. Recommendations **do not automatically overwrite or reconcile** existing records.
-
+ 
+Defines how the system preserves integrity. Recommendations **do not rewrite student task text** or mutate events and context facts. The planner only generates event-anchored study tasks and updates task scheduling fields (`scheduledDate`, `duration`).
+ 
 ```mermaid
 flowchart TD
     Journal[Journal Entry]
@@ -195,7 +200,8 @@ flowchart TD
     Context[Academic Context]
     State[Current Academic Information]
     Planner[AI Planner]
-    Recommendations[Recommended Tasks]
+    NewTasks["Event-anchored study tasks (origin = AI_GENERATED)"]
+    ScheduleUpdates["Updates scheduledDate & duration"]
 
     Journal ==> Extract
     Extract ==> Task
@@ -206,11 +212,15 @@ flowchart TD
     Event ==> State
     Context ==> State
     State ==> Planner
-    Planner ==> Recommendations
 
-    Recommendations -.->|Does not automatically rewrite| Task
-    Recommendations -.->|Does not automatically rewrite| Event
-    Recommendations -.->|Does not automatically rewrite| Context
+    Planner ==>|Creates| NewTasks
+    Planner ==>|Persists| ScheduleUpdates
+    NewTasks ==> Task
+    ScheduleUpdates ==> Task
+
+    Planner -.->|Does not rewrite title or description| Task
+    Planner -.->|Does not mutate| Event
+    Planner -.->|Does not mutate| Context
 ```
 
 ---
@@ -328,4 +338,6 @@ flowchart TD
     Reconsider -.-> StudyPlan
 ```
 
-*Feedback Loop*: When the student provides feedback (e.g. *"I have no time tonight"*), the feedback is incorporated into the planning context and the AI reconsiders task recommendations without mutating underlying Task or Event records.
+*Combined Flow*: When the student clicks Process, the system processes today's notes and runs study planning in one transaction. It extracts entities, generates study tasks for uncovered events, and updates `scheduledDate` and `duration` on open tasks for involved courses.
+
+*Feedback Loop*: When the student provides feedback (e.g. *"I have no time tonight"*), the feedback is incorporated into the planning context and the AI reconsiders task recommendations.
