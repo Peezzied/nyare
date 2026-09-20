@@ -12,7 +12,7 @@ This document formalizes the 9 architectural workflows of Nyare. These diagrams 
 | 2 | [Core Academic Model](#2-core-academic-model) | Entity relationships and journal ingestion structure |
 | 3 | [Journal Processing Workflow](#3-journal-processing-workflow) | Explicit AI extraction scoped to today's notes |
 | 4 | [AI Planning Workflow](#4-ai-planning-workflow) | Multi-input synthesis into the tri-state Study Plan |
-| 5 | [Study Plan & Calendar Relationship](#5-study-plan-and-calendar-relationship) | UI mapping to Calendar grid, Later area, and Needs Context area |
+| 5 | [Study Plan & Calendar Relationship](#5-study-plan-and-calendar-relationship) | UI mapping to Calendar grid, Later area, and Backlog area |
 | 6 | [Information & Planning Boundaries](#6-information-and-planning-boundaries) | Append-only materialization without automated entity mutation |
 | 7 | [Handling Missing Information](#7-handling-missing-information) | Known, Inferred, and Unknown handling without data fabrication |
 | 8 | [User Interface & Navigation](#8-user-interface-and-navigation) | Calendar View hub and read-only Notes View navigation |
@@ -130,8 +130,8 @@ flowchart TD
     Order[Order recommended tasks]
     Plan[Study Plan]
     Scheduled[Scheduled recommendations]
-    Later[Flexible / Later]
-    ContextNeeded[Needs Context]
+    Later[Later recommendations]
+    Backlog[Backlog]
 
     Today ==> Planner
     Existing -.-> Planner
@@ -144,7 +144,7 @@ flowchart TD
 
     Plan ==> Scheduled
     Plan ==> Later
-    Plan ==> ContextNeeded
+    Plan ==> Backlog
 ```
 
 ---
@@ -156,29 +156,29 @@ Illustrates the tri-state routing of Study Plan recommendations onto the user in
 ```mermaid
 flowchart LR
     Plan[Study Plan]
-    Dated[Dated recommendations]
-    Flexible["Flexible / Later recommendations"]
-    NeedsContext[Needs Context recommendations]
+    Dated[Scheduled recommendations]
+    Flexible["Later recommendations"]
+    BacklogItems[Backlog recommendations]
     Calendar[Calendar dates]
-    LaterArea["Later / Undated area"]
-    ContextArea[Needs Context area]
+    LaterArea["Later area"]
+    BacklogArea[Backlog area]
     Events["Academic Events / Deadlines"]
     Classes[Class Schedule]
 
     Plan ==> Dated
     Plan ==> Flexible
-    Plan ==> NeedsContext
+    Plan ==> BacklogItems
     Dated ==> Calendar
     Flexible ==> LaterArea
-    NeedsContext ==> ContextArea
+    BacklogItems ==> BacklogArea
 
     Events -.-> Calendar
     Classes -.-> Calendar
 ```
 
-- **Calendar Grid**: Displays class meeting times, rigid Academic Events / Deadlines, and **Scheduled** tasks with recommended dates.
-- **Later Area**: Displays actionable **Flexible / Later** tasks without specific target dates.
-- **Needs Context Area**: Displays actionable items that require additional information before confident planning can occur.
+- **Calendar Grid**: Displays class meeting times, rigid Academic Events / Deadlines, and **Scheduled** tasks with recommended dates (`scheduledDate != null`).
+- **Later Area**: Displays actionable **Later** tasks without specific target dates (`scheduledDate == null && duration != null`).
+- **Backlog Area**: Displays tasks requiring additional context or details before scheduling (`scheduledDate == null && duration == null`).
 
 ---
 
@@ -244,11 +244,11 @@ flowchart TD
     AcademicInfo ==> Planner
     Planner ==> Useful
     Planner ==> Flexible
-    Planner ==> NeedsContext
+    Planner ==> Backlog
 ```
 
 - When deadline or duration is unknown, it remains empty.
-- If plannability is low, the item is routed to **Needs Context** or **Flexible / Later**.
+- If plannability is low, the item is routed to **Backlog** or **Later**.
 
 ---
 
