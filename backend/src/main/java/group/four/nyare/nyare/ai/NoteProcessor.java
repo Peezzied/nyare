@@ -26,6 +26,7 @@ public class NoteProcessor {
             You are an academic planning assistant for Nyare.
             Extract actionable tasks, rigid academic events or deadlines, and temporal academic context facts from student journal notes.
             Link each extracted item to its source note using the note_ref identifier.
+            Use the temporal_anchor tag to resolve relative dates and deadlines (such as 'tomorrow', 'next Friday', or day names).
             Preserve uncertainty. Never hallucinate deadlines or durations.
             """;
 
@@ -77,7 +78,11 @@ public class NoteProcessor {
                 }
         );
 
+        LocalDate today = LocalDate.now();
+        String timeContext = String.format("Current Reference Date: %s (%s)", today, today.getDayOfWeek());
+
         TaggedPromptBuilder promptBuilder = TaggedPromptBuilder.builder()
+                .tag("temporal_anchor", timeContext)
                 .tag("journal_notes", notesCsv);
 
         // Minimum scaffold for image processing with compact references

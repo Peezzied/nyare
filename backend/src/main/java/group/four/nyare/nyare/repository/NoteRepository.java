@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,15 +26,16 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
 
     /**
      * Returns notes created on the given calendar date for a course.
-     * Uses an index-friendly range query between the start and end of the date.
+     * Uses an index-friendly range query between the start and end of the date in the local timezone.
      *
      * @param courseId the course ID to filter by
      * @param today    the calendar date to match against {@code createdAt}
      * @return notes created today for the course
      */
     default List<Note> findTodayNotesByCourseId(Long courseId, LocalDate today) {
-        Instant startOfDay = today.atStartOfDay(ZoneOffset.UTC).toInstant();
-        Instant endOfDay = today.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
+        ZoneId zone = ZoneId.systemDefault();
+        Instant startOfDay = today.atStartOfDay(zone).toInstant();
+        Instant endOfDay = today.plusDays(1).atStartOfDay(zone).toInstant();
         return findNotesByCourseIdAndCreatedAtRange(courseId, startOfDay, endOfDay);
     }
 

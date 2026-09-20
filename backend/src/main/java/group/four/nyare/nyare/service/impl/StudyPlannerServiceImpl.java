@@ -16,7 +16,7 @@ import group.four.nyare.nyare.repository.TaskRepository;
 import group.four.nyare.nyare.service.StudyPlannerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
  * Implementation of {@link StudyPlannerService} for processing daily notes into academic entities.
  */
 @Service
-@Transactional(readOnly = true)
 public class StudyPlannerServiceImpl implements StudyPlannerService {
 
     private final CourseRepository courseRepository;
@@ -40,6 +39,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
     private final AcademicEventRepository academicEventRepository;
     private final AcademicContextRepository academicContextRepository;
     private final NoteProcessor noteProcessor;
+    private final TransactionTemplate transactionTemplate;
 
     @Autowired
     public StudyPlannerServiceImpl(
@@ -48,17 +48,18 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
             TaskRepository taskRepository,
             AcademicEventRepository academicEventRepository,
             AcademicContextRepository academicContextRepository,
-            NoteProcessor noteProcessor) {
+            NoteProcessor noteProcessor,
+            TransactionTemplate transactionTemplate) {
         this.courseRepository = courseRepository;
         this.noteRepository = noteRepository;
         this.taskRepository = taskRepository;
         this.academicEventRepository = academicEventRepository;
         this.academicContextRepository = academicContextRepository;
         this.noteProcessor = noteProcessor;
+        this.transactionTemplate = transactionTemplate;
     }
 
     @Override
-    @Transactional
     public ProcessSummaryResponse processTodayNotes() {
         LocalDate today = LocalDate.now();
         List<Note> todayNotes = new ArrayList<>();
@@ -73,15 +74,17 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
 
         ExtractionResult extracted = extractFromNotes(todayNotes);
 
-        List<Task> savedTasks = taskRepository.saveAll(extracted.tasks());
-        List<AcademicEvent> savedEvents = academicEventRepository.saveAll(extracted.events());
-        List<AcademicContext> savedContexts = academicContextRepository.saveAll(extracted.contexts());
+        return transactionTemplate.execute(status -> {
+            List<Task> savedTasks = taskRepository.saveAll(extracted.tasks());
+            List<AcademicEvent> savedEvents = academicEventRepository.saveAll(extracted.events());
+            List<AcademicContext> savedContexts = academicContextRepository.saveAll(extracted.contexts());
 
-        return new ProcessSummaryResponse(
-                savedTasks.size(),
-                savedEvents.size(),
-                savedContexts.size()
-        );
+            return new ProcessSummaryResponse(
+                    savedTasks.size(),
+                    savedEvents.size(),
+                    savedContexts.size()
+            );
+        });
     }
 
     private ExtractionResult extractFromNotes(List<Note> notes) {
