@@ -17,11 +17,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.ai.chat.client.ChatClient;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,6 +51,9 @@ class StudyPlannerServiceTest {
     @Mock
     private AcademicContextRepository academicContextRepository;
 
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ChatClient chatClient;
+
     private StudyPlannerServiceImpl studyPlannerService;
 
     @BeforeEach
@@ -57,7 +63,8 @@ class StudyPlannerServiceTest {
                 noteRepository,
                 taskRepository,
                 academicEventRepository,
-                academicContextRepository
+                academicContextRepository,
+                chatClient
         );
     }
 
@@ -121,5 +128,47 @@ class StudyPlannerServiceTest {
         assertThat(response.getTasksCreated()).isEqualTo(0);
         assertThat(response.getEventsCreated()).isEqualTo(0);
         assertThat(response.getContextsCreated()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("processTodayNotes materializes entities returned by Spring AI extraction")
+    void processTodayNotesMaterializesExtractedEntities() {
+        Course course = new Course("CS101", "Intro to CS");
+        Note note = new Note(course, new NoteContent("Finish homework 1 and exam on Friday", null));
+
+        StudyPlannerServiceImpl.ExtractedTask extractedTask = new StudyPlannerServiceImpl.ExtractedTask(
+                "Finish homework 1",
+                "Complete exercises 1-5",
+                LocalDate.now().plusDays(2),
+                60
+        );
+        StudyPlannerServiceImpl.ExtractedEvent extractedEvent = new StudyPlannerServiceImpl.ExtractedEvent(
+                "CS101 Midterm Exam",
+                "Covers chapters 1 to 4",
+                LocalDateTime.now().plusDays(5)
+        );
+        StudyPlannerServiceImpl.ExtractedContext extractedContext = new StudyPlannerServiceImpl.ExtractedContext(
+                "Student struggled with recursion topics"
+        );
+        StudyPlannerServiceImpl.ExtractedData extractedData = new StudyPlannerServiceImpl.ExtractedData(
+                List.of(extractedTask),
+                List.of(extractedEvent),
+                List.of(extractedContext)
+        );
+
+        when(courseRepository.findAll()).thenReturn(List.of(course));
+        when(noteRepository.findTodayNotesByCourseId(eq(course.getId()), any(LocalDate.class))).thenReturn(List.of(note));
+        when(chatClient.prompt().user(any(String.class)).call().entity(StudyPlannerServiceImpl.ExtractedData.class))
+                .thenReturn(extractedData);
+        when(taskRepository.saveAll(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(academicEventRepository.saveAll(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(academicContextRepository.saveAll(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        ProcessSummaryResponse response = studyPlannerService.processTodayNotes();
+
+        assertThat(response).isNotNull();
+        assertThat(response.getTasksCreated()).isEqualTo(1);
+        assertThat(response.getEventsCreated()).isEqualTo(1);
+        assertThat(response.getContextsCreated()).isEqualTo(1);
     }
 }

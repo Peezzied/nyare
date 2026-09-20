@@ -24,32 +24,12 @@ public class TaggedPromptBuilder {
     }
 
     /**
-     * Factory method to start building a prompt.
-     *
-     * @return a new TaggedPromptBuilder instance
-     */
-    public static TaggedPromptBuilder create() {
-        return new TaggedPromptBuilder();
-    }
-
-    /**
      * Factory method alias to start building a prompt.
      *
      * @return a new TaggedPromptBuilder instance
      */
     public static TaggedPromptBuilder builder() {
         return new TaggedPromptBuilder();
-    }
-
-    /**
-     * Sets the system instruction message.
-     *
-     * @param instruction the system instruction text
-     * @return this builder
-     */
-    public TaggedPromptBuilder system(String instruction) {
-        this.systemInstruction = instruction;
-        return this;
     }
 
     /**
@@ -105,25 +85,7 @@ public class TaggedPromptBuilder {
     }
 
     /**
-     * Returns the aggregated user body text with XML tags.
-     *
-     * @return the composite string
-     */
-    public String buildText() {
-        return this.bodyBuilder.toString();
-    }
-
-    /**
-     * Builds a Spring AI UserMessage containing the aggregated XML tagged text.
-     *
-     * @return a new UserMessage
-     */
-    public UserMessage buildUserMessage() {
-        return new UserMessage(buildText());
-    }
-
-    /**
-     * Builds a Spring AI Prompt with the configured SystemMessage and UserMessage.
+     * Builds a Spring AI Prompt with the configured message.
      *
      * @return a new Prompt object
      */
@@ -132,7 +94,7 @@ public class TaggedPromptBuilder {
         if (this.systemInstruction != null && !this.systemInstruction.isBlank()) {
             messages.add(new SystemMessage(this.systemInstruction.trim()));
         }
-        messages.add(buildUserMessage());
+        messages.add(new UserMessage(this.bodyBuilder.toString()));
         return new Prompt(messages);
     }
 }
