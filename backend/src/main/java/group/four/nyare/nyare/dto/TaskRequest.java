@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * Request payload for creating or fully updating a Task.
@@ -15,6 +16,8 @@ public class TaskRequest {
 
     @NotNull(message = "Course ID is required")
     private Long courseId;
+
+    private UUID noteId;
 
     @NotBlank(message = "Task title is required")
     @Size(max = 255, message = "Task title cannot exceed 255 characters")
@@ -33,7 +36,12 @@ public class TaskRequest {
     }
 
     public TaskRequest(Long courseId, String title, String description, LocalDate scheduledDate, Duration duration, TaskStatus status) {
+        this(courseId, null, title, description, scheduledDate, duration, status);
+    }
+
+    public TaskRequest(Long courseId, UUID noteId, String title, String description, LocalDate scheduledDate, Duration duration, TaskStatus status) {
         this.courseId = courseId;
+        this.noteId = noteId;
         this.title = title;
         this.description = description;
         this.scheduledDate = scheduledDate;
@@ -47,6 +55,14 @@ public class TaskRequest {
 
     public void setCourseId(Long courseId) {
         this.courseId = courseId;
+    }
+
+    public UUID getNoteId() {
+        return noteId;
+    }
+
+    public void setNoteId(UUID noteId) {
+        this.noteId = noteId;
     }
 
     public String getTitle() {
