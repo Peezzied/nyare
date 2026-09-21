@@ -22,10 +22,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * REST controller for study task management.
- * Provides endpoints for creating, filtering, querying, updating, and deleting academic tasks.
- */
 @RestController
 @RequestMapping("/api/tasks")
 public class TaskController {
@@ -36,12 +32,6 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    /**
-     * Creates a new academic study task.
-     *
-     * @param request validated task creation payload
-     * @return 201 Created with Location header and persisted task response
-     */
     @PostMapping
     public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskRequest request) {
         TaskResponse response = taskService.createTask(request);
@@ -49,14 +39,6 @@ public class TaskController {
         return ResponseEntity.created(location).body(response);
     }
 
-    /**
-     * Retrieves tasks matching optional course, status, and scheduling filter parameters.
-     *
-     * @param courseId  optional course ID filter
-     * @param status    optional lifecycle status filter
-     * @param scheduled optional scheduled state filter (true for scheduled, false for unscheduled/later)
-     * @return 200 OK with list of matching tasks
-     */
     @GetMapping
     public ResponseEntity<List<TaskResponse>> listTasks(
             @RequestParam(required = false) Long courseId,
@@ -66,25 +48,12 @@ public class TaskController {
         return ResponseEntity.ok(tasks);
     }
 
-    /**
-     * Retrieves a single task by its unique identifier.
-     *
-     * @param id unique UUID of the task
-     * @return 200 OK with task response
-     */
     @GetMapping("/{id}")
     public ResponseEntity<TaskResponse> getTask(@PathVariable UUID id) {
         TaskResponse response = taskService.getTask(id);
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Fully replaces an existing task.
-     *
-     * @param id      unique UUID of the task to update
-     * @param request validated replacement payload
-     * @return 200 OK with updated task response
-     */
     @PutMapping("/{id}")
     public ResponseEntity<TaskResponse> updateTask(
             @PathVariable UUID id,
@@ -93,13 +62,6 @@ public class TaskController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Updates only the lifecycle status of an existing task.
-     *
-     * @param id      unique UUID of the task
-     * @param request validated status update payload
-     * @return 200 OK with updated task response
-     */
     @PatchMapping("/{id}/status")
     public ResponseEntity<TaskResponse> updateTaskStatus(
             @PathVariable UUID id,
@@ -108,12 +70,6 @@ public class TaskController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Deletes a task by its unique identifier.
-     *
-     * @param id unique UUID of the task to delete
-     * @return 204 No Content
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable UUID id) {
         taskService.deleteTask(id);
