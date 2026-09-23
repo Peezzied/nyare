@@ -18,9 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Production implementation of {@link AcademicEventService}.
- */
+
 @Service
 @Transactional(readOnly = true)
 public class AcademicEventServiceImpl implements AcademicEventService {
@@ -97,8 +95,7 @@ public class AcademicEventServiceImpl implements AcademicEventService {
         event.setDescription(request.getDescription());
         event.setDeadline(request.getDeadline());
 
-        AcademicEvent updatedEvent = academicEventRepository.save(event);
-        return toResponse(updatedEvent);
+        return toResponse(event);
     }
 
     @Override

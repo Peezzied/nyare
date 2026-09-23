@@ -20,10 +20,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * REST controller for academic event management.
- * All endpoints delegate to {@link AcademicEventService}.
- */
+
 @RestController
 @RequestMapping("/api/academic-events")
 public class AcademicEventController {
@@ -34,12 +31,7 @@ public class AcademicEventController {
         this.academicEventService = academicEventService;
     }
 
-    /**
-     * Creates a new academic event and returns 201 Created with Location header.
-     *
-     * @param request the validated academic event creation payload
-     * @return the created academic event with location header
-     */
+
     @PostMapping
     public ResponseEntity<AcademicEventResponse> createEvent(@Valid @RequestBody AcademicEventRequest request) {
         AcademicEventResponse created = academicEventService.createEvent(request);
@@ -50,13 +42,7 @@ public class AcademicEventController {
         return ResponseEntity.created(location).body(created);
     }
 
-    /**
-     * Retrieves academic events matching optional course and upcoming filters.
-     *
-     * @param courseId optional course identifier
-     * @param upcoming optional boolean flag for upcoming events
-     * @return list of matching academic events
-     */
+
     @GetMapping
     public ResponseEntity<List<AcademicEventResponse>> listEvents(
             @RequestParam(required = false) Long courseId,
@@ -65,24 +51,13 @@ public class AcademicEventController {
         return ResponseEntity.ok(academicEventService.listEvents(courseId, upcoming));
     }
 
-    /**
-     * Retrieves an academic event by its identifier.
-     *
-     * @param id the unique identifier of the academic event
-     * @return the academic event response
-     */
+
     @GetMapping("/{id}")
     public ResponseEntity<AcademicEventResponse> getEvent(@PathVariable UUID id) {
         return ResponseEntity.ok(academicEventService.getEvent(id));
     }
 
-    /**
-     * Updates an academic event by its identifier.
-     *
-     * @param id      the unique identifier of the academic event
-     * @param request the validated replacement payload
-     * @return the updated academic event response
-     */
+
     @PutMapping("/{id}")
     public ResponseEntity<AcademicEventResponse> updateEvent(
             @PathVariable UUID id,
@@ -91,12 +66,7 @@ public class AcademicEventController {
         return ResponseEntity.ok(academicEventService.updateEvent(id, request));
     }
 
-    /**
-     * Deletes an academic event by its identifier.
-     *
-     * @param id the unique identifier of the academic event
-     * @return 204 No Content response
-     */
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable UUID id) {
         academicEventService.deleteEvent(id);
