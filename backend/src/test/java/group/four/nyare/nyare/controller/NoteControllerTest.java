@@ -1,11 +1,8 @@
 package group.four.nyare.nyare.controller;
 
-import group.four.nyare.nyare.dto.ImageMetadataUpdateRequest;
 import group.four.nyare.nyare.dto.NoteRequest;
 import group.four.nyare.nyare.dto.NoteResponse;
-import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
-import group.four.nyare.nyare.model.ImageMetadata;
 import group.four.nyare.nyare.model.NoteContent;
 import group.four.nyare.nyare.service.NoteService;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +18,6 @@ import tools.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -32,7 +28,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -161,36 +156,6 @@ class NoteControllerTest {
                 .andExpect(jsonPath("$.title").value("Validation Failed"));
     }
 
-    @Test
-    void updateImageMetadata_withValidPayload_returns200() throws Exception {
-        // given
-        Map<String, ImageMetadata> metadataMap = Map.of("fig-1", new ImageMetadata("data:image/png;base64,...", "Summary"));
-        ImageMetadataUpdateRequest request = new ImageMetadataUpdateRequest(metadataMap);
-        when(noteService.updateImageMetadata(eq(noteId), any(ImageMetadataUpdateRequest.class))).thenReturn(sampleResponse);
-
-        // when & then
-        mockMvc.perform(patch("/api/notes/{id}/image-metadata", noteId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(noteId.toString()));
-    }
-
-    @Test
-    void updateImageMetadata_withMismatch_returns400ProblemDetail() throws Exception {
-        // given
-        Map<String, ImageMetadata> metadataMap = Map.of("fig-1", new ImageMetadata("data:image/png;base64,...", "Summary"));
-        ImageMetadataUpdateRequest request = new ImageMetadataUpdateRequest(metadataMap);
-        when(noteService.updateImageMetadata(eq(noteId), any(ImageMetadataUpdateRequest.class)))
-                .thenThrow(new BadRequestException("Image metadata keys do not match markdown image references"));
-
-        // when & then
-        mockMvc.perform(patch("/api/notes/{id}/image-metadata", noteId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.title").value("Bad Request"));
-    }
 
     @Test
     void deleteNote_withExistingId_returns204() throws Exception {

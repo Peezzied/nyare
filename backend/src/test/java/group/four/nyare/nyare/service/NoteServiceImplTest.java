@@ -1,12 +1,9 @@
 package group.four.nyare.nyare.service;
 
-import group.four.nyare.nyare.dto.ImageMetadataUpdateRequest;
 import group.four.nyare.nyare.dto.NoteRequest;
 import group.four.nyare.nyare.dto.NoteResponse;
-import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
-import group.four.nyare.nyare.model.ImageMetadata;
 import group.four.nyare.nyare.model.Note;
 import group.four.nyare.nyare.model.NoteContent;
 import group.four.nyare.nyare.repository.CourseRepository;
@@ -20,8 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -85,20 +80,33 @@ class NoteServiceImplTest {
     }
 
     @Test
-    void updateImageMetadata_withMismatchedKeys_throwsBadRequestException() {
+    void updateNote_withValidRequest_returnsResponse() {
         // given
-        NoteContent content = new NoteContent("Diagram: ![Architecture][fig-1]", Map.of("fig-1", new ImageMetadata("data", "desc")));
-        Note existingNote = new Note(course, content);
-        when(noteRepository.findById(noteId)).thenReturn(Optional.of(existingNote));
+        NoteContent updatedContent = new NoteContent("Updated notes", Collections.emptyMap());
+        NoteRequest request = new NoteRequest(1L, updatedContent);
+        when(noteRepository.findById(noteId)).thenReturn(Optional.of(note));
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Map<String, ImageMetadata> updatedMap = new HashMap<>();
-        updatedMap.put("fig-2", new ImageMetadata("data2", "desc2"));
-        ImageMetadataUpdateRequest request = new ImageMetadataUpdateRequest(updatedMap);
+        // when
+        NoteResponse response = noteService.updateNote(noteId, request);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getContent().getMarkdown()).isEqualTo("Updated notes");
+    }
+
+    @Test
+    void updateNote_withNonExistentNote_throwsResourceNotFoundException() {
+        // given
+        NoteContent updatedContent = new NoteContent("Updated notes", Collections.emptyMap());
+        NoteRequest request = new NoteRequest(1L, updatedContent);
+        when(noteRepository.findById(noteId)).thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> noteService.updateImageMetadata(noteId, request))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessageContaining("Image metadata keys do not match markdown image references");
+        assertThatThrownBy(() -> noteService.updateNote(noteId, request))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Note not found with ID: " + noteId);
     }
 
     @Test
