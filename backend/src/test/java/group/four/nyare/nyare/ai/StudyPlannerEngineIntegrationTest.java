@@ -166,10 +166,9 @@ public class StudyPlannerEngineIntegrationTest {
     void process_withOutlierNote_ignoresNoteAndLogsAudit(CapturedOutput output, TestInfo testInfo) throws Exception {
         // given: Outlier non-academic note assigned to OOP course
         Course oop = new Course("Object-Oriented Programming", "CS Core Course");
-        UUID noteId = UUID.randomUUID();
         String noteText = "bumili ako ng shampoo, sabon, tsaka kape sa grocery kanina tapos nanood ako ng anime buong gabi";
-        Note outlierNote = new Note(oop, new NoteContent(noteText, null));
-        ReflectionTestUtils.setField(outlierNote, "id", noteId);
+        Note outlierNote = createNote(oop, noteText);
+        UUID noteId = outlierNote.getId();
 
         // when
         StudyPlannerEngine.ExtractedData result = engine.process(
@@ -187,7 +186,42 @@ public class StudyPlannerEngineIntegrationTest {
         assertThat(result.contexts()).noneMatch(c -> noteId.equals(c.noteId()));
 
         // then: NoteAuditAdvisor intercepted and logged the audit warning
-        assertThat(output.getAll()).contains("[AI AUDIT - IGNORED NOTE]");
+        assertThat(output.getAll()).contains("[AI AUDIT - UNRELATED INFO]");
+        assertThat(output.getAll()).contains("n1");
+    }
+
+    @Test
+    @DisplayName("process with mixed note extracts valid entities and logs audit warning for unrelated content")
+    void process_withMixedNote_extractsEntitiesAndAuditsUnrelated(CapturedOutput output, TestInfo testInfo) throws Exception {
+        // given: Mixed note with valid academic task and unrelated personal errand
+        Course oop = new Course("Object-Oriented Programming", "CS Core Course");
+        String mixedText = "Kailangan ko tapusin yung UML class diagram asap bago mag-Tuesday lab. " +
+                "Tapos nag-kape ako sa Starbucks at bumili ng sabon at grocery kanina.";
+        Note mixedNote = createNote(oop, mixedText);
+        UUID noteId = mixedNote.getId();
+
+        // when
+        StudyPlannerEngine.ExtractedData result = engine.process(
+                List.of(mixedNote),
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList());
+
+        reportObservation(testInfo.getDisplayName(), result);
+
+        // then: Valid academic task is retained and extracted
+        assertThat(result.tasks()).isNotEmpty();
+        assertThat(result.tasks()).anyMatch(t -> t.title().toLowerCase().contains("uml") ||
+                                                 t.title().toLowerCase().contains("diagram"));
+
+        // then: Unrelated grocery/coffee errand is omitted from tasks
+        assertThat(result.tasks()).noneMatch(t -> t.title().toLowerCase().contains("starbucks") ||
+                                                 t.title().toLowerCase().contains("grocery") ||
+                                                 t.title().toLowerCase().contains("sabon"));
+
+        // then: NoteAuditAdvisor logged audit warning for the omitted unrelated statements
+        assertThat(output.getAll()).contains("[AI AUDIT - UNRELATED INFO]");
         assertThat(output.getAll()).contains("n1");
     }
 

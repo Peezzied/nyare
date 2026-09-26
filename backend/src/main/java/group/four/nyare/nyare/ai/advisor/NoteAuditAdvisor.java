@@ -34,8 +34,8 @@ public class NoteAuditAdvisor extends SimpleLoggerAdvisor {
         ChatClientResponse response = super.adviseCall(request, chain);
 
         try {
-            if (response != null && response.chatResponse() != null && response.chatResponse().getResult() != null
-                    && response.chatResponse().getResult().getOutput() != null) {
+            if (response.chatResponse() != null && response.chatResponse().getResult() != null) {
+                response.chatResponse().getResult();
                 String content = response.chatResponse().getResult().getOutput().getText();
                 if (content != null && content.contains("ignoredNotes")) {
                     JsonNode root = objectMapper.readTree(content);
@@ -44,7 +44,7 @@ public class NoteAuditAdvisor extends SimpleLoggerAdvisor {
                         for (JsonNode item : ignoredNotes) {
                             String noteRef = item.has("noteRef") ? item.get("noteRef").asText() : "unknown";
                             String reason = item.has("reason") ? item.get("reason").asText() : "No reason provided";
-                            log.warn("[AI AUDIT - IGNORED NOTE] NoteRef: {} | Reason: {}", noteRef, reason);
+                            log.warn("[AI AUDIT - UNRELATED INFO] NoteRef: {} | Reason: {}", noteRef, reason);
                         }
                     }
                 }

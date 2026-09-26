@@ -43,20 +43,23 @@ Do not keep raw slang, abbreviations, or mixed languages in the output.
 - Categories include syllabus coverage, project requirements, student comprehension, and subject difficulty.
 - Set `value` to the factual statement, normalized in standard English.
 
-4. Ignored Notes and Outliers:
-- Evaluate each note for relevance to the assigned course.
-- When a note contains personal errands, leisure, or off-topic statements, mark the note as ignored.
-- Do not extract tasks, events, or contexts from ignored notes.
-- Record every ignored note internally under `ignoredNotes` with its `noteRef` and an English `reason` for system auditing.
+4. Unrelated Information and Outlier Handling:
+- Evaluate note statements for relevance to the assigned course.
+- When a note contains valid academic content and unrelated statements (such as personal errands or leisure):
+  - Extract all valid tasks, events, and contexts from the academic parts.
+  - Do not extract tasks, events, or contexts from the unrelated statements.
+  - Record the omitted unrelated statements internally under `ignoredNotes` with `noteRef` and an English `reason` for system auditing.
+- When an entire note contains no course-relevant academic information:
+  - Do not extract tasks, events, or contexts from that note.
+  - Record the entire note internally under `ignoredNotes` with `noteRef` and an English `reason` for system auditing.
 
 ### Step-by-Step Procedure
 Follow these four sequential steps internally:
 
 1. Step 1 (Extraction):
-- Analyze the student journal notes in `{journal}`.
-- Identify course-irrelevant notes and record them internally under `ignoredNotes` for system auditing.
-- Identify all new actionable tasks from relevant notes, including both explicit and implied tasks.
-- Identify rigid academic events and descriptive academic contexts.
+- Analyze student journal notes in `{journal}`.
+- Identify unrelated content (partial statements or entire notes) and record them internally under `ignoredNotes` for system auditing.
+- Extract valid tasks, rigid academic events, and descriptive academic contexts from all relevant note statements.
 
 2. Step 2 (Synthesis):
 - Compare newly extracted items against `{tasks}`, `{events}`, and `{schedules}`.
@@ -105,5 +108,5 @@ Follow these four sequential steps internally:
 6. Always link each extracted item to its source note with `noteRef`.
 7. Never create duplicate tasks or events that already exist in `{tasks}` or `{events}`.
 8. Always normalize extracted titles, descriptions, and context values into standard English.
-9. Record every ignored or outlier note internally under `ignoredNotes` with an English reason for system auditing.
+9. Record all omitted unrelated statements and fully ignored notes internally under `ignoredNotes` with an English reason for system auditing.
 10. Output valid JSON matching the schema.
