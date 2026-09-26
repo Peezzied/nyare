@@ -4,13 +4,13 @@
 
 ## Key Concepts
 
-- **Task** (37 connections) — `src/main/java/group/four/nyare/nyare/model/Task.java`
-- **.extractFromNotes()** (13 connections) — `src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java`
+- **Task** (41 connections) — `src/main/java/group/four/nyare/nyare/model/Task.java`
+- **.extractFromNotes()** (12 connections) — `src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java`
 - **ExtractionResult** (5 connections) — `src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java`
 - **.getCourse()** (3 connections) — `src/main/java/group/four/nyare/nyare/model/Note.java`
 - **.setNote()** (3 connections) — `src/main/java/group/four/nyare/nyare/model/Task.java`
+- **.getCourse()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/Task.java`
 - **.getNote()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/Task.java`
-- **.setCourse()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/Task.java`
 - **.setDescription()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/Task.java`
 - **.setScheduledDate()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/Task.java`
 - **.toString()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/Task.java`
@@ -28,14 +28,15 @@
 
 ## Relationships
 
-- [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) (8 shared connections)
-- [jakarta.persistence.Entity](jakarta.persistence.Entity.md) (5 shared connections)
+- [StudyPlannerEngineTest.java](StudyPlannerEngineTest.java.md) (6 shared connections)
+- [org.junit.jupiter.api.Test](org.junit.jupiter.api.Test.md) (6 shared connections)
+- [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) (6 shared connections)
 - [Course](Course.md) (5 shared connections)
 - [Note](Note.md) (5 shared connections)
-- [org.junit.jupiter.api.Test](org.junit.jupiter.api.Test.md) (4 shared connections)
-- [TaskStatus](TaskStatus.md) (3 shared connections)
+- [TaskStatus](TaskStatus.md) (4 shared connections)
 - [AcademicEvent](AcademicEvent.md) (2 shared connections)
 - [AcademicContext](AcademicContext.md) (2 shared connections)
+- [Schedule](Schedule.md) (1 shared connections)
 
 ## Source Files
 
@@ -45,8 +46,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 52 (90%)
-- INFERRED: 6 (10%)
+- EXTRACTED: 56 (92%)
+- INFERRED: 5 (8%)
 - AMBIGUOUS: 0 (0%)
 
 ---

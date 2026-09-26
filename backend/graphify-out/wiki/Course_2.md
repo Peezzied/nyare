@@ -11,8 +11,8 @@
 
 ### imports
 - [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) `EXTRACTED`
+- [StudyPlannerEngineTest.java](StudyPlannerEngineTest.java.md) `EXTRACTED`
 - StudyPlannerServiceImpl.java `EXTRACTED`
-- NoteProcessorTest.java `EXTRACTED`
 - CourseRepository.java `EXTRACTED`
 
 ### method
@@ -30,7 +30,7 @@
 - [AcademicEvent](AcademicEvent.md) `EXTRACTED`
 - [AcademicContext](AcademicContext.md) `EXTRACTED`
 - [Schedule](Schedule.md) `EXTRACTED`
-- [jakarta.persistence.Entity](jakarta.persistence.Entity.md) `EXTRACTED`
+- jakarta.persistence.Entity `EXTRACTED`
 - jakarta.persistence.Table `EXTRACTED`
 - CourseRepository `EXTRACTED`
 - .AcademicContext() `EXTRACTED`

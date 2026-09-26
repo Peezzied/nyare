@@ -4,59 +4,61 @@
 
 ## Key Concepts
 
-- **org.junit.jupiter.api.Test** (33 connections)
-- **org.junit.jupiter.api.DisplayName** (31 connections)
-- **NoteProcessor** (20 connections) — `src/main/java/group/four/nyare/nyare/ai/NoteProcessor.java`
-- **.process()** (19 connections) — `src/main/java/group/four/nyare/nyare/ai/NoteProcessor.java`
-- **StudyPlannerServiceTest** (17 connections) — `src/test/java/group/four/nyare/nyare/service/StudyPlannerServiceTest.java`
-- **NoteProcessorTest.java** (16 connections) — `src/test/java/group/four/nyare/nyare/ai/NoteProcessorTest.java`
-- **.processTodayNotesMaterializesExtractedEntities()** (14 connections) — `src/test/java/group/four/nyare/nyare/service/StudyPlannerServiceTest.java`
+- **org.junit.jupiter.api.Test** (40 connections)
+- **org.junit.jupiter.api.DisplayName** (38 connections)
+- **.process()** (29 connections) — `src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java`
+- **StudyPlannerEngine** (20 connections) — `src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java`
+- **StudyPlannerEngineTest** (17 connections) — `src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java`
+- **ExtractedData** (13 connections) — `src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java`
+- **.processTodayNotesMaterializesExtractedEntities()** (13 connections) — `src/test/java/group/four/nyare/nyare/service/StudyPlannerServiceTest.java`
 - **StubReferenceCodec** (12 connections) — `src/main/java/group/four/nyare/nyare/ai/parser/StubReferenceCodec.java`
-- **.processTodayNotesSucceedsWhenNotesExist()** (11 connections) — `src/test/java/group/four/nyare/nyare/service/StudyPlannerServiceTest.java`
-- **NoteProcessor.java** (11 connections) — `src/main/java/group/four/nyare/nyare/ai/NoteProcessor.java`
-- **ExtractedData** (10 connections) — `src/main/java/group/four/nyare/nyare/ai/NoteProcessor.java`
-- **NoteProcessorTest** (10 connections) — `src/test/java/group/four/nyare/nyare/ai/NoteProcessorTest.java`
-- **.decodeReferences()** (10 connections) — `src/main/java/group/four/nyare/nyare/ai/NoteProcessor.java`
-- **TaggedPromptBuilder** (8 connections) — `src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java`
+- **.decodeReferences()** (10 connections) — `src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java`
+- **.processTodayNotesSucceedsWhenNotesExist()** (10 connections) — `src/test/java/group/four/nyare/nyare/service/StudyPlannerServiceTest.java`
+- **.toCsv()** (9 connections) — `src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java`
+- **.processTodayNotes()** (9 connections) — `src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java`
 - **CsvParserTest** (8 connections) — `src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java`
 - **.parse()** (8 connections) — `src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java`
 - **.encode()** (8 connections) — `src/main/java/group/four/nyare/nyare/ai/parser/StubReferenceCodec.java`
 - **CsvParser** (7 connections) — `src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java`
 - **StubReferenceCodecTest** (7 connections) — `src/test/java/group/four/nyare/nyare/ai/parser/StubReferenceCodecTest.java`
-- **.processImagesToCsv()** (7 connections) — `src/main/java/group/four/nyare/nyare/ai/NoteProcessor.java`
-- **.processConvertsNotesToCsvAndDecodesNoteId()** (7 connections) — `src/test/java/group/four/nyare/nyare/ai/NoteProcessorTest.java`
+- **.processImagesToCsv()** (7 connections) — `src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java`
+- **.findTodayNotesByCourseId()** (7 connections) — `src/main/java/group/four/nyare/nyare/repository/NoteRepository.java`
 - **.clearResetsMappings()** (7 connections) — `src/test/java/group/four/nyare/nyare/ai/parser/StubReferenceCodecTest.java`
+- **.processDecodesNoteRefsToUUIDs()** (7 connections) — `src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java`
 - **.parse_reader_convertsStream()** (6 connections) — `src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java`
 - **.parse_validCsvText_returnsMappedObjects()** (6 connections) — `src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java`
 - **.checksMembershipCorrectly()** (6 connections) — `src/test/java/group/four/nyare/nyare/ai/parser/StubReferenceCodecTest.java`
+- **.processTodayNotesThrowsWhenNoNotes()** (6 connections) — `src/test/java/group/four/nyare/nyare/service/StudyPlannerServiceTest.java`
 - *... and 67 more nodes in this community*
 
 ## Relationships
 
-- [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) (22 shared connections)
-- [Note](Note.md) (10 shared connections)
+- [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) (14 shared connections)
+- [Schedule](Schedule.md) (10 shared connections)
+- [Task](Task.md) (6 shared connections)
+- [Note](Note.md) (5 shared connections)
 - [.addCorsMappings_registersExpectedConfiguration](addCorsMappings_registersExpectedConfiguration.md) (5 shared connections)
-- [Task](Task.md) (4 shared connections)
+- [StudyPlannerEngineTest.java](StudyPlannerEngineTest.java.md) (4 shared connections)
 - [ProcessSummaryResponse](ProcessSummaryResponse.md) (4 shared connections)
-- [Course](Course.md) (2 shared connections)
-- [jakarta.persistence.Entity](jakarta.persistence.Entity.md) (2 shared connections)
-- [ImageMetadata](ImageMetadata.md) (2 shared connections)
+- [AcademicEvent](AcademicEvent.md) (3 shared connections)
+- [AcademicContext](AcademicContext.md) (2 shared connections)
+- [Course](Course.md) (1 shared connections)
 - [PlanCategory](PlanCategory.md) (1 shared connections)
-- [ValidImageReferences](ValidImageReferences.md) (1 shared connections)
-- [NoteContent](NoteContent.md) (1 shared connections)
+- [BadRequestException](BadRequestException.md) (1 shared connections)
 
 ## Source Files
 
-- `src/main/java/group/four/nyare/nyare/ai/NoteProcessor.java`
+- `src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java`
 - `src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java`
 - `src/main/java/group/four/nyare/nyare/ai/parser/StubReferenceCodec.java`
-- `src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java`
 - `src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java`
 - `src/main/java/group/four/nyare/nyare/model/Course.java`
 - `src/main/java/group/four/nyare/nyare/model/Task.java`
+- `src/main/java/group/four/nyare/nyare/repository/NoteRepository.java`
+- `src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java`
 - `src/test/java/group/four/nyare/nyare/NyareApplicationTests.java`
-- `src/test/java/group/four/nyare/nyare/ai/NoteProcessorTest.java`
 - `src/test/java/group/four/nyare/nyare/ai/SpringAiIntegrationTest.java`
+- `src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java`
 - `src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java`
 - `src/test/java/group/four/nyare/nyare/ai/parser/StubReferenceCodecTest.java`
 - `src/test/java/group/four/nyare/nyare/config/WebConfigTest.java`
@@ -64,8 +66,8 @@
 
 ## Audit Trail
 
-- EXTRACTED: 239 (81%)
-- INFERRED: 56 (19%)
+- EXTRACTED: 244 (80%)
+- INFERRED: 62 (20%)
 - AMBIGUOUS: 0 (0%)
 
 ---

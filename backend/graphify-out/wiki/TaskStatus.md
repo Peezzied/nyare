@@ -7,7 +7,7 @@
 - **TaskStatus** (27 connections) — `src/main/java/group/four/nyare/nyare/model/enums/TaskStatus.java`
 - **TaskStatusRequest** (7 connections) — `src/main/java/group/four/nyare/nyare/dto/TaskStatusRequest.java`
 - **TaskService.java** (5 connections) — `src/main/java/group/four/nyare/nyare/service/TaskService.java`
-- **.TaskRequest()** (2 connections) — `src/main/java/group/four/nyare/nyare/dto/TaskRequest.java`
+- **.findAllFiltered()** (4 connections) — `src/main/java/group/four/nyare/nyare/repository/TaskRepository.java`
 - **.getStatus()** (2 connections) — `src/main/java/group/four/nyare/nyare/dto/TaskResponse.java`
 - **.setStatus()** (2 connections) — `src/main/java/group/four/nyare/nyare/dto/TaskResponse.java`
 - **.getStatus()** (2 connections) — `src/main/java/group/four/nyare/nyare/dto/TaskStatusRequest.java`
@@ -25,24 +25,25 @@
 
 - [TaskRequest](TaskRequest.md) (6 shared connections)
 - [TaskResponse](TaskResponse.md) (4 shared connections)
+- [Task](Task.md) (4 shared connections)
 - [TaskService](TaskService.md) (3 shared connections)
-- [Task](Task.md) (3 shared connections)
 - [PlanCategory](PlanCategory.md) (2 shared connections)
 - [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) (2 shared connections)
-- [jakarta.persistence.Entity](jakarta.persistence.Entity.md) (1 shared connections)
+- [StudyPlannerEngineTest.java](StudyPlannerEngineTest.java.md) (1 shared connections)
+- [AcademicEvent](AcademicEvent.md) (1 shared connections)
 
 ## Source Files
 
-- `src/main/java/group/four/nyare/nyare/dto/TaskRequest.java`
 - `src/main/java/group/four/nyare/nyare/dto/TaskResponse.java`
 - `src/main/java/group/four/nyare/nyare/dto/TaskStatusRequest.java`
 - `src/main/java/group/four/nyare/nyare/model/Task.java`
 - `src/main/java/group/four/nyare/nyare/model/enums/TaskStatus.java`
+- `src/main/java/group/four/nyare/nyare/repository/TaskRepository.java`
 - `src/main/java/group/four/nyare/nyare/service/TaskService.java`
 
 ## Audit Trail
 
-- EXTRACTED: 41 (100%)
+- EXTRACTED: 43 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

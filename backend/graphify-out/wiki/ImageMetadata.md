@@ -24,9 +24,9 @@
 ## Relationships
 
 - [NoteContent](NoteContent.md) (3 shared connections)
-- [org.junit.jupiter.api.Test](org.junit.jupiter.api.Test.md) (2 shared connections)
+- [StudyPlannerEngineTest.java](StudyPlannerEngineTest.java.md) (2 shared connections)
 - [NoteResponse](NoteResponse.md) (2 shared connections)
-- [ProcessSummaryResponse](ProcessSummaryResponse.md) (1 shared connections)
+- [BadRequestException](BadRequestException.md) (1 shared connections)
 - [ImageReferencesValidator](ImageReferencesValidator.md) (1 shared connections)
 - [Note](Note.md) (1 shared connections)
 

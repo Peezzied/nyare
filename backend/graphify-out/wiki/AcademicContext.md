@@ -4,7 +4,7 @@
 
 ## Key Concepts
 
-- **AcademicContext** (25 connections) — `src/main/java/group/four/nyare/nyare/model/AcademicContext.java`
+- **AcademicContext** (29 connections) — `src/main/java/group/four/nyare/nyare/model/AcademicContext.java`
 - **.AcademicContext()** (3 connections) — `src/main/java/group/four/nyare/nyare/model/AcademicContext.java`
 - **.getCourse()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/AcademicContext.java`
 - **.getNote()** (2 connections) — `src/main/java/group/four/nyare/nyare/model/AcademicContext.java`
@@ -21,11 +21,14 @@
 
 ## Relationships
 
-- [jakarta.persistence.Entity](jakarta.persistence.Entity.md) (5 shared connections)
-- [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) (5 shared connections)
+- [StudyPlannerEngineTest.java](StudyPlannerEngineTest.java.md) (6 shared connections)
 - [Course](Course.md) (4 shared connections)
 - [Note](Note.md) (4 shared connections)
+- [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) (4 shared connections)
 - [Task](Task.md) (2 shared connections)
+- [org.junit.jupiter.api.Test](org.junit.jupiter.api.Test.md) (2 shared connections)
+- [AcademicEvent](AcademicEvent.md) (1 shared connections)
+- [Schedule](Schedule.md) (1 shared connections)
 
 ## Source Files
 
@@ -34,7 +37,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 33 (100%)
+- EXTRACTED: 37 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

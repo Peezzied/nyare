@@ -1,27 +1,10 @@
 # AcademicEventResponse
 
-> 36 nodes
+> 17 nodes
 
 ## Key Concepts
 
 - **AcademicEventResponse** (21 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java`
-- **AcademicEventRequest** (15 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java`
-- **AcademicEventService** (6 connections) — `src/main/java/group/four/nyare/nyare/service/AcademicEventService.java`
-- **.createEvent()** (3 connections) — `src/main/java/group/four/nyare/nyare/service/AcademicEventService.java`
-- **.updateEvent()** (3 connections) — `src/main/java/group/four/nyare/nyare/service/AcademicEventService.java`
-- **.getEvent()** (2 connections) — `src/main/java/group/four/nyare/nyare/service/AcademicEventService.java`
-- **.listEvents()** (2 connections) — `src/main/java/group/four/nyare/nyare/service/AcademicEventService.java`
-- **.AcademicEventRequest()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java`
-- **.getCourseId()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java`
-- **.getDeadline()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java`
-- **.getDescription()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java`
-- **.getNoteId()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java`
-- **.getTitle()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java`
-- **.setCourseId()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java`
-- **.setDeadline()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java`
-- **.setDescription()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java`
-- **.setNoteId()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java`
-- **.setTitle()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java`
 - **.AcademicEventResponse()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java`
 - **.getCourseId()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java`
 - **.getCreatedAt()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java`
@@ -29,21 +12,28 @@
 - **.getDescription()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java`
 - **.getId()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java`
 - **.getNoteId()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java`
-- *... and 11 more nodes in this community*
+- **.getTitle()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java`
+- **.setCourseId()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java`
+- **.setCreatedAt()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java`
+- **.setDeadline()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java`
+- **.setDescription()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java`
+- **.setId()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java`
+- **.setNoteId()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java`
+- **.setTitle()** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java`
+- **AcademicEventResponse.java** (1 connections) — `src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java`
 
 ## Relationships
 
-- [ProcessSummaryResponse](ProcessSummaryResponse.md) (3 shared connections)
+- [AcademicEventService](AcademicEventService.md) (4 shared connections)
+- [BadRequestException](BadRequestException.md) (1 shared connections)
 
 ## Source Files
 
-- `src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java`
 - `src/main/java/group/four/nyare/nyare/dto/AcademicEventResponse.java`
-- `src/main/java/group/four/nyare/nyare/service/AcademicEventService.java`
 
 ## Audit Trail
 
-- EXTRACTED: 42 (100%)
+- EXTRACTED: 21 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

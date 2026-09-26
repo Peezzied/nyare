@@ -1,6 +1,6 @@
 # AcademicContext
 
-> God node · 25 connections · `src/main/java/group/four/nyare/nyare/model/AcademicContext.java`
+> God node · 29 connections · `src/main/java/group/four/nyare/nyare/model/AcademicContext.java`
 
 **Community:** [AcademicContext](AcademicContext.md)
 
@@ -13,7 +13,9 @@
 - AcademicContext.java `EXTRACTED`
 
 ### imports
+- [StudyPlannerEngineTest.java](StudyPlannerEngineTest.java.md) `EXTRACTED`
 - StudyPlannerServiceImpl.java `EXTRACTED`
+- StudyPlannerEngine.java `EXTRACTED`
 - AcademicContextRepository.java `EXTRACTED`
 
 ### method
@@ -32,11 +34,13 @@
 ### references
 - [Note](Note.md) `EXTRACTED`
 - [Course](Course.md) `EXTRACTED`
-- [jakarta.persistence.Entity](jakarta.persistence.Entity.md) `EXTRACTED`
+- .process() `EXTRACTED`
+- jakarta.persistence.Entity `EXTRACTED`
 - jakarta.persistence.Table `EXTRACTED`
 - AcademicContextRepository `EXTRACTED`
 - jakarta.persistence.EntityListeners `EXTRACTED`
 - org.springframework.data.jpa.domain.support.AuditingEntityListener `EXTRACTED`
+- .buildContextsCsv() `EXTRACTED`
 - ExtractionResult `EXTRACTED`
 - .findAllFiltered() `EXTRACTED`
 - .findByCourseIdOrderByCreatedAtDesc() `EXTRACTED`

@@ -33,7 +33,7 @@
 
 ## Relationships
 
-- [ProcessSummaryResponse](ProcessSummaryResponse.md) (3 shared connections)
+- [BadRequestException](BadRequestException.md) (3 shared connections)
 
 ## Source Files
 

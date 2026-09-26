@@ -1,6 +1,6 @@
 # Task
 
-> God node · 37 connections · `src/main/java/group/four/nyare/nyare/model/Task.java`
+> God node · 41 connections · `src/main/java/group/four/nyare/nyare/model/Task.java`
 
 **Community:** [Task](Task.md)
 
@@ -14,7 +14,9 @@
 
 ### imports
 - [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) `EXTRACTED`
+- [StudyPlannerEngineTest.java](StudyPlannerEngineTest.java.md) `EXTRACTED`
 - StudyPlannerServiceImpl.java `EXTRACTED`
+- StudyPlannerEngine.java `EXTRACTED`
 - TaskRepository.java `EXTRACTED`
 
 ### method
@@ -43,13 +45,15 @@
 ### references
 - [Note](Note.md) `EXTRACTED`
 - [Course](Course.md) `EXTRACTED`
+- .process() `EXTRACTED`
 - [TaskStatus](TaskStatus.md) `EXTRACTED`
-- [jakarta.persistence.Entity](jakarta.persistence.Entity.md) `EXTRACTED`
+- jakarta.persistence.Entity `EXTRACTED`
 - jakarta.persistence.Table `EXTRACTED`
 - TaskRepository `EXTRACTED`
 - jakarta.persistence.EntityListeners `EXTRACTED`
 - org.springframework.data.jpa.domain.support.AuditingEntityListener `EXTRACTED`
 - ExtractionResult `EXTRACTED`
+- .buildTasksCsv() `EXTRACTED`
 - .findAllFiltered() `EXTRACTED`
 
 ---

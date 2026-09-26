@@ -11,9 +11,9 @@
 
 ### imports
 - [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) `EXTRACTED`
+- [StudyPlannerEngineTest.java](StudyPlannerEngineTest.java.md) `EXTRACTED`
 - StudyPlannerServiceImpl.java `EXTRACTED`
-- NoteProcessorTest.java `EXTRACTED`
-- NoteProcessor.java `EXTRACTED`
+- StudyPlannerEngine.java `EXTRACTED`
 - NoteRepository.java `EXTRACTED`
 
 ### method
@@ -32,14 +32,14 @@
 
 ### references
 - [Task](Task.md) `EXTRACTED`
-- [Course](Course.md) `EXTRACTED`
 - [AcademicEvent](AcademicEvent.md) `EXTRACTED`
+- [Course](Course.md) `EXTRACTED`
 - [NoteContent](NoteContent.md) `EXTRACTED`
 - [AcademicContext](AcademicContext.md) `EXTRACTED`
 - .process() `EXTRACTED`
-- .extractFromNotes() `EXTRACTED`
-- [jakarta.persistence.Entity](jakarta.persistence.Entity.md) `EXTRACTED`
+- jakarta.persistence.Entity `EXTRACTED`
 - jakarta.persistence.Table `EXTRACTED`
+- .extractFromNotes() `EXTRACTED`
 - NoteRepository `EXTRACTED`
 - .decodeReferences() `EXTRACTED`
 - jakarta.persistence.EntityListeners `EXTRACTED`

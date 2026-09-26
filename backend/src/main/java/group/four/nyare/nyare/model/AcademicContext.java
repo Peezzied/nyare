@@ -57,7 +57,7 @@ public class AcademicContext {
     private String value;
 
     /**
-     * Timestamp when the academic context was recorded.
+     * Timestamp when the academic context was recorded. Serves as the age of the academic context.
      */
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -125,6 +125,7 @@ public class AcademicContext {
         return createdAt;
     }
 
+    // TODO remove this
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
