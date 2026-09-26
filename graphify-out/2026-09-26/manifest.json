@@ -882,9 +882,9 @@
     "semantic_hash": "081c348d068770af78fcd90980521318"
   },
   "backend/AGENTS.md": {
-    "mtime": 1790421440.8383207,
-    "seen": 1790437731.262313,
-    "ast_hash": "39ee9c9967eb7637287a64a1a9ffb944",
+    "mtime": 1790269454.6451395,
+    "seen": 1790269471.0600736,
+    "ast_hash": "f7160115f285820db72972d37943dced",
     "semantic_hash": ""
   },
   "backend/.agents/mcp_config.json.example.json": {
@@ -948,9 +948,9 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/model/AcademicContext.java": {
-    "mtime": 1790434229.167724,
-    "seen": 1790437731.2615497,
-    "ast_hash": "1a32326067fa95e231a67fc030fcdb2c",
+    "mtime": 1790269454.989411,
+    "seen": 1790269471.0595653,
+    "ast_hash": "214aae7cd3cc7980d08b13668b326d63",
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/model/AcademicEvent.java": {
@@ -1170,9 +1170,9 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/model/ImageMetadata.java": {
-    "mtime": 1790414487.5067606,
-    "seen": 1790437731.2615657,
-    "ast_hash": "91c7f82115aba16daa55e76125f348a2",
+    "mtime": 1789382024.8608828,
+    "seen": 1789385541.1989503,
+    "ast_hash": "145f93f8e5340a0a62a6aef1e7252511",
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/model/NoteContent.java": {
@@ -1296,8 +1296,8 @@
     "semantic_hash": ""
   },
   "backend/build.gradle": {
-    "mtime": 1790435265.7537708,
-    "seen": 1790437731.2613673,
+    "mtime": 1790269454.6451395,
+    "seen": 1790269471.0594602,
     "ast_hash": "f81e0358aa02701450ec30002d2fd902",
     "semantic_hash": ""
   },
@@ -1950,15 +1950,33 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java": {
-    "mtime": 1790434983.4525187,
-    "seen": 1790437731.2616708,
-    "ast_hash": "1c5b9e9be54d9e519da96e97cfdcef1b",
+    "mtime": 1790269454.9945507,
+    "seen": 1790269471.0596356,
+    "ast_hash": "87cdbe29b419131d991ae64694b3cd1c",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/group/four/nyare/nyare/service/StudyPlannerServiceTest.java": {
+    "mtime": 1790269454.9987755,
+    "seen": 1790269471.0596566,
+    "ast_hash": "9c504db3952eb63baefcc595209ba035",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/group/four/nyare/nyare/ai/NoteProcessor.java": {
+    "mtime": 1790269454.9844153,
+    "seen": 1790269471.059506,
+    "ast_hash": "04c279e0b6cb7b34cc9eca4216d1f9da",
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/ai/parser/StubReferenceCodec.java": {
     "mtime": 1790269454.9844153,
     "seen": 1790269471.0595117,
     "ast_hash": "10da3314d96769b4bec32884511040a5",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/group/four/nyare/nyare/ai/NoteProcessorTest.java": {
+    "mtime": 1790269454.9945507,
+    "seen": 1790269471.0596416,
+    "ast_hash": "db78a17e0772765c170b69d4ff2c068d",
     "semantic_hash": ""
   },
   "backend/src/test/java/group/four/nyare/nyare/ai/parser/StubReferenceCodecTest.java": {
@@ -1971,60 +1989,6 @@
     "mtime": 1790269455.0531058,
     "seen": 1790269471.0603495,
     "ast_hash": "3d6747d93edde85d9fd1991b5857ba79",
-    "semantic_hash": ""
-  },
-  "backend/skills-lock.json": {
-    "mtime": 1790419365.2594998,
-    "seen": 1790437731.2614367,
-    "ast_hash": "b7d20af38b799ebc1c3e1ea624869534",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java": {
-    "mtime": 1790437462.2797878,
-    "seen": 1790437731.2614453,
-    "ast_hash": "83f0ae42171157450e7bac47a819ee97",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java": {
-    "mtime": 1790437454.0806522,
-    "seen": 1790437731.2614496,
-    "ast_hash": "b17539d1e3dfa237382a594ff4fa8bf4",
-    "semantic_hash": ""
-  },
-  "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java": {
-    "mtime": 1790437221.993201,
-    "seen": 1790437731.2616844,
-    "ast_hash": "d6db263ec1ab78f4d48f2590a64454b7",
-    "semantic_hash": ""
-  },
-  "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java": {
-    "mtime": 1790433855.5787623,
-    "seen": 1790437731.2616882,
-    "ast_hash": "0b94488ac7ca22c27c9ace3527c7d6fc",
-    "semantic_hash": ""
-  },
-  "backend/.agents/skills/prompt-engineering/SKILL.md": {
-    "mtime": 1790431567.933908,
-    "seen": 1790437731.2622862,
-    "ast_hash": "8f1d4b4f0a2a2578e3c7e1bd423622cb",
-    "semantic_hash": ""
-  },
-  "backend/.agents/skills/prompt-engineering/references/few-shot-patterns.md": {
-    "mtime": 1790420380.3439898,
-    "seen": 1790437731.2622914,
-    "ast_hash": "566f3aacaa98ec162f4e59e822699927",
-    "semantic_hash": ""
-  },
-  "backend/.agents/skills/prompt-engineering/references/optimization-frameworks.md": {
-    "mtime": 1790420388.0933056,
-    "seen": 1790437731.2622952,
-    "ast_hash": "6a87576c0f2c63791e70f05e9e28e934",
-    "semantic_hash": ""
-  },
-  "backend/.agents/skills/prompt-engineering/references/system-prompt-design.md": {
-    "mtime": 1790421447.596743,
-    "seen": 1790437731.2623007,
-    "ast_hash": "2eaae565551e4c1c02fcc0ac846f952e",
     "semantic_hash": ""
   }
 }
