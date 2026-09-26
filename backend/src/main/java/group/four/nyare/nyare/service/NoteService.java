@@ -1,9 +1,7 @@
 package group.four.nyare.nyare.service;
 
-import group.four.nyare.nyare.dto.ImageMetadataUpdateRequest;
 import group.four.nyare.nyare.dto.NoteRequest;
 import group.four.nyare.nyare.dto.NoteResponse;
-import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 
 import java.util.List;
@@ -50,18 +48,6 @@ public interface NoteService {
      * @throws ResourceNotFoundException if the note or course does not exist
      */
     NoteResponse updateNote(UUID id, NoteRequest request);
-
-    /**
-     * Selectively updates the image metadata of an existing note while preserving its markdown text.
-     * Verifies that all metadata keys correspond to existing image references in the markdown.
-     *
-     * @param id      the unique UUID of the note to update
-     * @param request the image metadata update payload
-     * @return the updated note response
-     * @throws ResourceNotFoundException if the note does not exist
-     * @throws BadRequestException       if the updated metadata keys do not match existing markdown image references
-     */
-    NoteResponse updateImageMetadata(UUID id, ImageMetadataUpdateRequest request);
 
     /**
      * Deletes a note by its unique identifier. Associated AI-extracted records
