@@ -46,6 +46,9 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 5. **Modern Standards & Deprecation**:
    - Avoid deprecated classes, methods, annotations, and APIs.
    - Use modern features supported by Java 25 and Spring Boot.
+6. **AI System Prompt**:
+   - The system prompt lives in `src/main/resources/system_prompt.st`.
+   - Store all AI system instructions in this template file.
 
 ---
 
