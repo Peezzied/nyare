@@ -45,16 +45,16 @@ Do not keep raw slang, abbreviations, or mixed languages in the output.
 
 4. Ignored Notes and Outliers:
 - Evaluate each note for relevance to the assigned course.
-- If a note contains personal errands, leisure, or off-topic statements, mark it as ignored.
+- When a note contains personal errands, leisure, or off-topic statements, mark the note as ignored.
 - Do not extract tasks, events, or contexts from ignored notes.
-- Record every ignored note in `ignoredNotes` with its `noteRef` and an English `reason`.
+- Record every ignored note internally under `ignoredNotes` with its `noteRef` and an English `reason` for system auditing.
 
 ### Step-by-Step Procedure
 Follow these four sequential steps internally:
 
 1. Step 1 (Extraction):
 - Analyze the student journal notes in `{journal}`.
-- Identify course-irrelevant notes and record them in `ignoredNotes` with explanations.
+- Identify course-irrelevant notes and record them internally under `ignoredNotes` for system auditing.
 - Identify all new actionable tasks from relevant notes, including both explicit and implied tasks.
 - Identify rigid academic events and descriptive academic contexts.
 
@@ -105,5 +105,5 @@ Follow these four sequential steps internally:
 6. Always link each extracted item to its source note with `noteRef`.
 7. Never create duplicate tasks or events that already exist in `{tasks}` or `{events}`.
 8. Always normalize extracted titles, descriptions, and context values into standard English.
-9. Record every ignored or outlier note in `ignoredNotes` with an explanation in English.
+9. Record every ignored or outlier note internally under `ignoredNotes` with an English reason for system auditing.
 10. Output valid JSON matching the schema.

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import jakarta.validation.constraints.Size;
@@ -160,9 +161,9 @@ public class StudyPlannerEngine {
 
         Prompt prompt = builder.buildPrompt();
 
-        ExtractedData raw = chatClient.prompt(prompt)
+        LlmPayload raw = chatClient.prompt(prompt)
                 .call()
-                .entity(ExtractedData.class);
+                .entity(LlmPayload.class);
 
         return raw != null ? decodeReferences(raw, noteCodec) : emptyExtractedData();
     }
@@ -255,7 +256,7 @@ public class StudyPlannerEngine {
 //                row -> new Object[]{row.imageRef(), row.noteRef(), row.description()});
 //    }
 
-    private ExtractedData decodeReferences(ExtractedData raw, StubReferenceCodec<Note> noteCodec) {
+    private ExtractedData decodeReferences(LlmPayload raw, StubReferenceCodec<Note> noteCodec) {
         List<ExtractedTask> tasks = raw.tasks() != null
                 ? raw.tasks().stream().map(t -> {
             Note note = noteCodec.decode(t.noteRef());
@@ -281,20 +282,11 @@ public class StudyPlannerEngine {
         }).toList()
                 : Collections.emptyList();
 
-        List<IgnoredNote> ignoredNotes = raw.ignoredNotes() != null
-                ? raw.ignoredNotes().stream().map(i -> {
-            Note note = noteCodec.decode(i.noteRef());
-            UUID noteId = note != null ? note.getId() : null;
-            return new IgnoredNote(i.noteRef(), noteId, i.reason());
-        }).toList()
-                : Collections.emptyList();
-
-        return new ExtractedData(tasks, events, contexts, ignoredNotes);
+        return new ExtractedData(tasks, events, contexts);
     }
 
     private static ExtractedData emptyExtractedData() {
         return new ExtractedData(
-                Collections.emptyList(),
                 Collections.emptyList(),
                 Collections.emptyList(),
                 Collections.emptyList());
@@ -365,20 +357,22 @@ public class StudyPlannerEngine {
             String value) {
     }
 
-    public record IgnoredNote(
-            @JsonProperty(value = "noteRef", required = true)
-            @JsonPropertyDescription("Reference identifier of the ignored note (e.g. n1)")
-            String noteRef,
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record ExtractedData(
+            @JsonProperty(value = "tasks", required = true)
+            @JsonPropertyDescription("Extracted actionable tasks")
+            List<ExtractedTask> tasks,
 
-            UUID noteId,
+            @JsonProperty(value = "events", required = true)
+            @JsonPropertyDescription("Extracted rigid academic events and deadlines")
+            List<ExtractedEvent> events,
 
-            @JsonProperty(value = "reason", required = true)
-            @JsonPropertyDescription("Explanation of why the note was ignored as irrelevant or an outlier")
-            @Size(max = 2048)
-            String reason) {
+            @JsonProperty(value = "contexts", required = true)
+            @JsonPropertyDescription("Extracted academic context facts")
+            List<ExtractedContext> contexts) {
     }
 
-    public record ExtractedData(
+    private record LlmPayload(
             @JsonProperty(value = "tasks", required = true)
             @JsonPropertyDescription("Extracted actionable tasks")
             List<ExtractedTask> tasks,
@@ -392,11 +386,17 @@ public class StudyPlannerEngine {
             List<ExtractedContext> contexts,
 
             @JsonProperty("ignoredNotes")
-            @JsonPropertyDescription("Notes ignored as course-irrelevant or outliers with explanation")
-            List<IgnoredNote> ignoredNotes) {
+            @JsonPropertyDescription("Internal list of ignored course-irrelevant or outlier notes for system auditing")
+            List<InternalIgnoredNote> ignoredNotes) {
+    }
 
-        public ExtractedData(List<ExtractedTask> tasks, List<ExtractedEvent> events, List<ExtractedContext> contexts) {
-            this(tasks, events, contexts, Collections.emptyList());
-        }
+    private record InternalIgnoredNote(
+            @JsonProperty(value = "noteRef", required = true)
+            @JsonPropertyDescription("Reference identifier of the ignored note (e.g. n1)")
+            String noteRef,
+
+            @JsonProperty(value = "reason", required = true)
+            @JsonPropertyDescription("Explanation of why the note was ignored as irrelevant or an outlier")
+            String reason) {
     }
 }
