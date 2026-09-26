@@ -386,17 +386,17 @@ public class StudyPlannerEngine {
             List<ExtractedContext> contexts,
 
             @JsonProperty("ignoredNotes")
-            @JsonPropertyDescription("Internal list of ignored course-irrelevant or outlier notes for system auditing")
+            @JsonPropertyDescription("Internal list of omitted unrelated statements or ignored outlier notes for system auditing")
             List<InternalIgnoredNote> ignoredNotes) {
     }
 
     private record InternalIgnoredNote(
             @JsonProperty(value = "noteRef", required = true)
-            @JsonPropertyDescription("Reference identifier of the ignored note (e.g. n1)")
+            @JsonPropertyDescription("Reference identifier of the source note (e.g. n1)")
             String noteRef,
 
             @JsonProperty(value = "reason", required = true)
-            @JsonPropertyDescription("Explanation of why the note was ignored as irrelevant or an outlier")
+            @JsonPropertyDescription("Explanation of the omitted unrelated information or why the entire note was ignored")
             String reason) {
     }
 }

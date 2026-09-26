@@ -1,7 +1,7 @@
 {
   "0": "AcademicEventResponse",
   "1": "AcademicEvent",
-  "2": "Schedule",
+  "2": "Course",
   "3": "Backend Agent Guide",
   "4": "jquery-3.7.1.min.js",
   "5": "Task",
@@ -34,7 +34,7 @@
   "32": "TaskStatus",
   "33": "Note",
   "34": "man-spring: Spring AI Google GenAI (Gemini)",
-  "35": "Course",
+  "35": "StudyPlannerEngineIntegrationTest.java",
   "36": "ScheduleResponse",
   "37": "search.js",
   "38": "search-page.js",
@@ -56,7 +56,7 @@
   "54": "package-search-index.js",
   "55": "tag-search-index.js",
   "56": "type-search-index.js",
-  "57": "ProcessSummaryResponse",
+  "57": "StudyPlannerController.java",
   "58": "TaskRequest",
   "59": "AcademicContext",
   "60": "TaskService",
@@ -65,10 +65,13 @@
   "63": "Dr. JSkill and Spring Docs MCP Rule",
   "64": "StudyPlannerEngine.java",
   "65": "Prompt Engineering for Nyare",
-  "66": "StudyPlannerEngineIntegrationTest.java",
+  "66": "ScheduleRequest",
   "67": "Prompt Guidelines",
   "68": "Prompt Optimization for Nyare",
   "69": "PlanCategory",
   "70": "Few-Shot Learning Patterns for Nyare",
-  "71": ".addCorsMappings_registersExpectedConfiguration"
+  "71": ".addCorsMappings_registersExpectedConfiguration",
+  "72": "GlobalExceptionHandler.java",
+  "73": "ProcessSummaryResponse",
+  "74": "BadRequestException"
 }
