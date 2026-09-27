@@ -127,10 +127,14 @@ public class StudyPlannerEngineIntegrationTest {
                 "kailangan ko mag-basa ng lecture slides tsaka mag-practice mag-solve ng derivation exercises para maintindihan ko yung topic");
 
         Note note4 = createNote(calc2, "calculus discussion abt inverse trigo functions. " +
-                "used synthetic division dq magets tas kasama raw yata sa midterm exam which will prolly be on oct 7 since asynch kami sa next meeting niya"+
-                "may kantutan din raw magaganap sa oct 07");
+                "used synthetic division dq magets tas kasama raw yata sa midterm exam which will prolly be on oct 7 since asynch kami sa next meeting niya");
 
-        List<Note> notes = List.of(note1, note2, note3, note4);
+        Note note5 = createNote(oop, "java discussion about file handling and exception handling. " +
+                "prof showed examples on how to read and write files, and how try-catch works. " +
+                "talked about multithreading din, like how multiple tasks can run at the same time. " +
+                "baka included in the next assessment kasi may activities about these topics.");
+
+        List<Note> notes = List.of(note1, note2, note3, note4, note5);
 
         // when
         StudyPlannerEngine.ExtractedData result = engine.process(
@@ -140,19 +144,10 @@ public class StudyPlannerEngineIntegrationTest {
         reportObservation(testInfo.getDisplayName(), result);
 
         // then: Entity lists present
-        assertThat(result).isNotNull();
-        assertThat(result.tasks()).isNotEmpty();
-        assertThat(result.events()).isNotEmpty();
-        assertThat(result.contexts()).isNotEmpty();
+        assertAllEntityTypesPresent(result);
 
         // then: Decoded UUID references match source notes
-        List<UUID> noteIds = List.of(note1.getId(), note2.getId(), note3.getId(), note4.getId());
-        assertThat(result.tasks())
-                .allMatch(t -> t.noteId() != null && noteIds.contains(t.noteId()));
-        assertThat(result.events())
-                .allMatch(e -> e.noteId() != null && noteIds.contains(e.noteId()));
-        assertThat(result.contexts())
-                .allMatch(c -> c.noteId() != null && noteIds.contains(c.noteId()));
+        assertNoteRefsMatchSource(result, notes);
 
         // then: Implied tasks detected
         assertThat(result.tasks())
@@ -166,7 +161,12 @@ public class StudyPlannerEngineIntegrationTest {
                                t.title().toLowerCase().contains("derivation") ||
                                t.title().toLowerCase().contains("calculus") ||
                                t.title().toLowerCase().contains("trigonometric") ||
-                               t.title().toLowerCase().contains("division"));
+                               t.title().toLowerCase().contains("division") ||
+                               t.title().toLowerCase().contains("file") ||
+                               t.title().toLowerCase().contains("exception") ||
+                               t.title().toLowerCase().contains("try-catch") ||
+                               t.title().toLowerCase().contains("thread") ||
+                               t.title().toLowerCase().contains("multithread"));
 
         // then: Academic events extracted with valid deadlines
         assertThat(result.events())
@@ -186,6 +186,12 @@ public class StudyPlannerEngineIntegrationTest {
         assertThat(result.events()).anyMatch(e -> note4.getId().equals(e.noteId()));
         assertThat(result.contexts()).anyMatch(c -> note4.getId().equals(c.noteId()));
 
+        // then: File handling note yields context but no rigid event (uncertain "baka" assessment)
+        // No task required: note states lecture coverage without an explicit actionable duty,
+        // so the model correctly preserves uncertainty instead of hallucinating a task.
+        assertThat(result.contexts()).anyMatch(c -> note5.getId().equals(c.noteId()));
+        assertThat(result.events()).noneMatch(e -> note5.getId().equals(e.noteId()));
+
         // then: PlannerAuditAdvisor intercepted and logged planning decisions for tasks and events
         assertThat(output.getAll()).contains("[AI AUDIT - TASK PLANNING]");
         assertThat(output.getAll()).contains("[AI AUDIT - EVENT PLANNING]");
@@ -195,49 +201,35 @@ public class StudyPlannerEngineIntegrationTest {
     @DisplayName("process with course-irrelevant outlier note ignores note and logs audit warning")
     void process_withOutlierNote_ignoresNoteAndLogsAudit(CapturedOutput output, TestInfo testInfo) throws Exception {
         // given: Outlier non-academic note assigned to OOP course
-        Course oop = new Course("Object-Oriented Programming", "CS Core Course");
+        Course oop = oopCourse();
         String noteText = "bumili ako ng shampoo, sabon, tsaka kape sa grocery kanina tapos nanood ako ng anime buong gabi";
         Note outlierNote = createNote(oop, noteText);
         UUID noteId = outlierNote.getId();
 
         // when
-        StudyPlannerEngine.ExtractedData result = engine.process(
-                List.of(outlierNote),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList());
+        StudyPlannerEngine.ExtractedData result = processWithEmptyState(List.of(outlierNote));
 
         reportObservation(testInfo.getDisplayName(), result);
 
         // then: Outlier note produces no tasks, events, or contexts
-        assertThat(result.tasks()).noneMatch(t -> noteId.equals(t.noteId()));
-        assertThat(result.events()).noneMatch(e -> noteId.equals(e.noteId()));
-        assertThat(result.contexts()).noneMatch(c -> noteId.equals(c.noteId()));
+        assertNoEntitiesForNote(result, noteId);
 
         // then: PlannerAuditAdvisor intercepted and logged the audit warning with decoded noteId and part
-        assertThat(output.getAll()).contains("[AI AUDIT - UNRELATED INFO]");
-        assertThat(output.getAll()).contains("NoteId: " + noteId);
-        assertThat(output.getAll()).contains("Part:");
+        assertAuditLoggedUnrelated(output, noteId);
     }
 
     @Test
     @DisplayName("process with mixed note extracts valid entities and logs audit warning for unrelated content")
     void process_withMixedNote_extractsEntitiesAndAuditsUnrelated(CapturedOutput output, TestInfo testInfo) throws Exception {
         // given: Mixed note with valid academic task and unrelated personal errand
-        Course oop = new Course("Object-Oriented Programming", "CS Core Course");
+        Course oop = oopCourse();
         String mixedText = "Kailangan ko tapusin yung UML class diagram asap bago mag-Tuesday lab. " +
                 "Tapos nag-kape ako sa Starbucks at bumili ng sabon at grocery kanina.";
         Note mixedNote = createNote(oop, mixedText);
         UUID noteId = mixedNote.getId();
 
         // when
-        StudyPlannerEngine.ExtractedData result = engine.process(
-                List.of(mixedNote),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList());
+        StudyPlannerEngine.ExtractedData result = processWithEmptyState(List.of(mixedNote));
 
         reportObservation(testInfo.getDisplayName(), result);
 
@@ -252,9 +244,7 @@ public class StudyPlannerEngineIntegrationTest {
                                                  t.title().toLowerCase().contains("sabon"));
 
         // then: PlannerAuditAdvisor logged audit warning for the omitted unrelated statements with decoded noteId and part
-        assertThat(output.getAll()).contains("[AI AUDIT - UNRELATED INFO]");
-        assertThat(output.getAll()).contains("NoteId: " + noteId);
-        assertThat(output.getAll()).contains("Part:");
+        assertAuditLoggedUnrelated(output, noteId);
     }
 
     @Test
@@ -271,32 +261,22 @@ public class StudyPlannerEngineIntegrationTest {
 
         // given: Incoming student journal notes
         Note artsNote = createNote(artApp, "Canva link later, 4 options, 2 landscape, 2 portrait, own stuff and they choose for arts");
-        Note financeNote = createNote(finMan, "Quiz next week about basic financial concepts, di naman nagturo un but ok, self search on compound interest, ordinary annuity");
+        Note financeNote = createNote(finMan, "Quiz next week about basic financial concepts, di naman nagturo " +
+                "un but ok, self search on compound interest, ordinary annuity");
 
         List<Note> notes = List.of(artsNote, financeNote);
 
         // when
-        StudyPlannerEngine.ExtractedData result = engine.process(
-                notes,
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                schedules);
+        StudyPlannerEngine.ExtractedData result = processWithEmptyState(notes, schedules);
 
         // observe & export
         reportObservation(testInfo.getDisplayName(), result);
 
         // then: Extracted entities present
-        assertThat(result).isNotNull();
-        assertThat(result.tasks()).isNotEmpty();
-        assertThat(result.events()).isNotEmpty();
-        assertThat(result.contexts()).isNotEmpty();
+        assertAllEntityTypesPresent(result);
 
         // then: Decoded UUID references match source notes
-        List<UUID> noteIds = List.of(artsNote.getId(), financeNote.getId());
-        assertThat(result.tasks()).allMatch(t -> t.noteId() != null && noteIds.contains(t.noteId()));
-        assertThat(result.events()).allMatch(e -> e.noteId() != null && noteIds.contains(e.noteId()));
-        assertThat(result.contexts()).allMatch(c -> c.noteId() != null && noteIds.contains(c.noteId()));
+        assertNoteRefsMatchSource(result, notes);
 
         // then: Arts note extracts task
         assertThat(result.tasks()).anyMatch(t -> artsNote.getId().equals(t.noteId()));
@@ -306,6 +286,52 @@ public class StudyPlannerEngineIntegrationTest {
                 (e.title().toLowerCase().contains("quiz") || e.title().toLowerCase().contains("financ")));
         assertThat(result.contexts()).anyMatch(c -> financeNote.getId().equals(c.noteId()));
         assertThat(result.tasks()).anyMatch(t -> financeNote.getId().equals(t.noteId()));
+    }
+
+    private static Course oopCourse() {
+        return new Course("Object-Oriented Programming", "CS Core Course");
+    }
+
+    private StudyPlannerEngine.ExtractedData processWithEmptyState(List<Note> notes) {
+        return processWithEmptyState(notes, Collections.emptyList());
+    }
+
+    private StudyPlannerEngine.ExtractedData processWithEmptyState(List<Note> notes, List<Schedule> schedules) {
+        return engine.process(
+                notes,
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList(),
+                schedules);
+    }
+
+    private static void assertAllEntityTypesPresent(StudyPlannerEngine.ExtractedData result) {
+        assertThat(result).isNotNull();
+        assertThat(result.tasks()).isNotEmpty();
+        assertThat(result.events()).isNotEmpty();
+        assertThat(result.contexts()).isNotEmpty();
+    }
+
+    private static void assertNoteRefsMatchSource(StudyPlannerEngine.ExtractedData result, List<Note> notes) {
+        List<UUID> noteIds = notes.stream().map(Note::getId).toList();
+        assertThat(result.tasks())
+                .allMatch(t -> t.noteId() != null && noteIds.contains(t.noteId()));
+        assertThat(result.events())
+                .allMatch(e -> e.noteId() != null && noteIds.contains(e.noteId()));
+        assertThat(result.contexts())
+                .allMatch(c -> c.noteId() != null && noteIds.contains(c.noteId()));
+    }
+
+    private static void assertNoEntitiesForNote(StudyPlannerEngine.ExtractedData result, UUID noteId) {
+        assertThat(result.tasks()).noneMatch(t -> noteId.equals(t.noteId()));
+        assertThat(result.events()).noneMatch(e -> noteId.equals(e.noteId()));
+        assertThat(result.contexts()).noneMatch(c -> noteId.equals(c.noteId()));
+    }
+
+    private static void assertAuditLoggedUnrelated(CapturedOutput output, UUID noteId) {
+        assertThat(output.getAll()).contains("[AI AUDIT - UNRELATED INFO]");
+        assertThat(output.getAll()).contains("NoteId: " + noteId);
+        assertThat(output.getAll()).contains("Part:");
     }
 
     private static Note createNote(Course course, String text) {

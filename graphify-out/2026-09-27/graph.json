@@ -499,7 +499,7 @@
       "file_type": "code",
       "norm_label": "studyplannerenginetest",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L38"
+      "source_location": "L40"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_controller_studyplannercontroller_studyplannercontroller",
@@ -508,11 +508,37 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 132,
-      "community_name": "StudyPlannerController.java",
+      "community_name": "StudyPlannerServiceImpl.java",
       "file_type": "code",
       "norm_label": "studyplannercontroller",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/controller/StudyPlannerController.java",
       "source_location": "L19"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_processsummaryresponse_processsummaryresponse",
+      "label": "ProcessSummaryResponse",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": "processsummaryresponse",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java",
+      "source_location": "L6"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_service_impl_studyplannerserviceimpl_studyplannerserviceimpl",
+      "label": "StudyPlannerServiceImpl",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": "studyplannerserviceimpl",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java",
+      "source_location": "L32"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_service_studyplannerservice_studyplannerservice",
@@ -521,7 +547,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 132,
-      "community_name": "StudyPlannerController.java",
+      "community_name": "StudyPlannerServiceImpl.java",
       "file_type": "code",
       "norm_label": "studyplannerservice",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/service/StudyPlannerService.java",
@@ -707,7 +733,7 @@
       "file_type": "code",
       "norm_label": "extractedcontext",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L347"
+      "source_location": "L361"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_extracteddata",
@@ -720,7 +746,7 @@
       "file_type": "code",
       "norm_label": "extracteddata",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L360"
+      "source_location": "L374"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_extractedevent",
@@ -733,7 +759,7 @@
       "file_type": "code",
       "norm_label": "extractedevent",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L325"
+      "source_location": "L339"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_extractedtask",
@@ -746,7 +772,7 @@
       "file_type": "code",
       "norm_label": "extractedtask",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L299"
+      "source_location": "L313"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_internalignorednote",
@@ -759,7 +785,7 @@
       "file_type": "code",
       "norm_label": "internalignorednote",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L393"
+      "source_location": "L421"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_llmpayload",
@@ -772,7 +798,20 @@
       "file_type": "code",
       "norm_label": "llmpayload",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L375"
+      "source_location": "L389"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_rawignorednote",
+      "label": "RawIgnoredNote",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 156,
+      "community_name": "StudyPlannerEngine",
+      "file_type": "code",
+      "norm_label": "rawignorednote",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
+      "source_location": "L407"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine",
@@ -801,19 +840,6 @@
       "source_location": "L52"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_service_impl_studyplannerserviceimpl_extractionresult",
-      "label": "ExtractionResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 156,
-      "community_name": "StudyPlannerEngine",
-      "file_type": "code",
-      "norm_label": "extractionresult",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java",
-      "source_location": "L156"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_dto_schedulerequest_schedulerequest",
       "label": "ScheduleRequest",
       "_callable": true,
@@ -840,17 +866,17 @@
       "source_location": "L16"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_service_impl_studyplannerserviceimpl_studyplannerserviceimpl",
-      "label": "StudyPlannerServiceImpl",
+      "id": "backend_src_main_java_group_four_nyare_nyare_service_impl_studyplannerserviceimpl_extractionresult",
+      "label": "ExtractionResult",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 165,
-      "community_name": "StudyPlannerServiceImpl.java",
+      "community_name": ".process",
       "file_type": "code",
-      "norm_label": "studyplannerserviceimpl",
+      "norm_label": "extractionresult",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java",
-      "source_location": "L32"
+      "source_location": "L156"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_controller_globalexceptionhandler_globalexceptionhandler",
@@ -866,17 +892,17 @@
       "source_location": "L16"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_processsummaryresponse_processsummaryresponse",
-      "label": "ProcessSummaryResponse",
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest",
+      "label": "AcademicEventRequest",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 167,
-      "community_name": "ProcessSummaryResponse",
+      "community_name": "AcademicEventRequest",
       "file_type": "code",
-      "norm_label": "processsummaryresponse",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java",
-      "source_location": "L6"
+      "norm_label": "academiceventrequest",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
+      "source_location": "L13"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest",
@@ -915,7 +941,7 @@
       "file_type": "code",
       "norm_label": "noteauditadvisor",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java",
-      "source_location": "L17"
+      "source_location": "L20"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_ai_parser_stubreferencecodec_stubreferencecodec",
@@ -981,19 +1007,6 @@
       "norm_label": "taskrequest",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
       "source_location": "L14"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest",
-      "label": "AcademicEventRequest",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 59,
-      "community_name": "AcademicEventResponse",
-      "file_type": "code",
-      "norm_label": "academiceventrequest",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
-      "source_location": "L13"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventresponse_academiceventresponse",
@@ -2189,18 +2202,6 @@
       "source_location": "L93"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_model_note_note_getcourse",
-      "label": ".getCourse()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 101,
-      "community_name": "Note",
-      "file_type": "code",
-      "norm_label": ".getcourse()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Note.java",
-      "source_location": "L85"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_note_note_getcreatedat",
       "label": ".getCreatedAt()",
       "_callable": true,
@@ -2225,18 +2226,6 @@
       "source_location": "L120"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_model_note_note_note",
-      "label": ".Note()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 101,
-      "community_name": "Note",
-      "file_type": "code",
-      "norm_label": ".note()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Note.java",
-      "source_location": "L67"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_note_note_setcontent",
       "label": ".setContent()",
       "_callable": true,
@@ -2247,6 +2236,18 @@
       "norm_label": ".setcontent()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Note.java",
       "source_location": "L97"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_model_note_note_setcourse",
+      "label": ".setCourse()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 101,
+      "community_name": "Note",
+      "file_type": "code",
+      "norm_label": ".setcourse()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Note.java",
+      "source_location": "L89"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_note_note_setcreatedat",
@@ -2535,6 +2536,18 @@
       "source_location": "L52"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_model_task_task_getcourse",
+      "label": ".getCourse()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "Task",
+      "file_type": "code",
+      "norm_label": ".getcourse()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Task.java",
+      "source_location": "L127"
+    },
+    {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_task_task_getcreatedat",
       "label": ".getCreatedAt()",
       "_callable": true,
@@ -2593,18 +2606,6 @@
       "norm_label": ".getscheduleddate()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Task.java",
       "source_location": "L159"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_model_task_task_getstatus",
-      "label": ".getStatus()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 103,
-      "community_name": "Task",
-      "file_type": "code",
-      "norm_label": ".getstatus()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Task.java",
-      "source_location": "L175"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_task_task_gettitle",
@@ -2677,30 +2678,6 @@
       "norm_label": ".setnote()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Task.java",
       "source_location": "L139"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_model_task_task_setscheduleddate",
-      "label": ".setScheduledDate()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 103,
-      "community_name": "Task",
-      "file_type": "code",
-      "norm_label": ".setscheduleddate()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Task.java",
-      "source_location": "L163"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_model_task_task_setstatus",
-      "label": ".setStatus()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 103,
-      "community_name": "Task",
-      "file_type": "code",
-      "norm_label": ".setstatus()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Task.java",
-      "source_location": "L179"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_task_task_settitle",
@@ -4319,52 +4296,6 @@
       "source_location": "L171"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_process",
-      "label": ".process()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "now",
-            "receiver_type": "LocalDate",
-            "lang": "java",
-            "line": "L150"
-          },
-          {
-            "callee": "format",
-            "receiver_type": "String",
-            "lang": "java",
-            "line": "L151"
-          },
-          {
-            "callee": "prompt",
-            "receiver_type": "ChatClient",
-            "lang": "java",
-            "line": "L164"
-          }
-        ]
-      },
-      "norm_label": ".process()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L113"
-    },
-    {
-      "id": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_nullorblank_returnsemptylist",
-      "label": ".parse_nullOrBlank_returnsEmptyList()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "org.junit.jupiter.api.Test",
-      "file_type": "code",
-      "norm_label": ".parse_nullorblank_returnsemptylist()",
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
-      "source_location": "L88"
-    },
-    {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_tocsv_nullorempty_returnsemptystring",
       "label": ".toCsv_nullOrEmpty_returnsEmptyString()",
       "_callable": true,
@@ -4434,13 +4365,13 @@
             "callee": "of",
             "receiver_type": "LocalDate",
             "lang": "java",
-            "line": "L241"
+            "line": "L244"
           }
         ]
       },
       "norm_label": ".formatagereturnscorrectstrings()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L238"
+      "source_location": "L241"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processbuildsfulltaggedprompt",
@@ -4456,59 +4387,59 @@
             "callee": "randomUUID",
             "receiver_type": "UUID",
             "lang": "java",
-            "line": "L95"
+            "line": "L97"
           },
           {
             "callee": "setField",
             "receiver_type": "ReflectionTestUtils",
             "lang": "java",
-            "line": "L96"
+            "line": "L98"
           },
           {
             "callee": "of",
             "receiver_type": "LocalTime",
             "lang": "java",
-            "line": "L100"
+            "line": "L102"
           },
           {
             "callee": "forClass",
             "receiver_type": "ArgumentCaptor",
             "lang": "java",
-            "line": "L102"
+            "line": "L104"
           },
           {
             "callee": "prompt",
             "receiver_type": "ChatClient",
             "lang": "java",
-            "line": "L103"
+            "line": "L105"
           },
           {
             "callee": "capture",
             "receiver_type": "ArgumentCaptor",
             "lang": "java",
-            "line": "L103"
+            "line": "L105"
           },
           {
             "callee": "of",
             "receiver_type": "List",
             "lang": "java",
-            "line": "L105"
+            "line": "L107"
           },
           {
             "callee": "getValue",
             "receiver_type": "ArgumentCaptor",
             "lang": "java",
-            "line": "L109"
+            "line": "L111"
           }
         ]
       },
       "norm_label": ".processbuildsfulltaggedprompt()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L90"
+      "source_location": "L92"
     },
     {
-      "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processdecodesnoterefstouuids",
-      "label": ".processDecodesNoteRefsToUUIDs()",
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processdecodesignorednoteswithpartandnoteid",
+      "label": ".processDecodesIgnoredNotesWithPartAndNoteId()",
       "_callable": true,
       "_origin": "ast",
       "community": 13,
@@ -4520,49 +4451,37 @@
             "callee": "randomUUID",
             "receiver_type": "UUID",
             "lang": "java",
-            "line": "L166"
+            "line": "L294"
           },
           {
             "callee": "setField",
             "receiver_type": "ReflectionTestUtils",
             "lang": "java",
-            "line": "L168"
-          },
-          {
-            "callee": "of",
-            "receiver_type": "List",
-            "lang": "java",
-            "line": "L172"
-          },
-          {
-            "callee": "now",
-            "receiver_type": "LocalDate",
-            "lang": "java",
-            "line": "L174"
-          },
-          {
-            "callee": "now",
-            "receiver_type": "LocalDateTime",
-            "lang": "java",
-            "line": "L177"
+            "line": "L295"
           },
           {
             "callee": "emptyList",
             "receiver_type": "Collections",
             "lang": "java",
-            "line": "L178"
+            "line": "L298"
+          },
+          {
+            "callee": "of",
+            "receiver_type": "List",
+            "lang": "java",
+            "line": "L301"
           },
           {
             "callee": "prompt",
             "receiver_type": "ChatClient",
             "lang": "java",
-            "line": "L181"
+            "line": "L304"
           }
         ]
       },
-      "norm_label": ".processdecodesnoterefstouuids()",
+      "norm_label": ".processdecodesignorednoteswithpartandnoteid()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L160"
+      "source_location": "L289"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processincludesageincontextcsv",
@@ -4578,49 +4497,49 @@
             "callee": "now",
             "receiver_type": "LocalDate",
             "lang": "java",
-            "line": "L222"
+            "line": "L225"
           },
           {
             "callee": "setField",
             "receiver_type": "ReflectionTestUtils",
             "lang": "java",
-            "line": "L223"
+            "line": "L226"
           },
           {
             "callee": "forClass",
             "receiver_type": "ArgumentCaptor",
             "lang": "java",
-            "line": "L225"
+            "line": "L228"
           },
           {
             "callee": "prompt",
             "receiver_type": "ChatClient",
             "lang": "java",
-            "line": "L226"
+            "line": "L229"
           },
           {
             "callee": "capture",
             "receiver_type": "ArgumentCaptor",
             "lang": "java",
-            "line": "L226"
+            "line": "L229"
           },
           {
             "callee": "of",
             "receiver_type": "List",
             "lang": "java",
-            "line": "L228"
+            "line": "L231"
           },
           {
             "callee": "getValue",
             "receiver_type": "ArgumentCaptor",
             "lang": "java",
-            "line": "L232"
+            "line": "L235"
           }
         ]
       },
       "norm_label": ".processincludesageincontextcsv()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L215"
+      "source_location": "L218"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processincludesimagescsvtagwithstubreferences",
@@ -4636,43 +4555,43 @@
             "callee": "of",
             "receiver_type": "Map",
             "lang": "java",
-            "line": "L263"
+            "line": "L267"
           },
           {
             "callee": "forClass",
             "receiver_type": "ArgumentCaptor",
             "lang": "java",
-            "line": "L266"
+            "line": "L270"
           },
           {
             "callee": "prompt",
             "receiver_type": "ChatClient",
             "lang": "java",
-            "line": "L267"
+            "line": "L271"
           },
           {
             "callee": "capture",
             "receiver_type": "ArgumentCaptor",
             "lang": "java",
-            "line": "L267"
+            "line": "L271"
           },
           {
             "callee": "of",
             "receiver_type": "List",
             "lang": "java",
-            "line": "L272"
+            "line": "L276"
           },
           {
             "callee": "getValue",
             "receiver_type": "ArgumentCaptor",
             "lang": "java",
-            "line": "L277"
+            "line": "L281"
           }
         ]
       },
       "norm_label": ".processincludesimagescsvtagwithstubreferences()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L258"
+      "source_location": "L261"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processincludestodaysdateintemporalanchor",
@@ -4688,43 +4607,43 @@
             "callee": "forClass",
             "receiver_type": "ArgumentCaptor",
             "lang": "java",
-            "line": "L126"
+            "line": "L128"
           },
           {
             "callee": "prompt",
             "receiver_type": "ChatClient",
             "lang": "java",
-            "line": "L127"
+            "line": "L129"
           },
           {
             "callee": "capture",
             "receiver_type": "ArgumentCaptor",
             "lang": "java",
-            "line": "L127"
+            "line": "L129"
           },
           {
             "callee": "of",
             "receiver_type": "List",
             "lang": "java",
-            "line": "L129"
+            "line": "L131"
           },
           {
             "callee": "getValue",
             "receiver_type": "ArgumentCaptor",
             "lang": "java",
-            "line": "L133"
+            "line": "L135"
           },
           {
             "callee": "now",
             "receiver_type": "LocalDate",
             "lang": "java",
-            "line": "L134"
+            "line": "L136"
           }
         ]
       },
       "norm_label": ".processincludestodaysdateintemporalanchor()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L120"
+      "source_location": "L122"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processomitsoptionaltagswhenlistsempty",
@@ -4740,37 +4659,37 @@
             "callee": "forClass",
             "receiver_type": "ArgumentCaptor",
             "lang": "java",
-            "line": "L143"
+            "line": "L145"
           },
           {
             "callee": "prompt",
             "receiver_type": "ChatClient",
             "lang": "java",
-            "line": "L144"
+            "line": "L146"
           },
           {
             "callee": "capture",
             "receiver_type": "ArgumentCaptor",
             "lang": "java",
-            "line": "L144"
+            "line": "L146"
           },
           {
             "callee": "of",
             "receiver_type": "List",
             "lang": "java",
-            "line": "L149"
+            "line": "L151"
           },
           {
             "callee": "getValue",
             "receiver_type": "ArgumentCaptor",
             "lang": "java",
-            "line": "L151"
+            "line": "L153"
           }
         ]
       },
       "norm_label": ".processomitsoptionaltagswhenlistsempty()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L137"
+      "source_location": "L139"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processreturnsemptywhenclientreturnsnull",
@@ -4786,19 +4705,19 @@
             "callee": "prompt",
             "receiver_type": "ChatClient",
             "lang": "java",
-            "line": "L203"
+            "line": "L206"
           },
           {
             "callee": "of",
             "receiver_type": "List",
             "lang": "java",
-            "line": "L208"
+            "line": "L211"
           }
         ]
       },
       "norm_label": ".processreturnsemptywhenclientreturnsnull()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L197"
+      "source_location": "L200"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_returnsemptywhenallnotesblank",
@@ -4814,13 +4733,13 @@
             "callee": "of",
             "receiver_type": "List",
             "lang": "java",
-            "line": "L82"
+            "line": "L84"
           }
         ]
       },
       "norm_label": ".returnsemptywhenallnotesblank()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L75"
+      "source_location": "L77"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_returnsemptywhennotesempty",
@@ -4836,19 +4755,19 @@
             "callee": "emptyList",
             "receiver_type": "Collections",
             "lang": "java",
-            "line": "L67"
+            "line": "L69"
           },
           {
             "callee": "of",
             "receiver_type": "List",
             "lang": "java",
-            "line": "L67"
+            "line": "L69"
           }
         ]
       },
       "norm_label": ".returnsemptywhennotesempty()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L63"
+      "source_location": "L65"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_returnsemptywhennotesnull",
@@ -4864,13 +4783,25 @@
             "callee": "of",
             "receiver_type": "List",
             "lang": "java",
-            "line": "L55"
+            "line": "L57"
           }
         ]
       },
       "norm_label": ".returnsemptywhennotesnull()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L51"
+      "source_location": "L53"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_setup",
+      "label": ".setUp()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".setup()",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
+      "source_location": "L48"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_controller_studyplannercontroller_studyplannercontroller_process",
@@ -4878,7 +4809,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 132,
-      "community_name": "StudyPlannerController.java",
+      "community_name": "StudyPlannerServiceImpl.java",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -4936,11 +4867,107 @@
       "_callable": true,
       "_origin": "ast",
       "community": 132,
-      "community_name": "StudyPlannerController.java",
+      "community_name": "StudyPlannerServiceImpl.java",
       "file_type": "code",
       "norm_label": ".studyplannercontroller()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/controller/StudyPlannerController.java",
       "source_location": "L28"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_processsummaryresponse_processsummaryresponse_getcontextscreated",
+      "label": ".getContextsCreated()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": ".getcontextscreated()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java",
+      "source_location": "L37"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_processsummaryresponse_processsummaryresponse_geteventscreated",
+      "label": ".getEventsCreated()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": ".geteventscreated()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java",
+      "source_location": "L29"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_processsummaryresponse_processsummaryresponse_gettaskscreated",
+      "label": ".getTasksCreated()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": ".gettaskscreated()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java",
+      "source_location": "L21"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_processsummaryresponse_processsummaryresponse_processsummaryresponse",
+      "label": ".ProcessSummaryResponse()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": ".processsummaryresponse()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java",
+      "source_location": "L12"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_processsummaryresponse_processsummaryresponse_setcontextscreated",
+      "label": ".setContextsCreated()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": ".setcontextscreated()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java",
+      "source_location": "L41"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_processsummaryresponse_processsummaryresponse_seteventscreated",
+      "label": ".setEventsCreated()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": ".seteventscreated()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java",
+      "source_location": "L33"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_processsummaryresponse_processsummaryresponse_settaskscreated",
+      "label": ".setTasksCreated()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": ".settaskscreated()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java",
+      "source_location": "L25"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_service_impl_studyplannerserviceimpl_studyplannerserviceimpl_studyplannerserviceimpl",
+      "label": ".StudyPlannerServiceImpl()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": ".studyplannerserviceimpl()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java",
+      "source_location": "L44"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_service_studyplannerservice_studyplannerservice_processtodaynotes",
@@ -4948,7 +4975,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 132,
-      "community_name": "StudyPlannerController.java",
+      "community_name": "StudyPlannerServiceImpl.java",
       "file_type": "code",
       "norm_label": ".processtodaynotes()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/service/StudyPlannerService.java",
@@ -5279,6 +5306,30 @@
       "source_location": "L81"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_model_task_task_setscheduleddate",
+      "label": ".setScheduledDate()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 139,
+      "community_name": "StudyPlannerEngineIntegrationTest.java",
+      "file_type": "code",
+      "norm_label": ".setscheduleddate()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Task.java",
+      "source_location": "L163"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_model_task_task_setstatus",
+      "label": ".setStatus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 139,
+      "community_name": "StudyPlannerEngineIntegrationTest.java",
+      "file_type": "code",
+      "norm_label": ".setstatus()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Task.java",
+      "source_location": "L179"
+    },
+    {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerengineintegrationtest_studyplannerengineintegrationtest_createnote",
       "label": ".createNote()",
       "_callable": true,
@@ -5292,19 +5343,19 @@
             "callee": "randomUUID",
             "receiver_type": "UUID",
             "lang": "java",
-            "line": "L229"
+            "line": "L257"
           },
           {
             "callee": "setField",
             "receiver_type": "ReflectionTestUtils",
             "lang": "java",
-            "line": "L231"
+            "line": "L259"
           }
         ]
       },
       "norm_label": ".createnote()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L228"
+      "source_location": "L256"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerengineintegrationtest_studyplannerengineintegrationtest_mainintegrationtest_processesnotesandextractsentities",
@@ -5356,7 +5407,7 @@
             "callee": "getDisplayName",
             "receiver_type": "TestInfo",
             "lang": "java",
-            "line": "L133"
+            "line": "L140"
           }
         ]
       },
@@ -5378,31 +5429,31 @@
             "callee": "of",
             "receiver_type": "List",
             "lang": "java",
-            "line": "L205"
+            "line": "L232"
           },
           {
             "callee": "emptyList",
             "receiver_type": "Collections",
             "lang": "java",
-            "line": "L206"
+            "line": "L233"
           },
           {
             "callee": "getDisplayName",
             "receiver_type": "TestInfo",
             "lang": "java",
-            "line": "L211"
+            "line": "L238"
           },
           {
             "callee": "getAll",
             "receiver_type": "CapturedOutput",
             "lang": "java",
-            "line": "L224"
+            "line": "L251"
           }
         ]
       },
       "norm_label": ".process_withmixednote_extractsentitiesandauditsunrelated()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L193"
+      "source_location": "L220"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerengineintegrationtest_studyplannerengineintegrationtest_process_withoutliernote_ignoresnoteandlogsaudit",
@@ -5418,31 +5469,31 @@
             "callee": "of",
             "receiver_type": "List",
             "lang": "java",
-            "line": "L175"
+            "line": "L201"
           },
           {
             "callee": "emptyList",
             "receiver_type": "Collections",
             "lang": "java",
-            "line": "L176"
+            "line": "L202"
           },
           {
             "callee": "getDisplayName",
             "receiver_type": "TestInfo",
             "lang": "java",
-            "line": "L181"
+            "line": "L207"
           },
           {
             "callee": "getAll",
             "receiver_type": "CapturedOutput",
             "lang": "java",
-            "line": "L189"
+            "line": "L215"
           }
         ]
       },
       "norm_label": ".process_withoutliernote_ignoresnoteandlogsaudit()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L164"
+      "source_location": "L190"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerengineintegrationtest_studyplannerengineintegrationtest_reportobservation",
@@ -5458,37 +5509,37 @@
             "callee": "format",
             "receiver_type": "String",
             "lang": "java",
-            "line": "L244"
+            "line": "L275"
           },
           {
             "callee": "writerWithDefaultPrettyPrinter",
             "receiver_type": "ObjectMapper",
             "lang": "java",
-            "line": "L263"
+            "line": "L294"
           },
           {
             "callee": "of",
             "receiver_type": "Path",
             "lang": "java",
-            "line": "L267"
+            "line": "L298"
           },
           {
             "callee": "createDirectories",
             "receiver_type": "Files",
             "lang": "java",
-            "line": "L270"
+            "line": "L301"
           },
           {
             "callee": "writeString",
             "receiver_type": "Files",
             "lang": "java",
-            "line": "L272"
+            "line": "L303"
           }
         ]
       },
       "norm_label": ".reportobservation()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L236"
+      "source_location": "L264"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_csvparser",
@@ -5569,6 +5620,18 @@
       "norm_label": ".getvalue_unmappedcolumn_returnsnull()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
       "source_location": "L97"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_nullorblank_returnsemptylist",
+      "label": ".parse_nullOrBlank_returnsEmptyList()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 140,
+      "community_name": ".parse",
+      "file_type": "code",
+      "norm_label": ".parse_nullorblank_returnsemptylist()",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L88"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_reader_convertsstream",
@@ -5801,88 +5864,6 @@
       "source_location": "L15"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_tocsv",
-      "label": ".toCsv()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 156,
-      "community_name": "StudyPlannerEngine",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "builder",
-            "receiver_type": "CSVFormat",
-            "lang": "java",
-            "line": "L57"
-          },
-          {
-            "callee": "print",
-            "receiver_type": "CSVFormat",
-            "lang": "java",
-            "line": "L61"
-          },
-          {
-            "callee": "toString",
-            "receiver_type": "StringWriter",
-            "lang": "java",
-            "line": "L69"
-          }
-        ]
-      },
-      "norm_label": ".tocsv()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
-      "source_location": "L42"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_buildcontextscsv",
-      "label": ".buildContextsCsv()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 156,
-      "community_name": "StudyPlannerEngine",
-      "file_type": "code",
-      "norm_label": ".buildcontextscsv()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L202"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_buildeventscsv",
-      "label": ".buildEventsCsv()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 156,
-      "community_name": "StudyPlannerEngine",
-      "file_type": "code",
-      "norm_label": ".buildeventscsv()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L185"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_buildschedulescsv",
-      "label": ".buildSchedulesCsv()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 156,
-      "community_name": "StudyPlannerEngine",
-      "file_type": "code",
-      "norm_label": ".buildschedulescsv()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L211"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_buildtaskscsv",
-      "label": ".buildTasksCsv()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 156,
-      "community_name": "StudyPlannerEngine",
-      "file_type": "code",
-      "norm_label": ".buildtaskscsv()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L173"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_decodereferences",
       "label": ".decodeReferences()",
       "_callable": true,
@@ -5896,13 +5877,13 @@
             "callee": "emptyList",
             "receiver_type": "Collections",
             "lang": "java",
-            "line": "L267"
+            "line": "L273"
           }
         ]
       },
       "norm_label": ".decodereferences()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L259"
+      "source_location": "L265"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_emptyextracteddata",
@@ -5918,25 +5899,13 @@
             "callee": "emptyList",
             "receiver_type": "Collections",
             "lang": "java",
-            "line": "L290"
+            "line": "L304"
           }
         ]
       },
       "norm_label": ".emptyextracteddata()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L288"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_formatage",
-      "label": ".formatAge()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 156,
-      "community_name": "StudyPlannerEngine",
-      "file_type": "code",
-      "norm_label": ".formatage()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L227"
+      "source_location": "L302"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_studyplannerengine",
@@ -5985,16 +5954,62 @@
       "source_location": "L67"
     },
     {
-      "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_setup",
-      "label": ".setUp()",
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processdecodesnoterefstouuids",
+      "label": ".processDecodesNoteRefsToUUIDs()",
       "_callable": true,
       "_origin": "ast",
       "community": 156,
       "community_name": "StudyPlannerEngine",
       "file_type": "code",
-      "norm_label": ".setup()",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "randomUUID",
+            "receiver_type": "UUID",
+            "lang": "java",
+            "line": "L168"
+          },
+          {
+            "callee": "setField",
+            "receiver_type": "ReflectionTestUtils",
+            "lang": "java",
+            "line": "L170"
+          },
+          {
+            "callee": "of",
+            "receiver_type": "List",
+            "lang": "java",
+            "line": "L174"
+          },
+          {
+            "callee": "now",
+            "receiver_type": "LocalDate",
+            "lang": "java",
+            "line": "L176"
+          },
+          {
+            "callee": "now",
+            "receiver_type": "LocalDateTime",
+            "lang": "java",
+            "line": "L179"
+          },
+          {
+            "callee": "emptyList",
+            "receiver_type": "Collections",
+            "lang": "java",
+            "line": "L180"
+          },
+          {
+            "callee": "prompt",
+            "receiver_type": "ChatClient",
+            "lang": "java",
+            "line": "L184"
+          }
+        ]
+      },
+      "norm_label": ".processdecodesnoterefstouuids()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L46"
+      "source_location": "L162"
     },
     {
       "id": "agents_skills_dr_jskill_scripts_sync_workshop_docs_findbrokenlinks",
@@ -6261,19 +6276,7 @@
       "source_location": "L71"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_model_note_note_setcourse",
-      "label": ".setCourse()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 164,
-      "community_name": "Course",
-      "file_type": "code",
-      "norm_label": ".setcourse()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Note.java",
-      "source_location": "L89"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_model_task_task_getcourse",
+      "id": "backend_src_main_java_group_four_nyare_nyare_model_note_note_getcourse",
       "label": ".getCourse()",
       "_callable": true,
       "_origin": "ast",
@@ -6281,8 +6284,20 @@
       "community_name": "Course",
       "file_type": "code",
       "norm_label": ".getcourse()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Task.java",
-      "source_location": "L127"
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Note.java",
+      "source_location": "L85"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_model_note_note_note",
+      "label": ".Note()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 164,
+      "community_name": "Course",
+      "file_type": "code",
+      "norm_label": ".note()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Note.java",
+      "source_location": "L67"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_model_task_task_setcourse",
@@ -6309,16 +6324,132 @@
       "source_location": "L92"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_service_impl_studyplannerserviceimpl_studyplannerserviceimpl_studyplannerserviceimpl",
-      "label": ".StudyPlannerServiceImpl()",
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_tocsv",
+      "label": ".toCsv()",
       "_callable": true,
       "_origin": "ast",
       "community": 165,
-      "community_name": "StudyPlannerServiceImpl.java",
+      "community_name": ".process",
       "file_type": "code",
-      "norm_label": ".studyplannerserviceimpl()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java",
-      "source_location": "L44"
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "builder",
+            "receiver_type": "CSVFormat",
+            "lang": "java",
+            "line": "L57"
+          },
+          {
+            "callee": "print",
+            "receiver_type": "CSVFormat",
+            "lang": "java",
+            "line": "L61"
+          },
+          {
+            "callee": "toString",
+            "receiver_type": "StringWriter",
+            "lang": "java",
+            "line": "L69"
+          }
+        ]
+      },
+      "norm_label": ".tocsv()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
+      "source_location": "L42"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_buildcontextscsv",
+      "label": ".buildContextsCsv()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 165,
+      "community_name": ".process",
+      "file_type": "code",
+      "norm_label": ".buildcontextscsv()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
+      "source_location": "L208"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_buildeventscsv",
+      "label": ".buildEventsCsv()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 165,
+      "community_name": ".process",
+      "file_type": "code",
+      "norm_label": ".buildeventscsv()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
+      "source_location": "L191"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_buildschedulescsv",
+      "label": ".buildSchedulesCsv()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 165,
+      "community_name": ".process",
+      "file_type": "code",
+      "norm_label": ".buildschedulescsv()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
+      "source_location": "L217"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_buildtaskscsv",
+      "label": ".buildTasksCsv()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 165,
+      "community_name": ".process",
+      "file_type": "code",
+      "norm_label": ".buildtaskscsv()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
+      "source_location": "L179"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_formatage",
+      "label": ".formatAge()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 165,
+      "community_name": ".process",
+      "file_type": "code",
+      "norm_label": ".formatage()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
+      "source_location": "L233"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_process",
+      "label": ".process()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 165,
+      "community_name": ".process",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "now",
+            "receiver_type": "LocalDate",
+            "lang": "java",
+            "line": "L150"
+          },
+          {
+            "callee": "format",
+            "receiver_type": "String",
+            "lang": "java",
+            "line": "L151"
+          },
+          {
+            "callee": "prompt",
+            "receiver_type": "ChatClient",
+            "lang": "java",
+            "line": "L169"
+          }
+        ]
+      },
+      "norm_label": ".process()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
+      "source_location": "L113"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_controller_globalexceptionhandler_globalexceptionhandler_handlebadrequest",
@@ -6417,88 +6548,136 @@
       "source_location": "L33"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_processsummaryresponse_processsummaryresponse_getcontextscreated",
-      "label": ".getContextsCreated()",
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_academiceventrequest",
+      "label": ".AcademicEventRequest()",
       "_callable": true,
       "_origin": "ast",
       "community": 167,
-      "community_name": "ProcessSummaryResponse",
+      "community_name": "AcademicEventRequest",
       "file_type": "code",
-      "norm_label": ".getcontextscreated()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java",
-      "source_location": "L37"
+      "norm_label": ".academiceventrequest()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
+      "source_location": "L30"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_processsummaryresponse_processsummaryresponse_geteventscreated",
-      "label": ".getEventsCreated()",
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_getcourseid",
+      "label": ".getCourseId()",
       "_callable": true,
       "_origin": "ast",
       "community": 167,
-      "community_name": "ProcessSummaryResponse",
+      "community_name": "AcademicEventRequest",
       "file_type": "code",
-      "norm_label": ".geteventscreated()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java",
-      "source_location": "L29"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_processsummaryresponse_processsummaryresponse_gettaskscreated",
-      "label": ".getTasksCreated()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 167,
-      "community_name": "ProcessSummaryResponse",
-      "file_type": "code",
-      "norm_label": ".gettaskscreated()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java",
-      "source_location": "L21"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_processsummaryresponse_processsummaryresponse_processsummaryresponse",
-      "label": ".ProcessSummaryResponse()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 167,
-      "community_name": "ProcessSummaryResponse",
-      "file_type": "code",
-      "norm_label": ".processsummaryresponse()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java",
-      "source_location": "L12"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_processsummaryresponse_processsummaryresponse_setcontextscreated",
-      "label": ".setContextsCreated()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 167,
-      "community_name": "ProcessSummaryResponse",
-      "file_type": "code",
-      "norm_label": ".setcontextscreated()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java",
+      "norm_label": ".getcourseid()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
       "source_location": "L41"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_processsummaryresponse_processsummaryresponse_seteventscreated",
-      "label": ".setEventsCreated()",
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_getdeadline",
+      "label": ".getDeadline()",
       "_callable": true,
       "_origin": "ast",
       "community": 167,
-      "community_name": "ProcessSummaryResponse",
+      "community_name": "AcademicEventRequest",
       "file_type": "code",
-      "norm_label": ".seteventscreated()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java",
-      "source_location": "L33"
+      "norm_label": ".getdeadline()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
+      "source_location": "L73"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_processsummaryresponse_processsummaryresponse_settaskscreated",
-      "label": ".setTasksCreated()",
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_getdescription",
+      "label": ".getDescription()",
       "_callable": true,
       "_origin": "ast",
       "community": 167,
-      "community_name": "ProcessSummaryResponse",
+      "community_name": "AcademicEventRequest",
       "file_type": "code",
-      "norm_label": ".settaskscreated()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java",
-      "source_location": "L25"
+      "norm_label": ".getdescription()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
+      "source_location": "L65"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_getnoteid",
+      "label": ".getNoteId()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 167,
+      "community_name": "AcademicEventRequest",
+      "file_type": "code",
+      "norm_label": ".getnoteid()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
+      "source_location": "L49"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_gettitle",
+      "label": ".getTitle()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 167,
+      "community_name": "AcademicEventRequest",
+      "file_type": "code",
+      "norm_label": ".gettitle()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
+      "source_location": "L57"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_setcourseid",
+      "label": ".setCourseId()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 167,
+      "community_name": "AcademicEventRequest",
+      "file_type": "code",
+      "norm_label": ".setcourseid()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
+      "source_location": "L45"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_setdeadline",
+      "label": ".setDeadline()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 167,
+      "community_name": "AcademicEventRequest",
+      "file_type": "code",
+      "norm_label": ".setdeadline()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
+      "source_location": "L77"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_setdescription",
+      "label": ".setDescription()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 167,
+      "community_name": "AcademicEventRequest",
+      "file_type": "code",
+      "norm_label": ".setdescription()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
+      "source_location": "L69"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_setnoteid",
+      "label": ".setNoteId()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 167,
+      "community_name": "AcademicEventRequest",
+      "file_type": "code",
+      "norm_label": ".setnoteid()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
+      "source_location": "L53"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_settitle",
+      "label": ".setTitle()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 167,
+      "community_name": "AcademicEventRequest",
+      "file_type": "code",
+      "norm_label": ".settitle()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
+      "source_location": "L61"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_nyareapplicationtests_nyareapplicationtests_contextloads",
@@ -6526,43 +6705,49 @@
             "callee": "chatResponse",
             "receiver_type": "ChatClientResponse",
             "lang": "java",
-            "line": "L37"
+            "line": "L40"
+          },
+          {
+            "callee": "context",
+            "receiver_type": "ChatClientRequest",
+            "lang": "java",
+            "line": "L44"
           },
           {
             "callee": "readTree",
             "receiver_type": "ObjectMapper",
             "lang": "java",
-            "line": "L41"
+            "line": "L48"
           },
           {
             "callee": "get",
             "receiver_type": "JsonNode",
             "lang": "java",
-            "line": "L42"
+            "line": "L49"
           },
           {
             "callee": "isArray",
             "receiver_type": "JsonNode",
             "lang": "java",
-            "line": "L43"
+            "line": "L50"
           },
           {
             "callee": "warn",
             "receiver_type": "Logger",
             "lang": "java",
-            "line": "L47"
+            "line": "L57"
           },
           {
             "callee": "debug",
             "receiver_type": "Logger",
             "lang": "java",
-            "line": "L53"
+            "line": "L64"
           }
         ]
       },
       "norm_label": ".advisecall()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java",
-      "source_location": "L32"
+      "source_location": "L35"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_ai_advisor_noteauditadvisor_noteauditadvisor_getname",
@@ -6574,7 +6759,7 @@
       "file_type": "code",
       "norm_label": ".getname()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java",
-      "source_location": "L27"
+      "source_location": "L30"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_ai_advisor_noteauditadvisor_noteauditadvisor_noteauditadvisor",
@@ -6586,7 +6771,7 @@
       "file_type": "code",
       "norm_label": ".noteauditadvisor()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java",
-      "source_location": "L23"
+      "source_location": "L26"
     },
     {
       "id": "agents_skills_dr_jskill_docs_vuepress_config_cleandocspermalinksplugin",
@@ -7315,6 +7500,18 @@
       "source_location": "L68"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_getstatus",
+      "label": ".getStatus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "TaskRequest",
+      "file_type": "code",
+      "norm_label": ".getstatus()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
+      "source_location": "L84"
+    },
+    {
       "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_gettitle",
       "label": ".getTitle()",
       "_callable": true,
@@ -7397,138 +7594,6 @@
       "norm_label": ".settitle()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
       "source_location": "L56"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_academiceventrequest",
-      "label": ".AcademicEventRequest()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 59,
-      "community_name": "AcademicEventResponse",
-      "file_type": "code",
-      "norm_label": ".academiceventrequest()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
-      "source_location": "L30"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_getcourseid",
-      "label": ".getCourseId()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 59,
-      "community_name": "AcademicEventResponse",
-      "file_type": "code",
-      "norm_label": ".getcourseid()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
-      "source_location": "L41"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_getdeadline",
-      "label": ".getDeadline()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 59,
-      "community_name": "AcademicEventResponse",
-      "file_type": "code",
-      "norm_label": ".getdeadline()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
-      "source_location": "L73"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_getdescription",
-      "label": ".getDescription()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 59,
-      "community_name": "AcademicEventResponse",
-      "file_type": "code",
-      "norm_label": ".getdescription()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
-      "source_location": "L65"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_getnoteid",
-      "label": ".getNoteId()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 59,
-      "community_name": "AcademicEventResponse",
-      "file_type": "code",
-      "norm_label": ".getnoteid()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
-      "source_location": "L49"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_gettitle",
-      "label": ".getTitle()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 59,
-      "community_name": "AcademicEventResponse",
-      "file_type": "code",
-      "norm_label": ".gettitle()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
-      "source_location": "L57"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_setcourseid",
-      "label": ".setCourseId()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 59,
-      "community_name": "AcademicEventResponse",
-      "file_type": "code",
-      "norm_label": ".setcourseid()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
-      "source_location": "L45"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_setdeadline",
-      "label": ".setDeadline()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 59,
-      "community_name": "AcademicEventResponse",
-      "file_type": "code",
-      "norm_label": ".setdeadline()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
-      "source_location": "L77"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_setdescription",
-      "label": ".setDescription()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 59,
-      "community_name": "AcademicEventResponse",
-      "file_type": "code",
-      "norm_label": ".setdescription()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
-      "source_location": "L69"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_setnoteid",
-      "label": ".setNoteId()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 59,
-      "community_name": "AcademicEventResponse",
-      "file_type": "code",
-      "norm_label": ".setnoteid()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
-      "source_location": "L53"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_settitle",
-      "label": ".setTitle()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 59,
-      "community_name": "AcademicEventResponse",
-      "file_type": "code",
-      "norm_label": ".settitle()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
-      "source_location": "L61"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventresponse_academiceventresponse_academiceventresponse",
@@ -9115,18 +9180,6 @@
       "source_location": "L206"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_getstatus",
-      "label": ".getStatus()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "TaskStatus",
-      "file_type": "code",
-      "norm_label": ".getstatus()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
-      "source_location": "L84"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_dto_taskrequest_taskrequest_taskrequest",
       "label": ".TaskRequest()",
       "_callable": true,
@@ -9197,6 +9250,18 @@
       "norm_label": ".taskstatusrequest()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskStatusRequest.java",
       "source_location": "L14"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_model_task_task_getstatus",
+      "label": ".getStatus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 98,
+      "community_name": "TaskStatus",
+      "file_type": "code",
+      "norm_label": ".getstatus()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Task.java",
+      "source_location": "L175"
     },
     {
       "id": "agents_skills_dr_jskill_scripts_create_basic_project",
@@ -12262,6 +12327,39 @@
       "source_location": "L1"
     },
     {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest",
+      "label": "StudyPlannerEngineTest.java",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "studyplannerenginetest.java",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "org_junit_jupiter_api_beforeeach",
+      "label": "org.junit.jupiter.api.BeforeEach",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "org.junit.jupiter.api.beforeeach",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_junit_jupiter_api_disabled",
+      "label": "org.junit.jupiter.api.Disabled",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "org.junit.jupiter.api.disabled",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "org_junit_jupiter_api_displayname",
       "label": "org.junit.jupiter.api.DisplayName",
       "_origin": "ast",
@@ -12269,6 +12367,17 @@
       "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
       "norm_label": "org.junit.jupiter.api.displayname",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_junit_jupiter_api_extension_extendwith",
+      "label": "org.junit.jupiter.api.extension.ExtendWith",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "org.junit.jupiter.api.extension.extendwith",
       "source_file": "",
       "source_location": ""
     },
@@ -12284,13 +12393,13 @@
       "source_location": ""
     },
     {
-      "id": "stubreferencecodec",
-      "label": "StubReferenceCodec",
+      "id": "org_mockito_junit_jupiter_mockitoextension",
+      "label": "org.mockito.junit.jupiter.MockitoExtension",
       "_origin": "ast",
       "community": 13,
       "community_name": "org.junit.jupiter.api.Test",
       "file_type": "code",
-      "norm_label": "stubreferencecodec",
+      "norm_label": "org.mockito.junit.jupiter.mockitoextension",
       "source_file": "",
       "source_location": ""
     },
@@ -12455,18 +12564,128 @@
       "label": "StudyPlannerController.java",
       "_origin": "ast",
       "community": 132,
-      "community_name": "StudyPlannerController.java",
+      "community_name": "StudyPlannerServiceImpl.java",
       "file_type": "code",
       "norm_label": "studyplannercontroller.java",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/controller/StudyPlannerController.java",
       "source_location": "L1"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_processsummaryresponse",
+      "label": "ProcessSummaryResponse.java",
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": "processsummaryresponse.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_service_impl_studyplannerserviceimpl",
+      "label": "StudyPlannerServiceImpl.java",
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": "studyplannerserviceimpl.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_service_studyplannerservice",
+      "label": "StudyPlannerService.java",
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": "studyplannerservice.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/StudyPlannerService.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "group_four_nyare_nyare_repository_academiccontextrepository",
+      "label": "group.four.nyare.nyare.repository.AcademicContextRepository",
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": "group.four.nyare.nyare.repository.academiccontextrepository",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "group_four_nyare_nyare_repository_academiceventrepository",
+      "label": "group.four.nyare.nyare.repository.AcademicEventRepository",
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": "group.four.nyare.nyare.repository.academiceventrepository",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "group_four_nyare_nyare_repository_courserepository",
+      "label": "group.four.nyare.nyare.repository.CourseRepository",
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": "group.four.nyare.nyare.repository.courserepository",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "group_four_nyare_nyare_repository_noterepository",
+      "label": "group.four.nyare.nyare.repository.NoteRepository",
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": "group.four.nyare.nyare.repository.noterepository",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "group_four_nyare_nyare_repository_taskrepository",
+      "label": "group.four.nyare.nyare.repository.TaskRepository",
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": "group.four.nyare.nyare.repository.taskrepository",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_springframework_stereotype_service",
+      "label": "org.springframework.stereotype.Service",
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": "org.springframework.stereotype.service",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "org_springframework_transaction_support_transactiontemplate",
+      "label": "org.springframework.transaction.support.TransactionTemplate",
+      "_origin": "ast",
+      "community": 132,
+      "community_name": "StudyPlannerServiceImpl.java",
+      "file_type": "code",
+      "norm_label": "org.springframework.transaction.support.transactiontemplate",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "org_springframework_web_bind_annotation_postmapping",
       "label": "org.springframework.web.bind.annotation.PostMapping",
       "_origin": "ast",
       "community": 132,
-      "community_name": "StudyPlannerController.java",
+      "community_name": "StudyPlannerServiceImpl.java",
       "file_type": "code",
       "norm_label": "org.springframework.web.bind.annotation.postmapping",
       "source_file": "",
@@ -12477,7 +12696,7 @@
       "label": "org.springframework.web.bind.annotation.RequestMapping",
       "_origin": "ast",
       "community": 132,
-      "community_name": "StudyPlannerController.java",
+      "community_name": "StudyPlannerServiceImpl.java",
       "file_type": "code",
       "norm_label": "org.springframework.web.bind.annotation.requestmapping",
       "source_file": "",
@@ -12488,7 +12707,7 @@
       "label": "org.springframework.web.bind.annotation.RestController",
       "_origin": "ast",
       "community": 132,
-      "community_name": "StudyPlannerController.java",
+      "community_name": "StudyPlannerServiceImpl.java",
       "file_type": "code",
       "norm_label": "org.springframework.web.bind.annotation.restcontroller",
       "source_file": "",
@@ -12499,7 +12718,7 @@
       "label": "org.springframework.web.servlet.mvc.method.annotation.SseEmitter",
       "_origin": "ast",
       "community": 132,
-      "community_name": "StudyPlannerController.java",
+      "community_name": "StudyPlannerServiceImpl.java",
       "file_type": "code",
       "norm_label": "org.springframework.web.servlet.mvc.method.annotation.sseemitter",
       "source_file": "",
@@ -12510,7 +12729,7 @@
       "label": "SseEmitter",
       "_origin": "ast",
       "community": 132,
-      "community_name": "StudyPlannerController.java",
+      "community_name": "StudyPlannerServiceImpl.java",
       "file_type": "code",
       "norm_label": "sseemitter",
       "source_file": "",
@@ -13517,17 +13736,6 @@
       "source_location": ""
     },
     {
-      "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest",
-      "label": "StudyPlannerEngineTest.java",
-      "_origin": "ast",
-      "community": 139,
-      "community_name": "StudyPlannerEngineIntegrationTest.java",
-      "file_type": "code",
-      "norm_label": "studyplannerenginetest.java",
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L1"
-    },
-    {
       "id": "group_four_nyare_nyare_model_course",
       "label": "group.four.nyare.nyare.model.Course",
       "_origin": "ast",
@@ -13539,28 +13747,6 @@
       "source_location": ""
     },
     {
-      "id": "group_four_nyare_nyare_model_note",
-      "label": "group.four.nyare.nyare.model.Note",
-      "_origin": "ast",
-      "community": 139,
-      "community_name": "StudyPlannerEngineIntegrationTest.java",
-      "file_type": "code",
-      "norm_label": "group.four.nyare.nyare.model.note",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "org_junit_jupiter_api_extension_extendwith",
-      "label": "org.junit.jupiter.api.extension.ExtendWith",
-      "_origin": "ast",
-      "community": 139,
-      "community_name": "StudyPlannerEngineIntegrationTest.java",
-      "file_type": "code",
-      "norm_label": "org.junit.jupiter.api.extension.extendwith",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "org_junit_jupiter_api_testinfo",
       "label": "org.junit.jupiter.api.TestInfo",
       "_origin": "ast",
@@ -13568,17 +13754,6 @@
       "community_name": "StudyPlannerEngineIntegrationTest.java",
       "file_type": "code",
       "norm_label": "org.junit.jupiter.api.testinfo",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "org_mockito_junit_jupiter_mockitoextension",
-      "label": "org.mockito.junit.jupiter.MockitoExtension",
-      "_origin": "ast",
-      "community": 139,
-      "community_name": "StudyPlannerEngineIntegrationTest.java",
-      "file_type": "code",
-      "norm_label": "org.mockito.junit.jupiter.mockitoextension",
       "source_file": "",
       "source_location": ""
     },
@@ -14015,17 +14190,6 @@
       "source_location": "L1"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_service_studyplannerservice",
-      "label": "StudyPlannerService.java",
-      "_origin": "ast",
-      "community": 152,
-      "community_name": "BadRequestException",
-      "file_type": "code",
-      "norm_label": "studyplannerservice.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/StudyPlannerService.java",
-      "source_location": "L1"
-    },
-    {
       "id": "agents_skills_asd_ste100_skill",
       "label": "asd-ste100/SKILL.md",
       "_origin": "ast",
@@ -14431,57 +14595,13 @@
       "source_location": ""
     },
     {
-      "id": "group_four_nyare_nyare_model_academiccontext",
-      "label": "group.four.nyare.nyare.model.AcademicContext",
+      "id": "group_four_nyare_nyare_model_note",
+      "label": "group.four.nyare.nyare.model.Note",
       "_origin": "ast",
       "community": 156,
       "community_name": "StudyPlannerEngine",
       "file_type": "code",
-      "norm_label": "group.four.nyare.nyare.model.academiccontext",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "group_four_nyare_nyare_model_academicevent",
-      "label": "group.four.nyare.nyare.model.AcademicEvent",
-      "_origin": "ast",
-      "community": 156,
-      "community_name": "StudyPlannerEngine",
-      "file_type": "code",
-      "norm_label": "group.four.nyare.nyare.model.academicevent",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "group_four_nyare_nyare_model_schedule",
-      "label": "group.four.nyare.nyare.model.Schedule",
-      "_origin": "ast",
-      "community": 156,
-      "community_name": "StudyPlannerEngine",
-      "file_type": "code",
-      "norm_label": "group.four.nyare.nyare.model.schedule",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "group_four_nyare_nyare_model_task",
-      "label": "group.four.nyare.nyare.model.Task",
-      "_origin": "ast",
-      "community": 156,
-      "community_name": "StudyPlannerEngine",
-      "file_type": "code",
-      "norm_label": "group.four.nyare.nyare.model.task",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "org_junit_jupiter_api_beforeeach",
-      "label": "org.junit.jupiter.api.BeforeEach",
-      "_origin": "ast",
-      "community": 156,
-      "community_name": "StudyPlannerEngine",
-      "file_type": "code",
-      "norm_label": "org.junit.jupiter.api.beforeeach",
+      "norm_label": "group.four.nyare.nyare.model.note",
       "source_file": "",
       "source_location": ""
     },
@@ -14934,14 +15054,14 @@
       "source_location": "L7"
     },
     {
-      "id": "backend_agents_skills_prompt_engineering_skill_reference_guides",
-      "label": "Reference Guides",
+      "id": "backend_agents_skills_prompt_engineering_skill_related_skills_references",
+      "label": "Related Skills & References",
       "_origin": "ast",
       "community": 163,
       "community_name": "Prompt Engineering for Nyare",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "reference guides",
+      "norm_label": "related skills & references",
       "source_file": "backend/.agents/skills/prompt-engineering/SKILL.md",
       "source_location": "L51"
     },
@@ -14993,90 +15113,57 @@
       "source_location": ""
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_service_impl_studyplannerserviceimpl",
-      "label": "StudyPlannerServiceImpl.java",
+      "id": "group_four_nyare_nyare_model_academiccontext",
+      "label": "group.four.nyare.nyare.model.AcademicContext",
       "_origin": "ast",
       "community": 165,
-      "community_name": "StudyPlannerServiceImpl.java",
+      "community_name": ".process",
       "file_type": "code",
-      "norm_label": "studyplannerserviceimpl.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "group_four_nyare_nyare_repository_academiccontextrepository",
-      "label": "group.four.nyare.nyare.repository.AcademicContextRepository",
-      "_origin": "ast",
-      "community": 165,
-      "community_name": "StudyPlannerServiceImpl.java",
-      "file_type": "code",
-      "norm_label": "group.four.nyare.nyare.repository.academiccontextrepository",
+      "norm_label": "group.four.nyare.nyare.model.academiccontext",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "group_four_nyare_nyare_repository_academiceventrepository",
-      "label": "group.four.nyare.nyare.repository.AcademicEventRepository",
+      "id": "group_four_nyare_nyare_model_academicevent",
+      "label": "group.four.nyare.nyare.model.AcademicEvent",
       "_origin": "ast",
       "community": 165,
-      "community_name": "StudyPlannerServiceImpl.java",
+      "community_name": ".process",
       "file_type": "code",
-      "norm_label": "group.four.nyare.nyare.repository.academiceventrepository",
+      "norm_label": "group.four.nyare.nyare.model.academicevent",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "group_four_nyare_nyare_repository_courserepository",
-      "label": "group.four.nyare.nyare.repository.CourseRepository",
+      "id": "group_four_nyare_nyare_model_schedule",
+      "label": "group.four.nyare.nyare.model.Schedule",
       "_origin": "ast",
       "community": 165,
-      "community_name": "StudyPlannerServiceImpl.java",
+      "community_name": ".process",
       "file_type": "code",
-      "norm_label": "group.four.nyare.nyare.repository.courserepository",
+      "norm_label": "group.four.nyare.nyare.model.schedule",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "group_four_nyare_nyare_repository_noterepository",
-      "label": "group.four.nyare.nyare.repository.NoteRepository",
+      "id": "group_four_nyare_nyare_model_task",
+      "label": "group.four.nyare.nyare.model.Task",
       "_origin": "ast",
       "community": 165,
-      "community_name": "StudyPlannerServiceImpl.java",
+      "community_name": ".process",
       "file_type": "code",
-      "norm_label": "group.four.nyare.nyare.repository.noterepository",
+      "norm_label": "group.four.nyare.nyare.model.task",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "group_four_nyare_nyare_repository_taskrepository",
-      "label": "group.four.nyare.nyare.repository.TaskRepository",
+      "id": "stubreferencecodec",
+      "label": "StubReferenceCodec",
       "_origin": "ast",
       "community": 165,
-      "community_name": "StudyPlannerServiceImpl.java",
+      "community_name": ".process",
       "file_type": "code",
-      "norm_label": "group.four.nyare.nyare.repository.taskrepository",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "org_springframework_stereotype_service",
-      "label": "org.springframework.stereotype.Service",
-      "_origin": "ast",
-      "community": 165,
-      "community_name": "StudyPlannerServiceImpl.java",
-      "file_type": "code",
-      "norm_label": "org.springframework.stereotype.service",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "org_springframework_transaction_support_transactiontemplate",
-      "label": "org.springframework.transaction.support.TransactionTemplate",
-      "_origin": "ast",
-      "community": 165,
-      "community_name": "StudyPlannerServiceImpl.java",
-      "file_type": "code",
-      "norm_label": "org.springframework.transaction.support.transactiontemplate",
+      "norm_label": "stubreferencecodec",
       "source_file": "",
       "source_location": ""
     },
@@ -15136,14 +15223,14 @@
       "source_location": ""
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_processsummaryresponse",
-      "label": "ProcessSummaryResponse.java",
+      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest",
+      "label": "AcademicEventRequest.java",
       "_origin": "ast",
       "community": 167,
-      "community_name": "ProcessSummaryResponse",
+      "community_name": "AcademicEventRequest",
       "file_type": "code",
-      "norm_label": "processsummaryresponse.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java",
+      "norm_label": "academiceventrequest.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
       "source_location": "L1"
     },
     {
@@ -15574,6 +15661,155 @@
       "norm_label": "override",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "backend_agents_skills_generating_test_notes_skill",
+      "label": "generating-test-notes/SKILL.md",
+      "_origin": "ast",
+      "community": 176,
+      "community_name": "Generating Test Notes for Nyare",
+      "file_type": "document",
+      "frontmatter": {
+        "name": "generating-test-notes",
+        "description": "Use when authoring student journal note fixtures, generating realistic rushed test entries, or creating edge-case test notes for Nyare academic planning evaluation.",
+        "allowed-tools": "Read, Write, Edit, Glob, Grep, Bash"
+      },
+      "node_kind": "page",
+      "norm_label": "generating-test-notes/skill.md",
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_agents_skills_generating_test_notes_skill_1_clean_domain_extraction",
+      "label": "1. Clean Domain Extraction",
+      "_origin": "ast",
+      "community": 176,
+      "community_name": "Generating Test Notes for Nyare",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "1. clean domain extraction",
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L83"
+    },
+    {
+      "id": "backend_agents_skills_generating_test_notes_skill_2_auditing_mixed_or_outlier_content",
+      "label": "2. Auditing Mixed or Outlier Content",
+      "_origin": "ast",
+      "community": 176,
+      "community_name": "Generating Test Notes for Nyare",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "2. auditing mixed or outlier content",
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L94"
+    },
+    {
+      "id": "backend_agents_skills_generating_test_notes_skill_assertion_verification_patterns",
+      "label": "Assertion & Verification Patterns",
+      "_origin": "ast",
+      "community": 176,
+      "community_name": "Generating Test Notes for Nyare",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "assertion & verification patterns",
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L81"
+    },
+    {
+      "id": "backend_agents_skills_generating_test_notes_skill_common_mistakes",
+      "label": "Common Mistakes",
+      "_origin": "ast",
+      "community": 176,
+      "community_name": "Generating Test Notes for Nyare",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "common mistakes",
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L118"
+    },
+    {
+      "id": "backend_agents_skills_generating_test_notes_skill_core_fixture_pattern_java",
+      "label": "Core Fixture Pattern (Java)",
+      "_origin": "ast",
+      "community": 176,
+      "community_name": "Generating Test Notes for Nyare",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "core fixture pattern (java)",
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L49"
+    },
+    {
+      "id": "backend_agents_skills_generating_test_notes_skill_generating_test_notes_for_nyare",
+      "label": "Generating Test Notes for Nyare",
+      "_origin": "ast",
+      "community": 176,
+      "community_name": "Generating Test Notes for Nyare",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "generating test notes for nyare",
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "backend_agents_skills_generating_test_notes_skill_linking_with_academic_state_schedules",
+      "label": "Linking with Academic State & Schedules",
+      "_origin": "ast",
+      "community": 176,
+      "community_name": "Generating Test Notes for Nyare",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "linking with academic state & schedules",
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L62"
+    },
+    {
+      "id": "backend_agents_skills_generating_test_notes_skill_note_taxonomy_archetypes",
+      "label": "Note Taxonomy & Archetypes",
+      "_origin": "ast",
+      "community": 176,
+      "community_name": "Generating Test Notes for Nyare",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "note taxonomy & archetypes",
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L33"
+    },
+    {
+      "id": "backend_agents_skills_generating_test_notes_skill_overview",
+      "label": "Overview",
+      "_origin": "ast",
+      "community": 176,
+      "community_name": "Generating Test Notes for Nyare",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "overview",
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L9"
+    },
+    {
+      "id": "backend_agents_skills_generating_test_notes_skill_when_not_to_use",
+      "label": "When NOT to Use",
+      "_origin": "ast",
+      "community": 176,
+      "community_name": "Generating Test Notes for Nyare",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "when not to use",
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L25"
+    },
+    {
+      "id": "backend_agents_skills_generating_test_notes_skill_when_to_use",
+      "label": "When to Use",
+      "_origin": "ast",
+      "community": 176,
+      "community_name": "Generating Test Notes for Nyare",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "when to use",
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L18"
     },
     {
       "id": "agents_skills_dr_jskill_docs_workshop_00_introduction",
@@ -18536,17 +18772,6 @@
       "file_type": "code",
       "norm_label": "taskrequest.java",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest",
-      "label": "AcademicEventRequest.java",
-      "_origin": "ast",
-      "community": 59,
-      "community_name": "AcademicEventResponse",
-      "file_type": "code",
-      "norm_label": "academiceventrequest.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/dto/AcademicEventRequest.java",
       "source_location": "L1"
     },
     {
@@ -24379,7 +24604,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java",
-      "source_location": "L17",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -24391,7 +24616,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java",
-      "source_location": "L32",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -24403,7 +24628,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java",
-      "source_location": "L27",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -24415,7 +24640,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L360",
+      "source_location": "L374",
       "weight": 1.0
     },
     {
@@ -25543,7 +25768,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L193",
+      "source_location": "L220",
       "weight": 1.0
     },
     {
@@ -25555,7 +25780,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L193",
+      "source_location": "L220",
       "weight": 1.0
     },
     {
@@ -25567,7 +25792,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L164",
+      "source_location": "L190",
       "weight": 1.0
     },
     {
@@ -25579,7 +25804,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L164",
+      "source_location": "L190",
       "weight": 1.0
     },
     {
@@ -25651,7 +25876,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L38",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -25663,7 +25888,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L38",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -25675,7 +25900,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L238",
+      "source_location": "L241",
       "weight": 1.0
     },
     {
@@ -25687,7 +25912,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L238",
+      "source_location": "L241",
       "weight": 1.0
     },
     {
@@ -25699,7 +25924,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L90",
+      "source_location": "L92",
       "weight": 1.0
     },
     {
@@ -25711,7 +25936,31 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L90",
+      "source_location": "L92",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processdecodesignorednoteswithpartandnoteid",
+      "target": "org_junit_jupiter_api_displayname",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
+      "source_location": "L289",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processdecodesignorednoteswithpartandnoteid",
+      "target": "org_junit_jupiter_api_test",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
+      "source_location": "L289",
       "weight": 1.0
     },
     {
@@ -25723,7 +25972,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L160",
+      "source_location": "L162",
       "weight": 1.0
     },
     {
@@ -25735,7 +25984,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L160",
+      "source_location": "L162",
       "weight": 1.0
     },
     {
@@ -25747,7 +25996,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L215",
+      "source_location": "L218",
       "weight": 1.0
     },
     {
@@ -25759,7 +26008,19 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L215",
+      "source_location": "L218",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processincludesimagescsvtagwithstubreferences",
+      "target": "org_junit_jupiter_api_disabled",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "attribute",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
+      "source_location": "L261",
       "weight": 1.0
     },
     {
@@ -25771,7 +26032,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L258",
+      "source_location": "L261",
       "weight": 1.0
     },
     {
@@ -25783,7 +26044,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L258",
+      "source_location": "L261",
       "weight": 1.0
     },
     {
@@ -25795,7 +26056,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L120",
+      "source_location": "L122",
       "weight": 1.0
     },
     {
@@ -25807,7 +26068,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L120",
+      "source_location": "L122",
       "weight": 1.0
     },
     {
@@ -25819,7 +26080,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L137",
+      "source_location": "L139",
       "weight": 1.0
     },
     {
@@ -25831,7 +26092,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L137",
+      "source_location": "L139",
       "weight": 1.0
     },
     {
@@ -25843,7 +26104,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L197",
+      "source_location": "L200",
       "weight": 1.0
     },
     {
@@ -25855,7 +26116,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L197",
+      "source_location": "L200",
       "weight": 1.0
     },
     {
@@ -25867,7 +26128,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L75",
+      "source_location": "L77",
       "weight": 1.0
     },
     {
@@ -25879,7 +26140,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L75",
+      "source_location": "L77",
       "weight": 1.0
     },
     {
@@ -25891,7 +26152,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L63",
+      "source_location": "L65",
       "weight": 1.0
     },
     {
@@ -25903,7 +26164,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L63",
+      "source_location": "L65",
       "weight": 1.0
     },
     {
@@ -25915,7 +26176,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L51",
+      "source_location": "L53",
       "weight": 1.0
     },
     {
@@ -25927,7 +26188,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L51",
+      "source_location": "L53",
       "weight": 1.0
     },
     {
@@ -25939,7 +26200,7 @@
       "confidence_score": 1.0,
       "context": "attribute",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L46",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -29203,7 +29464,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L204",
+      "source_location": "L210",
       "weight": 1.0
     },
     {
@@ -29215,7 +29476,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L207",
+      "source_location": "L213",
       "weight": 1.0
     },
     {
@@ -29227,7 +29488,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L187",
+      "source_location": "L193",
       "weight": 1.0
     },
     {
@@ -29239,7 +29500,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L213",
+      "source_location": "L219",
       "weight": 1.0
     },
     {
@@ -29251,7 +29512,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L175",
+      "source_location": "L181",
       "weight": 1.0
     },
     {
@@ -29263,7 +29524,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L264",
+      "source_location": "L270",
       "weight": 1.0
     },
     {
@@ -29275,7 +29536,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L273",
+      "source_location": "L279",
       "weight": 1.0
     },
     {
@@ -29287,7 +29548,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L281",
+      "source_location": "L287",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_decodereferences",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_internalignorednote",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
+      "source_location": "L295",
       "weight": 1.0
     },
     {
@@ -29299,7 +29572,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L285",
+      "source_location": "L299",
       "weight": 1.0
     },
     {
@@ -29311,7 +29584,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L289",
+      "source_location": "L303",
       "weight": 1.0
     },
     {
@@ -29419,7 +29692,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L168",
+      "source_location": "L174",
       "weight": 1.0
     },
     {
@@ -29611,7 +29884,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L230",
+      "source_location": "L258",
       "weight": 1.0
     },
     {
@@ -29635,7 +29908,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L133",
+      "source_location": "L140",
       "weight": 1.0
     },
     {
@@ -29659,7 +29932,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L197",
+      "source_location": "L224",
       "weight": 1.0
     },
     {
@@ -29671,7 +29944,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L200",
+      "source_location": "L227",
       "weight": 1.0
     },
     {
@@ -29683,7 +29956,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L211",
+      "source_location": "L238",
       "weight": 1.0
     },
     {
@@ -29695,7 +29968,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L168",
+      "source_location": "L194",
       "weight": 1.0
     },
     {
@@ -29707,7 +29980,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L170",
+      "source_location": "L196",
       "weight": 1.0
     },
     {
@@ -29719,7 +29992,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L181",
+      "source_location": "L207",
       "weight": 1.0
     },
     {
@@ -29731,7 +30004,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L243",
+      "source_location": "L246",
       "weight": 1.0
     },
     {
@@ -29743,7 +30016,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L48",
+      "source_location": "L50",
       "weight": 1.0
     },
     {
@@ -29839,7 +30112,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java",
-      "source_location": "L20",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -29851,7 +30124,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java",
-      "source_location": "L21",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -30223,7 +30496,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L41",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
@@ -30235,7 +30508,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L44",
+      "source_location": "L46",
       "weight": 1.0
     },
     {
@@ -30259,47 +30532,11 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L362",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_extracteddata",
-      "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_extractedevent",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "generic_arg",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L366",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_extracteddata",
-      "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_extractedcontext",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "generic_arg",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L370",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_llmpayload",
-      "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_extractedtask",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "generic_arg",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
       "source_location": "L376",
       "weight": 1.0
     },
     {
-      "source": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_llmpayload",
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_extracteddata",
       "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_extractedevent",
       "relation": "references",
       "_origin": "ast",
@@ -30311,7 +30548,7 @@
       "weight": 1.0
     },
     {
-      "source": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_llmpayload",
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_extracteddata",
       "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_extractedcontext",
       "relation": "references",
       "_origin": "ast",
@@ -30324,14 +30561,50 @@
     },
     {
       "source": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_llmpayload",
-      "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_internalignorednote",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_extractedtask",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L388",
+      "source_location": "L390",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_llmpayload",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_extractedevent",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
+      "source_location": "L394",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_llmpayload",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_extractedcontext",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
+      "source_location": "L398",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_llmpayload",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_rawignorednote",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
+      "source_location": "L402",
       "weight": 1.0
     },
     {
@@ -30343,7 +30616,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L202",
+      "source_location": "L208",
       "weight": 1.0
     },
     {
@@ -30355,7 +30628,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L185",
+      "source_location": "L191",
       "weight": 1.0
     },
     {
@@ -30367,7 +30640,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L211",
+      "source_location": "L217",
       "weight": 1.0
     },
     {
@@ -30379,7 +30652,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L173",
+      "source_location": "L179",
       "weight": 1.0
     },
     {
@@ -30391,7 +30664,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L259",
+      "source_location": "L265",
       "weight": 1.0
     },
     {
@@ -33432,7 +33705,7 @@
     },
     {
       "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest",
-      "target": "org_junit_jupiter_api_displayname",
+      "target": "org_junit_jupiter_api_disabled",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -33444,7 +33717,7 @@
     },
     {
       "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest",
-      "target": "org_junit_jupiter_api_test",
+      "target": "org_junit_jupiter_api_displayname",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -33456,7 +33729,7 @@
     },
     {
       "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest",
-      "target": "org_junit_jupiter_api_extension_extendwith",
+      "target": "org_junit_jupiter_api_test",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -33468,19 +33741,19 @@
     },
     {
       "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest",
-      "target": "org_mockito_junit_jupiter_mockitoextension",
+      "target": "org_junit_jupiter_api_extension_extendwith",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L17",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
       "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest",
-      "target": "org_springframework_ai_chat_client_chatclient",
+      "target": "org_mockito_junit_jupiter_mockitoextension",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -33492,7 +33765,7 @@
     },
     {
       "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest",
-      "target": "prompt",
+      "target": "org_springframework_ai_chat_client_chatclient",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -33504,7 +33777,19 @@
     },
     {
       "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest",
-      "target": "backend_src_main_java_group_four_nyare_nyare_model_academiccontext",
+      "target": "prompt",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest",
+      "target": "group_four_nyare_nyare_model_academiccontext",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -33576,7 +33861,7 @@
     },
     {
       "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest",
-      "target": "backend_src_main_java_group_four_nyare_nyare_model_task",
+      "target": "group_four_nyare_nyare_model_task",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -34123,7 +34408,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java",
-      "source_location": "L32",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -34135,7 +34420,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java",
-      "source_location": "L32",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -34159,7 +34444,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L259",
+      "source_location": "L265",
       "weight": 1.0
     },
     {
@@ -34171,7 +34456,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L259",
+      "source_location": "L265",
       "weight": 1.0
     },
     {
@@ -34867,7 +35152,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L228",
+      "source_location": "L256",
       "weight": 1.0
     },
     {
@@ -34891,7 +35176,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L193",
+      "source_location": "L220",
       "weight": 1.0
     },
     {
@@ -34903,7 +35188,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L193",
+      "source_location": "L220",
       "weight": 1.0
     },
     {
@@ -34915,7 +35200,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L164",
+      "source_location": "L190",
       "weight": 1.0
     },
     {
@@ -34927,7 +35212,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L164",
+      "source_location": "L190",
       "weight": 1.0
     },
     {
@@ -34939,7 +35224,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L236",
+      "source_location": "L264",
       "weight": 1.0
     },
     {
@@ -34975,7 +35260,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java",
-      "source_location": "L32",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -35455,7 +35740,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L228",
+      "source_location": "L256",
       "weight": 1.0
     },
     {
@@ -40937,6 +41222,127 @@
       "weight": 1.0
     },
     {
+      "source": "backend_agents_skills_generating_test_notes_skill",
+      "target": "backend_agents_skills_generating_test_notes_skill_generating_test_notes_for_nyare",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_agents_skills_generating_test_notes_skill_assertion_verification_patterns",
+      "target": "backend_agents_skills_generating_test_notes_skill_1_clean_domain_extraction",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L83",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_agents_skills_generating_test_notes_skill_assertion_verification_patterns",
+      "target": "backend_agents_skills_generating_test_notes_skill_2_auditing_mixed_or_outlier_content",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L94",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_agents_skills_generating_test_notes_skill_core_fixture_pattern_java",
+      "target": "backend_agents_skills_generating_test_notes_skill_linking_with_academic_state_schedules",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_agents_skills_generating_test_notes_skill_generating_test_notes_for_nyare",
+      "target": "backend_agents_skills_generating_test_notes_skill_common_mistakes",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L118",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_agents_skills_generating_test_notes_skill_generating_test_notes_for_nyare",
+      "target": "backend_agents_skills_generating_test_notes_skill_when_to_use",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_agents_skills_generating_test_notes_skill_generating_test_notes_for_nyare",
+      "target": "backend_agents_skills_generating_test_notes_skill_note_taxonomy_archetypes",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_agents_skills_generating_test_notes_skill_generating_test_notes_for_nyare",
+      "target": "backend_agents_skills_generating_test_notes_skill_core_fixture_pattern_java",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_agents_skills_generating_test_notes_skill_generating_test_notes_for_nyare",
+      "target": "backend_agents_skills_generating_test_notes_skill_assertion_verification_patterns",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L81",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_agents_skills_generating_test_notes_skill_generating_test_notes_for_nyare",
+      "target": "backend_agents_skills_generating_test_notes_skill_overview",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_agents_skills_generating_test_notes_skill_when_to_use",
+      "target": "backend_agents_skills_generating_test_notes_skill_when_not_to_use",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/.agents/skills/generating-test-notes/SKILL.md",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
       "source": "backend_agents_skills_man_spring_skill",
       "target": "backend_agents_skills_man_spring_skill_man_spring_spring_ai_google_genai_gemini",
       "relation": "contains",
@@ -41532,7 +41938,7 @@
     },
     {
       "source": "backend_agents_skills_prompt_engineering_skill_prompt_engineering_for_nyare",
-      "target": "backend_agents_skills_prompt_engineering_skill_reference_guides",
+      "target": "backend_agents_skills_prompt_engineering_skill_related_skills_references",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -45432,7 +45838,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java",
-      "source_location": "L17",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -45487,7 +45893,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L299",
+      "source_location": "L313",
       "weight": 1.0
     },
     {
@@ -45498,7 +45904,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L325",
+      "source_location": "L339",
       "weight": 1.0
     },
     {
@@ -45509,7 +45915,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L347",
+      "source_location": "L361",
       "weight": 1.0
     },
     {
@@ -45520,7 +45926,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L360",
+      "source_location": "L374",
       "weight": 1.0
     },
     {
@@ -45531,7 +45937,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L375",
+      "source_location": "L389",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_rawignorednote",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
+      "source_location": "L407",
       "weight": 1.0
     },
     {
@@ -45542,7 +45959,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L393",
+      "source_location": "L421",
       "weight": 1.0
     },
     {
@@ -46114,7 +46531,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L38",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -47163,28 +47580,6 @@
       "weight": 1.0
     },
     {
-      "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest",
-      "target": "backend_src_main_java_group_four_nyare_nyare_model_academiccontext_academiccontext",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L3",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest",
-      "target": "backend_src_main_java_group_four_nyare_nyare_model_imagemetadata_imagemetadata",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L5",
-      "weight": 1.0
-    },
-    {
       "source": "agents_skills_caveman_compress_scripts_compress_locktimeouterror",
       "target": "timeouterror",
       "relation": "inherits",
@@ -47203,7 +47598,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java",
-      "source_location": "L17",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -47324,7 +47719,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java",
-      "source_location": "L23",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -47335,7 +47730,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java",
-      "source_location": "L27",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -47346,7 +47741,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java",
-      "source_location": "L32",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -47555,7 +47950,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L173",
+      "source_location": "L179",
       "weight": 1.0
     },
     {
@@ -47566,7 +47961,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L185",
+      "source_location": "L191",
       "weight": 1.0
     },
     {
@@ -47577,7 +47972,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L202",
+      "source_location": "L208",
       "weight": 1.0
     },
     {
@@ -47588,7 +47983,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L211",
+      "source_location": "L217",
       "weight": 1.0
     },
     {
@@ -47599,7 +47994,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L227",
+      "source_location": "L233",
       "weight": 1.0
     },
     {
@@ -47610,7 +48005,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L259",
+      "source_location": "L265",
       "weight": 1.0
     },
     {
@@ -47621,7 +48016,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L288",
+      "source_location": "L302",
       "weight": 1.0
     },
     {
@@ -50536,7 +50931,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L164",
+      "source_location": "L190",
       "weight": 1.0
     },
     {
@@ -50547,7 +50942,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L193",
+      "source_location": "L220",
       "weight": 1.0
     },
     {
@@ -50558,7 +50953,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L228",
+      "source_location": "L256",
       "weight": 1.0
     },
     {
@@ -50569,7 +50964,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L236",
+      "source_location": "L264",
       "weight": 1.0
     },
     {
@@ -50591,7 +50986,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L120",
+      "source_location": "L122",
       "weight": 1.0
     },
     {
@@ -50602,7 +50997,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L137",
+      "source_location": "L139",
       "weight": 1.0
     },
     {
@@ -50613,7 +51008,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L160",
+      "source_location": "L162",
       "weight": 1.0
     },
     {
@@ -50624,7 +51019,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L197",
+      "source_location": "L200",
       "weight": 1.0
     },
     {
@@ -50635,7 +51030,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L215",
+      "source_location": "L218",
       "weight": 1.0
     },
     {
@@ -50646,7 +51041,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L238",
+      "source_location": "L241",
       "weight": 1.0
     },
     {
@@ -50657,7 +51052,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L258",
+      "source_location": "L261",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest",
+      "target": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processdecodesignorednoteswithpartandnoteid",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
+      "source_location": "L289",
       "weight": 1.0
     },
     {
@@ -50668,7 +51074,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L46",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -50679,7 +51085,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L51",
+      "source_location": "L53",
       "weight": 1.0
     },
     {
@@ -50690,7 +51096,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L63",
+      "source_location": "L65",
       "weight": 1.0
     },
     {
@@ -50701,7 +51107,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L75",
+      "source_location": "L77",
       "weight": 1.0
     },
     {
@@ -50712,7 +51118,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L90",
+      "source_location": "L92",
       "weight": 1.0
     },
     {
@@ -52198,7 +52604,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L262",
+      "source_location": "L268",
       "weight": 1.0
     },
     {
@@ -52210,7 +52616,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L263",
+      "source_location": "L269",
       "weight": 1.0
     },
     {
@@ -52234,7 +52640,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L162",
+      "source_location": "L167",
       "weight": 1.0
     },
     {
@@ -52474,7 +52880,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L129",
+      "source_location": "L136",
       "weight": 1.0
     },
     {
@@ -52486,7 +52892,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L143",
+      "source_location": "L149",
       "weight": 1.0
     },
     {
@@ -52510,7 +52916,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L201",
+      "source_location": "L228",
       "weight": 1.0
     },
     {
@@ -52522,7 +52928,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L204",
+      "source_location": "L231",
       "weight": 1.0
     },
     {
@@ -52534,7 +52940,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L171",
+      "source_location": "L197",
       "weight": 1.0
     },
     {
@@ -52546,7 +52952,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java",
-      "source_location": "L174",
+      "source_location": "L200",
       "weight": 1.0
     },
     {
@@ -52558,7 +52964,19 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L107",
+      "source_location": "L109",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processdecodesignorednoteswithpartandnoteid",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_process",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
+      "source_location": "L309",
       "weight": 1.0
     },
     {
@@ -52570,7 +52988,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L186",
+      "source_location": "L189",
       "weight": 1.0
     },
     {
@@ -52582,7 +53000,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L230",
+      "source_location": "L233",
       "weight": 1.0
     },
     {
@@ -52594,7 +53012,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L272",
+      "source_location": "L276",
       "weight": 1.0
     },
     {
@@ -52606,7 +53024,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L131",
+      "source_location": "L133",
       "weight": 1.0
     },
     {
@@ -52618,7 +53036,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L149",
+      "source_location": "L151",
       "weight": 1.0
     },
     {
@@ -52630,7 +53048,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L208",
+      "source_location": "L211",
       "weight": 1.0
     },
     {
@@ -52642,7 +53060,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L82",
+      "source_location": "L84",
       "weight": 1.0
     },
     {
@@ -52654,7 +53072,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L67",
+      "source_location": "L69",
       "weight": 1.0
     },
     {
@@ -52666,7 +53084,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L55",
+      "source_location": "L57",
       "weight": 1.0
     },
     {
@@ -53018,6 +53436,54 @@
       "weight": 1.0
     },
     {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processbuildsfulltaggedprompt",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_llmpayload",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
+      "source_location": "L107",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processdecodesignorednoteswithpartandnoteid",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_llmpayload",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
+      "source_location": "L297",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processdecodesignorednoteswithpartandnoteid",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_rawignorednote",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
+      "source_location": "L301",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processdecodesnoterefstouuids",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_llmpayload",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
+      "source_location": "L173",
+      "weight": 1.0
+    },
+    {
       "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processdecodesnoterefstouuids",
       "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_extractedtask",
       "relation": "calls",
@@ -53026,7 +53492,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L172",
+      "source_location": "L174",
       "weight": 1.0
     },
     {
@@ -53038,7 +53504,31 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
-      "source_location": "L175",
+      "source_location": "L177",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processincludesageincontextcsv",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_llmpayload",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
+      "source_location": "L231",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_processincludestodaysdateintemporalanchor",
+      "target": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_llmpayload",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "call",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java",
+      "source_location": "L131",
       "weight": 1.0
     },
     {
@@ -55154,5 +55644,5 @@
       "source_file": ".agents/skills/dr-jskill/references/SPRING-BOOT-4.md"
     }
   ],
-  "built_at_commit": "9d20162532ed9fb1da43adc0e219bdb4d6400767"
+  "built_at_commit": "1b01483f596a72a13dcef5f943a7c89fb90b7da7"
 }

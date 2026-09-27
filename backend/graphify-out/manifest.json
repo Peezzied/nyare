@@ -1054,53 +1054,5 @@
     "seen": 1790510219.8108554,
     "ast_hash": "06ea42fa05fb01fda56fb86e200f8609",
     "semantic_hash": ""
-  },
-  ".superpowers/sdd/2026-09-27-planning-rationale-auditing/progress.md": {
-    "mtime": 1790510008.022001,
-    "seen": 1790510219.8109462,
-    "ast_hash": "ab84ddd58abfaaf0b289ec4019eee4f1",
-    "semantic_hash": ""
-  },
-  ".superpowers/sdd/2026-09-27-planning-rationale-auditing/task-1-brief.md": {
-    "mtime": 1790509504.5401394,
-    "seen": 1790510219.8109477,
-    "ast_hash": "94d9bd4bcf74d6689a06c08790a15508",
-    "semantic_hash": ""
-  },
-  ".superpowers/sdd/2026-09-27-planning-rationale-auditing/task-1-report.md": {
-    "mtime": 1790509692.2581131,
-    "seen": 1790510219.8109486,
-    "ast_hash": "29efaa0a19171de41fa7c6dfdc45c087",
-    "semantic_hash": ""
-  },
-  ".superpowers/sdd/2026-09-27-planning-rationale-auditing/task-1-review-package.md": {
-    "mtime": 1790509716.2772222,
-    "seen": 1790510219.8109496,
-    "ast_hash": "dfa2e6db99eb3d882486d927722f8596",
-    "semantic_hash": ""
-  },
-  ".superpowers/sdd/2026-09-27-planning-rationale-auditing/task-2-brief.md": {
-    "mtime": 1790509822.1194453,
-    "seen": 1790510219.810951,
-    "ast_hash": "6b0a0601bb16899c08925a7977f9e97d",
-    "semantic_hash": ""
-  },
-  ".superpowers/sdd/2026-09-27-planning-rationale-auditing/task-2-report.md": {
-    "mtime": 1790509941.2474334,
-    "seen": 1790510219.810952,
-    "ast_hash": "d9fbd19a95c81a2d0d1ee6f6db0a2275",
-    "semantic_hash": ""
-  },
-  ".superpowers/sdd/2026-09-27-planning-rationale-auditing/task-2-review-package.md": {
-    "mtime": 1790509949.246222,
-    "seen": 1790510219.8109531,
-    "ast_hash": "cae90a54384109494c4c720c85677cb7",
-    "semantic_hash": ""
-  },
-  ".superpowers/sdd/2026-09-27-planning-rationale-auditing/task-3-brief.md": {
-    "mtime": 1790510013.7887847,
-    "seen": 1790510219.810954,
-    "ast_hash": "b0debdb37014fd55dba3a96c9f1db0d6",
-    "semantic_hash": ""
   }
 }
