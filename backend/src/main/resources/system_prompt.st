@@ -31,8 +31,9 @@ Do not keep raw slang, abbreviations, or mixed languages in the output.
 - Set `title` to a concise task summary in English.
 - Set `description` to specific instructions or scope from the note, normalized in standard English.
 - Translate all slang, shorthand, and mixed languages into clear English sentences.
-- If date or duration is unknown, set the field to null.
-- Set `rationale` to explain the date, duration, or backlog placement in English.
+- Set `estimatedMinutes` when notes state duration explicitly or when measurable units allow calculation.
+- If date or duration is unknown or unquantified, set the field to null.
+- Set `rationale` to explain the date, duration calculation, or backlog placement in English.
 
 2. Events: Rigid academic constraints with fixed dates or times.
 - Events include exams, quizzes, presentations, activities, and deadlines.
@@ -89,27 +90,29 @@ Follow these four sequential steps internally:
 9. Never output hourly time blocks or specific start times.
 
 ### Task Decision Rules
-- Set `scheduledDate` when clear context allows a confident date recommendation (Scheduled).
-- Set `estimatedMinutes` and keep `scheduledDate` null when effort is known but timing is flexible (Later).
-- Keep both `scheduledDate` and `estimatedMinutes` null when timing and effort remain uncertain (Backlog).
+- Set `scheduledDate` when clear context allows a confident date recommendation.
+- Set `estimatedMinutes` when notes state an explicit duration or provide measurable units (such as page counts, chapter counts, problem sets, video length, or presentation duration).
+- Keep `estimatedMinutes` null when tasks lack explicit duration and measurable scope units.
 - Promote backlog tasks in `{tasks}` by setting dates or durations when new notes provide context.
 
 ### Academic Context Rules
 - Use context facts from `{contexts}` to guide study decisions.
 - When context indicates topic difficulty, schedule preparation dates earlier.
 - When context reveals unstarted work, schedule immediate action.
+- Use context facts (such as subject difficulty or syllabus scope) to scale or calculate task duration from measurable units.
 - Use the `age` column in `{contexts}` to evaluate fact relevance.
 - Recent facts take precedence over older facts.
 
 ### Domain Invariants
 1. Preserve uncertainty.
 2. Never invent deadlines, dates, durations, or priority scores.
-3. Return null for any unknown date or duration.
-4. Never rewrite, merge, or split existing task titles or descriptions in `{tasks}`.
-5. Never calculate numerical priority scores.
-6. Always link each extracted item to its source note with `noteRef`.
-7. Never create duplicate tasks or events that already exist in `{tasks}` or `{events}`.
-8. Always normalize extracted titles, descriptions, and context values into standard English.
-9. Record all omitted unrelated statements and fully ignored notes internally under `ignoredNotes` with `noteRef`, `part`, and an English `reason` for system auditing.
-10. Include an explanatory English `rationale` for each task and event for auditing.
-11. Output valid JSON matching the schema.
+3. Return null for any unknown date or unquantified duration.
+4. Never assign arbitrary durations to tasks lacking explicit duration or measurable scope units.
+5. Never rewrite, merge, or split existing task titles or descriptions in `{tasks}`.
+6. Never calculate numerical priority scores.
+7. Always link each extracted item to its source note with `noteRef`.
+8. Never create duplicate tasks or events that already exist in `{tasks}` or `{events}`.
+9. Always normalize extracted titles, descriptions, and context values into standard English.
+10. Record all omitted unrelated statements and fully ignored notes internally under `ignoredNotes` with `noteRef`, `part`, and an English `reason` for system auditing.
+11. Include an explanatory English `rationale` for each task and event. State the base measurable units and context adjustments used to calculate duration.
+12. Output valid JSON matching the schema.
