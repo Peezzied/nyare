@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
@@ -171,7 +172,7 @@ public class StudyPlannerEngine {
                 .call()
                 .entity(PlannerAuditRecords.LlmPayload.class);
 
-        return raw != null ? decodeReferences(raw, noteCodec) : emptyExtractedData();
+        return raw != null ? decodeReferences(raw, noteCodec, existingTasks) : emptyExtractedData();
     }
 
     // --- Private CSV builders ---
@@ -262,12 +263,29 @@ public class StudyPlannerEngine {
 //                row -> new Object[]{row.imageRef(), row.noteRef(), row.description()});
 //    }
 
-    private ExtractedData decodeReferences(PlannerAuditRecords.LlmPayload raw, StubReferenceCodec<Note> noteCodec) {
+    private ExtractedData decodeReferences(
+            PlannerAuditRecords.LlmPayload raw,
+            StubReferenceCodec<Note> noteCodec,
+            List<Task> existingTasks) {
         List<ExtractedTask> tasks = raw.tasks() != null
                 ? raw.tasks().stream().map(t -> {
-            Note note = noteCodec.decode(t.noteRef());
-            UUID noteId = note != null ? note.getId() : null;
-            return new ExtractedTask(t.noteRef(), noteId, t.title(), t.description(),
+            UUID noteId = null;
+            String noteRef = t.noteRef();
+            if (noteRef != null) {
+                Note note = noteCodec.decode(noteRef);
+                noteId = note != null ? note.getId() : null;
+            }
+            UUID taskId = t.taskId();
+            if (taskId == null && existingTasks != null && t.title() != null) {
+                for (Task existing : existingTasks) {
+                    if (existing.getId() != null && existing.getTitle() != null
+                            && existing.getTitle().trim().equalsIgnoreCase(t.title().trim())) {
+                        taskId = existing.getId();
+                        break;
+                    }
+                }
+            }
+            return new ExtractedTask(noteRef, taskId, noteId, t.title(), t.description(),
                     t.scheduledDate(), t.estimatedMinutes());
         }).toList()
                 : Collections.emptyList();
@@ -310,14 +328,20 @@ public class StudyPlannerEngine {
 
 //    private record ImageRow(String imageRef, String noteRef, String description) {}
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record ExtractedTask(
-            @JsonProperty(value = "noteRef", required = true)
-            @JsonPropertyDescription("Reference identifier of the source note (e.g. n1)")
+            @JsonProperty(value = "noteRef")
+            @JsonPropertyDescription("Reference identifier of the source note (e.g. n1) for new tasks")
             String noteRef,
+
+            @JsonProperty(value = "taskId")
+            @JsonAlias({"task_id", "taskId"})
+            @JsonPropertyDescription("Existing task ID (UUID) for updated existing tasks")
+            UUID taskId,
 
             UUID noteId,
 
-            @JsonProperty(value = "title", required = true)
+            @JsonProperty("title")
             @JsonPropertyDescription("Actionable title of the task")
             @Size(max = 255)
             String title,
@@ -334,16 +358,31 @@ public class StudyPlannerEngine {
             @JsonProperty("estimatedMinutes")
             @JsonPropertyDescription("Estimated duration in minutes, or null if uncertain")
             Integer estimatedMinutes) {
+
+        /**
+         * Returns true if this task updates or promotes an existing task.
+         */
+        public boolean isPromotion() {
+            return taskId != null && noteRef == null && noteId == null;
+        }
+
+        /**
+         * Returns true if this task is newly extracted from notes.
+         */
+        public boolean isNewTask() {
+            return noteRef != null || noteId != null;
+        }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record ExtractedEvent(
-            @JsonProperty(value = "noteRef", required = true)
+            @JsonProperty("noteRef")
             @JsonPropertyDescription("Reference identifier of the source note (e.g. n1)")
             String noteRef,
 
             UUID noteId,
 
-            @JsonProperty(value = "title", required = true)
+            @JsonProperty("title")
             @JsonPropertyDescription("Name of the academic event or deadline")
             @Size(max = 255)
             String title,
@@ -353,19 +392,20 @@ public class StudyPlannerEngine {
             @Size(max = 2048)
             String description,
 
-            @JsonProperty(value = "deadline", required = true)
+            @JsonProperty("deadline")
             @JsonPropertyDescription("Rigid deadline timestamp in ISO-8601 format (YYYY-MM-DDTHH:mm:ss)")
             LocalDateTime deadline) {
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record ExtractedContext(
-            @JsonProperty(value = "noteRef")
+            @JsonProperty("noteRef")
             @JsonPropertyDescription("Reference identifier of the source note (e.g. n1)")
             String noteRef,
 
             UUID noteId,
 
-            @JsonProperty(value = "value")
+            @JsonProperty("value")
             @JsonPropertyDescription("Descriptive fact about course status, coverage, progress, or difficulty and the likes")
             @Size(max = 2048)
             String value) {
