@@ -45,7 +45,7 @@ public class StudyPlannerEngineIntegrationTest {
 
     @SpringBootConfiguration
     @EnableAutoConfiguration
-    @Import({StudyPlannerEngine.class, group.four.nyare.nyare.ai.advisor.NoteAuditAdvisor.class})
+    @Import({StudyPlannerEngine.class, group.four.nyare.nyare.ai.advisor.PlannerAuditAdvisor.class})
     static class TestConfig {}
 
     @Autowired
@@ -53,7 +53,7 @@ public class StudyPlannerEngineIntegrationTest {
 
     @Test
     @DisplayName("Main Integration: processes notes with full academic context and extracts planning entities")
-    void mainIntegrationTest_processesNotesAndExtractsEntities(TestInfo testInfo) throws Exception {
+    void mainIntegrationTest_processesNotesAndExtractsEntities(CapturedOutput output, TestInfo testInfo) throws Exception {
         // given: Student Courses from University Class Schedule
         Course compArch = new Course("Computer Architecture and Organization", "CS Core Course");
         Course ppl = new Course("Principles of Programming Languages", "CS Core Course");
@@ -185,6 +185,10 @@ public class StudyPlannerEngineIntegrationTest {
         // then: Calculus note extracts midterm exam event and topic context
         assertThat(result.events()).anyMatch(e -> note4.getId().equals(e.noteId()));
         assertThat(result.contexts()).anyMatch(c -> note4.getId().equals(c.noteId()));
+
+        // then: PlannerAuditAdvisor intercepted and logged planning decisions for tasks and events
+        assertThat(output.getAll()).contains("[AI AUDIT - TASK PLANNING]");
+        assertThat(output.getAll()).contains("[AI AUDIT - EVENT PLANNING]");
     }
 
     @Test
@@ -211,7 +215,7 @@ public class StudyPlannerEngineIntegrationTest {
         assertThat(result.events()).noneMatch(e -> noteId.equals(e.noteId()));
         assertThat(result.contexts()).noneMatch(c -> noteId.equals(c.noteId()));
 
-        // then: NoteAuditAdvisor intercepted and logged the audit warning with decoded noteId and part
+        // then: PlannerAuditAdvisor intercepted and logged the audit warning with decoded noteId and part
         assertThat(output.getAll()).contains("[AI AUDIT - UNRELATED INFO]");
         assertThat(output.getAll()).contains("NoteId: " + noteId);
         assertThat(output.getAll()).contains("Part:");
@@ -247,10 +251,61 @@ public class StudyPlannerEngineIntegrationTest {
                                                  t.title().toLowerCase().contains("grocery") ||
                                                  t.title().toLowerCase().contains("sabon"));
 
-        // then: NoteAuditAdvisor logged audit warning for the omitted unrelated statements with decoded noteId and part
+        // then: PlannerAuditAdvisor logged audit warning for the omitted unrelated statements with decoded noteId and part
         assertThat(output.getAll()).contains("[AI AUDIT - UNRELATED INFO]");
         assertThat(output.getAll()).contains("NoteId: " + noteId);
         assertThat(output.getAll()).contains("Part:");
+    }
+
+    @Test
+    @DisplayName("process with arts submission and financial quiz notes extracts tasks and events with schedule anchors")
+    void process_withArtsAndFinanceNotes_extractsTasksAndEvents(TestInfo testInfo) throws Exception {
+        // given: Dummy courses and weekly recurring schedules
+        Course artApp = new Course("Art Appreciation", "General Education Course");
+        Schedule artSchedule = new Schedule(artApp, DayOfWeek.WEDNESDAY, LocalTime.of(10, 0), LocalTime.of(13, 0));
+
+        Course finMan = new Course("Financial Management", "Business Course");
+        Schedule finSchedule = new Schedule(finMan, DayOfWeek.FRIDAY, LocalTime.of(13, 30), LocalTime.of(16, 30));
+
+        List<Schedule> schedules = List.of(artSchedule, finSchedule);
+
+        // given: Incoming student journal notes
+        Note artsNote = createNote(artApp, "Canva link later, 4 options, 2 landscape, 2 portrait, own stuff and they choose for arts");
+        Note financeNote = createNote(finMan, "Quiz next week about basic financial concepts, di naman nagturo un but ok, self search on compound interest, ordinary annuity");
+
+        List<Note> notes = List.of(artsNote, financeNote);
+
+        // when
+        StudyPlannerEngine.ExtractedData result = engine.process(
+                notes,
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList(),
+                schedules);
+
+        // observe & export
+        reportObservation(testInfo.getDisplayName(), result);
+
+        // then: Extracted entities present
+        assertThat(result).isNotNull();
+        assertThat(result.tasks()).isNotEmpty();
+        assertThat(result.events()).isNotEmpty();
+        assertThat(result.contexts()).isNotEmpty();
+
+        // then: Decoded UUID references match source notes
+        List<UUID> noteIds = List.of(artsNote.getId(), financeNote.getId());
+        assertThat(result.tasks()).allMatch(t -> t.noteId() != null && noteIds.contains(t.noteId()));
+        assertThat(result.events()).allMatch(e -> e.noteId() != null && noteIds.contains(e.noteId()));
+        assertThat(result.contexts()).allMatch(c -> c.noteId() != null && noteIds.contains(c.noteId()));
+
+        // then: Arts note extracts task
+        assertThat(result.tasks()).anyMatch(t -> artsNote.getId().equals(t.noteId()));
+
+        // then: Finance note extracts quiz event, context, and implied study tasks
+        assertThat(result.events()).anyMatch(e -> financeNote.getId().equals(e.noteId()) &&
+                (e.title().toLowerCase().contains("quiz") || e.title().toLowerCase().contains("financ")));
+        assertThat(result.contexts()).anyMatch(c -> financeNote.getId().equals(c.noteId()));
+        assertThat(result.tasks()).anyMatch(t -> financeNote.getId().equals(t.noteId()));
     }
 
     private static Note createNote(Course course, String text) {

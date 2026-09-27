@@ -131,7 +131,7 @@
   "129": "4.2 List Notes by Course",
   "130": "4.4 Full Update of Note",
   "131": "4.6 Delete Note",
-  "132": "StudyPlannerController.java",
+  "132": "StudyPlannerServiceImpl.java",
   "133": "3. Error Handling (RFC 7807 Problem Details)",
   "134": "4. Endpoints Specification",
   "135": "ASD-STE100 Skill — Simplified Technical English for Agent Output",
@@ -164,9 +164,9 @@
   "162": "Dr. JSkill and Spring Docs MCP Rule",
   "163": "Prompt Engineering for Nyare",
   "164": "Course",
-  "165": "StudyPlannerServiceImpl.java",
+  "165": ".process",
   "166": "GlobalExceptionHandler.java",
-  "167": "ProcessSummaryResponse",
+  "167": "AcademicEventRequest",
   "168": "org.springframework.boot.test.context.SpringBootTest",
   "169": "NoteAuditAdvisor",
   "170": "Nyare Future Considerations",
@@ -174,5 +174,6 @@
   "172": "Prompt Optimization for Nyare",
   "173": "Few-Shot Learning Patterns for Nyare",
   "174": "Override",
-  "175": "Override"
+  "175": "Override",
+  "176": "Generating Test Notes for Nyare"
 }

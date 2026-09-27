@@ -63,3 +63,5 @@ replay_pid*
 /docs/temp/*
 /docs/superpowers/plans/*
 /.env
+
+opencode.json
