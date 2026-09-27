@@ -35,7 +35,9 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -201,7 +203,7 @@ public class StudyPlannerEngineIntegrationTest {
     @DisplayName("process with course-irrelevant outlier note ignores note and logs audit warning")
     void process_withOutlierNote_ignoresNoteAndLogsAudit(CapturedOutput output, TestInfo testInfo) throws Exception {
         // given: Outlier non-academic note assigned to OOP course
-        Course oop = oopCourse();
+        Course oop = new Course("Object-Oriented Programming", "CS Core Course");
         String noteText = "bumili ako ng shampoo, sabon, tsaka kape sa grocery kanina tapos nanood ako ng anime buong gabi";
         Note outlierNote = createNote(oop, noteText);
         UUID noteId = outlierNote.getId();
@@ -222,7 +224,7 @@ public class StudyPlannerEngineIntegrationTest {
     @DisplayName("process with mixed note extracts valid entities and logs audit warning for unrelated content")
     void process_withMixedNote_extractsEntitiesAndAuditsUnrelated(CapturedOutput output, TestInfo testInfo) throws Exception {
         // given: Mixed note with valid academic task and unrelated personal errand
-        Course oop = oopCourse();
+        Course oop = new Course("Object-Oriented Programming", "CS Core Course");
         String mixedText = "Kailangan ko tapusin yung UML class diagram asap bago mag-Tuesday lab. " +
                 "Tapos nag-kape ako sa Starbucks at bumili ng sabon at grocery kanina.";
         Note mixedNote = createNote(oop, mixedText);
@@ -288,8 +290,60 @@ public class StudyPlannerEngineIntegrationTest {
         assertThat(result.tasks()).anyMatch(t -> financeNote.getId().equals(t.noteId()));
     }
 
-    private static Course oopCourse() {
-        return new Course("Object-Oriented Programming", "CS Core Course");
+    @Test
+    @DisplayName("process promotes backlog tasks to scheduled or later when new notes provide context")
+    void process_promotesBacklogTasks_whenNewNotesProvideContext(CapturedOutput output, TestInfo testInfo) throws Exception {
+        // given: Course with recurring schedule
+        Course dataStructures = new Course("Data Structures", "CS Core Course");
+        List<Schedule> schedules = List.of(
+                new Schedule(dataStructures, DayOfWeek.TUESDAY, LocalTime.of(13, 30), LocalTime.of(16, 30))
+        );
+
+        // given: Existing BACKLOG tasks (no scheduledDate, no duration)
+        Task backlogTask1 = new Task(dataStructures, "Review recursion and tree traversal");
+        backlogTask1.setStatus(TaskStatus.TODO);
+        ReflectionTestUtils.setField(backlogTask1, "id", UUID.randomUUID());
+
+        Task backlogTask2 = new Task(dataStructures, "Practice linked list implementation");
+        backlogTask2.setStatus(TaskStatus.TODO);
+        ReflectionTestUtils.setField(backlogTask2, "id", UUID.randomUUID());
+
+        Task backlogTask3 = new Task(dataStructures, "Complete problem set 3");
+        backlogTask3.setStatus(TaskStatus.TODO);
+        ReflectionTestUtils.setField(backlogTask3, "id", UUID.randomUUID());
+
+        List<Task> existingTasks = List.of(backlogTask1, backlogTask2, backlogTask3);
+        Set<UUID> backlogTaskIds = existingTasks.stream().map(Task::getId).collect(Collectors.toSet());
+
+        // given: New rushed student notes providing context for promotion
+        String noteText = "grabe hirap sa recursion topic kanina sa lab. " +
+                "sir announced quiz next tue coverage tree traversal at binary search tree. " +
+                "kailangan ko tapusin yung problem set 3 bago thursday lab session. " +
+                "sabi ni prof review din linked list implementation at stack queue para sa midterm exam, maglaan daw mga 45 mins para mag practice nito.";
+        Note note = createNote(dataStructures, noteText);
+
+        List<Note> notes = List.of(note);
+
+        // when
+        StudyPlannerEngine.ExtractedData result = engine.process(
+                notes, existingTasks, Collections.emptyList(), Collections.emptyList(), schedules);
+
+        // observe & export
+        reportObservation(testInfo.getDisplayName(), result);
+
+        // then: At least one backlog task promoted to SCHEDULED (scheduledDate != null, taskId matches existing)
+        boolean promotedToScheduled = result.tasks().stream()
+                .anyMatch(t -> t.taskId() != null && backlogTaskIds.contains(t.taskId()) && t.scheduledDate() != null);
+        assertThat(promotedToScheduled).as("At least one BACKLOG task should be promoted to SCHEDULED").isTrue();
+
+        // then: At least one backlog task promoted to LATER (duration != null, scheduledDate == null, taskId matches existing)
+        boolean promotedToLater = result.tasks().stream()
+                .anyMatch(t -> t.taskId() != null && backlogTaskIds.contains(t.taskId()) && t.estimatedMinutes() != null && t.scheduledDate() == null);
+        assertThat(promotedToLater).as("At least one BACKLOG task should be promoted to LATER").isTrue();
+
+        // then: PlannerAuditAdvisor logged promotion decisions with TaskId
+        assertThat(output.getAll()).contains("[AI AUDIT - TASK PROMOTION]");
+        assertThat(output.getAll()).contains("TaskId: ");
     }
 
     private StudyPlannerEngine.ExtractedData processWithEmptyState(List<Note> notes) {

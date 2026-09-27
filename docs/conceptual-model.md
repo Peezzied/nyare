@@ -137,12 +137,15 @@ Academic Term (Conceptual Grouping)
 
 ---
 
-## 4. Preserving Uncertainty & Incomplete Information
+## 4. Preserving Uncertainty & Grounded Duration Estimation
 
-A foundational tenet of Nyare is that **missing information must remain uncertain**:
-1. **Never Invent Data**: The AI must never invent deadlines, dates, durations, or priority metrics.
+A foundational tenet of Nyare is that **missing information must remain uncertain unless grounded**:
+1. **Never Invent Data**: The AI must never invent deadlines, dates, or priority metrics.
 2. **Three Information States**:
-   - **Known**: Stated explicitly in notes or syllabus (e.g., *"Exam is on Nov 12"*).
-   - **Inferred**: Reasonably deduced without fabrication (e.g., *"Ma'am said submit before the weekend"* -> weekend boundary).
-   - **Unknown**: Absent from notes (e.g., duration unknown, deadline unspecified).
+   - **Known**: Stated explicitly in notes or syllabus (e.g., *"Exam is on Nov 12"*, *"Allot 45 mins"*).
+   - **Inferred / Estimated**: Reasonably deduced without arbitrary guessing:
+     - Date anchors resolved from recurring schedules and deadlines.
+     - Commonsense baseline duration for standard setup tasks (e.g., IDE or software installation).
+     - Context-backed rough duration for study and review tasks based on topic scope or student struggles.
+   - **Unknown**: Absent and ungrounded (e.g., unspecified deadline, abstract task with zero context -> `duration = null`).
 3. **Graceful Handling**: Unknown properties remain null or unassigned. Tasks with high uncertainty are categorized under **Backlog** or **Later**.

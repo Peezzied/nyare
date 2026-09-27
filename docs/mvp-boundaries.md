@@ -65,14 +65,14 @@ To maintain simplicity, predictability, and development velocity, Nyare enforces
 
 ---
 
-## 6. Strict Uncertainty Preservation (Zero Hallucination)
+## 6. Grounded Uncertainty Preservation
 
-* **Boundary**: Incomplete information must remain uncertain.
-* **What We Do**: Retain `null` or unassigned fields when deadlines, durations, or details are absent. Place ambiguous tasks in **Backlog** or **Later**.
+* **Boundary**: Incomplete information must remain uncertain unless grounded by commonsense baselines or academic context.
+* **What We Do**: Retain `null` or unassigned fields when deadlines or durations lack grounding. Devise rough duration estimates for standard setup tasks or when backed by academic context facts.
 * **What We Do NOT Do**:
   - Do NOT hallucinate or guess a deadline if one was not stated or reasonably inferred.
-  - Do NOT invent estimated durations or priorities just to fit a task into a calendar slot.
-* **Rationale**: Trust in an academic planner is broken immediately if it presents fabricated deadlines or false constraints.
+  - Do NOT invent arbitrary durations for complex tasks lacking context or measurable units.
+* **Rationale**: Trust in an academic planner is broken immediately if it presents fabricated deadlines or ungrounded constraints.
 
 ---
 

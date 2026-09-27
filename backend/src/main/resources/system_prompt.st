@@ -34,8 +34,11 @@ Do not keep raw slang, abbreviations, or mixed languages in the output.
 - Set `title` to a concise task summary in English.
 - Set `description` to specific instructions or scope from the note, normalized in standard English.
 - Translate all slang, shorthand, and mixed languages into clear English sentences.
-- Set `estimatedMinutes` when notes state duration explicitly or when measurable units allow calculation.
-- If date or duration is unknown or unquantified, set the field to null.
+- Set `estimatedMinutes` when:
+  - Notes state duration explicitly or provide measurable units.
+  - The task is a standard setup task with a commonsense baseline (e.g., software or IDE installation).
+  - Supporting academic context facts provide sufficient scope or difficulty details to devise a rough estimate.
+- If a task lacks explicit duration, commonsense baselines, and academic context, set `estimatedMinutes` to null.
 - Set `rationale` to explain the date, duration calculation, or backlog placement in English.
 
 2. Events: Rigid academic constraints with fixed dates or times.
@@ -95,10 +98,6 @@ Follow these four sequential steps internally:
 9. Never output hourly time blocks or specific start times.
 </planning_rules>
 
-### Task Decision Rules
-- Set `scheduledDate` when clear context allows a confident date recommendation.
-- Set `estimatedMinutes` when notes state an explicit duration or provide measurable units (such as page counts, chapter counts, problem sets, video length, or presentation duration).
-- Keep `estimatedMinutes` null when tasks lack explicit duration and measurable scope units.
 <matching_rules>
 When new notes provide context for an existing task in `{tasks}`:
 - Match by `title` (semantic similarity) and `course` (exact match).
@@ -113,6 +112,11 @@ When new notes provide context for an existing task in `{tasks}`:
 
 <decision_rules>
 Task Decision Rules:
+- Set `scheduledDate` only when notes or upcoming events provide a concrete date anchor.
+- If no date anchor or deadline exists, leave `scheduledDate` as null.
+- When a task has an estimated duration but lacks a date anchor, keep `scheduledDate` as null (LATER category).
+- Set `estimatedMinutes` when notes state an explicit duration, provide measurable units, or specify standard setup tasks with commonsense baselines.
+- Keep `estimatedMinutes` null when tasks lack explicit duration, commonsense baselines, and academic context.
 - Promote backlog tasks in `{tasks}` by setting dates or durations when new notes provide context.
 - For promoted existing tasks, copy `task_id` from `{tasks}` into `taskId` and set `noteRef` to null.
 - For new tasks extracted from notes, include `noteRef` and set `taskId` to null.
@@ -121,7 +125,7 @@ Academic Context Rules:
 - Use context facts from `{contexts}` to guide study decisions.
 - When context indicates topic difficulty, schedule preparation dates earlier.
 - When context reveals unstarted work, schedule immediate action.
-- Use context facts (such as subject difficulty or syllabus scope) to scale or calculate task duration from measurable units.
+- Use context facts (topic difficulty, student struggles, covered material) to devise or scale rough duration estimates for study tasks.
 - Use the `age` column in `{contexts}` to evaluate fact relevance.
 - Recent facts take precedence over older facts.
 </decision_rules>
@@ -191,10 +195,9 @@ Output new task:
 
 <domain_invariants>
 1. Preserve uncertainty.
-2. Never invent deadlines, dates, durations, or priority scores.
-3. Return null for any unknown date or unquantified duration.
-4. Never assign arbitrary durations to tasks lacking explicit duration or measurable scope units.
 2. Never invent deadlines, dates, or priority scores.
+3. Return null for any unknown date, or for any duration that lacks context, measurable units, or commonsense baselines.
+4. Never assign arbitrary durations to abstract or specialized tasks lacking explicit duration, commonsense setup baselines, or supporting academic context.
 5. Never rewrite, merge, or split existing task titles or descriptions in `{tasks}`.
 6. Never calculate numerical priority scores.
 7. Link new tasks to source note with `noteRef`. Link promoted existing tasks with `taskId` from `{tasks}`.

@@ -172,7 +172,7 @@ class StudyPlannerEngineTest {
 
         PlannerAuditRecords.LlmPayload rawResponse = new PlannerAuditRecords.LlmPayload(
                 List.of(new PlannerAuditRecords.RawTask(
-                        "n1", "Finish homework", "Pages 10-20",
+                        "n1", null, "Finish homework", "Pages 10-20",
                         LocalDate.now().plusDays(1), 45, "Preparation task scheduled before due date")),
                 List.of(new PlannerAuditRecords.RawEvent(
                         "n2", "CS101 Exam", "Chapters 1-4",
@@ -310,5 +310,23 @@ class StudyPlannerEngineTest {
 
         assertThat(result).isNotNull();
         assertThat(result.tasks()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("ExtractedTask correctly distinguishes promotion from new task")
+    void extractedTaskDistinguishesPromotionFromNewTask() {
+        UUID taskId = UUID.randomUUID();
+        StudyPlannerEngine.ExtractedTask promotedTask = new StudyPlannerEngine.ExtractedTask(
+                null, taskId, null, "Existing Task", "Description", LocalDate.now(), 45);
+
+        assertThat(promotedTask.isPromotion()).isTrue();
+        assertThat(promotedTask.isNewTask()).isFalse();
+
+        UUID noteId = UUID.randomUUID();
+        StudyPlannerEngine.ExtractedTask newTask = new StudyPlannerEngine.ExtractedTask(
+                "n1", null, noteId, "New Task", "Description", LocalDate.now(), 30);
+
+        assertThat(newTask.isPromotion()).isFalse();
+        assertThat(newTask.isNewTask()).isTrue();
     }
 }
