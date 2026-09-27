@@ -1,5 +1,7 @@
 package group.four.nyare.nyare.ai;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import jakarta.validation.constraints.Size;
@@ -20,16 +22,17 @@ public final class PlannerAuditRecords {
     private PlannerAuditRecords() {
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record LlmPayload(
-            @JsonProperty(value = "tasks", required = true)
+            @JsonProperty("tasks")
             @JsonPropertyDescription("Extracted actionable tasks")
             List<RawTask> tasks,
 
-            @JsonProperty(value = "events", required = true)
+            @JsonProperty("events")
             @JsonPropertyDescription("Extracted rigid academic events and deadlines")
             List<RawEvent> events,
 
-            @JsonProperty(value = "contexts", required = true)
+            @JsonProperty("contexts")
             @JsonPropertyDescription("Extracted academic context facts")
             List<StudyPlannerEngine.ExtractedContext> contexts,
 
@@ -38,12 +41,18 @@ public final class PlannerAuditRecords {
             List<RawIgnoredNote> ignoredNotes) {
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record RawTask(
-            @JsonProperty(value = "noteRef", required = true)
-            @JsonPropertyDescription("Reference identifier of the source note (e.g. n1)")
+            @JsonProperty("noteRef")
+            @JsonPropertyDescription("Reference identifier of the source note (e.g. n1) for new tasks")
             String noteRef,
 
-            @JsonProperty(value = "title", required = true)
+            @JsonProperty("taskId")
+            @JsonAlias({"task_id", "taskId"})
+            @JsonPropertyDescription("Existing task ID (UUID) for updated existing tasks")
+            UUID taskId,
+
+            @JsonProperty("title")
             @JsonPropertyDescription("Actionable title of the task")
             @Size(max = 255)
             String title,
@@ -61,17 +70,18 @@ public final class PlannerAuditRecords {
             @JsonPropertyDescription("Estimated duration in minutes, or null if uncertain")
             Integer estimatedMinutes,
 
-            @JsonProperty(value = "rationale", required = true)
+            @JsonProperty("rationale")
             @JsonPropertyDescription("Explanation of the planning decision for task timing, duration, or backlog placement")
             String rationale) {
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record RawEvent(
-            @JsonProperty(value = "noteRef", required = true)
+            @JsonProperty("noteRef")
             @JsonPropertyDescription("Reference identifier of the source note (e.g. n1)")
             String noteRef,
 
-            @JsonProperty(value = "title", required = true)
+            @JsonProperty("title")
             @JsonPropertyDescription("Name of the academic event or deadline")
             @Size(max = 255)
             String title,
@@ -81,25 +91,26 @@ public final class PlannerAuditRecords {
             @Size(max = 2048)
             String description,
 
-            @JsonProperty(value = "deadline", required = true)
+            @JsonProperty("deadline")
             @JsonPropertyDescription("Rigid deadline timestamp in ISO-8601 format (YYYY-MM-DDTHH:mm:ss)")
             LocalDateTime deadline,
 
-            @JsonProperty(value = "rationale", required = true)
+            @JsonProperty("rationale")
             @JsonPropertyDescription("Explanation of how the deadline timestamp was derived from context and schedule")
             String rationale) {
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record RawIgnoredNote(
-            @JsonProperty(value = "noteRef", required = true)
+            @JsonProperty("noteRef")
             @JsonPropertyDescription("Reference identifier of the source note (e.g. n1)")
             String noteRef,
 
-            @JsonProperty(value = "part", required = true)
+            @JsonProperty("part")
             @JsonPropertyDescription("The exact statement, text, or entire note that induced the audit")
             String part,
 
-            @JsonProperty(value = "reason", required = true)
+            @JsonProperty("reason")
             @JsonPropertyDescription("Explanation of why this part is unrelated or why the entire note was ignored")
             String reason) {
     }

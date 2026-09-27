@@ -81,8 +81,6 @@ public class PlannerAuditAdvisor extends SimpleLoggerAdvisor {
                     continue;
                 }
 
-                String noteRef = item.hasNonNull("noteRef") ? item.get("noteRef").asText() : "unknown";
-                UUID noteId = noteIdMap != null ? noteIdMap.get(noteRef) : null;
                 String title = item.hasNonNull("title") ? item.get("title").asText() : "";
                 String scheduledDate = item.hasNonNull("scheduledDate") && !item.get("scheduledDate").asText().isBlank()
                         ? item.get("scheduledDate").asText()
@@ -91,10 +89,30 @@ public class PlannerAuditAdvisor extends SimpleLoggerAdvisor {
                         ? item.get("estimatedMinutes").asText()
                         : "none";
 
+                String taskId = extractTaskId(item);
+                if (taskId != null) {
+                    log.info("[AI AUDIT - TASK PROMOTION] TaskId: {} | Title: \"{}\" | Scheduled: {} | Duration: {} | Rationale: {}",
+                            taskId, title, scheduledDate, duration, rationale);
+                    continue;
+                }
+
+                String noteRef = item.hasNonNull("noteRef") ? item.get("noteRef").asText() : "unknown";
+                UUID noteId = noteIdMap != null ? noteIdMap.get(noteRef) : null;
+
                 log.info("[AI AUDIT - TASK PLANNING] NoteId: {} | Title: \"{}\" | Scheduled: {} | Duration: {} | Rationale: {}",
                         noteId != null ? noteId : noteRef, title, scheduledDate, duration, rationale);
             }
         }
+    }
+
+    private String extractTaskId(JsonNode item) {
+        if (item.hasNonNull("taskId") && !item.get("taskId").asText().isBlank()) {
+            return item.get("taskId").asText();
+        }
+        if (item.hasNonNull("task_id") && !item.get("task_id").asText().isBlank()) {
+            return item.get("task_id").asText();
+        }
+        return null;
     }
 
     private void auditEvents(JsonNode root, Map<String, UUID> noteIdMap) {
