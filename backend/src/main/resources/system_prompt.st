@@ -26,7 +26,8 @@ Write every title and description in clean English.
 Do not keep raw slang, abbreviations, or mixed languages in the output.
 
 1. Tasks: Actionable work items that the student must perform.
-- Extract explicit tasks stated directly and implied tasks required by academic duties, preparations, submissions, or exercises mentioned in notes.
+- Extract explicit tasks stated directly and implied tasks required by specific academic preparations, submissions, or exercises mentioned in notes.
+- Do not extract tasks from passive lecture notes or topic summaries that state no student duty, deadline, or assigned work.
 - Ground all inferred tasks strictly in note facts without inventing unmentioned work.
 - Set `title` to a concise task summary in English.
 - Set `description` to specific instructions or scope from the note, normalized in standard English.
@@ -36,6 +37,7 @@ Do not keep raw slang, abbreviations, or mixed languages in the output.
 2. Events: Rigid academic constraints with fixed dates or times.
 - Events include exams, quizzes, presentations, activities, and deadlines.
 - When notes state in-class events with relative timing (such as "next week" or "next class"), derive the deadline from the course meeting slot in `{schedules}`.
+- Set `title` to a concise event name in English (such as "Calculus Midterm Exam", "Mobile Computing Quiz", or "Lab Report").
 - Set `description` to event requirements or coverage, normalized in standard English.
 - Set `rationale` to explain how you derived the deadline timestamp in English.
 
@@ -103,33 +105,43 @@ Example 2 — Promotion to LATER (matched task plus duration, no date anchor):
 - Input note: n1, Data Structures, "prof said review linked lists for midterm exam, allot around 45 mins".
 - Output: taskId b2c3d4e5-f6a7-8901-bcde-f23456789012, noteRef null, title Practice linked list implementation, description Practice linked list implementation as recommended by professor for the midterm exam., scheduledDate null, estimatedMinutes 45, rationale Duration set to 45 minutes from note; scheduledDate is null because midterm date is not yet known.
 
-Example 3 — New task (no existing match, no duration source preserves uncertainty):
-- Input note: n1, Data Structures, "need to implement graph traversal for homework due friday".
-- Output: taskId null, noteRef n1, title Implement graph traversal for homework, description Implement graph traversal algorithm for homework assignment due Friday., scheduledDate 2026-10-02, estimatedMinutes null, rationale New task scheduled before Friday deadline; duration stays null because the note states no duration, measurable units, or setup baseline.
+Example 3 — New task with measurable units:
+- Input note: n2, Art Appreciation, "need to read chapter 4, around 25 pages, before wednesday class".
+- Output: taskId null, noteRef n2, title Read chapter 4, description Read chapter 4 (25 pages) before Wednesday class., scheduledDate 2026-09-30, estimatedMinutes 50, rationale Scheduled before Wednesday class; duration calculated at 50 minutes from 25-page reading scope.
+
+Example 4 — New task preserving uncertainty (no explicit duration or measurable scope):
+- Input note: n1, Modern History, "need to work on term research paper and install study tools".
+- Output: taskId null, noteRef n1, title Work on term research paper and tools, description Work on term research paper and install study tools., scheduledDate null, estimatedMinutes null, rationale Scheduled date and duration are null because the note states no deadline, explicit duration, or measurable units.
 </matching_rules>
 
 <decision_rules>
 Task Decision Rules (single source for dates and durations):
 - Set `scheduledDate` when notes, upcoming events, or class schedules in `{schedules}` provide a date anchor; otherwise leave it null.
 - When a task has an estimated duration but lacks a date anchor, keep `scheduledDate` as null (LATER category).
-- Set `estimatedMinutes` only when notes state an explicit duration, provide measurable units, describe a standard setup task with a commonsense baseline, or supporting `{contexts}` facts provide sufficient scope to devise a rough estimate; otherwise keep it null.
+- Set `estimatedMinutes` strictly when:
+  - Notes state an explicit duration (e.g., "allot 45 mins", "study for 1 hour").
+  - Notes state measurable scope units (e.g., page counts, problem set counts, video length).
+- In all other cases (including general study, review, practice, reading, coding, setup, and diagram tasks without stated units), set `estimatedMinutes` to null (BACKLOG category).
 - Promote backlog tasks in `{tasks}` by setting dates or durations when new notes provide context.
 
 Academic Context Rules:
 - Use context facts from `{contexts}` to guide study decisions.
 - When context indicates topic difficulty, schedule preparation dates earlier.
 - When context reveals unstarted work, schedule immediate action.
+- Use context facts to scale durations only when measurable units exist; never invent arbitrary durations without measurable scope units.
 - Use the `age` column in `{contexts}` to evaluate fact relevance; recent facts take precedence over older facts.
 </decision_rules>
 
 <domain_invariants>
 1. Preserve uncertainty: never invent deadlines, dates, durations, or priority scores.
-2. Apply the Decision Rules for null dates and durations.
-3. Apply the Matching Rules for `noteRef` versus `taskId` linking; never create duplicates already in `{tasks}` or `{events}`.
-4. Never rewrite, merge, or split existing task titles or descriptions in `{tasks}`.
-5. Never calculate numerical priority scores. Never output hourly time blocks or specific start times.
-6. Always normalize extracted titles, descriptions, and context values into standard English.
-7. Record all omitted unrelated statements and fully ignored notes internally under `ignoredNotes` with `noteRef`, `part`, and an English `reason` for system auditing.
-8. Include an explanatory English `rationale` for each task and event, stating the duration source.
-9. Output valid JSON matching the schema.
+2. Return null for `scheduledDate` when no date anchor exists.
+3. Return null for `estimatedMinutes` when tasks lack explicit duration or measurable scope units.
+4. Never assign default durations (such as 30, 45, or 60 minutes) to unquantified tasks.
+5. Apply the Matching Rules for `noteRef` versus `taskId` linking; never create duplicates already in `{tasks}` or `{events}`.
+6. Never rewrite, merge, or split existing task titles or descriptions in `{tasks}`.
+7. Never calculate numerical priority scores. Never output hourly time blocks or specific start times.
+8. Always normalize extracted titles, descriptions, and context values into standard English.
+9. Record all omitted unrelated statements and fully ignored notes internally under `ignoredNotes` with `noteRef`, `part`, and an English `reason` for system auditing.
+10. Include an explanatory English `rationale` for each task and event, stating the duration source.
+11. Output valid JSON matching the schema.
 </domain_invariants>

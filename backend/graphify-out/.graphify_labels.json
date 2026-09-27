@@ -11,6 +11,7 @@
   "9": "ImageMetadata",
   "10": "Nyare Notes Management Service API Specification",
   "11": "Architect Craft",
+  "12": "LlmPayload",
   "13": "NyareApplication",
   "14": "gradlew",
   "15": "Layer Isolation Invariant",
@@ -64,7 +65,7 @@
   "63": "Dr. JSkill and Spring Docs MCP Rule",
   "64": "StudyPlannerEngineTest.java",
   "65": "Prompt Engineering for Nyare",
-  "66": "StudyPlannerEngine.java",
+  "66": "PlannerAuditAdvisor",
   "67": "Prompt Guidelines",
   "68": "Prompt Optimization for Nyare",
   "69": "PlanCategory",
@@ -72,6 +73,10 @@
   "71": ".addCorsMappings_registersExpectedConfiguration",
   "72": "Course",
   "73": "org.junit.jupiter.api.Test",
+  "74": "StudyPlannerEngine.java",
+  "75": "StubReferenceCodec",
   "76": "Generating Test Notes for Nyare",
-  "82": "StudyPlannerEngineIntegrationTest.java"
+  "77": ".parse",
+  "78": ".process",
+  "79": "org.springframework.boot.test.context.SpringBootTest"
 }

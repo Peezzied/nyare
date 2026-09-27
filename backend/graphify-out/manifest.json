@@ -924,9 +924,9 @@
     "semantic_hash": ""
   },
   ".agents/skills/man-spring/SKILL.md": {
-    "mtime": 1789832313.0714467,
-    "seen": 1789833383.0386257,
-    "ast_hash": "5aa05e85a456989421bec8499eae3b0f",
+    "mtime": 1790533096.2073278,
+    "seen": 1790533923.4868937,
+    "ast_hash": "6993688a3b7a6811c536df268fc2ff54",
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/repository/AcademicContextRepository.java": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java": {
-    "mtime": 1790530389.1166632,
-    "seen": 1790530776.5324936,
-    "ast_hash": "a1dcb6df5f62d51d5670b549f742a6be",
+    "mtime": 1790533120.0335891,
+    "seen": 1790533923.4866269,
+    "ast_hash": "ff1752e0091717344582715c21b2f4bc",
     "semantic_hash": ""
   },
   "src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java": {
@@ -1014,9 +1014,9 @@
     "semantic_hash": ""
   },
   ".agents/skills/prompt-engineering/references/few-shot-patterns.md": {
-    "mtime": 1790420380.3439898,
-    "seen": 1790421471.9363084,
-    "ast_hash": "566f3aacaa98ec162f4e59e822699927",
+    "mtime": 1790532616.192167,
+    "seen": 1790533923.486909,
+    "ast_hash": "71abf3882c78f707541459b106153785",
     "semantic_hash": ""
   },
   ".agents/skills/prompt-engineering/references/optimization-frameworks.md": {
@@ -1026,9 +1026,9 @@
     "semantic_hash": ""
   },
   ".agents/skills/prompt-engineering/references/system-prompt-design.md": {
-    "mtime": 1790530765.5140388,
-    "seen": 1790530776.5325916,
-    "ast_hash": "206fceccf2f988073eebf27c6ea51ff4",
+    "mtime": 1790533912.7985265,
+    "seen": 1790533923.4869196,
+    "ast_hash": "ce6078d1b7c24f12548f4bdd089dd1a3",
     "semantic_hash": ""
   },
   "src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java": {
@@ -1044,9 +1044,9 @@
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/ai/PlannerAuditRecords.java": {
-    "mtime": 1790524824.2583115,
-    "seen": 1790525483.5703743,
-    "ast_hash": "304060b88cca6677d71881b21993fb53",
+    "mtime": 1790533070.9253407,
+    "seen": 1790533923.4866183,
+    "ast_hash": "786c4d01378b08d7024945620b4387e2",
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/ai/advisor/PlannerAuditAdvisor.java": {

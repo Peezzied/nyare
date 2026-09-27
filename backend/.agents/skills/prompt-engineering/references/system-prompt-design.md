@@ -34,3 +34,8 @@ Do not ask the model to generate start times or hourly time-blocks.
 When notes describe in-class academic events with relative expressions (such as "quiz next week" or "activity next meeting"):
 - Anchor the event deadline to the recurring class schedule slot in `{schedules}`.
 - Derive task preparation dates to precede the anchored event.
+
+### 5. Duration Estimation Bounds (Option 1)
+- Assign durations only when notes state explicit time budgets or measurable scope units (such as page counts, problem counts, video length).
+- Never assign arbitrary durations to unquantified tasks.
+- Return null for unquantified tasks to preserve the Backlog state in Nyare's Tri-State planning model.

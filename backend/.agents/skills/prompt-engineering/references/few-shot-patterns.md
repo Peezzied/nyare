@@ -65,3 +65,25 @@ Extracted Plan Task:
   "estimatedMinutes": 90
 }
 ```
+
+## 4. Cross-Disciplinary Baseline vs. Uncertainty Preservation
+
+Few-shot examples must represent diverse academic disciplines and avoid software-only bias:
+
+```text
+Input Note (Digital Workspace Onboarding):
+"Need to create an account and configure the online chemistry lab portal before Tuesday."
+
+Extracted Output:
+{
+  "tasks": [
+    {
+      "noteRef": "n1",
+      "title": "Configure online chemistry lab portal",
+      "description": "Create an account and configure the online chemistry lab portal before Tuesday",
+      "scheduledDate": "2026-09-29",
+      "estimatedMinutes": 30
+    }
+  ]
+}
+```

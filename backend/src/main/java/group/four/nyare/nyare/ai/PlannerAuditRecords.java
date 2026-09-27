@@ -24,19 +24,19 @@ public final class PlannerAuditRecords {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record LlmPayload(
-            @JsonProperty("tasks")
+            @JsonProperty(value = "tasks", required = true)
             @JsonPropertyDescription("Extracted actionable tasks")
             List<RawTask> tasks,
 
-            @JsonProperty("events")
+            @JsonProperty(value = "events", required = true)
             @JsonPropertyDescription("Extracted rigid academic events and deadlines")
             List<RawEvent> events,
 
-            @JsonProperty("contexts")
+            @JsonProperty(value = "contexts", required = true)
             @JsonPropertyDescription("Extracted academic context facts")
             List<StudyPlannerEngine.ExtractedContext> contexts,
 
-            @JsonProperty("ignoredNotes")
+            @JsonProperty(value = "ignoredNotes", required = true)
             @JsonPropertyDescription("Internal list of omitted unrelated statements or ignored outlier notes for system auditing")
             List<RawIgnoredNote> ignoredNotes) {
     }
@@ -52,12 +52,12 @@ public final class PlannerAuditRecords {
             @JsonPropertyDescription("Existing task ID (UUID) for updated existing tasks")
             UUID taskId,
 
-            @JsonProperty("title")
+            @JsonProperty(value = "title", required = true)
             @JsonPropertyDescription("Actionable title of the task")
             @Size(max = 255)
             String title,
 
-            @JsonProperty("description")
+            @JsonProperty(value = "description", required = true)
             @JsonPropertyDescription("Details or instructions for the task")
             @Size(max = 2048)
             String description,
@@ -70,47 +70,47 @@ public final class PlannerAuditRecords {
             @JsonPropertyDescription("Estimated duration in minutes, or null if uncertain")
             Integer estimatedMinutes,
 
-            @JsonProperty("rationale")
+            @JsonProperty(value = "rationale", required = true)
             @JsonPropertyDescription("Explanation of the planning decision for task timing, duration, or backlog placement")
             String rationale) {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record RawEvent(
-            @JsonProperty("noteRef")
+            @JsonProperty(value = "noteRef", required = true)
             @JsonPropertyDescription("Reference identifier of the source note (e.g. n1)")
             String noteRef,
 
-            @JsonProperty("title")
+            @JsonProperty(value = "title", required = true)
             @JsonPropertyDescription("Name of the academic event or deadline")
             @Size(max = 255)
             String title,
 
-            @JsonProperty("description")
+            @JsonProperty(value = "description", required = true)
             @JsonPropertyDescription("Event details, coverage or instructions")
             @Size(max = 2048)
             String description,
 
-            @JsonProperty("deadline")
+            @JsonProperty(value = "deadline", required = true)
             @JsonPropertyDescription("Rigid deadline timestamp in ISO-8601 format (YYYY-MM-DDTHH:mm:ss)")
             LocalDateTime deadline,
 
-            @JsonProperty("rationale")
+            @JsonProperty(value = "rationale", required = true)
             @JsonPropertyDescription("Explanation of how the deadline timestamp was derived from context and schedule")
             String rationale) {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record RawIgnoredNote(
-            @JsonProperty("noteRef")
+            @JsonProperty(value = "noteRef", required = true)
             @JsonPropertyDescription("Reference identifier of the source note (e.g. n1)")
             String noteRef,
 
-            @JsonProperty("part")
+            @JsonProperty(value = "part", required = true)
             @JsonPropertyDescription("The exact statement, text, or entire note that induced the audit")
             String part,
 
-            @JsonProperty("reason")
+            @JsonProperty(value = "reason", required = true)
             @JsonPropertyDescription("Explanation of why this part is unrelated or why the entire note was ignored")
             String reason) {
     }
