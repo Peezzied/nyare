@@ -61,6 +61,9 @@ public class Note {
     @LastModifiedDate
     private Instant updatedAt;
 
+    @Column(name = "last_processed_at")
+    private Instant lastProcessedAt;
+
     /**
      * Protected default constructor for JPA proxies.
      */
@@ -123,6 +126,14 @@ public class Note {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Instant getLastProcessedAt() {
+        return lastProcessedAt;
+    }
+
+    public void setLastProcessedAt(Instant lastProcessedAt) {
+        this.lastProcessedAt = lastProcessedAt;
     }
 
     @Override
