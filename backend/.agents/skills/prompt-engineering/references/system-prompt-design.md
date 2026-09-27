@@ -29,3 +29,8 @@ Never instruct the model to guess or assign default deadlines.
 ### 3. High-Level Planning
 Nyare schedules tasks to calendar dates.
 Do not ask the model to generate start times or hourly time-blocks.
+
+### 4. Schedule-Anchored Event Resolution
+When notes describe in-class academic events with relative expressions (such as "quiz next week" or "activity next meeting"):
+- Anchor the event deadline to the recurring class schedule slot in `{schedules}`.
+- Derive task preparation dates to precede the anchored event.
