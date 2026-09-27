@@ -32,10 +32,12 @@ Do not keep raw slang, abbreviations, or mixed languages in the output.
 - Set `description` to specific instructions or scope from the note, normalized in standard English.
 - Translate all slang, shorthand, and mixed languages into clear English sentences.
 - If date or duration is unknown, set the field to null.
+- Set `rationale` to explain the date, duration, or backlog placement in English.
 
 2. Events: Rigid academic constraints with fixed dates or times.
 - Events include exams, quizzes, presentations, activities, and deadlines.
 - Set `description` to event requirements or coverage, normalized in standard English.
+- Set `rationale` to explain how you derived the deadline timestamp in English.
 
 3. Contexts: Temporal descriptive facts about academic status, scope, or progress.
 - Contexts provide background planning information.
@@ -109,4 +111,5 @@ Follow these four sequential steps internally:
 7. Never create duplicate tasks or events that already exist in `{tasks}` or `{events}`.
 8. Always normalize extracted titles, descriptions, and context values into standard English.
 9. Record all omitted unrelated statements and fully ignored notes internally under `ignoredNotes` with `noteRef`, `part`, and an English `reason` for system auditing.
-10. Output valid JSON matching the schema.
+10. Include an explanatory English `rationale` for each task and event for auditing.
+11. Output valid JSON matching the schema.

@@ -67,7 +67,7 @@ public class StudyPlannerEngine {
     @Autowired
     public StudyPlannerEngine(ChatClient.Builder chatClientBuilder,
                               @Value("classpath:system_prompt.st") Resource systemPromptResource,
-                              @Autowired(required = false) group.four.nyare.nyare.ai.advisor.NoteAuditAdvisor noteAuditAdvisor) {
+                              @Autowired(required = false) group.four.nyare.nyare.ai.advisor.PlannerAuditAdvisor plannerAuditAdvisor) {
         SystemPromptTemplate systemTemplate = new SystemPromptTemplate(systemPromptResource);
 
         Function<String, String> tagWrap = (tag) -> {
@@ -86,8 +86,8 @@ public class StudyPlannerEngine {
         ));
 
         ChatClient.Builder builder = chatClientBuilder.defaultSystem(renderedSystemPrompt);
-        if (noteAuditAdvisor != null) {
-            builder.defaultAdvisors(noteAuditAdvisor);
+        if (plannerAuditAdvisor != null) {
+            builder.defaultAdvisors(plannerAuditAdvisor);
         }
 
         this.chatClient = builder.build();
@@ -166,10 +166,10 @@ public class StudyPlannerEngine {
 
         Prompt prompt = builder.buildPrompt();
 
-        LlmPayload raw = chatClient.prompt(prompt)
+        PlannerAuditRecords.LlmPayload raw = chatClient.prompt(prompt)
                 .advisors(a -> a.param("noteIdMap", noteIdMap))
                 .call()
-                .entity(LlmPayload.class);
+                .entity(PlannerAuditRecords.LlmPayload.class);
 
         return raw != null ? decodeReferences(raw, noteCodec) : emptyExtractedData();
     }
@@ -262,7 +262,7 @@ public class StudyPlannerEngine {
 //                row -> new Object[]{row.imageRef(), row.noteRef(), row.description()});
 //    }
 
-    private ExtractedData decodeReferences(LlmPayload raw, StubReferenceCodec<Note> noteCodec) {
+    private ExtractedData decodeReferences(PlannerAuditRecords.LlmPayload raw, StubReferenceCodec<Note> noteCodec) {
         List<ExtractedTask> tasks = raw.tasks() != null
                 ? raw.tasks().stream().map(t -> {
             Note note = noteCodec.decode(t.noteRef());
@@ -288,11 +288,11 @@ public class StudyPlannerEngine {
         }).toList()
                 : Collections.emptyList();
 
-        List<InternalIgnoredNote> ignoredNotes = raw.ignoredNotes() != null
+        List<PlannerAuditRecords.InternalIgnoredNote> ignoredNotes = raw.ignoredNotes() != null
                 ? raw.ignoredNotes().stream().map(i -> {
             Note note = noteCodec.decode(i.noteRef());
             UUID noteId = note != null ? note.getId() : null;
-            return new InternalIgnoredNote(noteId, i.part(), i.reason());
+            return new PlannerAuditRecords.InternalIgnoredNote(noteId, i.part(), i.reason());
         }).toList()
                 : Collections.emptyList();
 
@@ -384,43 +384,5 @@ public class StudyPlannerEngine {
             @JsonProperty(value = "contexts", required = true)
             @JsonPropertyDescription("Extracted academic context facts")
             List<ExtractedContext> contexts) {
-    }
-
-    record LlmPayload(
-            @JsonProperty(value = "tasks", required = true)
-            @JsonPropertyDescription("Extracted actionable tasks")
-            List<ExtractedTask> tasks,
-
-            @JsonProperty(value = "events", required = true)
-            @JsonPropertyDescription("Extracted rigid academic events and deadlines")
-            List<ExtractedEvent> events,
-
-            @JsonProperty(value = "contexts", required = true)
-            @JsonPropertyDescription("Extracted academic context facts")
-            List<ExtractedContext> contexts,
-
-            @JsonProperty("ignoredNotes")
-            @JsonPropertyDescription("Internal list of omitted unrelated statements or ignored outlier notes for system auditing")
-            List<RawIgnoredNote> ignoredNotes) {
-    }
-
-    record RawIgnoredNote(
-            @JsonProperty(value = "noteRef", required = true)
-            @JsonPropertyDescription("Reference identifier of the source note (e.g. n1)")
-            String noteRef,
-
-            @JsonProperty(value = "part", required = true)
-            @JsonPropertyDescription("The exact statement, text, or entire note that induced the audit")
-            String part,
-
-            @JsonProperty(value = "reason", required = true)
-            @JsonPropertyDescription("Explanation of why this part is unrelated or why the entire note was ignored")
-            String reason) {
-    }
-
-    public record InternalIgnoredNote(
-            UUID noteId,
-            String part,
-            String reason) {
     }
 }

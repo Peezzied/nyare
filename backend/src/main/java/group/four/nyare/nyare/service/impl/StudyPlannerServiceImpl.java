@@ -30,9 +30,7 @@ import java.util.stream.Collectors;
  * Implementation of {@link StudyPlannerService} for processing daily notes into academic entities.
  */
 @Service
-public class StudyPlannerServiceImpl
-//        implements StudyPlannerService
-{
+public class StudyPlannerServiceImpl implements StudyPlannerService {
 
     private final CourseRepository courseRepository;
     private final NoteRepository noteRepository;
@@ -57,7 +55,11 @@ public class StudyPlannerServiceImpl
         this.transactionTemplate = transactionTemplate;
     }
 
-//    @Override
+    @Override
+    public ProcessSummaryResponse processTodayNotes() {
+        // ponytail: integration between StudyPlannerEngine and StudyPlannerServiceImpl handled in upcoming plan
+        return new ProcessSummaryResponse(0, 0, 0);
+    }
 //    public ProcessSummaryResponse processTodayNotes() {
 //        LocalDate today = LocalDate.now();
 //        List<Note> todayNotes = new ArrayList<>();

@@ -103,8 +103,8 @@ class StudyPlannerEngineTest {
 
         ArgumentCaptor<Prompt> promptCaptor = ArgumentCaptor.forClass(Prompt.class);
         when(chatClient.prompt(promptCaptor.capture()).advisors(any(Consumer.class)).call()
-                .entity(StudyPlannerEngine.LlmPayload.class))
-                .thenReturn(new StudyPlannerEngine.LlmPayload(List.of(), List.of(), List.of(), List.of()));
+                .entity(PlannerAuditRecords.LlmPayload.class))
+                .thenReturn(new PlannerAuditRecords.LlmPayload(List.of(), List.of(), List.of(), List.of()));
 
         engine.process(List.of(note), List.of(task), List.of(), List.of(), List.of(schedule));
 
@@ -127,8 +127,8 @@ class StudyPlannerEngineTest {
 
         ArgumentCaptor<Prompt> promptCaptor = ArgumentCaptor.forClass(Prompt.class);
         when(chatClient.prompt(promptCaptor.capture()).advisors(any(Consumer.class)).call()
-                .entity(StudyPlannerEngine.LlmPayload.class))
-                .thenReturn(new StudyPlannerEngine.LlmPayload(List.of(), List.of(), List.of(), List.of()));
+                .entity(PlannerAuditRecords.LlmPayload.class))
+                .thenReturn(new PlannerAuditRecords.LlmPayload(List.of(), List.of(), List.of(), List.of()));
 
         engine.process(List.of(note), List.of(), List.of(), List.of(), List.of());
 
@@ -144,7 +144,7 @@ class StudyPlannerEngineTest {
 
         ArgumentCaptor<Prompt> promptCaptor = ArgumentCaptor.forClass(Prompt.class);
         when(chatClient.prompt(promptCaptor.capture()).advisors(any(Consumer.class)).call()
-                .entity(StudyPlannerEngine.LlmPayload.class))
+                .entity(PlannerAuditRecords.LlmPayload.class))
                 .thenReturn(null);
 
         StudyPlannerEngine.ExtractedData result =
@@ -170,19 +170,19 @@ class StudyPlannerEngineTest {
         ReflectionTestUtils.setField(note1, "id", id1);
         ReflectionTestUtils.setField(note2, "id", id2);
 
-        StudyPlannerEngine.LlmPayload rawResponse = new StudyPlannerEngine.LlmPayload(
-                List.of(new StudyPlannerEngine.ExtractedTask(
-                        "n1", null, "Finish homework", "Pages 10-20",
-                        LocalDate.now().plusDays(1), 45)),
-                List.of(new StudyPlannerEngine.ExtractedEvent(
-                        "n2", null, "CS101 Exam", "Chapters 1-4",
-                        LocalDateTime.now().plusDays(3))),
+        PlannerAuditRecords.LlmPayload rawResponse = new PlannerAuditRecords.LlmPayload(
+                List.of(new PlannerAuditRecords.RawTask(
+                        "n1", "Finish homework", "Pages 10-20",
+                        LocalDate.now().plusDays(1), 45, "Preparation task scheduled before due date")),
+                List.of(new PlannerAuditRecords.RawEvent(
+                        "n2", "CS101 Exam", "Chapters 1-4",
+                        LocalDateTime.now().plusDays(3), "Exam event derived from note")),
                 Collections.emptyList(),
                 Collections.emptyList()
         );
 
         when(chatClient.prompt(any(Prompt.class)).advisors(any(Consumer.class)).call()
-                .entity(StudyPlannerEngine.LlmPayload.class))
+                .entity(PlannerAuditRecords.LlmPayload.class))
                 .thenReturn(rawResponse);
 
         StudyPlannerEngine.ExtractedData result =
@@ -204,7 +204,7 @@ class StudyPlannerEngineTest {
         Note note = new Note(course, new NoteContent("Some content", null));
 
         when(chatClient.prompt(any(Prompt.class)).advisors(any(Consumer.class)).call()
-                .entity(StudyPlannerEngine.LlmPayload.class))
+                .entity(PlannerAuditRecords.LlmPayload.class))
                 .thenReturn(null);
 
         StudyPlannerEngine.ExtractedData result =
@@ -227,8 +227,8 @@ class StudyPlannerEngineTest {
 
         ArgumentCaptor<Prompt> promptCaptor = ArgumentCaptor.forClass(Prompt.class);
         when(chatClient.prompt(promptCaptor.capture()).advisors(any(Consumer.class)).call()
-                .entity(StudyPlannerEngine.LlmPayload.class))
-                .thenReturn(new StudyPlannerEngine.LlmPayload(List.of(), List.of(), List.of(), List.of()));
+                .entity(PlannerAuditRecords.LlmPayload.class))
+                .thenReturn(new PlannerAuditRecords.LlmPayload(List.of(), List.of(), List.of(), List.of()));
 
         engine.process(List.of(note), List.of(), List.of(), List.of(context), List.of());
 
@@ -269,7 +269,7 @@ class StudyPlannerEngineTest {
 
         ArgumentCaptor<Prompt> promptCaptor = ArgumentCaptor.forClass(Prompt.class);
         when(chatClient.prompt(promptCaptor.capture()).advisors(any(Consumer.class)).call()
-                .entity(StudyPlannerEngine.LlmPayload.class))
+                .entity(PlannerAuditRecords.LlmPayload.class))
                 .thenReturn(null);
 
         StudyPlannerEngine.ExtractedData result =
@@ -294,15 +294,15 @@ class StudyPlannerEngineTest {
         UUID noteId = UUID.randomUUID();
         ReflectionTestUtils.setField(note, "id", noteId);
 
-        StudyPlannerEngine.LlmPayload rawResponse = new StudyPlannerEngine.LlmPayload(
+        PlannerAuditRecords.LlmPayload rawResponse = new PlannerAuditRecords.LlmPayload(
                 Collections.emptyList(),
                 Collections.emptyList(),
                 Collections.emptyList(),
-                List.of(new StudyPlannerEngine.RawIgnoredNote("n1", "Grocery shopping errand", "Unrelated errand"))
+                List.of(new PlannerAuditRecords.RawIgnoredNote("n1", "Grocery shopping errand", "Unrelated errand"))
         );
 
         when(chatClient.prompt(any(Prompt.class)).advisors(any(Consumer.class)).call()
-                .entity(StudyPlannerEngine.LlmPayload.class))
+                .entity(PlannerAuditRecords.LlmPayload.class))
                 .thenReturn(rawResponse);
 
         StudyPlannerEngine.ExtractedData result =
