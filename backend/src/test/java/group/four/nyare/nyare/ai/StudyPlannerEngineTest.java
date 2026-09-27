@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.ai;
 
+import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.model.AcademicContext;
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.ImageMetadata;
@@ -33,6 +34,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -310,6 +312,28 @@ class StudyPlannerEngineTest {
 
         assertThat(result).isNotNull();
         assertThat(result.tasks()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("process throws BadRequestException when AI call exceeds configured timeout")
+    void process_whenAiCallExceedsTimeout_throwsBadRequestException() {
+        // given
+        Course course = new Course("CS101", "Computer Science");
+        Note note = new Note(course, new NoteContent("Read chapter 2", null));
+        StudyPlannerEngine impatientEngine = new StudyPlannerEngine(chatClient, 200);
+
+        when(chatClient.prompt(any(Prompt.class)).advisors(any(Consumer.class)).call()
+                .entity(PlannerAuditRecords.LlmPayload.class))
+                .thenAnswer(invocation -> {
+                    Thread.sleep(3000);
+                    return null;
+                });
+
+        // when & then
+        assertThatThrownBy(() -> impatientEngine.process(
+                List.of(note), List.of(), List.of(), List.of(), List.of()))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("timed out");
     }
 
     @Test

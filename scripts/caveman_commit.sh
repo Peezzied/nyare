@@ -20,8 +20,4 @@ printf 'Generating %s commit message(s) with opencode...\n\n' "${commit_count}" 
 output=$(opencode run "/caveman-commit generate ${commit_count} commits; include body messages; outline the affected files for each" \
   --auto --no-replay --model opencode/muse-spark-1.3-contributor-free 2>/dev/null)
 
-# Use Perl in slurp mode (-0777) to apply a greedy regex across the whole output.
-# Captures from the first conventional-commit header (\w+\(.+\):) through the
-# last "```" block (trailing .* is greedy), then strips all triple backticks
-# from the extracted message.
-perl -0777 -ne 'if (/(\w+\(.+?\):.*)```/s) { $m = $1; $m =~ s/```//g; print $m }' <<< "$output"
+perl -0777 -ne 'if (/(```.*)/s) { print $1 }' <<< "$output"

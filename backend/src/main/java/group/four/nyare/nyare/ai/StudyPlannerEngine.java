@@ -3,6 +3,7 @@ package group.four.nyare.nyare.ai;
 import group.four.nyare.nyare.ai.parser.CsvParser;
 import group.four.nyare.nyare.ai.parser.StubReferenceCodec;
 import group.four.nyare.nyare.ai.prompt.TaggedPromptBuilder;
+import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.model.AcademicContext;
 import group.four.nyare.nyare.model.AcademicEvent;
 import group.four.nyare.nyare.model.Note;
@@ -28,6 +29,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
 /**
@@ -63,12 +69,20 @@ public class StudyPlannerEngine {
     // FIXME temporary only. change in the future
     private static final int PLANNING_SCOPE_DAYS = 14;
 
+    /**
+     * Default guard for a single model round-trip. Kept below the SSE timeout
+     * so slow-model failures surface as SSE error events instead of a dropped stream.
+     */
+    private static final long DEFAULT_AI_TIMEOUT_MS = 50_000;
+
     private final ChatClient chatClient;
+    private final long aiTimeoutMs;
 
     @Autowired
     public StudyPlannerEngine(ChatClient.Builder chatClientBuilder,
                               @Value("classpath:system_prompt.st") Resource systemPromptResource,
-                              @Autowired(required = false) group.four.nyare.nyare.ai.advisor.PlannerAuditAdvisor plannerAuditAdvisor) {
+                              @Autowired(required = false) group.four.nyare.nyare.ai.advisor.PlannerAuditAdvisor plannerAuditAdvisor,
+                              @Value("${nyare.study-planner.ai-timeout-ms:50000}") long aiTimeoutMs) {
         SystemPromptTemplate systemTemplate = new SystemPromptTemplate(systemPromptResource);
 
         Function<String, String> tagWrap = (tag) -> {
@@ -92,10 +106,16 @@ public class StudyPlannerEngine {
         }
 
         this.chatClient = builder.build();
+        this.aiTimeoutMs = aiTimeoutMs;
     }
 
     StudyPlannerEngine(ChatClient chatClient) {
+        this(chatClient, DEFAULT_AI_TIMEOUT_MS);
+    }
+
+    StudyPlannerEngine(ChatClient chatClient, long aiTimeoutMs) {
         this.chatClient = chatClient;
+        this.aiTimeoutMs = aiTimeoutMs;
     }
 
     /**
@@ -167,12 +187,58 @@ public class StudyPlannerEngine {
 
         Prompt prompt = builder.buildPrompt();
 
-        PlannerAuditRecords.LlmPayload raw = chatClient.prompt(prompt)
-                .advisors(a -> a.param("noteIdMap", noteIdMap))
-                .call()
-                .entity(PlannerAuditRecords.LlmPayload.class);
+        PlannerAuditRecords.LlmPayload raw = callWithTimeout(noteIdMap, prompt);
 
         return raw != null ? decodeReferences(raw, noteCodec, existingTasks) : emptyExtractedData();
+    }
+
+    /**
+     * Executes the single model round-trip guarded by the configurable AI timeout.
+     *
+     * <p>Spring AI {@code ChatClient} exposes no per-request timeout (the underlying
+     * Google GenAI SDK client is not a Spring {@code RestClient}, so
+     * {@code spring.http.client.*} timeouts do not apply). The blocking call is
+     * therefore raced against {@code aiTimeoutMs}. A non-positive timeout disables
+     * the guard and calls the model directly.
+     *
+     * @param noteIdMap stub reference to note ID map forwarded to the audit advisor
+     * @param prompt    fully tagged extraction prompt
+     * @return the extracted LLM payload, possibly {@code null}
+     * @throws BadRequestException when the model does not respond within the timeout
+     */
+    private PlannerAuditRecords.LlmPayload callWithTimeout(Map<String, UUID> noteIdMap, Prompt prompt) {
+        if (aiTimeoutMs <= 0) {
+            return chatClient.prompt(prompt)
+                    .advisors(a -> a.param("noteIdMap", noteIdMap))
+                    .call()
+                    .entity(PlannerAuditRecords.LlmPayload.class);
+        }
+
+        CompletableFuture<PlannerAuditRecords.LlmPayload> future = CompletableFuture.supplyAsync(() -> chatClient.prompt(prompt)
+                .advisors(a -> a.param("noteIdMap", noteIdMap))
+                .call()
+                .entity(PlannerAuditRecords.LlmPayload.class));
+
+        try {
+            return future.orTimeout(aiTimeoutMs, TimeUnit.MILLISECONDS).join();
+        } catch (CompletionException ex) {
+            future.cancel(true);
+            Throwable cause = ex.getCause();
+            if (cause instanceof TimeoutException) {
+                throw new BadRequestException("AI model request timed out after " + aiTimeoutMs + " ms", cause);
+            }
+            if (cause instanceof RuntimeException runtime) {
+                throw runtime;
+            }
+            if (cause instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            throw new BadRequestException(cause != null ? cause.getMessage() : "AI model request failed", cause);
+        } catch (CancellationException ex) {
+            future.cancel(true);
+            Thread.currentThread().interrupt();
+            throw new BadRequestException("AI model request timed out after " + aiTimeoutMs + " ms", ex);
+        }
     }
 
     // --- Private CSV builders ---
