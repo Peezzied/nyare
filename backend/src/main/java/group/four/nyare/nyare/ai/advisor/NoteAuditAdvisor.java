@@ -10,6 +10,9 @@ import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.client.advisor.api.CallAdvisorChain;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+import java.util.UUID;
+
 /**
  * Spring AI Advisor that intercepts LLM responses, extracts virtual internal
  * ignored/outlier note decisions, and records audit logs.
@@ -35,16 +38,24 @@ public class NoteAuditAdvisor extends SimpleLoggerAdvisor {
 
         try {
             if (response.chatResponse() != null && response.chatResponse().getResult() != null) {
-                response.chatResponse().getResult();
                 String content = response.chatResponse().getResult().getOutput().getText();
                 if (content != null && content.contains("ignoredNotes")) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, UUID> noteIdMap = request.context() != null
+                            ? (Map<String, UUID>) request.context().get("noteIdMap")
+                            : null;
+
                     JsonNode root = objectMapper.readTree(content);
                     JsonNode ignoredNotes = root.get("ignoredNotes");
                     if (ignoredNotes != null && ignoredNotes.isArray()) {
                         for (JsonNode item : ignoredNotes) {
                             String noteRef = item.has("noteRef") ? item.get("noteRef").asText() : "unknown";
+                            String part = item.has("part") ? item.get("part").asText() : "";
                             String reason = item.has("reason") ? item.get("reason").asText() : "No reason provided";
-                            log.warn("[AI AUDIT - UNRELATED INFO] NoteRef: {} | Reason: {}", noteRef, reason);
+                            UUID noteId = noteIdMap != null ? noteIdMap.get(noteRef) : null;
+
+                            log.warn("[AI AUDIT - UNRELATED INFO] NoteId: {} | Part: \"{}\" | Reason: {}",
+                                    noteId != null ? noteId : noteRef, part, reason);
                         }
                     }
                 }

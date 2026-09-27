@@ -159,9 +159,15 @@ public class StudyPlannerEngine {
                 .tagIfPresent(Tags.CONTEXTS, buildContextsCsv(existingContexts, today))
                 .tagIfPresent(Tags.SCHEDULES, buildSchedulesCsv(schedules));
 
+        Map<String, UUID> noteIdMap = new HashMap<>();
+        for (Note note : validNotes) {
+            noteIdMap.put(noteCodec.encode(note), note.getId());
+        }
+
         Prompt prompt = builder.buildPrompt();
 
         LlmPayload raw = chatClient.prompt(prompt)
+                .advisors(a -> a.param("noteIdMap", noteIdMap))
                 .call()
                 .entity(LlmPayload.class);
 
@@ -282,6 +288,14 @@ public class StudyPlannerEngine {
         }).toList()
                 : Collections.emptyList();
 
+        List<InternalIgnoredNote> ignoredNotes = raw.ignoredNotes() != null
+                ? raw.ignoredNotes().stream().map(i -> {
+            Note note = noteCodec.decode(i.noteRef());
+            UUID noteId = note != null ? note.getId() : null;
+            return new InternalIgnoredNote(noteId, i.part(), i.reason());
+        }).toList()
+                : Collections.emptyList();
+
         return new ExtractedData(tasks, events, contexts);
     }
 
@@ -372,7 +386,7 @@ public class StudyPlannerEngine {
             List<ExtractedContext> contexts) {
     }
 
-    private record LlmPayload(
+    record LlmPayload(
             @JsonProperty(value = "tasks", required = true)
             @JsonPropertyDescription("Extracted actionable tasks")
             List<ExtractedTask> tasks,
@@ -387,16 +401,26 @@ public class StudyPlannerEngine {
 
             @JsonProperty("ignoredNotes")
             @JsonPropertyDescription("Internal list of omitted unrelated statements or ignored outlier notes for system auditing")
-            List<InternalIgnoredNote> ignoredNotes) {
+            List<RawIgnoredNote> ignoredNotes) {
     }
 
-    private record InternalIgnoredNote(
+    record RawIgnoredNote(
             @JsonProperty(value = "noteRef", required = true)
             @JsonPropertyDescription("Reference identifier of the source note (e.g. n1)")
             String noteRef,
 
+            @JsonProperty(value = "part", required = true)
+            @JsonPropertyDescription("The exact statement, text, or entire note that induced the audit")
+            String part,
+
             @JsonProperty(value = "reason", required = true)
-            @JsonPropertyDescription("Explanation of the omitted unrelated information or why the entire note was ignored")
+            @JsonPropertyDescription("Explanation of why this part is unrelated or why the entire note was ignored")
+            String reason) {
+    }
+
+    public record InternalIgnoredNote(
+            UUID noteId,
+            String part,
             String reason) {
     }
 }

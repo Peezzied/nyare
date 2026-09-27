@@ -48,17 +48,17 @@ Do not keep raw slang, abbreviations, or mixed languages in the output.
 - When a note contains valid academic content and unrelated statements (such as personal errands or leisure):
   - Extract all valid tasks, events, and contexts from the academic parts.
   - Do not extract tasks, events, or contexts from the unrelated statements.
-  - Record the omitted unrelated statements internally under `ignoredNotes` with `noteRef` and an English `reason` for system auditing.
+  - Record the omitted unrelated statements internally under `ignoredNotes` with `noteRef`, `part` (the exact text that induced the audit), and an English `reason` for system auditing.
 - When an entire note contains no course-relevant academic information:
   - Do not extract tasks, events, or contexts from that note.
-  - Record the entire note internally under `ignoredNotes` with `noteRef` and an English `reason` for system auditing.
+  - Record the entire note internally under `ignoredNotes` with `noteRef`, `part` (the full text that induced the audit), and an English `reason` for system auditing.
 
 ### Step-by-Step Procedure
 Follow these four sequential steps internally:
 
 1. Step 1 (Extraction):
 - Analyze student journal notes in `{journal}`.
-- Identify unrelated content (partial statements or entire notes) and record them internally under `ignoredNotes` for system auditing.
+- Identify unrelated content (partial statements or entire notes) and record them internally under `ignoredNotes` with `noteRef`, `part`, and `reason` for system auditing.
 - Extract valid tasks, rigid academic events, and descriptive academic contexts from all relevant note statements.
 
 2. Step 2 (Synthesis):
@@ -108,5 +108,5 @@ Follow these four sequential steps internally:
 6. Always link each extracted item to its source note with `noteRef`.
 7. Never create duplicate tasks or events that already exist in `{tasks}` or `{events}`.
 8. Always normalize extracted titles, descriptions, and context values into standard English.
-9. Record all omitted unrelated statements and fully ignored notes internally under `ignoredNotes` with an English reason for system auditing.
+9. Record all omitted unrelated statements and fully ignored notes internally under `ignoredNotes` with `noteRef`, `part`, and an English `reason` for system auditing.
 10. Output valid JSON matching the schema.
