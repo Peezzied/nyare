@@ -19,8 +19,6 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import jakarta.validation.constraints.Size;
 
 import java.time.Instant;
@@ -396,33 +394,21 @@ public class StudyPlannerEngine {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record ExtractedTask(
-            @JsonProperty(value = "noteRef")
-            @JsonPropertyDescription("Reference identifier of the source note (e.g. n1) for new tasks")
             String noteRef,
 
-            @JsonProperty(value = "taskId")
             @JsonAlias({"task_id", "taskId"})
-            @JsonPropertyDescription("Existing task ID (UUID) for updated existing tasks")
             UUID taskId,
 
             UUID noteId,
 
-            @JsonProperty("title")
-            @JsonPropertyDescription("Actionable title of the task")
             @Size(max = 255)
             String title,
 
-            @JsonProperty("description")
-            @JsonPropertyDescription("Details or instructions for the task")
             @Size(max = 2048)
             String description,
 
-            @JsonProperty("scheduledDate")
-            @JsonPropertyDescription("Target study date in YYYY-MM-DD format, or null if uncertain")
             LocalDate scheduledDate,
 
-            @JsonProperty("estimatedMinutes")
-            @JsonPropertyDescription("Estimated duration in minutes, or null if uncertain")
             Integer estimatedMinutes) {
 
         /**
@@ -442,53 +428,35 @@ public class StudyPlannerEngine {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record ExtractedEvent(
-            @JsonProperty("noteRef")
-            @JsonPropertyDescription("Reference identifier of the source note (e.g. n1)")
             String noteRef,
 
             UUID noteId,
 
-            @JsonProperty("title")
-            @JsonPropertyDescription("Name of the academic event or deadline")
             @Size(max = 255)
             String title,
 
-            @JsonProperty("description")
-            @JsonPropertyDescription("Event details, coverage or instructions")
             @Size(max = 2048)
             String description,
 
-            @JsonProperty("deadline")
-            @JsonPropertyDescription("Rigid deadline timestamp in ISO-8601 format (YYYY-MM-DDTHH:mm:ss)")
             LocalDateTime deadline) {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record ExtractedContext(
-            @JsonProperty("noteRef")
-            @JsonPropertyDescription("Reference identifier of the source note (e.g. n1)")
             String noteRef,
 
             UUID noteId,
 
-            @JsonProperty("value")
-            @JsonPropertyDescription("Descriptive fact about course status, coverage, progress, or difficulty and the likes")
             @Size(max = 2048)
             String value) {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record ExtractedData(
-            @JsonProperty(value = "tasks", required = true)
-            @JsonPropertyDescription("Extracted actionable tasks")
             List<ExtractedTask> tasks,
 
-            @JsonProperty(value = "events", required = true)
-            @JsonPropertyDescription("Extracted rigid academic events and deadlines")
             List<ExtractedEvent> events,
 
-            @JsonProperty(value = "contexts", required = true)
-            @JsonPropertyDescription("Extracted academic context facts")
             List<ExtractedContext> contexts) {
     }
 }
