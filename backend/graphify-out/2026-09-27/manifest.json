@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java": {
-    "mtime": 1790440434.05934,
-    "seen": 1790440481.7967591,
-    "ast_hash": "2640d0a612c714ddd64449a90e14436d",
+    "mtime": 1790441412.7743394,
+    "seen": 1790441555.7806933,
+    "ast_hash": "0f736bf64978f9bf20047a71d2983c4f",
     "semantic_hash": ""
   },
   "src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java": {
@@ -1008,9 +1008,9 @@
     "semantic_hash": ""
   },
   ".agents/skills/prompt-engineering/SKILL.md": {
-    "mtime": 1790431567.933908,
-    "seen": 1790431627.4416504,
-    "ast_hash": "8f1d4b4f0a2a2578e3c7e1bd423622cb",
+    "mtime": 1790442732.3931634,
+    "seen": 1790442742.3947117,
+    "ast_hash": "d7ecfb1acb58afb04876e67d5588a1a3",
     "semantic_hash": ""
   },
   ".agents/skills/prompt-engineering/references/few-shot-patterns.md": {
@@ -1032,15 +1032,21 @@
     "semantic_hash": ""
   },
   "src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java": {
-    "mtime": 1790440316.4015365,
-    "seen": 1790440481.7968273,
-    "ast_hash": "3effdd545f373702eb371299944a527d",
+    "mtime": 1790503170.2580962,
+    "seen": 1790503260.9770198,
+    "ast_hash": "7cbc28f0be25b143abe647e46b1f4358",
     "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java": {
-    "mtime": 1790440387.3094144,
-    "seen": 1790440481.796761,
-    "ast_hash": "35b0e1ff41123e8b1a43a27489aae5fb",
+    "mtime": 1790441625.0696473,
+    "seen": 1790442742.3946311,
+    "ast_hash": "2061fbd4b0c0794ee6dca9051c5caae1",
+    "semantic_hash": ""
+  },
+  ".agents/skills/generating-test-notes/SKILL.md": {
+    "mtime": 1790442714.7589502,
+    "seen": 1790442742.3947074,
+    "ast_hash": "5ba80ffe8e088041b2adfe58bcd96de9",
     "semantic_hash": ""
   }
 }

@@ -48,8 +48,10 @@ Nyare uses a structured prompt format:
 - Verify prompt templates manually against domain constraints, token limits, and ASD-STE100 rules.
 - Use `graphify update .` to track codebase graph changes after modifying prompts.
 
-## Reference Guides
+## Related Skills & References
 
+- **REQUIRED SUB-SKILL:** Consult `man-spring` for Spring AI model integration and chat options.
+- **RELATED SKILL:** Consult `generating-test-notes` when authoring student journal note test fixtures.
 - `references/system-prompt-design.md`: System prompt structure and domain constraints.
 - `references/few-shot-patterns.md`: Note extraction and uncertainty preservation examples.
 - `references/optimization-frameworks.md`: Token efficiency metrics and Spring AI prompt tests.

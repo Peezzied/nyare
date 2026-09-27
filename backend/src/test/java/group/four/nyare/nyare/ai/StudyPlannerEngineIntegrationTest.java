@@ -123,7 +123,14 @@ public class StudyPlannerEngineIntegrationTest {
         Note note2 = createNote(mobComp, "intro pa lang sa android studio setup and activity lifecycle sa a-211 pero shookt kami biglang announced quiz sa thursday 10:30am coverage yung lifecycle callbacks. " +
                 "need ko mag-install ng android studio tsaka sdk sa laptop bago mag-next lab session para di nganga");
 
-        List<Note> notes = List.of(note1, note2);
+        Note note3 = createNote(ppl, "hirap na hirap ako sa lambda calculus at syntax grammar ambiguity... " +
+                "kailangan ko mag-basa ng lecture slides tsaka mag-practice mag-solve ng derivation exercises para maintindihan ko yung topic");
+
+        Note note4 = createNote(calc2, "calculus discussion abt inverse trigo functions. " +
+                "used synthetic division dq magets tas kasama raw yata sa midterm exam which will prolly be on oct 7 since asynch kami sa next meeting niya"+
+                "may kantutan din raw magaganap sa oct 07");
+
+        List<Note> notes = List.of(note1, note2, note3, note4);
 
         // when
         StudyPlannerEngine.ExtractedData result = engine.process(
@@ -139,26 +146,45 @@ public class StudyPlannerEngineIntegrationTest {
         assertThat(result.contexts()).isNotEmpty();
 
         // then: Decoded UUID references match source notes
+        List<UUID> noteIds = List.of(note1.getId(), note2.getId(), note3.getId(), note4.getId());
         assertThat(result.tasks())
-                .allMatch(t -> t.noteId() != null && (t.noteId().equals(note1.getId()) || t.noteId().equals(note2.getId())));
+                .allMatch(t -> t.noteId() != null && noteIds.contains(t.noteId()));
         assertThat(result.events())
-                .allMatch(e -> e.noteId() != null && (e.noteId().equals(note1.getId()) || e.noteId().equals(note2.getId())));
+                .allMatch(e -> e.noteId() != null && noteIds.contains(e.noteId()));
         assertThat(result.contexts())
-                .allMatch(c -> c.noteId() != null && (c.noteId().equals(note1.getId()) || c.noteId().equals(note2.getId())));
+                .allMatch(c -> c.noteId() != null && noteIds.contains(c.noteId()));
 
         // then: Implied tasks detected
         assertThat(result.tasks())
                 .anyMatch(t -> t.title().toLowerCase().contains("interface") ||
                                t.title().toLowerCase().contains("abstract") ||
                                t.title().toLowerCase().contains("practice") ||
-                               t.title().toLowerCase().contains("lifecycle"));
+                               t.title().toLowerCase().contains("lifecycle") ||
+                               t.title().toLowerCase().contains("lambda") ||
+                               t.title().toLowerCase().contains("grammar") ||
+                               t.title().toLowerCase().contains("slide") ||
+                               t.title().toLowerCase().contains("derivation") ||
+                               t.title().toLowerCase().contains("calculus") ||
+                               t.title().toLowerCase().contains("trigonometric") ||
+                               t.title().toLowerCase().contains("division"));
 
         // then: Academic events extracted with valid deadlines
         assertThat(result.events())
                 .anyMatch(e -> e.title().toLowerCase().contains("quiz") ||
                                e.title().toLowerCase().contains("report") ||
                                e.title().toLowerCase().contains("deadline") ||
-                               e.title().toLowerCase().contains("lab"));
+                               e.title().toLowerCase().contains("lab") ||
+                               e.title().toLowerCase().contains("midterm") ||
+                               e.title().toLowerCase().contains("exam"));
+
+        // then: Note without dates yields tasks and context but no rigid academic events
+        assertThat(result.tasks()).anyMatch(t -> note3.getId().equals(t.noteId()));
+        assertThat(result.contexts()).anyMatch(c -> note3.getId().equals(c.noteId()));
+        assertThat(result.events()).noneMatch(e -> note3.getId().equals(e.noteId()));
+
+        // then: Calculus note extracts midterm exam event and topic context
+        assertThat(result.events()).anyMatch(e -> note4.getId().equals(e.noteId()));
+        assertThat(result.contexts()).anyMatch(c -> note4.getId().equals(c.noteId()));
     }
 
     @Test
@@ -185,9 +211,10 @@ public class StudyPlannerEngineIntegrationTest {
         assertThat(result.events()).noneMatch(e -> noteId.equals(e.noteId()));
         assertThat(result.contexts()).noneMatch(c -> noteId.equals(c.noteId()));
 
-        // then: NoteAuditAdvisor intercepted and logged the audit warning
+        // then: NoteAuditAdvisor intercepted and logged the audit warning with decoded noteId and part
         assertThat(output.getAll()).contains("[AI AUDIT - UNRELATED INFO]");
-        assertThat(output.getAll()).contains("n1");
+        assertThat(output.getAll()).contains("NoteId: " + noteId);
+        assertThat(output.getAll()).contains("Part:");
     }
 
     @Test
@@ -220,9 +247,10 @@ public class StudyPlannerEngineIntegrationTest {
                                                  t.title().toLowerCase().contains("grocery") ||
                                                  t.title().toLowerCase().contains("sabon"));
 
-        // then: NoteAuditAdvisor logged audit warning for the omitted unrelated statements
+        // then: NoteAuditAdvisor logged audit warning for the omitted unrelated statements with decoded noteId and part
         assertThat(output.getAll()).contains("[AI AUDIT - UNRELATED INFO]");
-        assertThat(output.getAll()).contains("n1");
+        assertThat(output.getAll()).contains("NoteId: " + noteId);
+        assertThat(output.getAll()).contains("Part:");
     }
 
     private static Note createNote(Course course, String text) {
@@ -234,6 +262,9 @@ public class StudyPlannerEngineIntegrationTest {
     }
 
     private static void reportObservation(String testName, StudyPlannerEngine.ExtractedData result) throws IOException {
+        // Replace invalid filename characters and whitespace with underscores
+        String sanitizedTestName = testName.replaceAll("[^a-zA-Z0-9.-]", "_");
+
         StringBuilder report = new StringBuilder();
         report.append("=======================================================\n");
         report.append("            STUDY PLANNER ENGINE AI OUTPUT             \n");
@@ -264,8 +295,8 @@ public class StudyPlannerEngineIntegrationTest {
 
         System.out.println(report);
 
-        Path reportFile = Path.of("build", "reports", testName, "ai-engine-output.txt");
-        Path jsonFile = Path.of("build", "reports", testName, "ai-engine-output.json");
+        Path reportFile = Path.of("build", "reports", sanitizedTestName, "ai-engine-output.txt");
+        Path jsonFile = Path.of("build", "reports", sanitizedTestName, "ai-engine-output.json");
         if (reportFile.getParent() != null) {
             Files.createDirectories(reportFile.getParent());
         }

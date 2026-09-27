@@ -1,7 +1,7 @@
 {
   "0": "AcademicEventResponse",
   "1": "AcademicEvent",
-  "2": "Course",
+  "2": "Schedule",
   "3": "Backend Agent Guide",
   "4": "jquery-3.7.1.min.js",
   "5": "Task",
@@ -73,5 +73,7 @@
   "71": ".addCorsMappings_registersExpectedConfiguration",
   "72": "GlobalExceptionHandler.java",
   "73": "ProcessSummaryResponse",
-  "74": "BadRequestException"
+  "74": "BadRequestException",
+  "75": "Course",
+  "76": "Generating Test Notes for Nyare"
 }
