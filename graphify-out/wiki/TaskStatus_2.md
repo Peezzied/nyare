@@ -29,13 +29,13 @@
 - TaskStatusRequest `EXTRACTED`
 - .findAllFiltered() `EXTRACTED`
 - .TaskResponse() `EXTRACTED`
+- .setStatus() `EXTRACTED`
 - .listTasks() `EXTRACTED`
 - .setStatus() `EXTRACTED`
 - .TaskRequest() `EXTRACTED`
 - .setStatus() `EXTRACTED`
 - .setStatus() `EXTRACTED`
 - .TaskStatusRequest() `EXTRACTED`
-- .setStatus() `EXTRACTED`
 - .getStatus() `EXTRACTED`
 - .getStatus() `EXTRACTED`
 - .getStatus() `EXTRACTED`

@@ -1,11 +1,16 @@
 # AcademicContext
 
-> 14 nodes
+> 19 nodes
 
 ## Key Concepts
 
-- **AcademicContext** (25 connections) — `backend/src/main/java/group/four/nyare/nyare/model/AcademicContext.java`
+- **AcademicContext** (22 connections) — `backend/src/main/java/group/four/nyare/nyare/model/AcademicContext.java`
+- **Course** (7 connections)
+- **AcademicContextRepository** (5 connections) — `backend/src/main/java/group/four/nyare/nyare/repository/AcademicContextRepository.java`
+- **Note** (4 connections)
+- **AcademicContextRepository.java** (4 connections) — `backend/src/main/java/group/four/nyare/nyare/repository/AcademicContextRepository.java`
 - **.AcademicContext()** (3 connections) — `backend/src/main/java/group/four/nyare/nyare/model/AcademicContext.java`
+- **.findAllFiltered()** (3 connections) — `backend/src/main/java/group/four/nyare/nyare/repository/AcademicContextRepository.java`
 - **.getCourse()** (2 connections) — `backend/src/main/java/group/four/nyare/nyare/model/AcademicContext.java`
 - **.getNote()** (2 connections) — `backend/src/main/java/group/four/nyare/nyare/model/AcademicContext.java`
 - **.setCourse()** (2 connections) — `backend/src/main/java/group/four/nyare/nyare/model/AcademicContext.java`
@@ -22,10 +27,9 @@
 ## Relationships
 
 - [jakarta.persistence.Entity](jakarta.persistence.Entity.md) (5 shared connections)
-- [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) (5 shared connections)
-- [Course](Course.md) (4 shared connections)
-- [Note](Note.md) (4 shared connections)
-- [Task](Task.md) (2 shared connections)
+- [StudyPlannerEngineIntegrationTest.java](StudyPlannerEngineIntegrationTest.java.md) (3 shared connections)
+- [Schedule](Schedule.md) (2 shared connections)
+- [AcademicEvent](AcademicEvent.md) (2 shared connections)
 
 ## Source Files
 
@@ -34,7 +38,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 33 (100%)
+- EXTRACTED: 39 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

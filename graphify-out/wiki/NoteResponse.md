@@ -27,7 +27,7 @@
 ## Relationships
 
 - [NoteContent](NoteContent.md) (7 shared connections)
-- [BadRequestException](BadRequestException.md) (2 shared connections)
+- [ResourceNotFoundException](ResourceNotFoundException.md) (2 shared connections)
 - [ImageMetadata](ImageMetadata.md) (2 shared connections)
 
 ## Source Files

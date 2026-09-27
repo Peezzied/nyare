@@ -13,7 +13,7 @@
 
 ## Relationships
 
-- [conventions.md](conventions.md.md) (1 shared connections)
+- [AGENTS.md](AGENTS.md.md) (1 shared connections)
 
 ## Source Files
 

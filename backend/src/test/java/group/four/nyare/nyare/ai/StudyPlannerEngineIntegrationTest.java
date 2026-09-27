@@ -375,15 +375,6 @@ public class StudyPlannerEngineIntegrationTest {
         String jsonOutput = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result);
 
         System.out.println(report);
-
-        Path reportFile = Path.of("build", "reports", sanitizedTestName, "ai-engine-output.txt");
-        Path jsonFile = Path.of("build", "reports", sanitizedTestName, "ai-engine-output.json");
-        if (reportFile.getParent() != null) {
-            Files.createDirectories(reportFile.getParent());
-        }
-        Files.writeString(reportFile, report.toString(), StandardCharsets.UTF_8);
-        Files.writeString(jsonFile, jsonOutput, StandardCharsets.UTF_8);
-        System.out.println("Exported test report to: " + reportFile.toAbsolutePath());
-        System.out.println("Exported JSON output to: " + jsonFile.toAbsolutePath());
+        System.out.println("\n Raw json output:\n" + jsonOutput);
     }
 }

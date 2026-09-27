@@ -1,10 +1,11 @@
 # Architecture & Package Conventions
 
-> 5 nodes
+> 6 nodes
 
 ## Key Concepts
 
 - **Architecture & Package Conventions** (5 connections) — `backend/docs/conventions/architecture.md`
+- **architecture.md** (3 connections) — `backend/docs/conventions/architecture.md`
 - **1. Layered Architecture** (1 connections) — `backend/docs/conventions/architecture.md`
 - **2. Layer Isolation Rules** (1 connections) — `backend/docs/conventions/architecture.md`
 - **3. Package Structure** (1 connections) — `backend/docs/conventions/architecture.md`
@@ -12,6 +13,7 @@
 
 ## Relationships
 
+- [AGENTS.md](AGENTS.md.md) (1 shared connections)
 - [conventions.md](conventions.md.md) (1 shared connections)
 
 ## Source Files
@@ -20,7 +22,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 5 (100%)
+- EXTRACTED: 7 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

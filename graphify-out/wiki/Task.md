@@ -4,15 +4,13 @@
 
 ## Key Concepts
 
-- **Task** (37 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
-- **.extractFromNotes()** (13 connections) — `backend/src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java`
-- **ExtractionResult** (5 connections) — `backend/src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java`
-- **.getCourse()** (3 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Note.java`
-- **.setNote()** (3 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
-- **.getCourse()** (2 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
-- **.getNote()** (2 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
-- **.setCourse()** (2 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
-- **.setDescription()** (2 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
+- **Task** (33 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
+- **TaskRepository.java** (5 connections) — `backend/src/main/java/group/four/nyare/nyare/repository/TaskRepository.java`
+- **TaskRepository** (4 connections) — `backend/src/main/java/group/four/nyare/nyare/repository/TaskRepository.java`
+- **.findAllFiltered()** (4 connections) — `backend/src/main/java/group/four/nyare/nyare/repository/TaskRepository.java`
+- **.setStatus()** (3 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
+- **.getStatus()** (2 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
+- **.setNote()** (2 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
 - **.setScheduledDate()** (2 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
 - **.toString()** (2 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
 - **.getCreatedAt()** (1 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
@@ -23,31 +21,32 @@
 - **.getTitle()** (1 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
 - **.getUpdatedAt()** (1 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
 - **.setCreatedAt()** (1 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
+- **.setDescription()** (1 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
+- **.setDuration()** (1 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
 - **.setTitle()** (1 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
 - **.setUpdatedAt()** (1 connections) — `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
 - **Override** (1 connections)
 
 ## Relationships
 
-- [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) (8 shared connections)
 - [jakarta.persistence.Entity](jakarta.persistence.Entity.md) (5 shared connections)
-- [Course](Course.md) (5 shared connections)
-- [Note](Note.md) (5 shared connections)
-- [org.junit.jupiter.api.Test](org.junit.jupiter.api.Test.md) (4 shared connections)
-- [TaskStatus](TaskStatus.md) (3 shared connections)
+- [TaskStatus](TaskStatus.md) (5 shared connections)
+- [Course](Course.md) (4 shared connections)
+- [Note](Note.md) (3 shared connections)
+- [Schedule](Schedule.md) (2 shared connections)
+- [StudyPlannerEngineIntegrationTest.java](StudyPlannerEngineIntegrationTest.java.md) (2 shared connections)
 - [AcademicEvent](AcademicEvent.md) (2 shared connections)
-- [AcademicContext](AcademicContext.md) (2 shared connections)
+- [PlanCategory](PlanCategory.md) (1 shared connections)
 
 ## Source Files
 
-- `backend/src/main/java/group/four/nyare/nyare/model/Note.java`
 - `backend/src/main/java/group/four/nyare/nyare/model/Task.java`
-- `backend/src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java`
+- `backend/src/main/java/group/four/nyare/nyare/repository/TaskRepository.java`
 
 ## Audit Trail
 
-- EXTRACTED: 53 (90%)
-- INFERRED: 6 (10%)
+- EXTRACTED: 45 (96%)
+- INFERRED: 2 (4%)
 - AMBIGUOUS: 0 (0%)
 
 ---

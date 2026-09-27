@@ -1,11 +1,10 @@
 # TaskRequest
 
-> 14 nodes
+> 13 nodes
 
 ## Key Concepts
 
 - **TaskRequest** (18 connections) — `backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java`
-- **.getStatus()** (2 connections) — `backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java`
 - **.setStatus()** (2 connections) — `backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java`
 - **TaskRequest.java** (2 connections) — `backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java`
 - **.getCourseId()** (1 connections) — `backend/src/main/java/group/four/nyare/nyare/dto/TaskRequest.java`
@@ -30,7 +29,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 21 (100%)
+- EXTRACTED: 20 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

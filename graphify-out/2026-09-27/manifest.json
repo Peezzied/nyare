@@ -227,12 +227,6 @@
     "ast_hash": "217835ed68cc988b72d0ca68a361aeae",
     "semantic_hash": "217835ed68cc988b72d0ca68a361aeae"
   },
-  "opencode.json": {
-    "mtime": 1789032611.3770373,
-    "seen": 1789125311.3910809,
-    "ast_hash": "7e28166e67eebe43d64a6f5b72017740",
-    "semantic_hash": "7e28166e67eebe43d64a6f5b72017740"
-  },
   ".agents/rules/graphify.md": {
     "mtime": 1789286661.572159,
     "seen": 1789288668.8893998,
@@ -1950,9 +1944,9 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java": {
-    "mtime": 1790434983.4525187,
-    "seen": 1790437731.2616708,
-    "ast_hash": "1c5b9e9be54d9e519da96e97cfdcef1b",
+    "mtime": 1790510165.4453247,
+    "seen": 1790511178.493634,
+    "ast_hash": "08e4fe757fb99d67fdd4249df2d2be88",
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/ai/parser/StubReferenceCodec.java": {
@@ -1980,27 +1974,21 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java": {
-    "mtime": 1790505032.5343184,
-    "seen": 1790505962.7705636,
-    "ast_hash": "1791f83e47b9ef31e314967cfec01e8d",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/group/four/nyare/nyare/ai/advisor/NoteAuditAdvisor.java": {
-    "mtime": 1790505058.2999809,
-    "seen": 1790505962.77057,
-    "ast_hash": "ac2baa3ce01ea571076b8f293da2e125",
+    "mtime": 1790509162.5937088,
+    "seen": 1790511178.4935277,
+    "ast_hash": "4bc0242bfd20539830523cb12a18646e",
     "semantic_hash": ""
   },
   "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java": {
-    "mtime": 1790505276.3104575,
-    "seen": 1790505962.7708063,
-    "ast_hash": "3f1ef0b8591b82c226b92421f23bcc0a",
+    "mtime": 1790509857.2670321,
+    "seen": 1790511178.493644,
+    "ast_hash": "bb15e0349589e7cfba74edc875881ac8",
     "semantic_hash": ""
   },
   "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java": {
-    "mtime": 1790505686.5123808,
-    "seen": 1790505962.7708106,
-    "ast_hash": "0a9ff794eb49c95ca13b920fb83cdd74",
+    "mtime": 1790509571.3431718,
+    "seen": 1790511178.4936469,
+    "ast_hash": "ff8b91495397f6bd087fe95cb384eae9",
     "semantic_hash": ""
   },
   "backend/.agents/skills/prompt-engineering/SKILL.md": {
@@ -2031,6 +2019,24 @@
     "mtime": 1790442714.7589502,
     "seen": 1790505962.771331,
     "ast_hash": "5ba80ffe8e088041b2adfe58bcd96de9",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/group/four/nyare/nyare/ai/PlannerAuditRecords.java": {
+    "mtime": 1790509598.6240368,
+    "seen": 1790511178.4935226,
+    "ast_hash": "4aa98a7460e9f5ec3be3c25b0b7cff42",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/group/four/nyare/nyare/ai/advisor/PlannerAuditAdvisor.java": {
+    "mtime": 1790509897.0215354,
+    "seen": 1790511178.4935303,
+    "ast_hash": "06ea42fa05fb01fda56fb86e200f8609",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-27-extract-auditing-subsystem.md": {
+    "mtime": 1790507373.506646,
+    "seen": 1790511178.4941678,
+    "ast_hash": "43f80f245025101915150866cb828d54",
     "semantic_hash": ""
   }
 }

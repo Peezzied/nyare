@@ -1,40 +1,31 @@
 # BadRequestException
 
-> 8 nodes
+> 4 nodes
 
 ## Key Concepts
 
-- **BadRequestException** (12 connections) — `backend/src/main/java/group/four/nyare/nyare/exception/BadRequestException.java`
-- **ResourceNotFoundException** (7 connections) — `backend/src/main/java/group/four/nyare/nyare/exception/ResourceNotFoundException.java`
-- **NoteService.java** (6 connections) — `backend/src/main/java/group/four/nyare/nyare/service/NoteService.java`
-- **ScheduleService.java** (5 connections) — `backend/src/main/java/group/four/nyare/nyare/service/ScheduleService.java`
+- **BadRequestException** (9 connections) — `backend/src/main/java/group/four/nyare/nyare/exception/BadRequestException.java`
+- **AcademicEventService.java** (5 connections) — `backend/src/main/java/group/four/nyare/nyare/service/AcademicEventService.java`
+- **BadRequestException.java** (2 connections) — `backend/src/main/java/group/four/nyare/nyare/exception/BadRequestException.java`
 - **.BadRequestException()** (1 connections) — `backend/src/main/java/group/four/nyare/nyare/exception/BadRequestException.java`
-- **.ResourceNotFoundException()** (1 connections) — `backend/src/main/java/group/four/nyare/nyare/exception/ResourceNotFoundException.java`
-- **BadRequestException.java** (1 connections) — `backend/src/main/java/group/four/nyare/nyare/exception/BadRequestException.java`
-- **ResourceNotFoundException.java** (1 connections) — `backend/src/main/java/group/four/nyare/nyare/exception/ResourceNotFoundException.java`
 
 ## Relationships
 
-- [GlobalExceptionHandler.java](GlobalExceptionHandler.java.md) (4 shared connections)
-- [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) (3 shared connections)
-- [ProcessSummaryResponse](ProcessSummaryResponse.md) (2 shared connections)
+- [ResourceNotFoundException](ResourceNotFoundException.md) (3 shared connections)
+- [GlobalExceptionHandler.java](GlobalExceptionHandler.java.md) (2 shared connections)
+- [StudyPlannerController.java](StudyPlannerController.java.md) (2 shared connections)
 - [AcademicEventResponse](AcademicEventResponse.md) (2 shared connections)
-- [NoteResponse](NoteResponse.md) (2 shared connections)
-- [ScheduleResponse](ScheduleResponse.md) (2 shared connections)
-- [ImageMetadata](ImageMetadata.md) (1 shared connections)
-- [NoteContent](NoteContent.md) (1 shared connections)
-- [ScheduleRequest](ScheduleRequest.md) (1 shared connections)
+- [StudyPlannerServiceImpl.java](StudyPlannerServiceImpl.java.md) (1 shared connections)
+- [AcademicEventRequest](AcademicEventRequest.md) (1 shared connections)
 
 ## Source Files
 
 - `backend/src/main/java/group/four/nyare/nyare/exception/BadRequestException.java`
-- `backend/src/main/java/group/four/nyare/nyare/exception/ResourceNotFoundException.java`
-- `backend/src/main/java/group/four/nyare/nyare/service/NoteService.java`
-- `backend/src/main/java/group/four/nyare/nyare/service/ScheduleService.java`
+- `backend/src/main/java/group/four/nyare/nyare/service/AcademicEventService.java`
 
 ## Audit Trail
 
-- EXTRACTED: 26 (100%)
+- EXTRACTED: 14 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

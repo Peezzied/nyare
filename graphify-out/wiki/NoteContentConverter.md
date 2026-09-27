@@ -16,7 +16,7 @@
 ## Relationships
 
 - [NoteContent](NoteContent.md) (4 shared connections)
-- [ProcessSummaryResponse](ProcessSummaryResponse.md) (2 shared connections)
+- [StudyPlannerController.java](StudyPlannerController.java.md) (2 shared connections)
 
 ## Source Files
 

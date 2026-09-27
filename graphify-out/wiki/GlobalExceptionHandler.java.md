@@ -16,7 +16,8 @@
 
 ## Relationships
 
-- [BadRequestException](BadRequestException.md) (4 shared connections)
+- [BadRequestException](BadRequestException.md) (2 shared connections)
+- [ResourceNotFoundException](ResourceNotFoundException.md) (2 shared connections)
 
 ## Source Files
 

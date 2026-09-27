@@ -1,12 +1,15 @@
 # AcademicEvent
 
-> 17 nodes
+> 20 nodes
 
 ## Key Concepts
 
-- **AcademicEvent** (31 connections) — `backend/src/main/java/group/four/nyare/nyare/model/AcademicEvent.java`
-- **.getCourse()** (2 connections) — `backend/src/main/java/group/four/nyare/nyare/model/AcademicEvent.java`
-- **.setCourse()** (2 connections) — `backend/src/main/java/group/four/nyare/nyare/model/AcademicEvent.java`
+- **AcademicEvent** (29 connections) — `backend/src/main/java/group/four/nyare/nyare/model/AcademicEvent.java`
+- **org.springframework.data.jpa.repository.Query** (9 connections)
+- **AcademicEventRepository** (6 connections) — `backend/src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java`
+- **AcademicEventRepository.java** (4 connections) — `backend/src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java`
+- **.findAllFiltered()** (3 connections) — `backend/src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java`
+- **.findUpcomingInWindow()** (3 connections) — `backend/src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java`
 - **.toString()** (2 connections) — `backend/src/main/java/group/four/nyare/nyare/model/AcademicEvent.java`
 - **.findByCourseIdOrderByDeadlineAsc()** (2 connections) — `backend/src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java`
 - **.getCreatedAt()** (1 connections) — `backend/src/main/java/group/four/nyare/nyare/model/AcademicEvent.java`
@@ -24,10 +27,11 @@
 
 ## Relationships
 
+- [Note](Note.md) (6 shared connections)
 - [jakarta.persistence.Entity](jakarta.persistence.Entity.md) (5 shared connections)
-- [StudyPlannerServiceTest.java](StudyPlannerServiceTest.java.md) (5 shared connections)
-- [Course](Course.md) (4 shared connections)
-- [Note](Note.md) (3 shared connections)
+- [Course](Course.md) (3 shared connections)
+- [Schedule](Schedule.md) (2 shared connections)
+- [AcademicContext](AcademicContext.md) (2 shared connections)
 - [Task](Task.md) (2 shared connections)
 
 ## Source Files
@@ -37,7 +41,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 35 (100%)
+- EXTRACTED: 45 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

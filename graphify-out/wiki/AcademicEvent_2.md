@@ -1,19 +1,15 @@
 # AcademicEvent
 
-> God node · 31 connections · `backend/src/main/java/group/four/nyare/nyare/model/AcademicEvent.java`
+> God node · 29 connections · `backend/src/main/java/group/four/nyare/nyare/model/AcademicEvent.java`
 
 **Community:** [AcademicEvent](AcademicEvent.md)
 
 ## Connections by Relation
 
-### calls
-- .extractFromNotes() `EXTRACTED`
-
 ### contains
 - AcademicEvent.java `EXTRACTED`
 
 ### imports
-- StudyPlannerServiceImpl.java `EXTRACTED`
 - AcademicEventRepository.java `EXTRACTED`
 
 ### method
@@ -40,11 +36,11 @@
 - [Course](Course.md) `EXTRACTED`
 - [jakarta.persistence.Entity](jakarta.persistence.Entity.md) `EXTRACTED`
 - jakarta.persistence.Table `EXTRACTED`
-- AcademicEventRepository `EXTRACTED`
 - jakarta.persistence.EntityListeners `EXTRACTED`
 - org.springframework.data.jpa.domain.support.AuditingEntityListener `EXTRACTED`
-- ExtractionResult `EXTRACTED`
+- AcademicEventRepository `EXTRACTED`
 - .findAllFiltered() `EXTRACTED`
+- .findUpcomingInWindow() `EXTRACTED`
 - .findByCourseIdOrderByDeadlineAsc() `EXTRACTED`
 
 ---
