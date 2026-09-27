@@ -1290,9 +1290,9 @@
     "semantic_hash": ""
   },
   "backend/build.gradle": {
-    "mtime": 1790435265.7537708,
-    "seen": 1790437731.2613673,
-    "ast_hash": "f81e0358aa02701450ec30002d2fd902",
+    "mtime": 1790515733.9383566,
+    "seen": 1790517618.1062813,
+    "ast_hash": "d401f18fe1b96f47c53e4ca94aaec342",
     "semantic_hash": ""
   },
   "backend/docs/javadoc/member-search-index.js": {
@@ -1980,9 +1980,9 @@
     "semantic_hash": ""
   },
   "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineIntegrationTest.java": {
-    "mtime": 1790509857.2670321,
-    "seen": 1790511178.493644,
-    "ast_hash": "bb15e0349589e7cfba74edc875881ac8",
+    "mtime": 1790516992.9214537,
+    "seen": 1790517618.1065493,
+    "ast_hash": "2211efe0ac6ef9f40a9b6e7769cc17f7",
     "semantic_hash": ""
   },
   "backend/src/test/java/group/four/nyare/nyare/ai/StudyPlannerEngineTest.java": {
@@ -2037,6 +2037,18 @@
     "mtime": 1790507373.506646,
     "seen": 1790511178.4941678,
     "ast_hash": "43f80f245025101915150866cb828d54",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/group/four/nyare/nyare/ai/ConsoleLogListener.java": {
+    "mtime": 1790517248.941899,
+    "seen": 1790517618.1065075,
+    "ast_hash": "a2602128786783f855c5e6252e812e0e",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-27-note-dirty-tracking-and-processing.md": {
+    "mtime": 1790517370.1083448,
+    "seen": 1790517618.1086066,
+    "ast_hash": "91d32b5c37781a0759fa50571ff10801",
     "semantic_hash": ""
   }
 }
