@@ -24,8 +24,8 @@ class TaskRepositoryTest {
     private CourseRepository courseRepository;
 
     @Test
-    @DisplayName("findAllOpen excludes COMPLETED tasks across all courses")
-    void findAllOpen_excludesCompleted() {
+    @DisplayName("findByStatusNotOrderByCreatedAtDesc excludes COMPLETED tasks across all courses")
+    void findByStatusNot_excludesCompleted() {
         Course c1 = courseRepository.save(new Course("CS101", "Intro"));
         Course c2 = courseRepository.save(new Course("CS202", "Data Structures"));
 
@@ -39,7 +39,7 @@ class TaskRepositoryTest {
         completed.setStatus(TaskStatus.COMPLETED);
         completed = taskRepository.save(completed);
 
-        List<Task> open = taskRepository.findAllOpen();
+        List<Task> open = taskRepository.findByStatusNotOrderByCreatedAtDesc(TaskStatus.COMPLETED);
 
         assertThat(open).extracting(Task::getId)
                 .containsExactlyInAnyOrder(todo.getId(), inProgress.getId())

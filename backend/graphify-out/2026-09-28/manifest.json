@@ -84,10 +84,10 @@
     "semantic_hash": "7b0ba63fef22f4a6ecc79cd623e58d2a"
   },
   "src/main/java/group/four/nyare/nyare/model/Course.java": {
-    "mtime": 1789308362.2980895,
-    "seen": 1789379696.0032938,
-    "ast_hash": "b6f8d6bbc27460a1a0bda16ecaadafe4",
-    "semantic_hash": "b6f8d6bbc27460a1a0bda16ecaadafe4"
+    "mtime": 1790578238.236258,
+    "seen": 1790578371.963818,
+    "ast_hash": "79c6e645d0f31bf6c11228c63681c20c",
+    "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/model/Note.java": {
     "mtime": 1790518076.4457128,
@@ -102,10 +102,10 @@
     "semantic_hash": "a89951c6a4a2e9eda5316bfc70f5f113"
   },
   "src/main/java/group/four/nyare/nyare/model/Task.java": {
-    "mtime": 1790269454.9914172,
-    "seen": 1790577660.1448703,
-    "ast_hash": "1c38c83d42198575171a6222a6c5402a",
-    "semantic_hash": "1c38c83d42198575171a6222a6c5402a"
+    "mtime": 1790578237.8660886,
+    "seen": 1790578371.963826,
+    "ast_hash": "f099bab5785da914536f58949af81e5d",
+    "semantic_hash": ""
   },
   "src/main/java/group/four/nyare/nyare/model/enums/TaskStatus.java": {
     "mtime": 1789308350.2293315,
@@ -912,10 +912,10 @@
     "semantic_hash": "b123b8e8b8089f94644387e31dfa2ce9"
   },
   "src/main/java/group/four/nyare/nyare/ai/prompt/TaggedPromptBuilder.java": {
-    "mtime": 1790269454.9844153,
-    "seen": 1790577660.142185,
-    "ast_hash": "214bfb02c4f50b22ea7e06f63e53a997",
-    "semantic_hash": "214bfb02c4f50b22ea7e06f63e53a997"
+    "mtime": 1790578154.370298,
+    "seen": 1790578371.9637837,
+    "ast_hash": "fa748658a2445bd95b66b08824bfc508",
+    "semantic_hash": ""
   },
   ".agents/rules/dr-jskill-and-spring-docs.md": {
     "mtime": 1789832313.0698926,
@@ -936,10 +936,10 @@
     "semantic_hash": "11e01996874c61c1a4d345991a275778"
   },
   "src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java": {
-    "mtime": 1790269454.9844153,
-    "seen": 1790577660.1421802,
-    "ast_hash": "e1fef4f2b088cffe24f936243203ea66",
-    "semantic_hash": "e1fef4f2b088cffe24f936243203ea66"
+    "mtime": 1790578153.956783,
+    "seen": 1790578371.963779,
+    "ast_hash": "5b1e4a2e34d8a71ee7f27439dbd6c85a",
+    "semantic_hash": ""
   },
   "src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java": {
     "mtime": 1790269454.9987755,

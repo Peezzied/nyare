@@ -45,10 +45,5 @@ public interface AcademicContextRepository extends JpaRepository<AcademicContext
      * @param courseIds the set of course IDs to include
      * @return context records ordered by createdAt descending
      */
-    @Query("""
-            SELECT c FROM AcademicContext c
-            WHERE c.course.id IN :courseIds
-            ORDER BY c.createdAt DESC
-            """)
-    List<AcademicContext> findByCourseIdInOrderByCreatedAtDesc(@Param("courseIds") Set<Long> courseIds);
+    List<AcademicContext> findByCourseIdInOrderByCreatedAtDesc(Set<Long> courseIds);
 }

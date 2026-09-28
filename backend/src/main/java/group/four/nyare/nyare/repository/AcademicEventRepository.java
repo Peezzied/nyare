@@ -68,18 +68,4 @@ public interface AcademicEventRepository extends JpaRepository<AcademicEvent, UU
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
-
-    /**
-     * Retrieves all academic events with a deadline on or after the given instant,
-     * across all courses, ordered by deadline ascending.
-     *
-     * @param now the lower bound for the deadline (inclusive)
-     * @return all future or current events ordered by deadline ascending
-     */
-    @Query("""
-            SELECT e FROM AcademicEvent e
-            WHERE e.deadline >= :now
-            ORDER BY e.deadline ASC
-            """)
-    List<AcademicEvent> findAllFromNow(@Param("now") LocalDateTime now);
 }

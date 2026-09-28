@@ -2,7 +2,6 @@ package group.four.nyare.nyare.repository;
 
 import group.four.nyare.nyare.model.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.time.DayOfWeek;
 import java.util.List;
@@ -30,16 +29,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
      * @return schedules on the specified day ordered by start time ascending
      */
     List<Schedule> findByCourseIdAndDayOrderByStartTimeAsc(Long courseId, DayOfWeek day);
-
-    /**
-     * Retrieves all recurring schedules across all courses, ordered by day and
-     * start time ascending.
-     *
-     * @return all schedules ordered by day and start time ascending
-     */
-    @Query("""
-            SELECT s FROM Schedule s
-            ORDER BY s.day ASC, s.startTime ASC
-            """)
-    List<Schedule> findAllOrderByDayAscStartTimeAsc();
 }
+

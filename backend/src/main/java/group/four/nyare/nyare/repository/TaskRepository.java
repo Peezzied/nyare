@@ -41,15 +41,11 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
     );
 
     /**
-     * Retrieves all non-COMPLETED tasks across all courses, ordered by creation
+     * Retrieves all tasks not having the specified status, ordered by creation
      * timestamp descending.
      *
-     * @return open tasks for all courses
+     * @param status the status to exclude
+     * @return open tasks matching the criteria
      */
-    @Query("""
-            SELECT t FROM Task t
-            WHERE t.status <> group.four.nyare.nyare.model.enums.TaskStatus.COMPLETED
-            ORDER BY t.createdAt DESC
-            """)
-    List<Task> findAllOpen();
+    List<Task> findByStatusNotOrderByCreatedAtDesc(TaskStatus status);
 }

@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/repository/TaskRepository.java": {
-    "mtime": 1789308414.661046,
-    "seen": 1789309047.5797634,
-    "ast_hash": "7ce9ac375f2e6cd47a556bf8db08e04d",
+    "mtime": 1790576190.858127,
+    "seen": 1790578051.9427998,
+    "ast_hash": "f34fb9fe2f4bc1e44ec0c8a2a6e6b639",
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/service/TaskService.java": {
@@ -1086,9 +1086,9 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java": {
-    "mtime": 1790269454.9945507,
-    "seen": 1790269471.059606,
-    "ast_hash": "eaf145b724864324b4e06e95d2173737",
+    "mtime": 1790576219.2816567,
+    "seen": 1790578051.9427667,
+    "ast_hash": "ee2c104da93f2dcbe10d1dd5c919fb80",
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/service/AcademicEventService.java": {
@@ -1128,15 +1128,15 @@
     "semantic_hash": ""
   },
   "backend/docs/conventions/persistence-sqlite.md": {
-    "mtime": 1789378719.6767516,
-    "seen": 1789378866.9040287,
-    "ast_hash": "1e9fad67539d277ca6698c1bc16769c0",
+    "mtime": 1790577180.18609,
+    "seen": 1790578051.9433699,
+    "ast_hash": "85301c38b5209d0be89db970d5d5fb2e",
     "semantic_hash": ""
   },
   "backend/docs/conventions/services-and-tx.md": {
-    "mtime": 1789409717.4726527,
-    "seen": 1789410131.1946,
-    "ast_hash": "449ac117e14876779225a2f984462d44",
+    "mtime": 1790577209.1846385,
+    "seen": 1790578051.943374,
+    "ast_hash": "c5876b9b14620973af12a8f6127a61fc",
     "semantic_hash": ""
   },
   "backend/docs/conventions/testing-standards.md": {
@@ -1194,9 +1194,9 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/repository/NoteRepository.java": {
-    "mtime": 1790518124.421079,
-    "seen": 1790520412.6977952,
-    "ast_hash": "ed280cf285f3e69da73fc3ba9997208d",
+    "mtime": 1790576122.114859,
+    "seen": 1790578051.9427724,
+    "ast_hash": "6fb0e641e9f13137e690c021893bfe70",
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/service/NoteService.java": {
@@ -1254,9 +1254,9 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/repository/ScheduleRepository.java": {
-    "mtime": 1789388954.0899444,
-    "seen": 1789390047.6795447,
-    "ast_hash": "99174fb445a3231c3a2594c65f3ec928",
+    "mtime": 1790576228.6781664,
+    "seen": 1790578051.9427977,
+    "ast_hash": "f567d04d0bd5ff4ce60c7785299751e4",
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/service/ScheduleService.java": {
@@ -1902,9 +1902,9 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/repository/AcademicContextRepository.java": {
-    "mtime": 1790269454.9914172,
-    "seen": 1790269471.059603,
-    "ast_hash": "3df7f3650052cde150a3e9c3e8423f2d",
+    "mtime": 1790576224.1995313,
+    "seen": 1790578051.9427638,
+    "ast_hash": "11e01996874c61c1a4d345991a275778",
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java": {
@@ -1920,9 +1920,9 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/controller/StudyPlannerController.java": {
-    "mtime": 1790269454.989411,
-    "seen": 1790269471.0595236,
-    "ast_hash": "efba80405783fc7750eb7e46cd716469",
+    "mtime": 1790576081.617798,
+    "seen": 1790578051.942638,
+    "ast_hash": "4649686b825031707d85ddf8cdcf81c3",
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/dto/ProcessSummaryResponse.java": {
@@ -1938,15 +1938,15 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/service/StudyPlannerService.java": {
-    "mtime": 1790269454.9945507,
-    "seen": 1790269471.05963,
-    "ast_hash": "f77cdfcfeae3fd5933d0a77f023646f8",
+    "mtime": 1790576067.992567,
+    "seen": 1790578051.9428108,
+    "ast_hash": "57f40021eefe1a23341c8a94e94a3178",
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/service/impl/StudyPlannerServiceImpl.java": {
-    "mtime": 1790510165.4453247,
-    "seen": 1790511178.493634,
-    "ast_hash": "08e4fe757fb99d67fdd4249df2d2be88",
+    "mtime": 1790576951.49743,
+    "seen": 1790578051.9428165,
+    "ast_hash": "a71e696ef118c53f6bbb0a2adda43d44",
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/ai/parser/StubReferenceCodec.java": {
@@ -2052,15 +2052,27 @@
     "semantic_hash": ""
   },
   "backend/src/test/java/group/four/nyare/nyare/repository/NoteRepositoryTest.java": {
-    "mtime": 1790518132.959349,
-    "seen": 1790520412.6979456,
-    "ast_hash": "8c568f61607751c47a78e9d577964410",
+    "mtime": 1790576127.2644918,
+    "seen": 1790578051.9428475,
+    "ast_hash": "6e2279e123bb54da6393b83a22aea901",
     "semantic_hash": ""
   },
   "scripts/caveman_commit.sh": {
-    "mtime": 1790529145.5002792,
-    "seen": 1790529741.0720186,
-    "ast_hash": "90376381c97c9fddda9a195504c7ff1b",
+    "mtime": 1790577523.2182515,
+    "seen": 1790578051.9428754,
+    "ast_hash": "f7ddf117fd1df9b27322c0344ca47f64",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/group/four/nyare/nyare/repository/TaskRepositoryTest.java": {
+    "mtime": 1790576170.0302508,
+    "seen": 1790578051.9428504,
+    "ast_hash": "5871a994650a65052c2a879fff965b96",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/group/four/nyare/nyare/service/StudyPlannerServiceImplTest.java": {
+    "mtime": 1790576989.028216,
+    "seen": 1790578051.9428532,
+    "ast_hash": "17df9c545f87fa12821624eee7af92aa",
     "semantic_hash": ""
   }
 }
