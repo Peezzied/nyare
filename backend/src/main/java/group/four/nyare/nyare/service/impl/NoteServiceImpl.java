@@ -2,6 +2,7 @@ package group.four.nyare.nyare.service.impl;
 
 import group.four.nyare.nyare.dto.NoteRequest;
 import group.four.nyare.nyare.dto.NoteResponse;
+import group.four.nyare.nyare.dto.NoteSummaryResponse;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.Note;
@@ -20,6 +21,8 @@ import java.util.UUID;
 @Service
 @Transactional(readOnly = true)
 public class NoteServiceImpl implements NoteService {
+
+    private static final int PREVIEW_MAX_LENGTH = 200;
 
     private final NoteRepository noteRepository;
     private final CourseRepository courseRepository;
@@ -41,7 +44,7 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public List<NoteResponse> listNotes(Long courseId) {
+    public List<NoteSummaryResponse> listNotes(Long courseId) {
         if (courseId != null) {
             if (!courseRepository.existsById(courseId)) {
                 throw new ResourceNotFoundException("Course not found with ID: " + courseId);
@@ -49,13 +52,13 @@ public class NoteServiceImpl implements NoteService {
 
             return noteRepository.findByCourseIdOrderByCreatedAtDesc(courseId)
                     .stream()
-                    .map(this::toResponse)
+                    .map(this::toSummary)
                     .toList();
         }
 
         return noteRepository.findAllByOrderByCreatedAtDesc()
                 .stream()
-                .map(this::toResponse)
+                .map(this::toSummary)
                 .toList();
     }
 
@@ -94,6 +97,21 @@ public class NoteServiceImpl implements NoteService {
                 note.getId(),
                 note.getCourse() != null ? note.getCourse().getId() : null,
                 note.getContent(),
+                note.getCreatedAt(),
+                note.getUpdatedAt()
+        );
+    }
+
+    private NoteSummaryResponse toSummary(Note note) {
+        String content = note.getContent() != null ? note.getContent() : "";
+        boolean truncated = content.length() > PREVIEW_MAX_LENGTH;
+        String preview = truncated ? content.substring(0, PREVIEW_MAX_LENGTH) : content;
+        return new NoteSummaryResponse(
+                note.getId(),
+                note.getCourse() != null ? note.getCourse().getId() : null,
+                preview,
+                truncated,
+                content.length(),
                 note.getCreatedAt(),
                 note.getUpdatedAt()
         );
