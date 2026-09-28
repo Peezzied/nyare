@@ -39,4 +39,17 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
             @Param("status") TaskStatus status,
             @Param("scheduled") Boolean scheduled
     );
+
+    /**
+     * Retrieves all non-COMPLETED tasks across all courses, ordered by creation
+     * timestamp descending.
+     *
+     * @return open tasks for all courses
+     */
+    @Query("""
+            SELECT t FROM Task t
+            WHERE t.status <> group.four.nyare.nyare.model.enums.TaskStatus.COMPLETED
+            ORDER BY t.createdAt DESC
+            """)
+    List<Task> findAllOpen();
 }

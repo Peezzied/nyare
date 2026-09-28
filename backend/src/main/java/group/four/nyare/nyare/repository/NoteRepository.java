@@ -60,7 +60,7 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
     );
 
     /**
-     * Returns notes created today across all courses that are either unextracted or modified after last extraction.
+     * Returns notes created on the date window across all courses that are either unextracted or modified after last extraction.
      *
      * @param startOfDay beginning of the date window (inclusive)
      * @param endOfDay   end of the date window (exclusive)
@@ -72,21 +72,21 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
               AND n.createdAt < :endOfDay
               AND (n.lastProcessedAt IS NULL OR n.updatedAt > n.lastProcessedAt)
             """)
-    List<Note> findTodayDirtyNotes(
+    List<Note> findDirtyNotes(
             @Param("startOfDay") Instant startOfDay,
             @Param("endOfDay") Instant endOfDay
     );
 
     /**
-     * Convenience default method to query today's dirty notes across all courses.
+     * Convenience default method to query dirty notes for the given date across all courses.
      *
-     * @param today the calendar date
-     * @return dirty notes created or modified today
+     * @param date the calendar date
+     * @return dirty notes created or modified on the date
      */
-    default List<Note> findTodayDirtyNotes(LocalDate today) {
+    default List<Note> findDirtyNotes(LocalDate date) {
         ZoneId zone = ZoneId.systemDefault();
-        Instant startOfDay = today.atStartOfDay(zone).toInstant();
-        Instant endOfDay = today.plusDays(1).atStartOfDay(zone).toInstant();
-        return findTodayDirtyNotes(startOfDay, endOfDay);
+        Instant startOfDay = date.atStartOfDay(zone).toInstant();
+        Instant endOfDay = date.plusDays(1).atStartOfDay(zone).toInstant();
+        return findDirtyNotes(startOfDay, endOfDay);
     }
 }

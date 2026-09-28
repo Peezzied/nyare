@@ -788,32 +788,6 @@
       "source_location": "L14"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_exception_badrequestexception_badrequestexception",
-      "label": "BadRequestException",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 152,
-      "community_name": "BadRequestException",
-      "file_type": "code",
-      "norm_label": "badrequestexception",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/exception/BadRequestException.java",
-      "source_location": "L16"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_exception_resourcenotfoundexception_resourcenotfoundexception",
-      "label": "ResourceNotFoundException",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 152,
-      "community_name": "BadRequestException",
-      "file_type": "code",
-      "norm_label": "resourcenotfoundexception",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/exception/ResourceNotFoundException.java",
-      "source_location": "L6"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_config_webconfig_webconfig",
       "label": "WebConfig",
       "_callable": true,
@@ -885,11 +859,37 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 166,
-      "community_name": "GlobalExceptionHandler.java",
+      "community_name": "BadRequestException",
       "file_type": "code",
       "norm_label": "globalexceptionhandler",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/controller/GlobalExceptionHandler.java",
       "source_location": "L16"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_exception_badrequestexception_badrequestexception",
+      "label": "BadRequestException",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 166,
+      "community_name": "BadRequestException",
+      "file_type": "code",
+      "norm_label": "badrequestexception",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/exception/BadRequestException.java",
+      "source_location": "L16"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_exception_resourcenotfoundexception_resourcenotfoundexception",
+      "label": "ResourceNotFoundException",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 166,
+      "community_name": "BadRequestException",
+      "file_type": "code",
+      "norm_label": "resourcenotfoundexception",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/exception/ResourceNotFoundException.java",
+      "source_location": "L6"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest",
@@ -4601,18 +4601,6 @@
       "source_location": "L431"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_buildcontextscsv",
-      "label": ".buildContextsCsv()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "StudyPlannerEngine",
-      "file_type": "code",
-      "norm_label": ".buildcontextscsv()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L275"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_callwithtimeout",
       "label": ".callWithTimeout()",
       "_callable": true,
@@ -4689,18 +4677,6 @@
       "norm_label": ".emptyextracteddata()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
       "source_location": "L386"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_formatage",
-      "label": ".formatAge()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "StudyPlannerEngine",
-      "file_type": "code",
-      "norm_label": ".formatage()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
-      "source_location": "L300"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_studyplannerenginetest_extractedtaskdistinguishespromotionfromnewtask",
@@ -5655,40 +5631,6 @@
       "source_location": "L83"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_tocsv",
-      "label": ".toCsv()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 140,
-      "community_name": ".parse",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "builder",
-            "receiver_type": "CSVFormat",
-            "lang": "java",
-            "line": "L57"
-          },
-          {
-            "callee": "print",
-            "receiver_type": "CSVFormat",
-            "lang": "java",
-            "line": "L61"
-          },
-          {
-            "callee": "toString",
-            "receiver_type": "StringWriter",
-            "lang": "java",
-            "line": "L69"
-          }
-        ]
-      },
-      "norm_label": ".tocsv()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
-      "source_location": "L42"
-    },
-    {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_getvalue_unmappedcolumn_returnsnull",
       "label": ".getValue_unmappedColumn_returnsNull()",
       "_callable": true,
@@ -5699,18 +5641,6 @@
       "norm_label": ".getvalue_unmappedcolumn_returnsnull()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
       "source_location": "L97"
-    },
-    {
-      "id": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_nullorblank_returnsemptylist",
-      "label": ".parse_nullOrBlank_returnsEmptyList()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 140,
-      "community_name": ".parse",
-      "file_type": "code",
-      "norm_label": ".parse_nullorblank_returnsemptylist()",
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
-      "source_location": "L88"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_reader_convertsstream",
@@ -5777,28 +5707,6 @@
       "norm_label": ".tocsv_customitems_producesvalidcsv()",
       "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
       "source_location": "L16"
-    },
-    {
-      "id": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_tocsv_nullorempty_returnsemptystring",
-      "label": ".toCsv_nullOrEmpty_returnsEmptyString()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 140,
-      "community_name": ".parse",
-      "file_type": "code",
-      "metadata": {
-        "unresolved_calls": [
-          {
-            "callee": "emptyList",
-            "receiver_type": "Collections",
-            "lang": "java",
-            "line": "L41"
-          }
-        ]
-      },
-      "norm_label": ".tocsv_nullorempty_returnsemptystring()",
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
-      "source_location": "L36"
     },
     {
       "id": "agents_skills_dr_jskill_scripts_normalize_vue_frontend_main",
@@ -5873,30 +5781,6 @@
       "source_location": "L92"
     },
     {
-      "id": "backend_src_main_java_group_four_nyare_nyare_exception_badrequestexception_badrequestexception_badrequestexception",
-      "label": ".BadRequestException()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 152,
-      "community_name": "BadRequestException",
-      "file_type": "code",
-      "norm_label": ".badrequestexception()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/exception/BadRequestException.java",
-      "source_location": "L23"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_exception_resourcenotfoundexception_resourcenotfoundexception_resourcenotfoundexception",
-      "label": ".ResourceNotFoundException()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 152,
-      "community_name": "BadRequestException",
-      "file_type": "code",
-      "norm_label": ".resourcenotfoundexception()",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/exception/ResourceNotFoundException.java",
-      "source_location": "L8"
-    },
-    {
       "id": "backend_src_main_java_group_four_nyare_nyare_config_webconfig_webconfig_addcorsmappings",
       "label": ".addCorsMappings()",
       "_callable": true,
@@ -5965,6 +5849,52 @@
       "source_location": "L15"
     },
     {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_parser_csvparser_csvparser_tocsv",
+      "label": ".toCsv()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 156,
+      "community_name": "StudyPlannerEngineTest.java",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "builder",
+            "receiver_type": "CSVFormat",
+            "lang": "java",
+            "line": "L57"
+          },
+          {
+            "callee": "print",
+            "receiver_type": "CSVFormat",
+            "lang": "java",
+            "line": "L61"
+          },
+          {
+            "callee": "toString",
+            "receiver_type": "StringWriter",
+            "lang": "java",
+            "line": "L69"
+          }
+        ]
+      },
+      "norm_label": ".tocsv()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/parser/CsvParser.java",
+      "source_location": "L42"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_buildcontextscsv",
+      "label": ".buildContextsCsv()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 156,
+      "community_name": "StudyPlannerEngineTest.java",
+      "file_type": "code",
+      "norm_label": ".buildcontextscsv()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
+      "source_location": "L275"
+    },
+    {
       "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_buildeventscsv",
       "label": ".buildEventsCsv()",
       "_callable": true,
@@ -5999,6 +5929,18 @@
       "norm_label": ".buildtaskscsv()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
       "source_location": "L246"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_formatage",
+      "label": ".formatAge()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 156,
+      "community_name": "StudyPlannerEngineTest.java",
+      "file_type": "code",
+      "norm_label": ".formatage()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
+      "source_location": "L300"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_ai_studyplannerengine_studyplannerengine_studyplannerengine",
@@ -6220,7 +6162,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 166,
-      "community_name": "GlobalExceptionHandler.java",
+      "community_name": "BadRequestException",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -6248,7 +6190,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 166,
-      "community_name": "GlobalExceptionHandler.java",
+      "community_name": "BadRequestException",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -6276,7 +6218,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 166,
-      "community_name": "GlobalExceptionHandler.java",
+      "community_name": "BadRequestException",
       "file_type": "code",
       "metadata": {
         "unresolved_calls": [
@@ -6309,6 +6251,30 @@
       "norm_label": ".handlevalidation()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/controller/GlobalExceptionHandler.java",
       "source_location": "L33"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_exception_badrequestexception_badrequestexception_badrequestexception",
+      "label": ".BadRequestException()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 166,
+      "community_name": "BadRequestException",
+      "file_type": "code",
+      "norm_label": ".badrequestexception()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/exception/BadRequestException.java",
+      "source_location": "L23"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_exception_resourcenotfoundexception_resourcenotfoundexception_resourcenotfoundexception",
+      "label": ".ResourceNotFoundException()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 166,
+      "community_name": "BadRequestException",
+      "file_type": "code",
+      "norm_label": ".resourcenotfoundexception()",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/exception/ResourceNotFoundException.java",
+      "source_location": "L8"
     },
     {
       "id": "backend_src_main_java_group_four_nyare_nyare_dto_academiceventrequest_academiceventrequest_academiceventrequest",
@@ -6943,6 +6909,40 @@
       "norm_label": ".setlastprocessedat()",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/model/Note.java",
       "source_location": "L135"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_parse_nullorblank_returnsemptylist",
+      "label": ".parse_nullOrBlank_returnsEmptyList()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 178,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": ".parse_nullorblank_returnsemptylist()",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L88"
+    },
+    {
+      "id": "backend_src_test_java_group_four_nyare_nyare_ai_parser_csvparsertest_csvparsertest_tocsv_nullorempty_returnsemptystring",
+      "label": ".toCsv_nullOrEmpty_returnsEmptyString()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 178,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "emptyList",
+            "receiver_type": "Collections",
+            "lang": "java",
+            "line": "L41"
+          }
+        ]
+      },
+      "norm_label": ".tocsv_nullorempty_returnsemptystring()",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/ai/parser/CsvParserTest.java",
+      "source_location": "L36"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_springaiintegrationtest_springaiintegrationtest_executelivechatprompt",
@@ -14694,6 +14694,18 @@
       "source_location": "L1"
     },
     {
+      "id": "backend_docs_conventions_exceptions",
+      "label": "exceptions.md",
+      "_origin": "ast",
+      "community": 151,
+      "community_name": "Canonical Exception Strategy",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "exceptions.md",
+      "source_file": "backend/docs/conventions/exceptions.md",
+      "source_location": "L1"
+    },
+    {
       "id": "backend_docs_conventions_exceptions_1_core_policy_no_custom_exception_explosion",
       "label": "1. Core Policy: No Custom Exception Explosion",
       "_origin": "ast",
@@ -14739,61 +14751,6 @@
       "node_kind": "heading",
       "norm_label": "canonical exception strategy",
       "source_file": "backend/docs/conventions/exceptions.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_exception_badrequestexception",
-      "label": "BadRequestException.java",
-      "_origin": "ast",
-      "community": 152,
-      "community_name": "BadRequestException",
-      "file_type": "code",
-      "norm_label": "badrequestexception.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/exception/BadRequestException.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_exception_resourcenotfoundexception",
-      "label": "ResourceNotFoundException.java",
-      "_origin": "ast",
-      "community": 152,
-      "community_name": "BadRequestException",
-      "file_type": "code",
-      "norm_label": "resourcenotfoundexception.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/exception/ResourceNotFoundException.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_service_academiceventservice",
-      "label": "AcademicEventService.java",
-      "_origin": "ast",
-      "community": 152,
-      "community_name": "BadRequestException",
-      "file_type": "code",
-      "norm_label": "academiceventservice.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/AcademicEventService.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_service_noteservice",
-      "label": "NoteService.java",
-      "_origin": "ast",
-      "community": 152,
-      "community_name": "BadRequestException",
-      "file_type": "code",
-      "norm_label": "noteservice.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/NoteService.java",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_src_main_java_group_four_nyare_nyare_service_scheduleservice",
-      "label": "ScheduleService.java",
-      "_origin": "ast",
-      "community": 152,
-      "community_name": "BadRequestException",
-      "file_type": "code",
-      "norm_label": "scheduleservice.java",
-      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/ScheduleService.java",
       "source_location": "L1"
     },
     {
@@ -15092,17 +15049,6 @@
       "source_location": ""
     },
     {
-      "id": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest",
-      "label": "WebConfigTest.java",
-      "_origin": "ast",
-      "community": 155,
-      "community_name": ".addCorsMappings_registersExpectedConfiguration",
-      "file_type": "code",
-      "norm_label": "webconfigtest.java",
-      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
-      "source_location": "L1"
-    },
-    {
       "id": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest_java_override",
       "label": "Override",
       "_origin": "ast",
@@ -15177,6 +15123,17 @@
       "file_type": "code",
       "norm_label": "studyplannerengine.java",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_exception_badrequestexception",
+      "label": "BadRequestException.java",
+      "_origin": "ast",
+      "community": 156,
+      "community_name": "StudyPlannerEngineTest.java",
+      "file_type": "code",
+      "norm_label": "badrequestexception.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/exception/BadRequestException.java",
       "source_location": "L1"
     },
     {
@@ -15534,90 +15491,6 @@
       "norm_label": "targetdir",
       "source_file": ".agents/skills/dr-jskill/scripts/sync-workshop-docs.mjs",
       "source_location": "L26"
-    },
-    {
-      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_copilot_cli_doesn_t_see_the_dr_jskill_skill",
-      "label": "Copilot CLI doesn't see the Dr JSkill skill",
-      "_origin": "ast",
-      "community": 160,
-      "community_name": "Setup issues",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "copilot cli doesn't see the dr jskill skill",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
-      "source_location": "L55"
-    },
-    {
-      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_copilot_command_not_found",
-      "label": "`copilot` command not found",
-      "_origin": "ast",
-      "community": 160,
-      "community_name": "Setup issues",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "`copilot` command not found",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
-      "source_location": "L45"
-    },
-    {
-      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_docker_cannot_connect_to_the_docker_daemon",
-      "label": "Docker: `Cannot connect to the Docker daemon`",
-      "_origin": "ast",
-      "community": 160,
-      "community_name": "Setup issues",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "docker: `cannot connect to the docker daemon`",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
-      "source_location": "L37"
-    },
-    {
-      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_java_version_shows_java_21_or_similar",
-      "label": "`java --version` shows Java 21 (or similar)",
-      "_origin": "ast",
-      "community": 160,
-      "community_name": "Setup issues",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "`java --version` shows java 21 (or similar)",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
-      "source_location": "L21"
-    },
-    {
-      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_jdtls_help_errors_not_found",
-      "label": "`jdtls --help` errors / not found",
-      "_origin": "ast",
-      "community": 160,
-      "community_name": "Setup issues",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "`jdtls --help` errors / not found",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
-      "source_location": "L71"
-    },
-    {
-      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_node_version_prints_an_older_version",
-      "label": "`node --version` prints an older version",
-      "_origin": "ast",
-      "community": 160,
-      "community_name": "Setup issues",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "`node --version` prints an older version",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
-      "source_location": "L9"
-    },
-    {
-      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_setup_issues",
-      "label": "Setup issues",
-      "_origin": "ast",
-      "community": 160,
-      "community_name": "Setup issues",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "setup issues",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
-      "source_location": "L7"
     },
     {
       "id": "docs_conceptual_model_1_academic_event_vs_deadline",
@@ -16004,10 +15877,54 @@
       "label": "GlobalExceptionHandler.java",
       "_origin": "ast",
       "community": 166,
-      "community_name": "GlobalExceptionHandler.java",
+      "community_name": "BadRequestException",
       "file_type": "code",
       "norm_label": "globalexceptionhandler.java",
       "source_file": "backend/src/main/java/group/four/nyare/nyare/controller/GlobalExceptionHandler.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_exception_resourcenotfoundexception",
+      "label": "ResourceNotFoundException.java",
+      "_origin": "ast",
+      "community": 166,
+      "community_name": "BadRequestException",
+      "file_type": "code",
+      "norm_label": "resourcenotfoundexception.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/exception/ResourceNotFoundException.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_service_academiceventservice",
+      "label": "AcademicEventService.java",
+      "_origin": "ast",
+      "community": 166,
+      "community_name": "BadRequestException",
+      "file_type": "code",
+      "norm_label": "academiceventservice.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/AcademicEventService.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_service_noteservice",
+      "label": "NoteService.java",
+      "_origin": "ast",
+      "community": 166,
+      "community_name": "BadRequestException",
+      "file_type": "code",
+      "norm_label": "noteservice.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/NoteService.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_src_main_java_group_four_nyare_nyare_service_scheduleservice",
+      "label": "ScheduleService.java",
+      "_origin": "ast",
+      "community": 166,
+      "community_name": "BadRequestException",
+      "file_type": "code",
+      "norm_label": "scheduleservice.java",
+      "source_file": "backend/src/main/java/group/four/nyare/nyare/service/ScheduleService.java",
       "source_location": "L1"
     },
     {
@@ -16015,7 +15932,7 @@
       "label": "org.springframework.http.ProblemDetail",
       "_origin": "ast",
       "community": 166,
-      "community_name": "GlobalExceptionHandler.java",
+      "community_name": "BadRequestException",
       "file_type": "code",
       "norm_label": "org.springframework.http.problemdetail",
       "source_file": "",
@@ -16026,7 +15943,7 @@
       "label": "org.springframework.web.bind.annotation.ExceptionHandler",
       "_origin": "ast",
       "community": 166,
-      "community_name": "GlobalExceptionHandler.java",
+      "community_name": "BadRequestException",
       "file_type": "code",
       "norm_label": "org.springframework.web.bind.annotation.exceptionhandler",
       "source_file": "",
@@ -16037,7 +15954,7 @@
       "label": "org.springframework.web.bind.annotation.RestControllerAdvice",
       "_origin": "ast",
       "community": 166,
-      "community_name": "GlobalExceptionHandler.java",
+      "community_name": "BadRequestException",
       "file_type": "code",
       "norm_label": "org.springframework.web.bind.annotation.restcontrolleradvice",
       "source_file": "",
@@ -16048,7 +15965,7 @@
       "label": "org.springframework.web.bind.MethodArgumentNotValidException",
       "_origin": "ast",
       "community": 166,
-      "community_name": "GlobalExceptionHandler.java",
+      "community_name": "BadRequestException",
       "file_type": "code",
       "norm_label": "org.springframework.web.bind.methodargumentnotvalidexception",
       "source_file": "",
@@ -16523,6 +16440,18 @@
       "norm_label": "3. high-level planning",
       "source_file": "backend/.agents/skills/prompt-engineering/references/system-prompt-design.md",
       "source_location": "L29"
+    },
+    {
+      "id": "backend_agents_skills_prompt_engineering_references_system_prompt_design_4_schedule_anchored_event_resolution",
+      "label": "4. Schedule-Anchored Event Resolution",
+      "_origin": "ast",
+      "community": 171,
+      "community_name": "Prompt Guidelines",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4. schedule-anchored event resolution",
+      "source_file": "backend/.agents/skills/prompt-engineering/references/system-prompt-design.md",
+      "source_location": "L33"
     },
     {
       "id": "backend_agents_skills_prompt_engineering_references_system_prompt_design_core_structure",
@@ -17029,6 +16958,17 @@
       "source_location": "L1"
     },
     {
+      "id": "backend_src_test_java_group_four_nyare_nyare_config_webconfigtest",
+      "label": "WebConfigTest.java",
+      "_origin": "ast",
+      "community": 178,
+      "community_name": "org.junit.jupiter.api.Test",
+      "file_type": "code",
+      "norm_label": "webconfigtest.java",
+      "source_file": "backend/src/test/java/group/four/nyare/nyare/config/WebConfigTest.java",
+      "source_location": "L1"
+    },
+    {
       "id": "backend_src_test_java_group_four_nyare_nyare_model_notetest",
       "label": "NoteTest.java",
       "_origin": "ast",
@@ -17301,138 +17241,6 @@
       "norm_label": "studyplannerengine",
       "source_file": "",
       "source_location": ""
-    },
-    {
-      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_a_post_returns_400_and_the_log_says_cannot_map_null_into_type_boolean",
-      "label": "A POST returns 400 and the log says \"Cannot map `null` into type `boolean`\"",
-      "_origin": "ast",
-      "community": 184,
-      "community_name": "Docker & deployment",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "a post returns 400 and the log says \"cannot map `null` into type `boolean`\"",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
-      "source_location": "L379"
-    },
-    {
-      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_docker_build_fails_downloading_node_npm_ssl_peer_shut_down_incorrectly",
-      "label": "Docker build fails downloading Node/npm: \"SSL peer shut down incorrectly\"",
-      "_origin": "ast",
-      "community": 184,
-      "community_name": "Docker & deployment",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "docker build fails downloading node/npm: \"ssl peer shut down incorrectly\"",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
-      "source_location": "L243"
-    },
-    {
-      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_docker_compose_up_builds_slowly_every_time",
-      "label": "`docker compose up` builds slowly every time",
-      "_origin": "ast",
-      "community": 184,
-      "community_name": "Docker & deployment",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "`docker compose up` builds slowly every time",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
-      "source_location": "L237"
-    },
-    {
-      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_docker_deployment",
-      "label": "Docker & deployment",
-      "_origin": "ast",
-      "community": 184,
-      "community_name": "Docker & deployment",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "docker & deployment",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
-      "source_location": "L235"
-    },
-    {
-      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_docker_exec_sh_fails_with_exec_sh_executable_file_not_found",
-      "label": "`docker exec ... sh` fails with \"exec: \\\"sh\\\": executable file not found\"",
-      "_origin": "ast",
-      "community": 184,
-      "community_name": "Docker & deployment",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "`docker exec ... sh` fails with \"exec: \\\"sh\\\": executable file not found\"",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
-      "source_location": "L345"
-    },
-    {
-      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_spring_boot_actuator_endpoints_return_404",
-      "label": "Spring Boot Actuator endpoints return 404",
-      "_origin": "ast",
-      "community": 184,
-      "community_name": "Docker & deployment",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "spring boot actuator endpoints return 404",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
-      "source_location": "L358"
-    },
-    {
-      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_agent_behavior",
-      "label": "Agent behavior",
-      "_origin": "ast",
-      "community": 185,
-      "community_name": "Agent behavior",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "agent behavior",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
-      "source_location": "L167"
-    },
-    {
-      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_the_agent_insists_on_adding_a_dependency_i_rejected",
-      "label": "The agent insists on adding a dependency I rejected",
-      "_origin": "ast",
-      "community": 185,
-      "community_name": "Agent behavior",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "the agent insists on adding a dependency i rejected",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
-      "source_location": "L179"
-    },
-    {
-      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_the_agent_keeps_producing_different_code_each_run",
-      "label": "The agent keeps producing different code each run",
-      "_origin": "ast",
-      "community": 185,
-      "community_name": "Agent behavior",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "the agent keeps producing different code each run",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
-      "source_location": "L187"
-    },
-    {
-      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_the_agent_made_a_huge_change_i_didn_t_want",
-      "label": "The agent made a huge change I didn't want",
-      "_origin": "ast",
-      "community": 185,
-      "community_name": "Agent behavior",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "the agent made a huge change i didn't want",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
-      "source_location": "L169"
-    },
-    {
-      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_the_agent_says_done_but_nothing_changed",
-      "label": "The agent says \"done\" but nothing changed",
-      "_origin": "ast",
-      "community": 185,
-      "community_name": "Agent behavior",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "the agent says \"done\" but nothing changed",
-      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
-      "source_location": "L191"
     },
     {
       "id": "backend_src_test_java_group_four_nyare_nyare_ai_studyplannerenginetest_java_studyplannerengine",
@@ -17754,6 +17562,30 @@
       "source_location": "L13"
     },
     {
+      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_a_post_returns_400_and_the_log_says_cannot_map_null_into_type_boolean",
+      "label": "A POST returns 400 and the log says \"Cannot map `null` into type `boolean`\"",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "Appendix B \u2014 Troubleshooting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "a post returns 400 and the log says \"cannot map `null` into type `boolean`\"",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
+      "source_location": "L379"
+    },
+    {
+      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_agent_behavior",
+      "label": "Agent behavior",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "Appendix B \u2014 Troubleshooting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "agent behavior",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
+      "source_location": "L167"
+    },
+    {
       "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_appendix_b_troubleshooting",
       "label": "Appendix B \u2014 Troubleshooting",
       "_origin": "ast",
@@ -17764,6 +17596,90 @@
       "norm_label": "appendix b \u2014 troubleshooting",
       "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
       "source_location": "L1"
+    },
+    {
+      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_copilot_cli_doesn_t_see_the_dr_jskill_skill",
+      "label": "Copilot CLI doesn't see the Dr JSkill skill",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "Appendix B \u2014 Troubleshooting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "copilot cli doesn't see the dr jskill skill",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
+      "source_location": "L55"
+    },
+    {
+      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_copilot_command_not_found",
+      "label": "`copilot` command not found",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "Appendix B \u2014 Troubleshooting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "`copilot` command not found",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
+      "source_location": "L45"
+    },
+    {
+      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_docker_build_fails_downloading_node_npm_ssl_peer_shut_down_incorrectly",
+      "label": "Docker build fails downloading Node/npm: \"SSL peer shut down incorrectly\"",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "Appendix B \u2014 Troubleshooting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "docker build fails downloading node/npm: \"ssl peer shut down incorrectly\"",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
+      "source_location": "L243"
+    },
+    {
+      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_docker_cannot_connect_to_the_docker_daemon",
+      "label": "Docker: `Cannot connect to the Docker daemon`",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "Appendix B \u2014 Troubleshooting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "docker: `cannot connect to the docker daemon`",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
+      "source_location": "L37"
+    },
+    {
+      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_docker_compose_up_builds_slowly_every_time",
+      "label": "`docker compose up` builds slowly every time",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "Appendix B \u2014 Troubleshooting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "`docker compose up` builds slowly every time",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
+      "source_location": "L237"
+    },
+    {
+      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_docker_deployment",
+      "label": "Docker & deployment",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "Appendix B \u2014 Troubleshooting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "docker & deployment",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
+      "source_location": "L235"
+    },
+    {
+      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_docker_exec_sh_fails_with_exec_sh_executable_file_not_found",
+      "label": "`docker exec ... sh` fails with \"exec: \\\"sh\\\": executable file not found\"",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "Appendix B \u2014 Troubleshooting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "`docker exec ... sh` fails with \"exec: \\\"sh\\\": executable file not found\"",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
+      "source_location": "L345"
     },
     {
       "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_frontend_build_fails_with_eacces_or_permission_errors",
@@ -17802,6 +17718,18 @@
       "source_location": "L82"
     },
     {
+      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_java_version_shows_java_21_or_similar",
+      "label": "`java --version` shows Java 21 (or similar)",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "Appendix B \u2014 Troubleshooting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "`java --version` shows java 21 (or similar)",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
+      "source_location": "L21"
+    },
+    {
       "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_jdtls_code_intelligence",
       "label": "JDTLS / code intelligence",
       "_origin": "ast",
@@ -17812,6 +17740,18 @@
       "norm_label": "jdtls / code intelligence",
       "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
       "source_location": "L391"
+    },
+    {
+      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_jdtls_help_errors_not_found",
+      "label": "`jdtls --help` errors / not found",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "Appendix B \u2014 Troubleshooting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "`jdtls --help` errors / not found",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
+      "source_location": "L71"
     },
     {
       "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_jdtls_never_finishes_indexing",
@@ -17874,6 +17814,18 @@
       "source_location": "L199"
     },
     {
+      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_node_version_prints_an_older_version",
+      "label": "`node --version` prints an older version",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "Appendix B \u2014 Troubleshooting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "`node --version` prints an older version",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
+      "source_location": "L9"
+    },
+    {
       "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_port_8080_already_in_use",
       "label": "Port 8080 already in use",
       "_origin": "ast",
@@ -17884,6 +17836,30 @@
       "norm_label": "port 8080 already in use",
       "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
       "source_location": "L150"
+    },
+    {
+      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_setup_issues",
+      "label": "Setup issues",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "Appendix B \u2014 Troubleshooting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "setup issues",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_spring_boot_actuator_endpoints_return_404",
+      "label": "Spring Boot Actuator endpoints return 404",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "Appendix B \u2014 Troubleshooting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "spring boot actuator endpoints return 404",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
+      "source_location": "L358"
     },
     {
       "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_stale_type_errors_after_a_pom_xml_change",
@@ -17944,6 +17920,54 @@
       "norm_label": "tests fail only on ci, not locally",
       "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
       "source_location": "L223"
+    },
+    {
+      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_the_agent_insists_on_adding_a_dependency_i_rejected",
+      "label": "The agent insists on adding a dependency I rejected",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "Appendix B \u2014 Troubleshooting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "the agent insists on adding a dependency i rejected",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
+      "source_location": "L179"
+    },
+    {
+      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_the_agent_keeps_producing_different_code_each_run",
+      "label": "The agent keeps producing different code each run",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "Appendix B \u2014 Troubleshooting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "the agent keeps producing different code each run",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
+      "source_location": "L187"
+    },
+    {
+      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_the_agent_made_a_huge_change_i_didn_t_want",
+      "label": "The agent made a huge change I didn't want",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "Appendix B \u2014 Troubleshooting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "the agent made a huge change i didn't want",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
+      "source_location": "L169"
+    },
+    {
+      "id": "agents_skills_dr_jskill_docs_workshop_appendix_b_troubleshooting_the_agent_says_done_but_nothing_changed",
+      "label": "The agent says \"done\" but nothing changed",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "Appendix B \u2014 Troubleshooting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "the agent says \"done\" but nothing changed",
+      "source_file": ".agents/skills/dr-jskill/docs/workshop/appendix-b-troubleshooting.md",
+      "source_location": "L191"
     },
     {
       "id": "agents_skills_dr_jskill_docs_workshop_08_deployment_08_deployment",
@@ -18472,138 +18496,6 @@
       "norm_label": "which model should you pick?",
       "source_file": ".agents/skills/dr-jskill/docs/workshop/02-getting-started.md",
       "source_location": "L34"
-    },
-    {
-      "id": "backend_agents",
-      "label": "AGENTS.md",
-      "_origin": "ast",
-      "community": 31,
-      "community_name": "conventions.md",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "agents.md",
-      "source_file": "backend/AGENTS.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_docs_conventions",
-      "label": "conventions.md",
-      "_origin": "ast",
-      "community": 31,
-      "community_name": "conventions.md",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "conventions.md",
-      "source_file": "backend/docs/conventions.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_docs_conventions_architecture",
-      "label": "architecture.md",
-      "_origin": "ast",
-      "community": 31,
-      "community_name": "conventions.md",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "architecture.md",
-      "source_file": "backend/docs/conventions/architecture.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_docs_conventions_controllers_and_rest",
-      "label": "controllers-and-rest.md",
-      "_origin": "ast",
-      "community": 31,
-      "community_name": "conventions.md",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "controllers-and-rest.md",
-      "source_file": "backend/docs/conventions/controllers-and-rest.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_docs_conventions_dtos_and_validation",
-      "label": "dtos-and-validation.md",
-      "_origin": "ast",
-      "community": 31,
-      "community_name": "conventions.md",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "dtos-and-validation.md",
-      "source_file": "backend/docs/conventions/dtos-and-validation.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_docs_conventions_entities",
-      "label": "entities.md",
-      "_origin": "ast",
-      "community": 31,
-      "community_name": "conventions.md",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "entities.md",
-      "source_file": "backend/docs/conventions/entities.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_docs_conventions_exceptions",
-      "label": "exceptions.md",
-      "_origin": "ast",
-      "community": 31,
-      "community_name": "conventions.md",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "exceptions.md",
-      "source_file": "backend/docs/conventions/exceptions.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_docs_conventions_nyare_backend_conventions_and_standards_index",
-      "label": "Nyare Backend Conventions and Standards (Index)",
-      "_origin": "ast",
-      "community": 31,
-      "community_name": "conventions.md",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "nyare backend conventions and standards (index)",
-      "source_file": "backend/docs/conventions.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_docs_conventions_persistence_sqlite",
-      "label": "persistence-sqlite.md",
-      "_origin": "ast",
-      "community": 31,
-      "community_name": "conventions.md",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "persistence-sqlite.md",
-      "source_file": "backend/docs/conventions/persistence-sqlite.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_docs_conventions_services_and_tx",
-      "label": "services-and-tx.md",
-      "_origin": "ast",
-      "community": 31,
-      "community_name": "conventions.md",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "services-and-tx.md",
-      "source_file": "backend/docs/conventions/services-and-tx.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_docs_conventions_testing_standards",
-      "label": "testing-standards.md",
-      "_origin": "ast",
-      "community": 31,
-      "community_name": "conventions.md",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "testing-standards.md",
-      "source_file": "backend/docs/conventions/testing-standards.md",
-      "source_location": "L1"
     },
     {
       "id": "agents_skills_dr_jskill_docs_workshop_appendix_a_prompts_appendix_a_prompt_cheat_sheet",
@@ -20389,6 +20281,18 @@
       "source_location": "L17"
     },
     {
+      "id": "backend_docs_conventions_controllers_and_rest",
+      "label": "controllers-and-rest.md",
+      "_origin": "ast",
+      "community": 60,
+      "community_name": "REST API & Controller Guidelines",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "controllers-and-rest.md",
+      "source_file": "backend/docs/conventions/controllers-and-rest.md",
+      "source_location": "L1"
+    },
+    {
       "id": "backend_docs_conventions_controllers_and_rest_1_paths_endpoints",
       "label": "1. Paths & Endpoints",
       "_origin": "ast",
@@ -20945,6 +20849,18 @@
       "source_location": "L1"
     },
     {
+      "id": "backend_docs_conventions_entities",
+      "label": "entities.md",
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "Domain Entity Guidelines",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "entities.md",
+      "source_file": "backend/docs/conventions/entities.md",
+      "source_location": "L1"
+    },
+    {
       "id": "backend_docs_conventions_entities_1_identifier_strategy",
       "label": "1. Identifier Strategy",
       "_origin": "ast",
@@ -21017,6 +20933,18 @@
       "source_location": "L1"
     },
     {
+      "id": "backend_docs_conventions_architecture",
+      "label": "architecture.md",
+      "_origin": "ast",
+      "community": 69,
+      "community_name": "Architecture & Package Conventions",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "architecture.md",
+      "source_file": "backend/docs/conventions/architecture.md",
+      "source_location": "L1"
+    },
+    {
       "id": "backend_docs_conventions_architecture_1_layered_architecture",
       "label": "1. Layered Architecture",
       "_origin": "ast",
@@ -21074,6 +21002,18 @@
       "node_kind": "heading",
       "norm_label": "architecture & package conventions",
       "source_file": "backend/docs/conventions/architecture.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_docs_conventions_dtos_and_validation",
+      "label": "dtos-and-validation.md",
+      "_origin": "ast",
+      "community": 70,
+      "community_name": "DTO & Validation Guidelines",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "dtos-and-validation.md",
+      "source_file": "backend/docs/conventions/dtos-and-validation.md",
       "source_location": "L1"
     },
     {
@@ -21701,11 +21641,47 @@
       "source_location": "L100"
     },
     {
+      "id": "backend_docs_conventions",
+      "label": "conventions.md",
+      "_origin": "ast",
+      "community": 73,
+      "community_name": "conventions.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "conventions.md",
+      "source_file": "backend/docs/conventions.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_docs_conventions_nyare_backend_conventions_and_standards_index",
+      "label": "Nyare Backend Conventions and Standards (Index)",
+      "_origin": "ast",
+      "community": 73,
+      "community_name": "conventions.md",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "nyare backend conventions and standards (index)",
+      "source_file": "backend/docs/conventions.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_docs_conventions_persistence_sqlite",
+      "label": "persistence-sqlite.md",
+      "_origin": "ast",
+      "community": 73,
+      "community_name": "conventions.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "persistence-sqlite.md",
+      "source_file": "backend/docs/conventions/persistence-sqlite.md",
+      "source_location": "L1"
+    },
+    {
       "id": "backend_docs_conventions_persistence_sqlite_1_single_writer_connection_pool",
       "label": "1. Single-Writer Connection Pool",
       "_origin": "ast",
       "community": 73,
-      "community_name": "Persistence & SQLite Guidelines",
+      "community_name": "conventions.md",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "1. single-writer connection pool",
@@ -21717,7 +21693,7 @@
       "label": "2. Schema Management",
       "_origin": "ast",
       "community": 73,
-      "community_name": "Persistence & SQLite Guidelines",
+      "community_name": "conventions.md",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "2. schema management",
@@ -21729,7 +21705,7 @@
       "label": "3. Open-In-View Disabled",
       "_origin": "ast",
       "community": 73,
-      "community_name": "Persistence & SQLite Guidelines",
+      "community_name": "conventions.md",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "3. open-in-view disabled",
@@ -21741,7 +21717,7 @@
       "label": "Persistence & SQLite Guidelines",
       "_origin": "ast",
       "community": 73,
-      "community_name": "Persistence & SQLite Guidelines",
+      "community_name": "conventions.md",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "persistence & sqlite guidelines",
@@ -21953,6 +21929,18 @@
       "source_location": "L64"
     },
     {
+      "id": "backend_docs_conventions_services_and_tx",
+      "label": "services-and-tx.md",
+      "_origin": "ast",
+      "community": 93,
+      "community_name": "Service & Transaction Guidelines",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "services-and-tx.md",
+      "source_file": "backend/docs/conventions/services-and-tx.md",
+      "source_location": "L1"
+    },
+    {
       "id": "backend_docs_conventions_services_and_tx_1_interface_implementation_structure",
       "label": "1. Interface + Implementation Structure",
       "_origin": "ast",
@@ -22013,11 +22001,35 @@
       "source_location": "L1"
     },
     {
+      "id": "backend_agents",
+      "label": "AGENTS.md",
+      "_origin": "ast",
+      "community": 94,
+      "community_name": "AGENTS.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "agents.md",
+      "source_file": "backend/AGENTS.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_docs_conventions_testing_standards",
+      "label": "testing-standards.md",
+      "_origin": "ast",
+      "community": 94,
+      "community_name": "AGENTS.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "testing-standards.md",
+      "source_file": "backend/docs/conventions/testing-standards.md",
+      "source_location": "L1"
+    },
+    {
       "id": "backend_docs_conventions_testing_standards_1_test_slices",
       "label": "1. Test Slices",
       "_origin": "ast",
       "community": 94,
-      "community_name": "Verification & Testing Standards",
+      "community_name": "AGENTS.md",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "1. test slices",
@@ -22029,7 +22041,7 @@
       "label": "2. Mocking & Service Interface Conventions",
       "_origin": "ast",
       "community": 94,
-      "community_name": "Verification & Testing Standards",
+      "community_name": "AGENTS.md",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "2. mocking & service interface conventions",
@@ -22041,7 +22053,7 @@
       "label": "3. Test Conventions",
       "_origin": "ast",
       "community": 94,
-      "community_name": "Verification & Testing Standards",
+      "community_name": "AGENTS.md",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "3. test conventions",
@@ -22053,7 +22065,7 @@
       "label": "Controller Test Example (`@MockitoBean` on Interface)",
       "_origin": "ast",
       "community": 94,
-      "community_name": "Verification & Testing Standards",
+      "community_name": "AGENTS.md",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "controller test example (`@mockitobean` on interface)",
@@ -22065,7 +22077,7 @@
       "label": "Service Unit Test Example (`@Mock` and `@InjectMocks`)",
       "_origin": "ast",
       "community": 94,
-      "community_name": "Verification & Testing Standards",
+      "community_name": "AGENTS.md",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "service unit test example (`@mock` and `@injectmocks`)",
@@ -22077,7 +22089,7 @@
       "label": "Verification & Testing Standards",
       "_origin": "ast",
       "community": 94,
-      "community_name": "Verification & Testing Standards",
+      "community_name": "AGENTS.md",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "verification & testing standards",
@@ -44398,6 +44410,17 @@
       "weight": 1.0
     },
     {
+      "source": "backend_agents_skills_prompt_engineering_references_system_prompt_design_prompt_guidelines",
+      "target": "backend_agents_skills_prompt_engineering_references_system_prompt_design_4_schedule_anchored_event_resolution",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/.agents/skills/prompt-engineering/references/system-prompt-design.md",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
       "source": "backend_agents_skills_prompt_engineering_references_system_prompt_design_system_prompt_design_for_nyare",
       "target": "backend_agents_skills_prompt_engineering_references_system_prompt_design_prompt_guidelines",
       "relation": "contains",
@@ -58838,5 +58861,5 @@
       "source_file": ".agents/skills/dr-jskill/references/SPRING-BOOT-4.md"
     }
   ],
-  "built_at_commit": "845ca23c05b411e8a6bedc2c8d12d6caca5b5cca"
+  "built_at_commit": "5f501a7487e9e843e365d3c791e3efe1b48e17eb"
 }

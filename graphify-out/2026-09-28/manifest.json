@@ -1974,8 +1974,8 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/group/four/nyare/nyare/ai/StudyPlannerEngine.java": {
-    "mtime": 1790529410.5159998,
-    "seen": 1790529741.0718307,
+    "mtime": 1790530389.1166632,
+    "seen": 1790531552.991761,
     "ast_hash": "a1dcb6df5f62d51d5670b549f742a6be",
     "semantic_hash": ""
   },
@@ -2010,9 +2010,9 @@
     "semantic_hash": ""
   },
   "backend/.agents/skills/prompt-engineering/references/system-prompt-design.md": {
-    "mtime": 1790421447.596743,
-    "seen": 1790437731.2623007,
-    "ast_hash": "2eaae565551e4c1c02fcc0ac846f952e",
+    "mtime": 1790530765.5140388,
+    "seen": 1790531552.9920442,
+    "ast_hash": "206fceccf2f988073eebf27c6ea51ff4",
     "semantic_hash": ""
   },
   "backend/.agents/skills/generating-test-notes/SKILL.md": {

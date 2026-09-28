@@ -3,17 +3,20 @@ package group.four.nyare.nyare.service;
 import group.four.nyare.nyare.dto.ProcessSummaryResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
 
+import java.time.LocalDate;
+
 /**
  * Service contract for processing daily course journal notes.
  */
 public interface StudyPlannerService {
 
     /**
-     * Processes today's notes across all courses, materializes extracted entities,
-     * and returns the count summary.
+     * Processes dirty notes for the given date across all courses, materializes
+     * extracted entities, and returns the count summary.
      *
+     * @param date the calendar date whose dirty notes will be processed
      * @return summary count of created tasks, events, and contexts
-     * @throws BadRequestException if no notes exist for today
+     * @throws BadRequestException if no dirty notes exist for the given date
      */
-    ProcessSummaryResponse processTodayNotes();
+    ProcessSummaryResponse processNotes(LocalDate date);
 }

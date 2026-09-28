@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import tools.jackson.databind.ObjectMapper;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 /**
@@ -44,7 +45,7 @@ public class StudyPlannerController {
 
         Thread.ofVirtual().start(() -> {
             try {
-                ProcessSummaryResponse result = studyPlannerService.processTodayNotes();
+                ProcessSummaryResponse result = studyPlannerService.processNotes(LocalDate.now());
                 String json = OBJECT_MAPPER.writeValueAsString(result);
                 emitter.send(SseEmitter.event().name("done").data(json));
                 emitter.complete();

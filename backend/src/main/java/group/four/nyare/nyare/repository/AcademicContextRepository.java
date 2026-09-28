@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -36,4 +37,18 @@ public interface AcademicContextRepository extends JpaRepository<AcademicContext
      * @return list of academic context records ordered by createdAt descending
      */
     List<AcademicContext> findByCourseIdOrderByCreatedAtDesc(Long courseId);
+
+    /**
+     * Retrieves academic context records for a set of courses, ordered by creation
+     * timestamp descending.
+     *
+     * @param courseIds the set of course IDs to include
+     * @return context records ordered by createdAt descending
+     */
+    @Query("""
+            SELECT c FROM AcademicContext c
+            WHERE c.course.id IN :courseIds
+            ORDER BY c.createdAt DESC
+            """)
+    List<AcademicContext> findByCourseIdInOrderByCreatedAtDesc(@Param("courseIds") Set<Long> courseIds);
 }
