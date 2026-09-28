@@ -143,8 +143,7 @@ public class StudyPlannerEngine {
         List<Note> validNotes = notes.stream()
                 .filter(n -> n != null
                         && n.getContent() != null
-                        && n.getContent().getMarkdown() != null
-                        && !n.getContent().getMarkdown().isBlank())
+                        && !n.getContent().isBlank())
                 .toList();
 
         if (validNotes.isEmpty()) {
@@ -159,7 +158,7 @@ public class StudyPlannerEngine {
                 note -> new Object[]{
                         noteCodec.encode(note),
                         note.getCourse() != null ? note.getCourse().getName() : "",
-                        note.getContent().getMarkdown()
+                        note.getContent()
                 }
         );
 
@@ -306,27 +305,6 @@ public class StudyPlannerEngine {
         return months + " months old";
     }
 
-//    private String processImagesToCsv(List<Note> notes, StubReferenceCodec<Note> noteCodec) {
-//        // ponytail: image vision processing deferred — serializes existing descriptions only
-//        StubReferenceCodec<String> imageCodec = new StubReferenceCodec<>("i");
-//        List<ImageRow> imageRows = new ArrayList<>();
-//        for (Note note : notes) {
-//            if (note.getContent() != null && note.getContent().getImageMetadata() != null) {
-//                String noteRef = noteCodec.encode(note);
-//                note.getContent().getImageMetadata().forEach((imageId, metadata) -> {
-//                    if (metadata != null) {
-//                        String imageRef = imageCodec.encode(imageId);
-//                        String description = metadata.getDescription() != null ? metadata.getDescription() : "";
-//                        imageRows.add(new ImageRow(imageRef, noteRef, description));
-//                    }
-//                });
-//            }
-//        }
-//        if (imageRows.isEmpty()) return "";
-//        return CsvParser.toCsv(CsvHeaders.IMAGE, imageRows,
-//                row -> new Object[]{row.imageRef(), row.noteRef(), row.description()});
-//    }
-
     private ExtractedData decodeReferences(
             PlannerAuditRecords.LlmPayload raw,
             StubReferenceCodec<Note> noteCodec,
@@ -389,8 +367,6 @@ public class StudyPlannerEngine {
     }
 
     // --- Inner types ---
-
-//    private record ImageRow(String imageRef, String noteRef, String description) {}
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record ExtractedTask(

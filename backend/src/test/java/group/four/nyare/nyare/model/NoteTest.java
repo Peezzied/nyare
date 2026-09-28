@@ -13,7 +13,7 @@ class NoteTest {
     @DisplayName("Note tracks and updates lastProcessedAt timestamp")
     void noteTracksLastProcessedAt() {
         Course course = new Course("CS101", "Computer Science");
-        Note note = new Note(course, new NoteContent("Markdown text", null));
+        Note note = new Note(course, "Markdown text");
 
         assertThat(note.getLastProcessedAt()).isNull();
 

@@ -5,7 +5,6 @@ import group.four.nyare.nyare.dto.NoteResponse;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.Note;
-import group.four.nyare.nyare.model.NoteContent;
 import group.four.nyare.nyare.repository.CourseRepository;
 import group.four.nyare.nyare.repository.NoteRepository;
 import group.four.nyare.nyare.service.NoteService;
@@ -16,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Service implementation for journal note management and AI image metadata updates.
+ * Service implementation for journal note management.
  */
 @Service
 @Transactional(readOnly = true)

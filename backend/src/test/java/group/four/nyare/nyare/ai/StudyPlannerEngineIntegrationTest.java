@@ -6,7 +6,6 @@ import group.four.nyare.nyare.model.AcademicContext;
 import group.four.nyare.nyare.model.AcademicEvent;
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.Note;
-import group.four.nyare.nyare.model.NoteContent;
 import group.four.nyare.nyare.model.Schedule;
 import group.four.nyare.nyare.model.Task;
 import group.four.nyare.nyare.model.enums.TaskStatus;
@@ -388,7 +387,7 @@ public class StudyPlannerEngineIntegrationTest {
 
     private static Note createNote(Course course, String text) {
         UUID note1Id = UUID.randomUUID();
-        Note note = new Note(course, new NoteContent(text, null));
+        Note note = new Note(course, text);
         ReflectionTestUtils.setField(note, "id", note1Id);
 
         return note;

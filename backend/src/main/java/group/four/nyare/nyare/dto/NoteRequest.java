@@ -1,7 +1,6 @@
 package group.four.nyare.nyare.dto;
 
-import group.four.nyare.nyare.model.NoteContent;
-import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 /**
@@ -12,14 +11,13 @@ public class NoteRequest {
     @NotNull(message = "Course ID is required")
     private Long courseId;
 
-    @NotNull(message = "Note content is required")
-    @Valid
-    private NoteContent content;
+    @NotBlank(message = "Note content cannot be blank")
+    private String content;
 
     public NoteRequest() {
     }
 
-    public NoteRequest(Long courseId, NoteContent content) {
+    public NoteRequest(Long courseId, String content) {
         this.courseId = courseId;
         this.content = content;
     }
@@ -32,11 +30,11 @@ public class NoteRequest {
         this.courseId = courseId;
     }
 
-    public NoteContent getContent() {
+    public String getContent() {
         return content;
     }
 
-    public void setContent(NoteContent content) {
+    public void setContent(String content) {
         this.content = content;
     }
 }

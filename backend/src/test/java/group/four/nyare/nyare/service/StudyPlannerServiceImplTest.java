@@ -5,7 +5,6 @@ import group.four.nyare.nyare.dto.ProcessSummaryResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.Note;
-import group.four.nyare.nyare.model.NoteContent;
 import group.four.nyare.nyare.model.Task;
 import group.four.nyare.nyare.model.enums.TaskStatus;
 import group.four.nyare.nyare.repository.AcademicContextRepository;
@@ -225,6 +224,6 @@ class StudyPlannerServiceImplTest {
     }
 
     private Note noteWithCourse(Course course) {
-        return new Note(course, new NoteContent("Some content", null));
+        return new Note(course, "Some content");
     }
 }
