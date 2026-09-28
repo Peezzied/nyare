@@ -51,4 +51,25 @@ class NoteRepositoryTest {
         assertThat(dirtyNotes).extracting(Note::getId).contains(note1.getId());
         assertThat(dirtyNotes).extracting(Note::getId).doesNotContain(note2.getId());
     }
+
+    @Test
+    @DisplayName("findAllByOrderByCreatedAtDesc returns notes ordered newest first")
+    void findAllByOrderByCreatedAtDescReturnsOrderedNotes() {
+        Course course = courseRepository.save(new Course("CS102", "Data Structures"));
+
+        Note olderNote = new Note(course, new NoteContent("Older Note", null));
+        olderNote.setCreatedAt(Instant.now().minusSeconds(3600));
+        noteRepository.save(olderNote);
+
+        Note newerNote = new Note(course, new NoteContent("Newer Note", null));
+        newerNote.setCreatedAt(Instant.now());
+        noteRepository.save(newerNote);
+
+        List<Note> allNotes = noteRepository.findAllByOrderByCreatedAtDesc();
+
+        assertThat(allNotes).isNotEmpty();
+        int newerIndex = allNotes.indexOf(newerNote);
+        int olderIndex = allNotes.indexOf(olderNote);
+        assertThat(newerIndex).isLessThan(olderIndex);
+    }
 }

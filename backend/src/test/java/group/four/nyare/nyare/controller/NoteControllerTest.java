@@ -99,10 +99,14 @@ class NoteControllerTest {
     }
 
     @Test
-    void listNotes_withMissingCourseId_returns400() throws Exception {
+    void listNotes_withoutCourseId_returns200AndList() throws Exception {
+        // given
+        when(noteService.listNotes(null)).thenReturn(List.of(sampleResponse));
+
         // when & then
         mockMvc.perform(get("/api/notes"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(noteId.toString()));
     }
 
     @Test

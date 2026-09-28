@@ -25,6 +25,13 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
     List<Note> findByCourseIdOrderByCreatedAtDesc(Long courseId);
 
     /**
+     * Returns all notes ordered by creation timestamp descending.
+     *
+     * @return notes ordered newest first
+     */
+    List<Note> findAllByOrderByCreatedAtDesc();
+
+    /**
      * Returns notes created on the given calendar date for a course.
      * Uses an index-friendly range query between the start and end of the date in the local timezone.
      *

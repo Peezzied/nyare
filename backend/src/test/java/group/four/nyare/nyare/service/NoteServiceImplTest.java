@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -119,5 +120,43 @@ class NoteServiceImplTest {
 
         // then
         verify(noteRepository).delete(note);
+    }
+
+    @Test
+    void listNotes_withCourseId_returnsNotesForCourse() {
+        // given
+        when(courseRepository.existsById(1L)).thenReturn(true);
+        when(noteRepository.findByCourseIdOrderByCreatedAtDesc(1L)).thenReturn(List.of(note));
+
+        // when
+        List<NoteResponse> responses = noteService.listNotes(1L);
+
+        // then
+        assertThat(responses).hasSize(1);
+        assertThat(responses.get(0).getContent().getMarkdown()).isEqualTo("Study notes");
+    }
+
+    @Test
+    void listNotes_withNonExistentCourse_throwsResourceNotFoundException() {
+        // given
+        when(courseRepository.existsById(999L)).thenReturn(false);
+
+        // when & then
+        assertThatThrownBy(() -> noteService.listNotes(999L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Course not found with ID: 999");
+    }
+
+    @Test
+    void listNotes_withoutCourseId_returnsAllNotes() {
+        // given
+        when(noteRepository.findAllByOrderByCreatedAtDesc()).thenReturn(List.of(note));
+
+        // when
+        List<NoteResponse> responses = noteService.listNotes(null);
+
+        // then
+        assertThat(responses).hasSize(1);
+        assertThat(responses.get(0).getContent().getMarkdown()).isEqualTo("Study notes");
     }
 }
