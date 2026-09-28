@@ -160,7 +160,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         academicEventRepository.saveAll(eventsToSave);
         academicContextRepository.saveAll(contextsToSave);
 
-        Instant processedAt = Instant.now();
+        Instant processedAt = Instant.now().plusSeconds(1);
         dirtyNotes.forEach(n -> n.setLastProcessedAt(processedAt));
         noteRepository.saveAll(dirtyNotes);
 
