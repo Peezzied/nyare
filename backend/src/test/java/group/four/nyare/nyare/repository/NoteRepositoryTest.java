@@ -27,8 +27,8 @@ class NoteRepositoryTest {
     private CourseRepository courseRepository;
 
     @Test
-    @DisplayName("findTodayDirtyNotes returns unprocessed and modified notes only")
-    void findTodayDirtyNotesFiltersCleanNotes() {
+    @DisplayName("findDirtyNotes returns unprocessed and modified notes only")
+    void findDirtyNotesFiltersCleanNotes() {
         Course course = courseRepository.save(new Course("CS101", "Intro to CS"));
 
         // Note 1: Never processed (lastProcessedAt is null) -> Dirty
@@ -46,7 +46,7 @@ class NoteRepositoryTest {
         Instant startOfDay = today.atStartOfDay(zone).toInstant();
         Instant endOfDay = today.plusDays(1).atStartOfDay(zone).toInstant();
 
-        List<Note> dirtyNotes = noteRepository.findTodayDirtyNotes(startOfDay, endOfDay);
+        List<Note> dirtyNotes = noteRepository.findDirtyNotes(startOfDay, endOfDay);
 
         assertThat(dirtyNotes).extracting(Note::getId).contains(note1.getId());
         assertThat(dirtyNotes).extracting(Note::getId).doesNotContain(note2.getId());
