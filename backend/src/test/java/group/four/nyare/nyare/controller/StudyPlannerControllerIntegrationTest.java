@@ -4,7 +4,6 @@ import group.four.nyare.nyare.model.AcademicContext;
 import group.four.nyare.nyare.model.AcademicEvent;
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.Note;
-import group.four.nyare.nyare.model.NoteContent;
 import group.four.nyare.nyare.model.Schedule;
 import group.four.nyare.nyare.model.Task;
 import group.four.nyare.nyare.model.enums.TaskStatus;
@@ -139,39 +138,34 @@ class StudyPlannerControllerIntegrationTest {
         academicContextRepository.save(compArchContext);
 
         // Given: Historical processed note (clean, will not be processed)
-        Note pastNote = new Note(oop, new NoteContent("Old lesson summary", null));
+        Note pastNote = new Note(oop, "Old lesson summary");
         pastNote.setLastProcessedAt(Instant.now().minus(2, ChronoUnit.DAYS));
         noteRepository.save(pastNote);
 
         // Given: Seed 5 incoming rushed student journal notes for today
-        Note note1 = noteRepository.save(new Note(oop, new NoteContent(
+        Note note1 = noteRepository.save(new Note(oop,
                 "grabe sabaw ako sa lab 3 kanina sa a-205 puro inheritance at polymorphism... " +
                         "may pa-lab report si sir due next tue oct 6 ng 1:30pm bago mag-start lab. " +
                         "kailangan ko tapusin yung uml class diagram asap. " +
-                        "sabi rin ni prof mag-practice daw kami ng java abstract classes at interfaces before thursday lecture",
-                null)));
+                        "sabi rin ni prof mag-practice daw kami ng java abstract classes at interfaces before thursday lecture"));
 
-        Note note2 = noteRepository.save(new Note(mobComp, new NoteContent(
+        Note note2 = noteRepository.save(new Note(mobComp,
                 "intro pa lang sa android studio setup and activity lifecycle sa a-211 pero shookt kami biglang announced quiz sa thursday 10:30am coverage yung lifecycle callbacks. " +
-                        "need ko mag-install ng android studio tsaka sdk sa laptop bago mag-next lab session para di nganga",
-                null)));
+                        "need ko mag-install ng android studio tsaka sdk sa laptop bago mag-next lab session para di nganga"));
 
-        Note note3 = noteRepository.save(new Note(ppl, new NoteContent(
+        Note note3 = noteRepository.save(new Note(ppl,
                 "hirap na hirap ako sa lambda calculus at syntax grammar ambiguity... " +
-                        "kailangan ko mag-basa ng lecture slides tsaka mag-practice mag-solve ng derivation exercises para maintindihan ko yung topic",
-                null)));
+                        "kailangan ko mag-basa ng lecture slides tsaka mag-practice mag-solve ng derivation exercises para maintindihan ko yung topic"));
 
-        Note note4 = noteRepository.save(new Note(calc2, new NoteContent(
+        Note note4 = noteRepository.save(new Note(calc2,
                 "calculus discussion abt inverse trigo functions. " +
-                        "used synthetic division dq magets tas kasama raw yata sa midterm exam which will prolly be on oct 7 since asynch kami sa next meeting niya",
-                null)));
+                        "used synthetic division dq magets tas kasama raw yata sa midterm exam which will prolly be on oct 7 since asynch kami sa next meeting niya"));
 
-        Note note5 = noteRepository.save(new Note(oop, new NoteContent(
+        Note note5 = noteRepository.save(new Note(oop,
                 "java discussion about file handling and exception handling. " +
                         "prof showed examples on how to read and write files, and how try-catch works. " +
                         "talked about multithreading din, like how multiple tasks can run at the same time. " +
-                        "baka included in the next assessment kasi may activities about these topics.",
-                null)));
+                        "baka included in the next assessment kasi may activities about these topics."));
 
         // When: Trigger study planner processing endpoint
         MvcResult mvcResult = mockMvc.perform(post("/api/study-planner/process")

@@ -1,7 +1,5 @@
 package group.four.nyare.nyare.dto;
 
-import group.four.nyare.nyare.model.NoteContent;
-
 import java.time.Instant;
 import java.util.UUID;
 
@@ -12,7 +10,7 @@ public class NoteResponse {
 
     private UUID id;
     private Long courseId;
-    private NoteContent content;
+    private String content;
     private Instant createdAt;
     private Instant updatedAt;
     private Instant lastProcessedAt;
@@ -20,11 +18,11 @@ public class NoteResponse {
     public NoteResponse() {
     }
 
-    public NoteResponse(UUID id, Long courseId, NoteContent content, Instant createdAt, Instant updatedAt) {
+    public NoteResponse(UUID id, Long courseId, String content, Instant createdAt, Instant updatedAt) {
         this(id, courseId, content, createdAt, updatedAt, null);
     }
 
-    public NoteResponse(UUID id, Long courseId, NoteContent content, Instant createdAt, Instant updatedAt, Instant lastProcessedAt) {
+    public NoteResponse(UUID id, Long courseId, String content, Instant createdAt, Instant updatedAt, Instant lastProcessedAt) {
         this.id = id;
         this.courseId = courseId;
         this.content = content;
@@ -49,11 +47,11 @@ public class NoteResponse {
         this.courseId = courseId;
     }
 
-    public NoteContent getContent() {
+    public String getContent() {
         return content;
     }
 
-    public void setContent(NoteContent content) {
+    public void setContent(String content) {
         this.content = content;
     }
 

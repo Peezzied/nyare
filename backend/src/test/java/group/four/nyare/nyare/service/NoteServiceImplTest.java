@@ -5,7 +5,6 @@ import group.four.nyare.nyare.dto.NoteResponse;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.Note;
-import group.four.nyare.nyare.model.NoteContent;
 import group.four.nyare.nyare.repository.CourseRepository;
 import group.four.nyare.nyare.repository.NoteRepository;
 import group.four.nyare.nyare.service.impl.NoteServiceImpl;
@@ -16,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,15 +45,13 @@ class NoteServiceImplTest {
     void setUp() {
         course = new Course("Computer Systems", "CS intro course");
         noteId = UUID.randomUUID();
-        NoteContent content = new NoteContent("Study notes", Collections.emptyMap());
-        note = new Note(course, content);
+        note = new Note(course, "Study notes");
     }
 
     @Test
     void createNote_withValidRequest_returnsResponse() {
         // given
-        NoteContent content = new NoteContent("Lecture 1", Collections.emptyMap());
-        NoteRequest request = new NoteRequest(1L, content);
+        NoteRequest request = new NoteRequest(1L, "Lecture 1");
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
         when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -64,14 +60,13 @@ class NoteServiceImplTest {
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response.getContent().getMarkdown()).isEqualTo("Lecture 1");
+        assertThat(response.getContent()).isEqualTo("Lecture 1");
     }
 
     @Test
     void createNote_withNonExistentCourse_throwsResourceNotFoundException() {
         // given
-        NoteContent content = new NoteContent("Lecture 1", Collections.emptyMap());
-        NoteRequest request = new NoteRequest(999L, content);
+        NoteRequest request = new NoteRequest(999L, "Lecture 1");
         when(courseRepository.findById(999L)).thenReturn(Optional.empty());
 
         // when & then
@@ -83,8 +78,7 @@ class NoteServiceImplTest {
     @Test
     void updateNote_withValidRequest_returnsResponse() {
         // given
-        NoteContent updatedContent = new NoteContent("Updated notes", Collections.emptyMap());
-        NoteRequest request = new NoteRequest(1L, updatedContent);
+        NoteRequest request = new NoteRequest(1L, "Updated notes");
         when(noteRepository.findById(noteId)).thenReturn(Optional.of(note));
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
         when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -94,14 +88,13 @@ class NoteServiceImplTest {
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response.getContent().getMarkdown()).isEqualTo("Updated notes");
+        assertThat(response.getContent()).isEqualTo("Updated notes");
     }
 
     @Test
     void updateNote_withNonExistentNote_throwsResourceNotFoundException() {
         // given
-        NoteContent updatedContent = new NoteContent("Updated notes", Collections.emptyMap());
-        NoteRequest request = new NoteRequest(1L, updatedContent);
+        NoteRequest request = new NoteRequest(1L, "Updated notes");
         when(noteRepository.findById(noteId)).thenReturn(Optional.empty());
 
         // when & then
@@ -133,7 +126,7 @@ class NoteServiceImplTest {
 
         // then
         assertThat(responses).hasSize(1);
-        assertThat(responses.get(0).getContent().getMarkdown()).isEqualTo("Study notes");
+        assertThat(responses.get(0).getContent()).isEqualTo("Study notes");
     }
 
     @Test
@@ -157,6 +150,6 @@ class NoteServiceImplTest {
 
         // then
         assertThat(responses).hasSize(1);
-        assertThat(responses.get(0).getContent().getMarkdown()).isEqualTo("Study notes");
+        assertThat(responses.get(0).getContent()).isEqualTo("Study notes");
     }
 }

@@ -3,13 +3,10 @@ package group.four.nyare.nyare.ai;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.model.AcademicContext;
 import group.four.nyare.nyare.model.Course;
-import group.four.nyare.nyare.model.ImageMetadata;
 import group.four.nyare.nyare.model.Note;
-import group.four.nyare.nyare.model.NoteContent;
 import group.four.nyare.nyare.model.Schedule;
 import group.four.nyare.nyare.model.Task;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +26,6 @@ import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -80,7 +76,7 @@ class StudyPlannerEngineTest {
     @DisplayName("process returns empty data when all notes have blank markdown — no ChatClient call")
     void returnsEmptyWhenAllNotesBlank() {
         Course course = new Course("CS101", "Computer Science");
-        Note blank = new Note(course, new NoteContent("   ", null));
+        Note blank = new Note(course, "   ");
 
         StudyPlannerEngine.ExtractedData result =
                 engine.process(List.of(blank), List.of(), List.of(), List.of(), List.of());
@@ -95,7 +91,7 @@ class StudyPlannerEngineTest {
     @DisplayName("process sends tagged prompt with journal_notes, existing_tasks, class_schedules sections")
     void processBuildsFullTaggedPrompt() {
         Course course = new Course("CS101", "Computer Science");
-        Note note = new Note(course, new NoteContent("Study chapter 4 before exam", null));
+        Note note = new Note(course, "Study chapter 4 before exam");
         UUID noteId = UUID.randomUUID();
         ReflectionTestUtils.setField(note, "id", noteId);
 
@@ -125,7 +121,7 @@ class StudyPlannerEngineTest {
     @DisplayName("process includes temporal_anchor with today's date")
     void processIncludesTodaysDateInTemporalAnchor() {
         Course course = new Course("CS101", "Computer Science");
-        Note note = new Note(course, new NoteContent("Read chapter 2", null));
+        Note note = new Note(course, "Read chapter 2");
 
         ArgumentCaptor<Prompt> promptCaptor = ArgumentCaptor.forClass(Prompt.class);
         when(chatClient.prompt(promptCaptor.capture()).advisors(any(Consumer.class)).call()
@@ -142,7 +138,7 @@ class StudyPlannerEngineTest {
     @DisplayName("process omits optional tags when supporting lists are empty")
     void processOmitsOptionalTagsWhenListsEmpty() {
         Course course = new Course("CS101", "Computer Science");
-        Note note = new Note(course, new NoteContent("Read chapter 2", null));
+        Note note = new Note(course, "Read chapter 2");
 
         ArgumentCaptor<Prompt> promptCaptor = ArgumentCaptor.forClass(Prompt.class);
         when(chatClient.prompt(promptCaptor.capture()).advisors(any(Consumer.class)).call()
@@ -165,8 +161,8 @@ class StudyPlannerEngineTest {
     @DisplayName("process decodes stub note references back to note UUIDs in output")
     void processDecodesNoteRefsToUUIDs() {
         Course course = new Course("CS101", "Computer Science");
-        Note note1 = new Note(course, new NoteContent("Homework due Friday", null));
-        Note note2 = new Note(course, new NoteContent("Exam on Monday", null));
+        Note note1 = new Note(course, "Homework due Friday");
+        Note note2 = new Note(course, "Exam on Monday");
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
         ReflectionTestUtils.setField(note1, "id", id1);
@@ -203,7 +199,7 @@ class StudyPlannerEngineTest {
     @DisplayName("process returns empty data when ChatClient returns null")
     void processReturnsEmptyWhenClientReturnsNull() {
         Course course = new Course("CS101", "Computer Science");
-        Note note = new Note(course, new NoteContent("Some content", null));
+        Note note = new Note(course, "Some content");
 
         when(chatClient.prompt(any(Prompt.class)).advisors(any(Consumer.class)).call()
                 .entity(PlannerAuditRecords.LlmPayload.class))
@@ -221,7 +217,7 @@ class StudyPlannerEngineTest {
     @DisplayName("existing_contexts tag includes age column derived from createdAt")
     void processIncludesAgeInContextCsv() {
         Course course = new Course("CS101", "Computer Science");
-        Note note = new Note(course, new NoteContent("Chapter 3 was hard", null));
+        Note note = new Note(course, "Chapter 3 was hard");
 
         AcademicContext context = new AcademicContext(course, "Student struggles with recursion");
         Instant tenDaysAgo = LocalDate.now().minusDays(10).atStartOfDay().toInstant(ZoneOffset.UTC);
@@ -261,38 +257,10 @@ class StudyPlannerEngineTest {
     }
 
     @Test
-    @Disabled("ponytail: image vision processing deferred")
-    @DisplayName("process serializes image metadata with compact stub references")
-    void processIncludesImagesCsvTagWithStubReferences() {
-        Course course = new Course("CS101", "Computer Science");
-        ImageMetadata imageMeta = new ImageMetadata("base64data", "ER diagram for laboratory 2");
-        NoteContent content = new NoteContent("Database schema lecture", Map.of("diagram.png", imageMeta));
-        Note noteWithImage = new Note(course, content);
-
-        ArgumentCaptor<Prompt> promptCaptor = ArgumentCaptor.forClass(Prompt.class);
-        when(chatClient.prompt(promptCaptor.capture()).advisors(any(Consumer.class)).call()
-                .entity(PlannerAuditRecords.LlmPayload.class))
-                .thenReturn(null);
-
-        StudyPlannerEngine.ExtractedData result =
-                engine.process(List.of(noteWithImage), List.of(), List.of(), List.of(), List.of());
-
-        assertThat(result).isNotNull();
-        assertThat(result.tasks()).isEmpty();
-
-        String promptSent = promptCaptor.getValue().getContents();
-        assertThat(promptSent).contains("<journal_notes>");
-        assertThat(promptSent).contains("<images>");
-        assertThat(promptSent).contains("image_ref,note_ref,description");
-        assertThat(promptSent).contains("i1,n1,ER diagram for laboratory 2");
-        assertThat(promptSent).contains("</images>");
-    }
-
-    @Test
     @DisplayName("process decodes RawIgnoredNote into InternalIgnoredNote with noteId and part")
     void processDecodesIgnoredNotesWithPartAndNoteId() {
         Course course = new Course("CS101", "Computer Science");
-        Note note = new Note(course, new NoteContent("Grocery shopping errand", null));
+        Note note = new Note(course, "Grocery shopping errand");
         UUID noteId = UUID.randomUUID();
         ReflectionTestUtils.setField(note, "id", noteId);
 
@@ -319,7 +287,7 @@ class StudyPlannerEngineTest {
     void process_whenAiCallExceedsTimeout_throwsBadRequestException() {
         // given
         Course course = new Course("CS101", "Computer Science");
-        Note note = new Note(course, new NoteContent("Read chapter 2", null));
+        Note note = new Note(course, "Read chapter 2");
         StudyPlannerEngine impatientEngine = new StudyPlannerEngine(chatClient, 200);
 
         when(chatClient.prompt(any(Prompt.class)).advisors(any(Consumer.class)).call()

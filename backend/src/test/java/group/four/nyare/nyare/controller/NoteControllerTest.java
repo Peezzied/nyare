@@ -3,7 +3,6 @@ package group.four.nyare.nyare.controller;
 import group.four.nyare.nyare.dto.NoteRequest;
 import group.four.nyare.nyare.dto.NoteResponse;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
-import group.four.nyare.nyare.model.NoteContent;
 import group.four.nyare.nyare.service.NoteService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,15 +52,13 @@ class NoteControllerTest {
     @BeforeEach
     void setUp() {
         noteId = UUID.randomUUID();
-        NoteContent content = new NoteContent("Lecture Notes", Collections.emptyMap());
-        sampleResponse = new NoteResponse(noteId, 1L, content, Instant.now(), Instant.now());
+        sampleResponse = new NoteResponse(noteId, 1L, "Lecture Notes", Instant.now(), Instant.now());
     }
 
     @Test
     void createNote_withValidPayload_returns201AndLocationHeader() throws Exception {
         // given
-        NoteContent content = new NoteContent("Lecture Notes", Collections.emptyMap());
-        NoteRequest request = new NoteRequest(1L, content);
+        NoteRequest request = new NoteRequest(1L, "Lecture Notes");
         when(noteService.createNote(any(NoteRequest.class))).thenReturn(sampleResponse);
 
         // when & then
@@ -135,8 +131,7 @@ class NoteControllerTest {
     @Test
     void updateNote_withValidPayload_returns200() throws Exception {
         // given
-        NoteContent content = new NoteContent("Updated text", Collections.emptyMap());
-        NoteRequest request = new NoteRequest(1L, content);
+        NoteRequest request = new NoteRequest(1L, "Updated text");
         when(noteService.updateNote(eq(noteId), any(NoteRequest.class))).thenReturn(sampleResponse);
 
         // when & then
@@ -159,7 +154,6 @@ class NoteControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.title").value("Validation Failed"));
     }
-
 
     @Test
     void deleteNote_withExistingId_returns204() throws Exception {

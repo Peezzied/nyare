@@ -2,7 +2,6 @@ package group.four.nyare.nyare.repository;
 
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.Note;
-import group.four.nyare.nyare.model.NoteContent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +31,11 @@ class NoteRepositoryTest {
         Course course = courseRepository.save(new Course("CS101", "Intro to CS"));
 
         // Note 1: Never processed (lastProcessedAt is null) -> Dirty
-        Note note1 = new Note(course, new NoteContent("Unprocessed note", null));
+        Note note1 = new Note(course, "Unprocessed note");
         note1 = noteRepository.save(note1);
 
         // Note 2: Processed after update -> Clean
-        Note note2 = new Note(course, new NoteContent("Processed note", null));
+        Note note2 = new Note(course, "Processed note");
         note2 = noteRepository.save(note2);
         note2.setLastProcessedAt(Instant.now().plusSeconds(60));
         note2 = noteRepository.save(note2);
@@ -57,11 +56,11 @@ class NoteRepositoryTest {
     void findAllByOrderByCreatedAtDescReturnsOrderedNotes() {
         Course course = courseRepository.save(new Course("CS102", "Data Structures"));
 
-        Note olderNote = new Note(course, new NoteContent("Older Note", null));
+        Note olderNote = new Note(course, "Older Note");
         olderNote.setCreatedAt(Instant.now().minusSeconds(3600));
         noteRepository.save(olderNote);
 
-        Note newerNote = new Note(course, new NoteContent("Newer Note", null));
+        Note newerNote = new Note(course, "Newer Note");
         newerNote.setCreatedAt(Instant.now());
         noteRepository.save(newerNote);
 

@@ -7,12 +7,11 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Index;
 import jakarta.persistence.Table;
-import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -22,7 +21,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * Represents a course-linked journal entry containing student notes in JSON format.
+ * Represents a course-linked journal entry containing student notes in Markdown format.
  * Acts as the source document for AI processing and context/task extraction.
  */
 @Entity
@@ -45,14 +44,9 @@ public class Note {
     @JoinColumn(nullable = false)
     private Course course;
 
-    /**
-     * Structured note content containing markdown and image metadata.
-     */
-    @NotNull(message = "Note content cannot be null")
-    @Valid
-    @Convert(converter = group.four.nyare.nyare.model.converter.NoteContentConverter.class)
+    @NotBlank(message = "Note content cannot be blank")
     @Column(nullable = false, columnDefinition = "TEXT")
-    private NoteContent content;
+    private String content;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -71,12 +65,12 @@ public class Note {
     }
 
     /**
-     * Creates a new Note linked to a course with structured content.
+     * Creates a new Note linked to a course with markdown content.
      *
      * @param course  the course this note belongs to
-     * @param content the structured note content
+     * @param content the markdown note content
      */
-    public Note(Course course, NoteContent content) {
+    public Note(Course course, String content) {
         this.course = course;
         this.content = content;
     }
@@ -93,23 +87,12 @@ public class Note {
         this.course = course;
     }
 
-    public NoteContent getContent() {
+    public String getContent() {
         return content;
     }
 
-    public void setContent(NoteContent content) {
+    public void setContent(String content) {
         this.content = content;
-    }
-
-    /**
-     * Domain method for AI pipeline to update image metadata while preserving markdown.
-     *
-     * @param newMetadata the new image metadata map
-     */
-    public void updateImageMetadata(java.util.Map<String, ImageMetadata> newMetadata) {
-        if (this.content != null) {
-            this.content.setImageMetadata(newMetadata);
-        }
     }
 
     public Instant getCreatedAt() {
