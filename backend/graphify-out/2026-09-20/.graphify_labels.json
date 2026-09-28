@@ -1,7 +1,7 @@
 {
   "0": "AcademicEventResponse",
   "1": "AcademicEvent",
-  "2": "Course",
+  "2": "Schedule",
   "3": "Backend Agent Guide",
   "4": "jquery-3.7.1.min.js",
   "5": "Task",
@@ -56,11 +56,18 @@
   "54": "package-search-index.js",
   "55": "tag-search-index.js",
   "56": "type-search-index.js",
-  "57": ".addCorsMappings_registersExpectedConfiguration",
+  "57": "ProcessSummaryResponse",
   "58": "TaskRequest",
   "59": "AcademicContext",
   "60": "TaskService",
   "61": "Test IntelliJ MCP",
-  "62": "org.springframework.data.jpa.repository.JpaRepository",
-  "63": "Dr. JSkill and Spring Docs MCP Rule"
+  "62": "StudyPlannerServiceTest.java",
+  "63": "Dr. JSkill and Spring Docs MCP Rule",
+  "64": "AcademicEventRequest",
+  "65": "BadRequestException",
+  "66": "Course",
+  "67": "GlobalExceptionHandler.java",
+  "68": "AcademicEventService",
+  "69": "PlanCategory",
+  "71": ".addCorsMappings_registersExpectedConfiguration"
 }

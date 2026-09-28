@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Convert;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -25,7 +26,12 @@ import java.util.UUID;
  * Acts as the source document for AI processing and context/task extraction.
  */
 @Entity
-@Table(name = "notes")
+@Table(
+        name = "notes",
+        indexes = {
+                @Index(name = "idx_notes_course_created_at", columnList = "course_id, created_at")
+        }
+)
 @EntityListeners(AuditingEntityListener.class)
 public class Note {
 
@@ -54,6 +60,9 @@ public class Note {
 
     @LastModifiedDate
     private Instant updatedAt;
+
+    @Column(name = "last_processed_at")
+    private Instant lastProcessedAt;
 
     /**
      * Protected default constructor for JPA proxies.
@@ -117,6 +126,14 @@ public class Note {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Instant getLastProcessedAt() {
+        return lastProcessedAt;
+    }
+
+    public void setLastProcessedAt(Instant lastProcessedAt) {
+        this.lastProcessedAt = lastProcessedAt;
     }
 
     @Override

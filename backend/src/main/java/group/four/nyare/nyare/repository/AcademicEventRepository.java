@@ -46,4 +46,26 @@ public interface AcademicEventRepository extends JpaRepository<AcademicEvent, UU
      * @return events ordered by deadline ascending
      */
     List<AcademicEvent> findByCourseIdOrderByDeadlineAsc(Long courseId);
+
+    /**
+     * Retrieves academic events for a course within a specific time window,
+     * ordered by deadline ascending.
+     *
+     * @param courseId the course ID to filter by
+     * @param start    start of the window (inclusive)
+     * @param end      end of the window (exclusive)
+     * @return matching events ordered by deadline ascending
+     */
+    @Query("""
+            SELECT e FROM AcademicEvent e
+            WHERE e.course.id = :courseId
+              AND e.deadline >= :start
+              AND e.deadline < :end
+            ORDER BY e.deadline ASC
+            """)
+    List<AcademicEvent> findUpcomingInWindow(
+            @Param("courseId") Long courseId,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
 }

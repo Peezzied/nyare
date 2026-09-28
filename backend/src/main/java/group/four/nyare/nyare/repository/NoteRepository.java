@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,15 +26,16 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
 
     /**
      * Returns notes created on the given calendar date for a course.
-     * Uses an index-friendly range query between the start and end of the date.
+     * Uses an index-friendly range query between the start and end of the date in the local timezone.
      *
      * @param courseId the course ID to filter by
      * @param today    the calendar date to match against {@code createdAt}
      * @return notes created today for the course
      */
     default List<Note> findTodayNotesByCourseId(Long courseId, LocalDate today) {
-        Instant startOfDay = today.atStartOfDay(ZoneOffset.UTC).toInstant();
-        Instant endOfDay = today.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
+        ZoneId zone = ZoneId.systemDefault();
+        Instant startOfDay = today.atStartOfDay(zone).toInstant();
+        Instant endOfDay = today.plusDays(1).atStartOfDay(zone).toInstant();
         return findNotesByCourseIdAndCreatedAtRange(courseId, startOfDay, endOfDay);
     }
 
@@ -57,4 +58,35 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
             @Param("startOfDay") Instant startOfDay,
             @Param("endOfDay") Instant endOfDay
     );
+
+    /**
+     * Returns notes created on the date window across all courses that are either unextracted or modified after last extraction.
+     *
+     * @param startOfDay beginning of the date window (inclusive)
+     * @param endOfDay   end of the date window (exclusive)
+     * @return dirty notes matching the criteria
+     */
+    @Query("""
+            SELECT n FROM Note n
+            WHERE n.createdAt >= :startOfDay
+              AND n.createdAt < :endOfDay
+              AND (n.lastProcessedAt IS NULL OR n.updatedAt > n.lastProcessedAt)
+            """)
+    List<Note> findDirtyNotes(
+            @Param("startOfDay") Instant startOfDay,
+            @Param("endOfDay") Instant endOfDay
+    );
+
+    /**
+     * Convenience default method to query dirty notes for the given date across all courses.
+     *
+     * @param date the calendar date
+     * @return dirty notes created or modified on the date
+     */
+    default List<Note> findDirtyNotes(LocalDate date) {
+        ZoneId zone = ZoneId.systemDefault();
+        Instant startOfDay = date.atStartOfDay(zone).toInstant();
+        Instant endOfDay = date.plusDays(1).atStartOfDay(zone).toInstant();
+        return findDirtyNotes(startOfDay, endOfDay);
+    }
 }

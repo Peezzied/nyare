@@ -161,11 +161,13 @@ public class StudyPlannerAiService {
 
 ### 3. Structured Output Extraction
 
-Extract Java records direct from Gemini responses.
+Extract Java records direct from Gemini responses. Model schemas with Jackson annotations.
 
 ```java
 package group.four.nyare.nyare.service;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.ai.chat.client.ChatClient;
@@ -174,8 +176,31 @@ import org.springframework.stereotype.Service;
 @Service
 public class TaskExtractorService {
 
-    public record ExtractedTask(String title, String courseCode, Integer estimatedMinutes, LocalDate targetDate) {}
-    public record ExtractionResult(List<ExtractedTask> tasks, String summary) {}
+    public record ExtractedTask(
+            @JsonProperty(value = "title", required = true)
+            @JsonPropertyDescription("Actionable title of the task")
+            String title,
+
+            @JsonProperty(value = "courseCode", required = true)
+            @JsonPropertyDescription("Course identifier code")
+            String courseCode,
+
+            @JsonProperty("estimatedMinutes")
+            @JsonPropertyDescription("Estimated duration in minutes, or null if uncertain")
+            Integer estimatedMinutes,
+
+            @JsonProperty("targetDate")
+            @JsonPropertyDescription("Target study date, or null if uncertain")
+            LocalDate targetDate) {}
+
+    public record ExtractionResult(
+            @JsonProperty(value = "tasks", required = true)
+            @JsonPropertyDescription("List of extracted tasks")
+            List<ExtractedTask> tasks,
+
+            @JsonProperty(value = "summary", required = true)
+            @JsonPropertyDescription("Concise summary of notes")
+            String summary) {}
 
     private final ChatClient chatClient;
 
@@ -192,6 +217,13 @@ public class TaskExtractorService {
     }
 }
 ```
+
+#### Schema Modeling Rules for Structured Outputs
+
+- Set `@JsonProperty(value = "name", required = true)` on mandatory properties.
+- Do not set `required = true` on nullable or uncertain fields.
+- Set `@JsonPropertyDescription("...")` on every property to guide the model.
+- Align prompt instructions with all required fields in the schema.
 
 ---
 

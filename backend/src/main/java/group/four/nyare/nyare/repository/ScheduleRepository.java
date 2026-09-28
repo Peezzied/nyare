@@ -30,3 +30,4 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
      */
     List<Schedule> findByCourseIdAndDayOrderByStartTimeAsc(Long courseId, DayOfWeek day);
 }
+

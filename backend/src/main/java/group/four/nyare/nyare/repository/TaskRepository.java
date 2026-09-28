@@ -39,4 +39,13 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
             @Param("status") TaskStatus status,
             @Param("scheduled") Boolean scheduled
     );
+
+    /**
+     * Retrieves all tasks not having the specified status, ordered by creation
+     * timestamp descending.
+     *
+     * @param status the status to exclude
+     * @return open tasks matching the criteria
+     */
+    List<Task> findByStatusNotOrderByCreatedAtDesc(TaskStatus status);
 }

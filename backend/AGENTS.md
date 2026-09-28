@@ -18,7 +18,8 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 - **`Course`**: Academic subject organizing schedules, notes, tasks, events, and context.
 - **`Schedule`**: Recurring weekly class meeting times (`day`, `startTime`, `endTime`, `course`).
 - **`Note`**: Course-linked journal entry in JSON format (`content`, `course`, `createdAt`, `updatedAt`).
-- **`Task`**: Actionable item recommended for flexible planning (`course`, `scheduledDate`, `duration`, `status`).
+- **`Task`**: Actionable item (`course`, `origin`, `scheduledDate`, `duration`, `status`, derived `planCategory`).
+- **`PlanCategory`**: Tri-state planning enum (`SCHEDULED`, `LATER`, `BACKLOG`) derived from task date and duration.
 - **`AcademicEvent`**: Rigid time constraint or deadline (`course`, `note`, `title`, `description`, `deadline`).
 - **`AcademicContext`**: Temporal academic facts extracted from journal notes.
 - **`StudyPlan`**: Virtual presentation construct; **never** persist as a database table.
@@ -28,9 +29,10 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 ## Core Architecture & Invariants
 
 1. **Layer Isolation**:
-   - Packages: strictly lowercase (`controller`, `service`, `repository`, `model`, `dto`, `exception`).
+   - Packages: strictly lowercase (`controller`, `service`, `repository`, `model`, `dto`, `exception`, `ai`).
    - Controllers never touch repositories; Entities never escape the service layer (DTOs only).
    - Class-level `@Transactional(readOnly = true)` on services; explicit `@Transactional` on mutations.
+   - Combined Processing & Planning: `StudyPlannerService.processTodayNotes()` executes note extraction, event-anchored study task generation, and date/duration updates in one transaction.
 2. **Canonical Exceptions Only**:
    - Never create custom exception classes per entity/feature.
    - Throw only `ResourceNotFoundException` (404) or `BadRequestException` (400) with descriptive messages.
@@ -44,6 +46,9 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 5. **Modern Standards & Deprecation**:
    - Avoid deprecated classes, methods, annotations, and APIs.
    - Use modern features supported by Java 25 and Spring Boot.
+6. **AI System Prompt**:
+   - The system prompt lives in `src/main/resources/system_prompt.st`.
+   - Store all AI system instructions in this template file.
 
 ---
 

@@ -12,7 +12,7 @@ This document formalizes the 9 architectural workflows of Nyare. These diagrams 
 | 2 | [Core Academic Model](#2-core-academic-model) | Entity relationships and journal ingestion structure |
 | 3 | [Journal Processing Workflow](#3-journal-processing-workflow) | Explicit AI extraction scoped to today's notes |
 | 4 | [AI Planning Workflow](#4-ai-planning-workflow) | Multi-input synthesis into the tri-state Study Plan |
-| 5 | [Study Plan & Calendar Relationship](#5-study-plan-and-calendar-relationship) | UI mapping to Calendar grid, Later area, and Needs Context area |
+| 5 | [Study Plan & Calendar Relationship](#5-study-plan-and-calendar-relationship) | UI mapping to Calendar grid, Later area, and Backlog area |
 | 6 | [Information & Planning Boundaries](#6-information-and-planning-boundaries) | Append-only materialization without automated entity mutation |
 | 7 | [Handling Missing Information](#7-handling-missing-information) | Known, Inferred, and Unknown handling without data fabrication |
 | 8 | [User Interface & Navigation](#8-user-interface-and-navigation) | Calendar View hub and read-only Notes View navigation |
@@ -117,35 +117,40 @@ flowchart TD
 
 ### 4. AI Planning Workflow
 
-Shows how the AI Planner selects and orders tasks into a coherent Study Plan. The planner takes into account newly processed notes, existing tasks, academic events, class schedules, and course context.
+Shows how the AI Planner selects, generates, and orders tasks into a coherent Study Plan. The planner takes into account newly processed notes, existing tasks, academic events, class schedules, and course context.
 
 ```mermaid
 flowchart TD
-    Today["Today's processed information"]
+    Today["Today's processed notes"]
+    Courses["Involved courses"]
+    Events["Upcoming Academic Events (14-day window)"]
+    Context["Academic Context facts"]
+    Schedule["Class Schedule"]
+    OpenTasks["Existing open tasks"]
     Planner[AI Planner]
-    Existing["Existing Tasks / Events / Context"]
-    Courses[Course relationships]
-    Schedule[Class Schedule]
-    Select[Select relevant tasks]
-    Order[Order recommended tasks]
-    Plan[Study Plan]
-    Scheduled[Scheduled recommendations]
-    Later[Flexible / Later]
-    ContextNeeded[Needs Context]
+    Guard{"Open tasks exist for course?"}
+    GenTasks["Generate study tasks (origin = AI_GENERATED)"]
+    UpdateDates["Update scheduledDate & duration on tasks"]
+    Plan[Study Plan Presentation]
 
-    Today ==> Planner
-    Existing -.-> Planner
-    Courses -.-> Planner
-    Schedule -.-> Planner
-
-    Planner ==> Select
-    Select ==> Order
-    Order ==> Plan
-
-    Plan ==> Scheduled
-    Plan ==> Later
-    Plan ==> ContextNeeded
+    Today ==> Courses
+    Courses ==> Planner
+    Events ==> Planner
+    Context ==> Planner
+    Schedule ==> Planner
+    OpenTasks ==> Planner
+    Planner ==> Guard
+    Guard ==>|No open tasks| GenTasks
+    Guard ==>|Open tasks exist| UpdateDates
+    GenTasks ==> UpdateDates
+    UpdateDates ==> Plan
 ```
+
+- **Scope**: Scopes strictly to courses with notes processed today.
+- **Event Lookahead**: Inspects upcoming academic events within a 14-day window.
+- **Task Generation**: Generates study tasks for events when no `SCHEDULED` or `LATER` tasks exist for that course.
+- **Persistence**: Persists and updates `scheduledDate` and `duration` directly on `Task` records.
+- **Backlog Promotion**: Assigns dates and durations to `BACKLOG` tasks when new context enables planning.
 
 ---
 
@@ -156,36 +161,36 @@ Illustrates the tri-state routing of Study Plan recommendations onto the user in
 ```mermaid
 flowchart LR
     Plan[Study Plan]
-    Dated[Dated recommendations]
-    Flexible["Flexible / Later recommendations"]
-    NeedsContext[Needs Context recommendations]
+    Dated[Scheduled recommendations]
+    Flexible["Later recommendations"]
+    BacklogItems[Backlog recommendations]
     Calendar[Calendar dates]
-    LaterArea["Later / Undated area"]
-    ContextArea[Needs Context area]
+    LaterArea["Later area"]
+    BacklogArea[Backlog area]
     Events["Academic Events / Deadlines"]
     Classes[Class Schedule]
 
     Plan ==> Dated
     Plan ==> Flexible
-    Plan ==> NeedsContext
+    Plan ==> BacklogItems
     Dated ==> Calendar
     Flexible ==> LaterArea
-    NeedsContext ==> ContextArea
+    BacklogItems ==> BacklogArea
 
     Events -.-> Calendar
     Classes -.-> Calendar
 ```
 
-- **Calendar Grid**: Displays class meeting times, rigid Academic Events / Deadlines, and **Scheduled** tasks with recommended dates.
-- **Later Area**: Displays actionable **Flexible / Later** tasks without specific target dates.
-- **Needs Context Area**: Displays actionable items that require additional information before confident planning can occur.
+- **Calendar Grid**: Displays class meeting times, rigid Academic Events / Deadlines, and **Scheduled** tasks with recommended dates (`scheduledDate != null`).
+- **Later Area**: Displays actionable **Later** tasks without specific target dates (`scheduledDate == null && duration != null`).
+- **Backlog Area**: Displays tasks requiring additional context or details before scheduling (`scheduledDate == null && duration == null`).
 
 ---
 
 ### 6. Information and Planning Boundaries
-
-Defines how the system preserves integrity by treating materialization as append-only. Recommendations **do not automatically overwrite or reconcile** existing records.
-
+ 
+Defines how the system preserves integrity. Recommendations **do not rewrite student task text** or mutate events and context facts. The planner only generates event-anchored study tasks and updates task scheduling fields (`scheduledDate`, `duration`).
+ 
 ```mermaid
 flowchart TD
     Journal[Journal Entry]
@@ -195,7 +200,8 @@ flowchart TD
     Context[Academic Context]
     State[Current Academic Information]
     Planner[AI Planner]
-    Recommendations[Recommended Tasks]
+    NewTasks["Event-anchored study tasks (origin = AI_GENERATED)"]
+    ScheduleUpdates["Updates scheduledDate & duration"]
 
     Journal ==> Extract
     Extract ==> Task
@@ -206,11 +212,15 @@ flowchart TD
     Event ==> State
     Context ==> State
     State ==> Planner
-    Planner ==> Recommendations
 
-    Recommendations -.->|Does not automatically rewrite| Task
-    Recommendations -.->|Does not automatically rewrite| Event
-    Recommendations -.->|Does not automatically rewrite| Context
+    Planner ==>|Creates| NewTasks
+    Planner ==>|Persists| ScheduleUpdates
+    NewTasks ==> Task
+    ScheduleUpdates ==> Task
+
+    Planner -.->|Does not rewrite title or description| Task
+    Planner -.->|Does not mutate| Event
+    Planner -.->|Does not mutate| Context
 ```
 
 ---
@@ -229,8 +239,8 @@ flowchart TD
     AcademicInfo[Structured academic information]
     Planner[AI Planner]
     Useful[Useful recommendation]
-    Flexible[Flexible / Later]
-    NeedsContext[Needs Context]
+    Later[Later]
+    Backlog[Backlog]
 
     Journal ==> AI
     AI ==> Known
@@ -243,12 +253,12 @@ flowchart TD
 
     AcademicInfo ==> Planner
     Planner ==> Useful
-    Planner ==> Flexible
-    Planner ==> NeedsContext
+    Planner ==> Later
+    Planner ==> Backlog
 ```
 
 - When deadline or duration is unknown, it remains empty.
-- If plannability is low, the item is routed to **Needs Context** or **Flexible / Later**.
+- If plannability is low, the item is routed to **Backlog** or **Later**.
 
 ---
 
@@ -328,4 +338,6 @@ flowchart TD
     Reconsider -.-> StudyPlan
 ```
 
-*Feedback Loop*: When the student provides feedback (e.g. *"I have no time tonight"*), the feedback is incorporated into the planning context and the AI reconsiders task recommendations without mutating underlying Task or Event records.
+*Combined Flow*: When the student clicks Process, the system processes today's notes and runs study planning in one transaction. It extracts entities, generates study tasks for uncovered events, and updates `scheduledDate` and `duration` on open tasks for involved courses.
+
+*Feedback Loop*: When the student provides feedback (e.g. *"I have no time tonight"*), the feedback is incorporated into the planning context and the AI reconsiders task recommendations.

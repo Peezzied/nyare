@@ -7,6 +7,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -27,7 +28,12 @@ import java.util.UUID;
  * as newer journal entries emerge or absent updates indicate status changes.
  */
 @Entity
-@Table(name = "academic_contexts")
+@Table(
+        name = "academic_contexts",
+        indexes = {
+                @Index(name = "idx_academic_contexts_course_created_at", columnList = "course_id, created_at")
+        }
+)
 @EntityListeners(AuditingEntityListener.class)
 public class AcademicContext {
 
@@ -51,7 +57,7 @@ public class AcademicContext {
     private String value;
 
     /**
-     * Timestamp when the academic context was recorded.
+     * Timestamp when the academic context was recorded. Serves as the age of the academic context.
      */
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -119,6 +125,7 @@ public class AcademicContext {
         return createdAt;
     }
 
+    // TODO remove this
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
