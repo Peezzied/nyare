@@ -1,17 +1,20 @@
 package group.four.nyare.nyare.service.impl;
 
+import group.four.nyare.nyare.ai.ImageAiProcessor;
 import group.four.nyare.nyare.ai.StudyPlannerEngine;
 import group.four.nyare.nyare.dto.ProcessSummaryResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.model.AcademicContext;
 import group.four.nyare.nyare.model.AcademicEvent;
 import group.four.nyare.nyare.model.Course;
+import group.four.nyare.nyare.model.Image;
 import group.four.nyare.nyare.model.Note;
 import group.four.nyare.nyare.model.Schedule;
 import group.four.nyare.nyare.model.Task;
 import group.four.nyare.nyare.model.enums.TaskStatus;
 import group.four.nyare.nyare.repository.AcademicContextRepository;
 import group.four.nyare.nyare.repository.AcademicEventRepository;
+import group.four.nyare.nyare.repository.ImageRepository;
 import group.four.nyare.nyare.repository.NoteRepository;
 import group.four.nyare.nyare.repository.ScheduleRepository;
 import group.four.nyare.nyare.repository.TaskRepository;
@@ -24,11 +27,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -38,11 +39,23 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class StudyPlannerServiceImpl implements StudyPlannerService {
 
+    private static final Pattern IMAGE_URL_PATTERN =
+            Pattern.compile("/api/images/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})");
+
+    /**
+     * Hard cap on persisted AI image descriptions. The image system prompt already
+     * asks for ~120 words; this backstop guarantees the DB invariant when the model
+     * ignores prompt guidance.
+     */
+    static final int MAX_IMAGE_DESCRIPTION_LENGTH = 500;
+
     private final NoteRepository noteRepository;
     private final TaskRepository taskRepository;
     private final AcademicEventRepository academicEventRepository;
     private final AcademicContextRepository academicContextRepository;
     private final ScheduleRepository scheduleRepository;
+    private final ImageRepository imageRepository;
+    private final ImageAiProcessor imageAiProcessor;
     private final StudyPlannerEngine studyPlannerEngine;
 
     @Autowired
@@ -52,12 +65,16 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
             AcademicEventRepository academicEventRepository,
             AcademicContextRepository academicContextRepository,
             ScheduleRepository scheduleRepository,
+            ImageRepository imageRepository,
+            ImageAiProcessor imageAiProcessor,
             StudyPlannerEngine studyPlannerEngine) {
         this.noteRepository = noteRepository;
         this.taskRepository = taskRepository;
         this.academicEventRepository = academicEventRepository;
         this.academicContextRepository = academicContextRepository;
         this.scheduleRepository = scheduleRepository;
+        this.imageRepository = imageRepository;
+        this.imageAiProcessor = imageAiProcessor;
         this.studyPlannerEngine = studyPlannerEngine;
     }
 
@@ -85,6 +102,9 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
                 .map(n -> n.getCourse().getId())
                 .collect(Collectors.toSet());
 
+        // Discover and update note images
+        Map<UUID, List<Image>> noteImages = processAndPersistNoteImages(dirtyNotes);
+
         List<Task> existingTasks = taskRepository.findByStatusNotOrderByCreatedAtDesc(TaskStatus.COMPLETED);
         List<AcademicEvent> existingEvents = academicEventRepository.findAllFiltered(null, true, LocalDateTime.now());
         List<AcademicContext> existingContexts =
@@ -92,7 +112,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         List<Schedule> schedules = scheduleRepository.findAll();
 
         StudyPlannerEngine.ExtractedData extracted = studyPlannerEngine.process(
-                dirtyNotes, existingTasks, existingEvents, existingContexts, schedules);
+                dirtyNotes, existingTasks, existingEvents, existingContexts, schedules, noteImages);
 
         Map<UUID, Note> noteMap = dirtyNotes.stream()
                 .filter(n -> n.getId() != null)
@@ -165,5 +185,78 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         noteRepository.saveAll(dirtyNotes);
 
         return new ProcessSummaryResponse((int) newTaskCount, eventsToSave.size(), contextsToSave.size());
+    }
+
+    private Map<UUID, List<Image>> processAndPersistNoteImages(List<Note> dirtyNotes) {
+        Map<UUID, Set<UUID>> noteToImageIds = new HashMap<>();
+        Set<UUID> allImageIds = new HashSet<>();
+
+        for (Note note : dirtyNotes) {
+            if (note.getId() == null || note.getContent() == null) continue;
+            Matcher matcher = IMAGE_URL_PATTERN.matcher(note.getContent());
+            Set<UUID> imageIds = new LinkedHashSet<>();
+            while (matcher.find()) {
+                try {
+                    UUID imageId = UUID.fromString(matcher.group(1));
+                    imageIds.add(imageId);
+                    allImageIds.add(imageId);
+                } catch (IllegalArgumentException ignored) {
+                }
+            }
+            if (!imageIds.isEmpty()) {
+                noteToImageIds.put(note.getId(), imageIds);
+            }
+        }
+
+        if (allImageIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        List<Image> existingImages = imageRepository.findAllById(allImageIds);
+        Map<UUID, Image> imageMap = existingImages.stream()
+                .filter(img -> img.getId() != null)
+                .collect(Collectors.toMap(Image::getId, img -> img, (a, b) -> a));
+
+        List<Image> imagesToUpdate = new ArrayList<>();
+        for (Image image : existingImages) {
+            if (image.getDescription() == null || image.getDescription().isBlank()) {
+                String description = imageAiProcessor.describeImage(image.getData(), image.getContentType());
+                if (description != null && !description.isBlank()) {
+                    image.setDescription(truncateDescription(description.strip()));
+                    imagesToUpdate.add(image);
+                }
+            }
+        }
+
+        if (!imagesToUpdate.isEmpty()) {
+            imageRepository.saveAll(imagesToUpdate);
+        }
+
+        Map<UUID, List<Image>> result = new HashMap<>();
+        for (Map.Entry<UUID, Set<UUID>> entry : noteToImageIds.entrySet()) {
+            List<Image> images = entry.getValue().stream()
+                    .map(imageMap::get)
+                    .filter(Objects::nonNull)
+                    .toList();
+            if (!images.isEmpty()) {
+                result.put(entry.getKey(), images);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Truncates an AI image description to {@link #MAX_IMAGE_DESCRIPTION_LENGTH},
+     * preferring a word boundary and marking truncation with an ellipsis.
+     */
+    static String truncateDescription(String description) {
+        if (description == null || description.length() <= MAX_IMAGE_DESCRIPTION_LENGTH) {
+            return description;
+        }
+        int cut = description.lastIndexOf(' ', MAX_IMAGE_DESCRIPTION_LENGTH - 1);
+        if (cut <= 0) {
+            cut = MAX_IMAGE_DESCRIPTION_LENGTH - 1;
+        }
+        return description.substring(0, cut).stripTrailing() + "…";
     }
 }
