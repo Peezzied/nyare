@@ -19,11 +19,7 @@ Use this skill to answer questions about the Nyare domain model, backend archite
    - Set `BypassSandbox: true` and set `Cwd` to the backend or project root directory.
    - Read documentation in `docs/` and `backend/docs/conventions/` for authoritative details.
 2. **One-Shot Caveman Response**:
-   - Write the entire response in **Caveman (Full)** style:
-     - Remove articles (a, an, the), pleasantries, hedges, and filler words.
-     - Use sentence fragments, short sentences (≤20 words), active voice, and present tense.
-     - Keep exact technical terms, entity names, file paths, and markdown links.
-     - Keep exact code blocks, schemas, and HTTP endpoints.
+   - Write the entire response in **Caveman (Lite)** style.
 3. **No State Persistence**:
    - **CRITICAL**: Apply Caveman style **only to the immediate response** for `tldr-nyare`.
    - **Do not keep Caveman mode active** for subsequent turns unless the user requests `/caveman`.
@@ -48,7 +44,7 @@ Course Schedule → Course-linked Journal (JSON) → AI Processing (Today's Note
 - **`AcademicEvent`**: Rigid time constraint or deadline (`Exam`, `Quiz`, `Presentation`, `Class Activity`, `Deadline`).
 - **`AcademicContext`**: Temporal background facts such as syllabus scope, pacing, and progress.
 - **`StudyPlan`**: Virtual presentation construct. The database **never stores this construct**.
-  - **Tri-State**: `Scheduled` (dated), `Flexible / Later` (undated backlog), `Needs Context` (uncertain).
+  - **Tri-State**: `Scheduled` (dated), `Later` (duration, undated), `Backlog` (undated, no duration).
 
 ### Key Domain Invariants and MVP Boundaries ([`docs/mvp-boundaries.md`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/docs/mvp-boundaries.md))
 - **No Automatic Reconciliation**: Never mutate, merge, split, or deduplicate existing tasks from new notes.
@@ -102,25 +98,3 @@ Course Schedule → Course-linked Journal (JSON) → AI Processing (Today's Note
 ### 5. `graphify` ([`graphify/SKILL.md`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/.agents/skills/graphify/SKILL.md))
 - **Role**: Codebase knowledge graph in `graphify-out/`.
 - **Usage**: Query relationships (`graphify query "..."`), explain concepts (`graphify explain "..."`), and update graph (`graphify update .`) with `BypassSandbox: true`.
-
----
-
-## 5. Output Format Example for `tldr-nyare`
-
-When answering user questions with this skill, format responses like this:
-
-```markdown
-Nyare calendar-first academic planning assistant.
-
-Core pipeline:
-- Class schedule anchors calendar navigation.
-- Student writes course-linked journal note (`Note` = raw JSON, immutable source of truth).
-- AI extracts `Task`, `AcademicEvent`, and `AcademicContext` from today's notes.
-- System dynamically generates virtual `StudyPlan` (tri-state: scheduled, flexible, needs context). Database does not persist study plans.
-
-Key backend rules:
-- Java 25, Spring Boot 4.1.1, SQLite.
-- Constructor injection with `private final` fields. No `@Autowired` field injection.
-- Controller tests mock service interfaces with `@MockitoBean`. Unit tests use `@ExtendWith(MockitoExtension.class)`.
-- Canonical exceptions only: `ResourceNotFoundException` (404), `BadRequestException` (400).
-```

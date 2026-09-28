@@ -76,18 +76,18 @@ Every architectural design must strictly respect the provisions established in t
   ```java
   public record StudyPlanDto(
       LocalDate generatedForDate,
-      List<TaskResponseDto> scheduledTasks,     // Calendar Grid
-      List<TaskResponseDto> flexibleTasks,      // Later Area
-      List<TaskResponseDto> needsContextTasks,  // Needs Context Area
+      List<TaskResponseDto> scheduledTasks,     // Calendar Grid (SCHEDULED)
+      List<TaskResponseDto> laterTasks,          // Later Area (LATER)
+      List<TaskResponseDto> backlogTasks,        // Backlog Area (BACKLOG)
       String plannerSummary
   ) {}
   ```
 
 ### 4. Tri-State Study Plan Recommendations
 Recommendations must always map cleanly into the UI's tri-area layout:
-1. **Scheduled**: Actionable items with sufficient context and a recommended target date $\rightarrow$ Rendered on the **Calendar Grid**.
-2. **Flexible / Later**: Actionable items with no urgent target date $\rightarrow$ Rendered in the **Later Area**.
-3. **Needs Context**: Actionable items lacking essential information for confident scheduling $\rightarrow$ Rendered in the **Needs Context Area**.
+1. **Scheduled**: Actionable items with sufficient context and a recommended target date (`scheduledDate != null`) $\rightarrow$ Rendered on the **Calendar Grid**.
+2. **Later**: Actionable items with duration but no target date (`scheduledDate == null && duration != null`) $\rightarrow$ Rendered in the **Later Area**.
+3. **Backlog**: Actionable items lacking date and duration estimate (`scheduledDate == null && duration == null`) $\rightarrow$ Rendered in the **Backlog Area**.
 
 ### 5. Append-Only Materialization (No Auto-Reconciliation)
 * When processing journal notes, AI materializes extracted items into new database records (`Task`, `AcademicEvent`, `AcademicContext`).
@@ -108,7 +108,7 @@ Recommendations must always map cleanly into the UI's tri-area layout:
 ### 8. Preserve Uncertainty (Zero Data Fabrication)
 * Distinguish between **Extractability** (understanding what was written) and **Plannability** (having enough context to recommend a schedule).
 * If a deadline or duration is missing, store it as `null`.
-* Low-context tasks are routed to **Needs Context** or **Flexible / Later**—never assigned a hallucinated date or duration.
+* Low-context tasks are routed to **Backlog** or **Later**—never assigned a hallucinated date or duration.
 
 ### 9. Student Feedback Loop Without Record Mutation
 * When a student submits feedback (e.g., *"I have no time to study tonight"*):

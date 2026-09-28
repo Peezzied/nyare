@@ -98,16 +98,17 @@ Content-Type: application/json
       "rationale": "Shifted to Tuesday due to lack of study time on Monday."
     }
   ],
-  "flexibleTasks": [
+  "laterTasks": [
     {
       "taskId": "f4a0...",
       "courseName": "Computer Networks",
       "title": "Read Chapter 4 slides",
       "recommendedDate": null,
+      "durationMinutes": 45,
       "rationale": "Actionable without a hard deadline this week."
     }
   ],
-  "needsContextTasks": [
+  "backlogTasks": [
     {
       "taskId": "881b...",
       "courseName": "Data Structures",

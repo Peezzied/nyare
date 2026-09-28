@@ -62,3 +62,6 @@ hs_err_pid*
 replay_pid*
 /docs/temp/*
 /docs/superpowers/plans/*
+/.env
+
+opencode.json

@@ -43,3 +43,12 @@ public class AcademicEventServiceImpl implements AcademicEventService {
 - Services validate incoming references (e.g. verifying `courseId` or `noteId` exists and belongs to course).
 - Throw domain runtime exceptions (`ResourceNotFoundException`, `BadRequestException`).
 - Services must **never** return HTTP status codes, `ResponseEntity`, or `ProblemDetail` directly.
+
+## 5. Batch Data Flow & Collection Processing
+
+- For batch operations or complex processing pipelines (e.g., AI extraction, daily planning):
+  1. **Pre-fetch**: Load all required records in bulk upfront.
+  2. **Index**: Map entities into in-memory lookup structures (`Map<Key, Entity>`).
+  3. **Process**: Iterate and mutate objects purely in-memory.
+  4. **Persist**: Flush updates with repository `saveAll(...)`.
+- Avoid executing repository queries within iteration loops.
