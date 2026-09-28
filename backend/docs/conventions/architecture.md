@@ -46,8 +46,9 @@ All subpackages are **strictly lowercase**:
 
 ## 4. Modern Standards & Deprecation Policy
 
-1. Do not use deprecated classes, methods, annotations, or APIs.
-2. Replace deprecated elements with current alternatives supported by Java 25 and Spring Boot.
-3. Review official documentation before you use framework features.
-4. Avoid obsolete programming practices in all application layers.
+1. Follow modern Java practices in all codebase layers.
+2. Avoid deprecated classes, methods, annotations, and APIs.
+3. Replace deprecated elements with current alternatives supported by Java 25 and Spring Boot.
+4. Consult official documentation before you implement framework features.
+5. Avoid obsolete programming practices in all application layers.
 

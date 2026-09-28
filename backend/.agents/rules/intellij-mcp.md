@@ -54,8 +54,10 @@ Enforce a strict 3-tier validation hierarchy to minimize build latency and compu
 | Tier | Mechanism | Purpose & Trigger Condition |
 | :--- | :--- | :--- |
 | **Tier 1 (Primary)** | **IntelliJ MCP Server** | Immediate post-edit validation, static semantic checks, in-memory compilation, diagnostics, and navigation. |
-| **Tier 2 (Targeted)** | **Focused CLI Commands** | Specific unit/integration tests (`./gradlew test --tests <TestName>`), targeted single-task compile (`./gradlew compileJava`). |
+| **Tier 2 (Targeted)** | **Focused CLI Commands** | Specific single test method (`./gradlew test --tests <ClassName.methodName>`), targeted single-task compile (`./gradlew compileJava`). |
 | **Tier 3 (Strict Last Resort)** | **Full CLI Builds** | Monolithic builds (`./gradlew build`, `mvn clean verify`). **Restricted strictly to:**<br>1. Final end-to-end task verification before task completion.<br>2. Build-time artifact generation or packaging.<br>3. Total unavailability of the IntelliJ MCP server. |
+
+*Integration Test Rules*: Run integration tests one at a time, not in bulk. Execute a single test method. Prompt the user before you execute more tests. Otherwise, finish the task. Always ask the user.
 
 ---
 

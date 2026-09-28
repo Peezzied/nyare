@@ -1,0 +1,13 @@
+# Example template — copy to application-test.properties for local dev (real file is gitignored).
+# Test-only datasource override: never touch the file-backed nyare.db.
+# Same SQLite engine/dialect as production, but backed by shared in-memory DB
+# so all @SpringBootTest classes are isolated from the developer database.
+# NOTE: must use file::memory:?cache=shared (not bare ::memory:) so the
+# single Hikari connection pool sees one shared in-memory database.
+spring.datasource.url=jdbc:sqlite:file::memory:?cache=shared
+spring.datasource.driver-class-name=org.sqlite.JDBC
+spring.datasource.hikari.maximum-pool-size=1
+spring.jpa.database-platform=org.hibernate.community.dialect.SQLiteDialect
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.show-sql=false
+spring.jpa.open-in-view=false
