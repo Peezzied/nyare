@@ -22,6 +22,12 @@ public class PlannerAuditAdvisor extends SimpleLoggerAdvisor {
     private static final Logger log = LoggerFactory.getLogger(PlannerAuditAdvisor.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     * Max description characters on the IMAGE CONTEXT audit line. The full text
+     * stays persisted on {@code Image.description}; the log keeps a greppable preview.
+     */
+    private static final int MAX_AUDIT_DESCRIPTION_LENGTH = 200;
+
     public PlannerAuditAdvisor() {
         super();
     }
@@ -54,7 +60,47 @@ public class PlannerAuditAdvisor extends SimpleLoggerAdvisor {
             log.debug("PlannerAuditAdvisor could not parse audit payload: {}", e.getMessage());
         }
 
+        auditImages(request);
+
         return response;
+    }
+
+    private void auditImages(ChatClientRequest request) {
+        if (request.context() == null) {
+            return;
+        }
+
+        Map<String, UUID> imageIdMap = (Map<String, UUID>) request.context().get("imageIdMap");
+        if (imageIdMap == null || imageIdMap.isEmpty()) {
+            return;
+        }
+
+        Map<String, UUID> imageNoteMap = (Map<String, UUID>) request.context().get("imageNoteMap");
+        Map<String, String> imageDescriptionMap =
+                (Map<String, String>) request.context().get("imageDescriptionMap");
+
+        for (Map.Entry<String, UUID> entry : imageIdMap.entrySet()) {
+            String imageRef = entry.getKey();
+            UUID imageId = entry.getValue();
+            UUID noteId = imageNoteMap != null ? imageNoteMap.get(imageRef) : null;
+            String description = imageDescriptionMap != null ? imageDescriptionMap.get(imageRef) : null;
+
+            log.info("[AI AUDIT - IMAGE CONTEXT] ImageId: {} | NoteId: {} | Description: \"{}\"",
+                    imageId != null ? imageId : imageRef,
+                    noteId != null ? noteId : "unknown",
+                    description != null ? truncate(description) : "none");
+        }
+    }
+
+    private static String truncate(String description) {
+        if (description.length() <= MAX_AUDIT_DESCRIPTION_LENGTH) {
+            return description;
+        }
+        int cut = description.lastIndexOf(' ', MAX_AUDIT_DESCRIPTION_LENGTH - 1);
+        if (cut <= 0) {
+            cut = MAX_AUDIT_DESCRIPTION_LENGTH - 1;
+        }
+        return description.substring(0, cut).stripTrailing() + "…";
     }
 
     private void auditIgnoredNotes(JsonNode root, Map<String, UUID> noteIdMap) {

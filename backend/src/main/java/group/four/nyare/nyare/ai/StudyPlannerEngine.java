@@ -6,6 +6,7 @@ import group.four.nyare.nyare.ai.prompt.TaggedPromptBuilder;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.model.AcademicContext;
 import group.four.nyare.nyare.model.AcademicEvent;
+import group.four.nyare.nyare.model.Image;
 import group.four.nyare.nyare.model.Note;
 import group.four.nyare.nyare.model.Schedule;
 import group.four.nyare.nyare.model.Task;
@@ -78,7 +79,7 @@ public class StudyPlannerEngine {
 
     @Autowired
     public StudyPlannerEngine(ChatClient.Builder chatClientBuilder,
-                              @Value("classpath:system_prompt.st") Resource systemPromptResource,
+                              @Value("classpath:planner_sys-prompt.st") Resource systemPromptResource,
                               @Autowired(required = false) group.four.nyare.nyare.ai.advisor.PlannerAuditAdvisor plannerAuditAdvisor,
                               @Value("${nyare.study-planner.ai-timeout-ms:50000}") long aiTimeoutMs) {
         SystemPromptTemplate systemTemplate = new SystemPromptTemplate(systemPromptResource);
@@ -135,6 +136,27 @@ public class StudyPlannerEngine {
             List<AcademicEvent> existingEvents,
             List<AcademicContext> existingContexts,
             List<Schedule> schedules) {
+        return process(notes, existingTasks, existingEvents, existingContexts, schedules, Collections.emptyMap());
+    }
+
+    /**
+     * Processes notes and attached images together with existing academic data in one AI round-trip.
+     *
+     * @param notes            journal notes to process
+     * @param existingTasks    open tasks for the scoped courses (caller-filtered)
+     * @param existingEvents   upcoming events for the scoped courses (caller-filtered)
+     * @param existingContexts known academic context facts for the scoped courses
+     * @param schedules        recurring class schedules for the scoped courses
+     * @param noteImages       map of note ID to attached images with descriptions
+     * @return extracted and scheduled tasks, events, and contexts
+     */
+    public ExtractedData process(
+            List<Note> notes,
+            List<Task> existingTasks,
+            List<AcademicEvent> existingEvents,
+            List<AcademicContext> existingContexts,
+            List<Schedule> schedules,
+            Map<UUID, List<Image>> noteImages) {
 
         if (notes == null || notes.isEmpty()) {
             return emptyExtractedData();
@@ -151,16 +173,7 @@ public class StudyPlannerEngine {
         }
 
         StubReferenceCodec<Note> noteCodec = new StubReferenceCodec<>("n");
-
-        String notesCsv = CsvParser.toCsv(
-                CsvHeaders.NOTE,
-                validNotes,
-                note -> new Object[]{
-                        noteCodec.encode(note),
-                        note.getCourse() != null ? note.getCourse().getName() : "",
-                        note.getContent()
-                }
-        );
+        StubReferenceCodec<Image> imageCodec = new StubReferenceCodec<>("i");
 
         // Supply today's date so the model can anchor relative expressions
         // and determine which schedule slots are upcoming.
@@ -170,8 +183,8 @@ public class StudyPlannerEngine {
 
         TaggedPromptBuilder builder = TaggedPromptBuilder.builder()
                 .tag(Tags.TIME, timeContext)
-                .tag(Tags.JOURNAL, notesCsv)
-//                .tagIfPresent(Tags.IMAGE,            processImagesToCsv(validNotes, noteCodec))
+                .tag(Tags.JOURNAL, buildNotesCsv(validNotes, noteCodec))
+                .tagIfPresent(Tags.IMAGE, buildImagesCsv(validNotes, noteImages, noteCodec, imageCodec))
                 .tagIfPresent(Tags.TASKS, buildTasksCsv(existingTasks))
                 .tagIfPresent(Tags.EVENTS, buildEventsCsv(existingEvents))
                 .tagIfPresent(Tags.CONTEXTS, buildContextsCsv(existingContexts, today))
@@ -182,9 +195,28 @@ public class StudyPlannerEngine {
             noteIdMap.put(noteCodec.encode(note), note.getId());
         }
 
+        Map<String, UUID> imageIdMap = new HashMap<>();
+        Map<String, UUID> imageNoteMap = new HashMap<>();
+        Map<String, String> imageDescriptionMap = new HashMap<>();
+        if (noteImages != null && !noteImages.isEmpty()) {
+            for (Note note : validNotes) {
+                if (note.getId() == null) continue;
+                List<Image> images = noteImages.get(note.getId());
+                if (images == null || images.isEmpty()) continue;
+                for (Image image : images) {
+                    if (image == null || image.getId() == null
+                            || image.getDescription() == null || image.getDescription().isBlank()) continue;
+                    String imageRef = imageCodec.encode(image);
+                    imageIdMap.put(imageRef, image.getId());
+                    imageNoteMap.put(imageRef, note.getId());
+                    imageDescriptionMap.put(imageRef, image.getDescription());
+                }
+            }
+        }
+
         Prompt prompt = builder.buildPrompt();
 
-        PlannerAuditRecords.LlmPayload raw = callWithTimeout(noteIdMap, prompt);
+        PlannerAuditRecords.LlmPayload raw = callWithTimeout(noteIdMap, imageIdMap, imageNoteMap, imageDescriptionMap, prompt);
 
         return raw != null ? decodeReferences(raw, noteCodec, existingTasks) : emptyExtractedData();
     }
@@ -199,20 +231,38 @@ public class StudyPlannerEngine {
      * the guard and calls the model directly.
      *
      * @param noteIdMap stub reference to note ID map forwarded to the audit advisor
+     * @param imageIdMap stub reference to image ID map forwarded to the audit advisor
+     * @param imageNoteMap image stub reference to owning note ID map forwarded to the audit advisor
+     * @param imageDescriptionMap image stub reference to generated description map forwarded to the audit advisor
      * @param prompt    fully tagged extraction prompt
      * @return the extracted LLM payload, possibly {@code null}
      * @throws BadRequestException when the model does not respond within the timeout
      */
-    private PlannerAuditRecords.LlmPayload callWithTimeout(Map<String, UUID> noteIdMap, Prompt prompt) {
+    private PlannerAuditRecords.LlmPayload callWithTimeout(
+            Map<String, UUID> noteIdMap,
+            Map<String, UUID> imageIdMap,
+            Map<String, UUID> imageNoteMap,
+            Map<String, String> imageDescriptionMap,
+            Prompt prompt) {
         if (aiTimeoutMs <= 0) {
             return chatClient.prompt(prompt)
-                    .advisors(a -> a.param("noteIdMap", noteIdMap))
+                    .advisors(a -> {
+                        a.param("noteIdMap", noteIdMap);
+                        a.param("imageIdMap", imageIdMap);
+                        a.param("imageNoteMap", imageNoteMap);
+                        a.param("imageDescriptionMap", imageDescriptionMap);
+                    })
                     .call()
                     .entity(PlannerAuditRecords.LlmPayload.class);
         }
 
         CompletableFuture<PlannerAuditRecords.LlmPayload> future = CompletableFuture.supplyAsync(() -> chatClient.prompt(prompt)
-                .advisors(a -> a.param("noteIdMap", noteIdMap))
+                .advisors(a -> {
+                    a.param("noteIdMap", noteIdMap);
+                    a.param("imageIdMap", imageIdMap);
+                    a.param("imageNoteMap", imageNoteMap);
+                    a.param("imageDescriptionMap", imageDescriptionMap);
+                })
                 .call()
                 .entity(PlannerAuditRecords.LlmPayload.class));
 
@@ -239,6 +289,44 @@ public class StudyPlannerEngine {
     }
 
     // --- Private CSV builders ---
+
+    private static String buildNotesCsv(List<Note> validNotes, StubReferenceCodec<Note> noteCodec) {
+        return CsvParser.toCsv(
+                CsvHeaders.NOTE,
+                validNotes,
+                note -> new Object[]{
+                        noteCodec.encode(note),
+                        note.getCourse() != null ? note.getCourse().getName() : "",
+                        note.getContent()
+                }
+        );
+    }
+
+    private String buildImagesCsv(
+            List<Note> validNotes,
+            Map<UUID, List<Image>> noteImages,
+            StubReferenceCodec<Note> noteCodec,
+            StubReferenceCodec<Image> imageCodec) {
+        if (noteImages == null || noteImages.isEmpty()) {
+            return "";
+        }
+        List<Object[]> rows = new ArrayList<>();
+        for (Note note : validNotes) {
+            if (note.getId() == null) continue;
+            List<Image> images = noteImages.get(note.getId());
+            if (images == null || images.isEmpty()) continue;
+            for (Image image : images) {
+                if (image == null || image.getDescription() == null || image.getDescription().isBlank()) continue;
+                rows.add(new Object[]{
+                        imageCodec.encode(image),
+                        noteCodec.encode(note),
+                        image.getDescription()
+                });
+            }
+        }
+        if (rows.isEmpty()) return "";
+        return CsvParser.toCsv(CsvHeaders.IMAGE, rows, r -> r);
+    }
 
     private String buildTasksCsv(List<Task> tasks) {
         if (tasks == null || tasks.isEmpty()) return "";

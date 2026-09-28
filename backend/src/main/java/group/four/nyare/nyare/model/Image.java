@@ -8,7 +8,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.annotation.CreatedDate;
@@ -30,7 +29,6 @@ public class Image {
     @Column(nullable = false, updatable = false)
     private UUID id;
 
-    @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(nullable = false)
     private byte[] data;

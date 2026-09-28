@@ -3,6 +3,7 @@ package group.four.nyare.nyare.ai;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.model.AcademicContext;
 import group.four.nyare.nyare.model.Course;
+import group.four.nyare.nyare.model.Image;
 import group.four.nyare.nyare.model.Note;
 import group.four.nyare.nyare.model.Schedule;
 import group.four.nyare.nyare.model.Task;
@@ -26,14 +27,14 @@ import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class StudyPlannerEngineTest {
