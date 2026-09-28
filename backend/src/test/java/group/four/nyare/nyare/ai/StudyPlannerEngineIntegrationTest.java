@@ -24,9 +24,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -48,7 +45,8 @@ public class StudyPlannerEngineIntegrationTest {
     @SpringBootConfiguration
     @EnableAutoConfiguration
     @Import({StudyPlannerEngine.class, group.four.nyare.nyare.ai.advisor.PlannerAuditAdvisor.class})
-    static class TestConfig {}
+    static class TestConfig {
+    }
 
     @Autowired
     private StudyPlannerEngine engine;
@@ -154,30 +152,30 @@ public class StudyPlannerEngineIntegrationTest {
         // then: Implied tasks detected
         assertThat(result.tasks())
                 .anyMatch(t -> t.title().toLowerCase().contains("interface") ||
-                               t.title().toLowerCase().contains("abstract") ||
-                               t.title().toLowerCase().contains("practice") ||
-                               t.title().toLowerCase().contains("lifecycle") ||
-                               t.title().toLowerCase().contains("lambda") ||
-                               t.title().toLowerCase().contains("grammar") ||
-                               t.title().toLowerCase().contains("slide") ||
-                               t.title().toLowerCase().contains("derivation") ||
-                               t.title().toLowerCase().contains("calculus") ||
-                               t.title().toLowerCase().contains("trigonometric") ||
-                               t.title().toLowerCase().contains("division") ||
-                               t.title().toLowerCase().contains("file") ||
-                               t.title().toLowerCase().contains("exception") ||
-                               t.title().toLowerCase().contains("try-catch") ||
-                               t.title().toLowerCase().contains("thread") ||
-                               t.title().toLowerCase().contains("multithread"));
+                        t.title().toLowerCase().contains("abstract") ||
+                        t.title().toLowerCase().contains("practice") ||
+                        t.title().toLowerCase().contains("lifecycle") ||
+                        t.title().toLowerCase().contains("lambda") ||
+                        t.title().toLowerCase().contains("grammar") ||
+                        t.title().toLowerCase().contains("slide") ||
+                        t.title().toLowerCase().contains("derivation") ||
+                        t.title().toLowerCase().contains("calculus") ||
+                        t.title().toLowerCase().contains("trigonometric") ||
+                        t.title().toLowerCase().contains("division") ||
+                        t.title().toLowerCase().contains("file") ||
+                        t.title().toLowerCase().contains("exception") ||
+                        t.title().toLowerCase().contains("try-catch") ||
+                        t.title().toLowerCase().contains("thread") ||
+                        t.title().toLowerCase().contains("multithread"));
 
         // then: Academic events extracted with valid deadlines
         assertThat(result.events())
                 .anyMatch(e -> e.title().toLowerCase().contains("quiz") ||
-                               e.title().toLowerCase().contains("report") ||
-                               e.title().toLowerCase().contains("deadline") ||
-                               e.title().toLowerCase().contains("lab") ||
-                               e.title().toLowerCase().contains("midterm") ||
-                               e.title().toLowerCase().contains("exam"));
+                        e.title().toLowerCase().contains("report") ||
+                        e.title().toLowerCase().contains("deadline") ||
+                        e.title().toLowerCase().contains("lab") ||
+                        e.title().toLowerCase().contains("midterm") ||
+                        e.title().toLowerCase().contains("exam"));
 
         // then: Note without dates yields tasks and context but no rigid academic events
         assertThat(result.tasks()).anyMatch(t -> note3.getId().equals(t.noteId()));
@@ -238,12 +236,12 @@ public class StudyPlannerEngineIntegrationTest {
         // then: Valid academic task is retained and extracted
         assertThat(result.tasks()).isNotEmpty();
         assertThat(result.tasks()).anyMatch(t -> t.title().toLowerCase().contains("uml") ||
-                                                 t.title().toLowerCase().contains("diagram"));
+                t.title().toLowerCase().contains("diagram"));
 
         // then: Unrelated grocery/coffee errand is omitted from tasks
         assertThat(result.tasks()).noneMatch(t -> t.title().toLowerCase().contains("starbucks") ||
-                                                 t.title().toLowerCase().contains("grocery") ||
-                                                 t.title().toLowerCase().contains("sabon"));
+                t.title().toLowerCase().contains("grocery") ||
+                t.title().toLowerCase().contains("sabon"));
 
         // then: PlannerAuditAdvisor logged audit warning for the omitted unrelated statements with decoded noteId and part
         assertAuditLoggedUnrelated(output, noteId);

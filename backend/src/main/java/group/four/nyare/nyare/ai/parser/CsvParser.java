@@ -33,10 +33,10 @@ public final class CsvParser {
     /**
      * Converts an iterable collection of items to a CSV string.
      *
-     * @param headers the CSV header names
-     * @param items the items to serialize
+     * @param headers   the CSV header names
+     * @param items     the items to serialize
      * @param rowMapper function to map an item to row columns
-     * @param <T> the element type
+     * @param <T>       the element type
      * @return the formatted CSV text
      */
     public static <T> String toCsv(String[] headers, Iterable<T> items, Function<T, Object[]> rowMapper) {
@@ -75,9 +75,9 @@ public final class CsvParser {
     /**
      * Parses CSV text into a list of objects using a record mapper.
      *
-     * @param csvContent the CSV string
+     * @param csvContent   the CSV string
      * @param recordMapper function to map a CSVRecord to an object
-     * @param <T> the target type
+     * @param <T>          the target type
      * @return list of parsed objects
      */
     public static <T> List<T> parse(String csvContent, Function<CSVRecord, T> recordMapper) {
@@ -90,9 +90,9 @@ public final class CsvParser {
     /**
      * Parses CSV content from a reader into a list of objects.
      *
-     * @param reader the input character stream
+     * @param reader       the input character stream
      * @param recordMapper function to map a CSVRecord to an object
-     * @param <T> the target type
+     * @param <T>          the target type
      * @return list of parsed objects
      */
     public static <T> List<T> parse(Reader reader, Function<CSVRecord, T> recordMapper) {
@@ -119,7 +119,7 @@ public final class CsvParser {
     /**
      * Retrieves a named column value safely from a CSV record.
      *
-     * @param record the CSV record
+     * @param record     the CSV record
      * @param headerName the column header name
      * @return the column value or null if not mapped
      */
