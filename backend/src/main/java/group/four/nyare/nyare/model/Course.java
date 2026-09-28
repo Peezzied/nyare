@@ -40,7 +40,7 @@ public class Course {
     /**
      * Creates a new Course with required details.
      *
-     * @param name the name of the course
+     * @param name        the name of the course
      * @param description optional description or course overview
      */
     public Course(String name, String description) {

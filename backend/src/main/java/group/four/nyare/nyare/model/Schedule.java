@@ -8,6 +8,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -20,7 +21,12 @@ import java.time.LocalTime;
  * Represents a recurring weekly class meeting time for a course.
  */
 @Entity
-@Table(name = "schedules")
+@Table(
+        name = "schedules",
+        indexes = {
+                @Index(name = "idx_schedules_course_day_time", columnList = "course_id, day, start_time")
+        }
+)
 public class Schedule {
 
     @Id

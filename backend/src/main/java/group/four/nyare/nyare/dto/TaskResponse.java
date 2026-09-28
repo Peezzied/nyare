@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.dto;
 
+import group.four.nyare.nyare.model.enums.PlanCategory;
 import group.four.nyare.nyare.model.enums.TaskStatus;
 
 import java.time.Duration;
@@ -20,6 +21,7 @@ public class TaskResponse {
     private LocalDate scheduledDate;
     private Duration duration;
     private TaskStatus status;
+    private PlanCategory planCategory;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -29,6 +31,12 @@ public class TaskResponse {
     public TaskResponse(UUID id, Long courseId, UUID noteId, String title, String description,
                         LocalDate scheduledDate, Duration duration, TaskStatus status,
                         Instant createdAt, Instant updatedAt) {
+        this(id, courseId, noteId, title, description, scheduledDate, duration, status, null, createdAt, updatedAt);
+    }
+
+    public TaskResponse(UUID id, Long courseId, UUID noteId, String title, String description,
+                        LocalDate scheduledDate, Duration duration, TaskStatus status,
+                        PlanCategory planCategory, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.courseId = courseId;
         this.noteId = noteId;
@@ -37,6 +45,7 @@ public class TaskResponse {
         this.scheduledDate = scheduledDate;
         this.duration = duration;
         this.status = status;
+        this.planCategory = planCategory;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -103,6 +112,14 @@ public class TaskResponse {
 
     public void setStatus(TaskStatus status) {
         this.status = status;
+    }
+
+    public PlanCategory getPlanCategory() {
+        return planCategory;
+    }
+
+    public void setPlanCategory(PlanCategory planCategory) {
+        this.planCategory = planCategory;
     }
 
     public Instant getCreatedAt() {

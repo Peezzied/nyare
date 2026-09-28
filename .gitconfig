@@ -1,0 +1,2 @@
+[alias]
+	caveman-commit = "!f() { bash \"$(git rev-parse --show-toplevel)/scripts/caveman_commit.sh\" \"$@\"; }; f"

@@ -1,0 +1,432 @@
+package group.four.nyare.nyare.ai;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import group.four.nyare.nyare.model.AcademicContext;
+import group.four.nyare.nyare.model.AcademicEvent;
+import group.four.nyare.nyare.model.Course;
+import group.four.nyare.nyare.model.Note;
+import group.four.nyare.nyare.model.NoteContent;
+import group.four.nyare.nyare.model.Schedule;
+import group.four.nyare.nyare.model.Task;
+import group.four.nyare.nyare.model.enums.TaskStatus;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.io.IOException;
+import java.time.DayOfWeek;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@ExtendWith(OutputCaptureExtension.class)
+@SpringBootTest(classes = StudyPlannerEngineIntegrationTest.TestConfig.class)
+public class StudyPlannerEngineIntegrationTest {
+
+    @SpringBootConfiguration
+    @EnableAutoConfiguration
+    @Import({StudyPlannerEngine.class, group.four.nyare.nyare.ai.advisor.PlannerAuditAdvisor.class})
+    static class TestConfig {
+    }
+
+    @Autowired
+    private StudyPlannerEngine engine;
+
+    @Test
+    @DisplayName("Main Integration: processes notes with full academic context and extracts planning entities")
+    void mainIntegrationTest_processesNotesAndExtractsEntities(CapturedOutput output, TestInfo testInfo) throws Exception {
+        // given: Student Courses from University Class Schedule
+        Course compArch = new Course("Computer Architecture and Organization", "CS Core Course");
+        Course ppl = new Course("Principles of Programming Languages", "CS Core Course");
+        Course itEra = new Course("GE Elective 1 - Living in the IT Era", "General Education Elective");
+        Course calc2 = new Course("Calculus 2", "Mathematics Course");
+        Course rph = new Course("Readings in Philippine History", "General Education Course");
+        Course mobComp = new Course("Mobile Computing", "CS Elective Course");
+        Course oop = new Course("Object-Oriented Programming", "CS Core Course");
+        Course pathfit = new Course("Physical Activities Toward Health & Fitness 3 (PATHFit 3)", "Physical Education");
+
+        // given: Weekly Recurring Schedules
+        List<Schedule> schedules = List.of(
+                // Monday
+                new Schedule(compArch, DayOfWeek.MONDAY, LocalTime.of(7, 30), LocalTime.of(8, 30)),
+                new Schedule(ppl, DayOfWeek.MONDAY, LocalTime.of(9, 0), LocalTime.of(10, 30)),
+                new Schedule(itEra, DayOfWeek.MONDAY, LocalTime.of(10, 30), LocalTime.of(12, 0)),
+                new Schedule(calc2, DayOfWeek.MONDAY, LocalTime.of(13, 30), LocalTime.of(15, 30)),
+                new Schedule(rph, DayOfWeek.MONDAY, LocalTime.of(15, 30), LocalTime.of(16, 30)),
+
+                // Tuesday
+                new Schedule(mobComp, DayOfWeek.TUESDAY, LocalTime.of(10, 30), LocalTime.of(13, 30)),
+                new Schedule(oop, DayOfWeek.TUESDAY, LocalTime.of(13, 30), LocalTime.of(16, 30)),
+
+                // Wednesday
+                new Schedule(compArch, DayOfWeek.WEDNESDAY, LocalTime.of(7, 30), LocalTime.of(10, 30)),
+                new Schedule(compArch, DayOfWeek.WEDNESDAY, LocalTime.of(11, 30), LocalTime.of(12, 30)),
+                new Schedule(calc2, DayOfWeek.WEDNESDAY, LocalTime.of(13, 30), LocalTime.of(15, 30)),
+                new Schedule(rph, DayOfWeek.WEDNESDAY, LocalTime.of(15, 30), LocalTime.of(16, 30)),
+
+                // Thursday
+                new Schedule(mobComp, DayOfWeek.THURSDAY, LocalTime.of(10, 30), LocalTime.of(12, 30)),
+                new Schedule(oop, DayOfWeek.THURSDAY, LocalTime.of(13, 30), LocalTime.of(15, 30)),
+
+                // Friday
+                new Schedule(ppl, DayOfWeek.FRIDAY, LocalTime.of(9, 0), LocalTime.of(10, 30)),
+                new Schedule(itEra, DayOfWeek.FRIDAY, LocalTime.of(10, 30), LocalTime.of(12, 0)),
+                new Schedule(pathfit, DayOfWeek.FRIDAY, LocalTime.of(13, 30), LocalTime.of(15, 30)),
+                new Schedule(rph, DayOfWeek.FRIDAY, LocalTime.of(15, 30), LocalTime.of(16, 30))
+        );
+
+        // given: Existing Academic State
+        Task completedTask = new Task(oop, "Review basic class syntax and constructors");
+        completedTask.setStatus(TaskStatus.COMPLETED);
+        completedTask.setScheduledDate(LocalDate.now().minusDays(4));
+
+        Task openTask = new Task(compArch, "Review MIPS instruction encoding");
+        openTask.setStatus(TaskStatus.TODO);
+        openTask.setScheduledDate(LocalDate.now().plusDays(1));
+        List<Task> existingTasks = List.of(completedTask, openTask);
+
+        AcademicEvent labEvent = new AcademicEvent(calc2, null, "Calculus 2 Problem Set 1", "Integration by parts",
+                LocalDateTime.now().plusDays(7));
+        List<AcademicEvent> existingEvents = List.of(labEvent);
+
+        AcademicContext oopContext = new AcademicContext(oop, "Student struggles with polymorphism and method overriding");
+        ReflectionTestUtils.setField(oopContext, "createdAt", Instant.now().minus(3, ChronoUnit.DAYS));
+        AcademicContext compArchContext = new AcademicContext(compArch, "Covered logic gates and boolean algebra");
+        ReflectionTestUtils.setField(compArchContext, "createdAt", Instant.now().minus(6, ChronoUnit.DAYS));
+        List<AcademicContext> existingContexts = List.of(oopContext, compArchContext);
+
+        // given: Incoming Rushed Student Journal Notes with UUIDs
+        Note note1 = createNote(oop, "grabe sabaw ako sa lab 3 kanina sa a-205 puro inheritance at polymorphism... " +
+                "may pa-lab report si sir due next tue oct 6 ng 1:30pm bago mag-start lab. " +
+                "kailangan ko tapusin yung uml class diagram asap. " +
+                "sabi rin ni prof mag-practice daw kami ng java abstract classes at interfaces before thursday lecture");
+
+        Note note2 = createNote(mobComp, "intro pa lang sa android studio setup and activity lifecycle sa a-211 pero shookt kami biglang announced quiz sa thursday 10:30am coverage yung lifecycle callbacks. " +
+                "need ko mag-install ng android studio tsaka sdk sa laptop bago mag-next lab session para di nganga");
+
+        Note note3 = createNote(ppl, "hirap na hirap ako sa lambda calculus at syntax grammar ambiguity... " +
+                "kailangan ko mag-basa ng lecture slides tsaka mag-practice mag-solve ng derivation exercises para maintindihan ko yung topic");
+
+        Note note4 = createNote(calc2, "calculus discussion abt inverse trigo functions. " +
+                "used synthetic division dq magets tas kasama raw yata sa midterm exam which will prolly be on oct 7 since asynch kami sa next meeting niya");
+
+        Note note5 = createNote(oop, "java discussion about file handling and exception handling. " +
+                "prof showed examples on how to read and write files, and how try-catch works. " +
+                "talked about multithreading din, like how multiple tasks can run at the same time. " +
+                "baka included in the next assessment kasi may activities about these topics.");
+
+        List<Note> notes = List.of(note1, note2, note3, note4, note5);
+
+        // when
+        StudyPlannerEngine.ExtractedData result = engine.process(
+                notes, existingTasks, existingEvents, existingContexts, schedules);
+
+        // observe & export: Build structured summary report and write to files
+        reportObservation(testInfo.getDisplayName(), result);
+
+        // then: Entity lists present
+        assertAllEntityTypesPresent(result);
+
+        // then: Decoded UUID references match source notes
+        assertNoteRefsMatchSource(result, notes);
+
+        // then: Implied tasks detected
+        assertThat(result.tasks())
+                .anyMatch(t -> t.title().toLowerCase().contains("interface") ||
+                        t.title().toLowerCase().contains("abstract") ||
+                        t.title().toLowerCase().contains("practice") ||
+                        t.title().toLowerCase().contains("lifecycle") ||
+                        t.title().toLowerCase().contains("lambda") ||
+                        t.title().toLowerCase().contains("grammar") ||
+                        t.title().toLowerCase().contains("slide") ||
+                        t.title().toLowerCase().contains("derivation") ||
+                        t.title().toLowerCase().contains("calculus") ||
+                        t.title().toLowerCase().contains("trigonometric") ||
+                        t.title().toLowerCase().contains("division") ||
+                        t.title().toLowerCase().contains("file") ||
+                        t.title().toLowerCase().contains("exception") ||
+                        t.title().toLowerCase().contains("try-catch") ||
+                        t.title().toLowerCase().contains("thread") ||
+                        t.title().toLowerCase().contains("multithread"));
+
+        // then: Academic events extracted with valid deadlines
+        assertThat(result.events())
+                .anyMatch(e -> e.title().toLowerCase().contains("quiz") ||
+                        e.title().toLowerCase().contains("report") ||
+                        e.title().toLowerCase().contains("deadline") ||
+                        e.title().toLowerCase().contains("lab") ||
+                        e.title().toLowerCase().contains("midterm") ||
+                        e.title().toLowerCase().contains("exam"));
+
+        // then: Note without dates yields tasks and context but no rigid academic events
+        assertThat(result.tasks()).anyMatch(t -> note3.getId().equals(t.noteId()));
+        assertThat(result.contexts()).anyMatch(c -> note3.getId().equals(c.noteId()));
+        assertThat(result.events()).noneMatch(e -> note3.getId().equals(e.noteId()));
+
+        // then: Calculus note extracts midterm exam event and topic context
+        assertThat(result.events()).anyMatch(e -> note4.getId().equals(e.noteId()));
+        assertThat(result.contexts()).anyMatch(c -> note4.getId().equals(c.noteId()));
+
+        // then: File handling note yields context but no rigid event (uncertain "baka" assessment)
+        // No task required: note states lecture coverage without an explicit actionable duty,
+        // so the model correctly preserves uncertainty instead of hallucinating a task.
+        assertThat(result.contexts()).anyMatch(c -> note5.getId().equals(c.noteId()));
+        assertThat(result.events()).noneMatch(e -> note5.getId().equals(e.noteId()));
+
+        // then: PlannerAuditAdvisor intercepted and logged planning decisions for tasks and events
+        assertThat(output.getAll()).contains("[AI AUDIT - TASK PLANNING]");
+        assertThat(output.getAll()).contains("[AI AUDIT - EVENT PLANNING]");
+    }
+
+    @Test
+    @DisplayName("process with course-irrelevant outlier note ignores note and logs audit warning")
+    void process_withOutlierNote_ignoresNoteAndLogsAudit(CapturedOutput output, TestInfo testInfo) throws Exception {
+        // given: Outlier non-academic note assigned to OOP course
+        Course oop = new Course("Object-Oriented Programming", "CS Core Course");
+        String noteText = "bumili ako ng shampoo, sabon, tsaka kape sa grocery kanina tapos nanood ako ng anime buong gabi";
+        Note outlierNote = createNote(oop, noteText);
+        UUID noteId = outlierNote.getId();
+
+        // when
+        StudyPlannerEngine.ExtractedData result = processWithEmptyState(List.of(outlierNote));
+
+        reportObservation(testInfo.getDisplayName(), result);
+
+        // then: Outlier note produces no tasks, events, or contexts
+        assertNoEntitiesForNote(result, noteId);
+
+        // then: PlannerAuditAdvisor intercepted and logged the audit warning with decoded noteId and part
+        assertAuditLoggedUnrelated(output, noteId);
+    }
+
+    @Test
+    @DisplayName("process with mixed note extracts valid entities and logs audit warning for unrelated content")
+    void process_withMixedNote_extractsEntitiesAndAuditsUnrelated(CapturedOutput output, TestInfo testInfo) throws Exception {
+        // given: Mixed note with valid academic task and unrelated personal errand
+        Course oop = new Course("Object-Oriented Programming", "CS Core Course");
+        String mixedText = "Kailangan ko tapusin yung UML class diagram asap bago mag-Tuesday lab. " +
+                "Tapos nag-kape ako sa Starbucks at bumili ng sabon at grocery kanina.";
+        Note mixedNote = createNote(oop, mixedText);
+        UUID noteId = mixedNote.getId();
+
+        // when
+        StudyPlannerEngine.ExtractedData result = processWithEmptyState(List.of(mixedNote));
+
+        reportObservation(testInfo.getDisplayName(), result);
+
+        // then: Valid academic task is retained and extracted
+        assertThat(result.tasks()).isNotEmpty();
+        assertThat(result.tasks()).anyMatch(t -> t.title().toLowerCase().contains("uml") ||
+                t.title().toLowerCase().contains("diagram"));
+
+        // then: Unrelated grocery/coffee errand is omitted from tasks
+        assertThat(result.tasks()).noneMatch(t -> t.title().toLowerCase().contains("starbucks") ||
+                t.title().toLowerCase().contains("grocery") ||
+                t.title().toLowerCase().contains("sabon"));
+
+        // then: PlannerAuditAdvisor logged audit warning for the omitted unrelated statements with decoded noteId and part
+        assertAuditLoggedUnrelated(output, noteId);
+    }
+
+    @Test
+    @DisplayName("process with arts submission and financial quiz notes extracts tasks and events with schedule anchors")
+    void process_withArtsAndFinanceNotes_extractsTasksAndEvents(TestInfo testInfo) throws Exception {
+        // given: Dummy courses and weekly recurring schedules
+        Course artApp = new Course("Art Appreciation", "General Education Course");
+        Schedule artSchedule = new Schedule(artApp, DayOfWeek.WEDNESDAY, LocalTime.of(10, 0), LocalTime.of(13, 0));
+
+        Course finMan = new Course("Financial Management", "Business Course");
+        Schedule finSchedule = new Schedule(finMan, DayOfWeek.FRIDAY, LocalTime.of(13, 30), LocalTime.of(16, 30));
+
+        List<Schedule> schedules = List.of(artSchedule, finSchedule);
+
+        // given: Incoming student journal notes
+        Note artsNote = createNote(artApp, "Canva link later, 4 options, 2 landscape, 2 portrait, own stuff and they choose for arts");
+        Note financeNote = createNote(finMan, "Quiz next week about basic financial concepts, di naman nagturo " +
+                "un but ok, self search on compound interest, ordinary annuity");
+
+        List<Note> notes = List.of(artsNote, financeNote);
+
+        // when
+        StudyPlannerEngine.ExtractedData result = processWithEmptyState(notes, schedules);
+
+        // observe & export
+        reportObservation(testInfo.getDisplayName(), result);
+
+        // then: Extracted entities present
+        assertAllEntityTypesPresent(result);
+
+        // then: Decoded UUID references match source notes
+        assertNoteRefsMatchSource(result, notes);
+
+        // then: Arts note extracts task
+        assertThat(result.tasks()).anyMatch(t -> artsNote.getId().equals(t.noteId()));
+
+        // then: Finance note extracts quiz event, context, and implied study tasks
+        assertThat(result.events()).anyMatch(e -> financeNote.getId().equals(e.noteId()) &&
+                (e.title().toLowerCase().contains("quiz") || e.title().toLowerCase().contains("financ")));
+        assertThat(result.contexts()).anyMatch(c -> financeNote.getId().equals(c.noteId()));
+        assertThat(result.tasks()).anyMatch(t -> financeNote.getId().equals(t.noteId()));
+    }
+
+    @Test
+    @DisplayName("process promotes backlog tasks to scheduled or later when new notes provide context")
+    void process_promotesBacklogTasks_whenNewNotesProvideContext(CapturedOutput output, TestInfo testInfo) throws Exception {
+        // given: Course with recurring schedule
+        Course dataStructures = new Course("Data Structures", "CS Core Course");
+        List<Schedule> schedules = List.of(
+                new Schedule(dataStructures, DayOfWeek.TUESDAY, LocalTime.of(13, 30), LocalTime.of(16, 30))
+        );
+
+        // given: Existing BACKLOG tasks (no scheduledDate, no duration)
+        Task backlogTask1 = new Task(dataStructures, "Review recursion and tree traversal");
+        backlogTask1.setStatus(TaskStatus.TODO);
+        ReflectionTestUtils.setField(backlogTask1, "id", UUID.randomUUID());
+
+        Task backlogTask2 = new Task(dataStructures, "Practice linked list implementation");
+        backlogTask2.setStatus(TaskStatus.TODO);
+        ReflectionTestUtils.setField(backlogTask2, "id", UUID.randomUUID());
+
+        Task backlogTask3 = new Task(dataStructures, "Complete problem set 3");
+        backlogTask3.setStatus(TaskStatus.TODO);
+        ReflectionTestUtils.setField(backlogTask3, "id", UUID.randomUUID());
+
+        List<Task> existingTasks = List.of(backlogTask1, backlogTask2, backlogTask3);
+        Set<UUID> backlogTaskIds = existingTasks.stream().map(Task::getId).collect(Collectors.toSet());
+
+        // given: New rushed student notes providing context for promotion
+        String noteText = "grabe hirap sa recursion topic kanina sa lab. " +
+                "sir announced quiz next tue coverage tree traversal at binary search tree. " +
+                "kailangan ko tapusin yung problem set 3 bago thursday lab session. " +
+                "sabi ni prof review din linked list implementation at stack queue para sa midterm exam, maglaan daw mga 45 mins para mag practice nito.";
+        Note note = createNote(dataStructures, noteText);
+
+        List<Note> notes = List.of(note);
+
+        // when
+        StudyPlannerEngine.ExtractedData result = engine.process(
+                notes, existingTasks, Collections.emptyList(), Collections.emptyList(), schedules);
+
+        // observe & export
+        reportObservation(testInfo.getDisplayName(), result);
+
+        // then: At least one backlog task promoted to SCHEDULED (scheduledDate != null, taskId matches existing)
+        boolean promotedToScheduled = result.tasks().stream()
+                .anyMatch(t -> t.taskId() != null && backlogTaskIds.contains(t.taskId()) && t.scheduledDate() != null);
+        assertThat(promotedToScheduled).as("At least one BACKLOG task should be promoted to SCHEDULED").isTrue();
+
+        // then: At least one backlog task promoted to LATER (duration != null, scheduledDate == null, taskId matches existing)
+        boolean promotedToLater = result.tasks().stream()
+                .anyMatch(t -> t.taskId() != null && backlogTaskIds.contains(t.taskId()) && t.estimatedMinutes() != null && t.scheduledDate() == null);
+        assertThat(promotedToLater).as("At least one BACKLOG task should be promoted to LATER").isTrue();
+
+        // then: PlannerAuditAdvisor logged promotion decisions with TaskId
+        assertThat(output.getAll()).contains("[AI AUDIT - TASK PROMOTION]");
+        assertThat(output.getAll()).contains("TaskId: ");
+    }
+
+    private StudyPlannerEngine.ExtractedData processWithEmptyState(List<Note> notes) {
+        return processWithEmptyState(notes, Collections.emptyList());
+    }
+
+    private StudyPlannerEngine.ExtractedData processWithEmptyState(List<Note> notes, List<Schedule> schedules) {
+        return engine.process(
+                notes,
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList(),
+                schedules);
+    }
+
+    private static void assertAllEntityTypesPresent(StudyPlannerEngine.ExtractedData result) {
+        assertThat(result).isNotNull();
+        assertThat(result.tasks()).isNotEmpty();
+        assertThat(result.events()).isNotEmpty();
+        assertThat(result.contexts()).isNotEmpty();
+    }
+
+    private static void assertNoteRefsMatchSource(StudyPlannerEngine.ExtractedData result, List<Note> notes) {
+        List<UUID> noteIds = notes.stream().map(Note::getId).toList();
+        assertThat(result.tasks())
+                .allMatch(t -> t.noteId() != null && noteIds.contains(t.noteId()));
+        assertThat(result.events())
+                .allMatch(e -> e.noteId() != null && noteIds.contains(e.noteId()));
+        assertThat(result.contexts())
+                .allMatch(c -> c.noteId() != null && noteIds.contains(c.noteId()));
+    }
+
+    private static void assertNoEntitiesForNote(StudyPlannerEngine.ExtractedData result, UUID noteId) {
+        assertThat(result.tasks()).noneMatch(t -> noteId.equals(t.noteId()));
+        assertThat(result.events()).noneMatch(e -> noteId.equals(e.noteId()));
+        assertThat(result.contexts()).noneMatch(c -> noteId.equals(c.noteId()));
+    }
+
+    private static void assertAuditLoggedUnrelated(CapturedOutput output, UUID noteId) {
+        assertThat(output.getAll()).contains("[AI AUDIT - UNRELATED INFO]");
+        assertThat(output.getAll()).contains("NoteId: " + noteId);
+        assertThat(output.getAll()).contains("Part:");
+    }
+
+    private static Note createNote(Course course, String text) {
+        UUID note1Id = UUID.randomUUID();
+        Note note = new Note(course, new NoteContent(text, null));
+        ReflectionTestUtils.setField(note, "id", note1Id);
+
+        return note;
+    }
+
+    private static void reportObservation(String testName, StudyPlannerEngine.ExtractedData result) throws IOException {
+        // Replace invalid filename characters and whitespace with underscores
+        String sanitizedTestName = testName.replaceAll("[^a-zA-Z0-9.-]", "_");
+
+        StringBuilder report = new StringBuilder();
+        report.append("=======================================================\n");
+        report.append("            STUDY PLANNER ENGINE AI OUTPUT             \n");
+        report.append("=======================================================\n\n");
+
+        report.append("--- EXTRACTED TASKS (").append(result.tasks().size()).append(") ---\n");
+        for (StudyPlannerEngine.ExtractedTask task : result.tasks()) {
+            report.append(String.format("• [%s] %s%n", task.noteRef(), task.title()));
+            report.append(String.format("  Description: %s%n", task.description()));
+            report.append(String.format("  Scheduled:   %s | Duration: %s min | NoteId: %s%n",
+                    task.scheduledDate(), task.estimatedMinutes(), task.noteId()));
+        }
+
+        report.append("\n--- EXTRACTED EVENTS (").append(result.events().size()).append(") ---\n");
+        for (StudyPlannerEngine.ExtractedEvent event : result.events()) {
+            report.append(String.format("• [%s] %s%n", event.noteRef(), event.title()));
+            report.append(String.format("  Description: %s%n", event.description()));
+            report.append(String.format("  Deadline:    %s | NoteId: %s%n", event.deadline(), event.noteId()));
+        }
+
+        report.append("\n--- EXTRACTED CONTEXTS (").append(result.contexts().size()).append(") ---\n");
+        for (StudyPlannerEngine.ExtractedContext context : result.contexts()) {
+            report.append(String.format("• [%s] %s (NoteId: %s)%n", context.noteRef(), context.value(), context.noteId()));
+        }
+
+        ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        String jsonOutput = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result);
+
+        System.out.println(report);
+        System.out.println("\n Raw json output:\n" + jsonOutput);
+    }
+}

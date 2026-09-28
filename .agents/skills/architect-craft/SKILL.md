@@ -90,18 +90,18 @@ Architecture must follow docs:
   ```java
   public record StudyPlanDto(
       LocalDate generatedForDate,
-      List<TaskResponseDto> scheduledTasks,     // Calendar Grid
-      List<TaskResponseDto> flexibleTasks,      // Later Area
-      List<TaskResponseDto> needsContextTasks,  // Needs Context Area
+      List<TaskResponseDto> scheduledTasks,     // Calendar Grid (SCHEDULED)
+      List<TaskResponseDto> laterTasks,          // Later Area (LATER)
+      List<TaskResponseDto> backlogTasks,        // Backlog Area (BACKLOG)
       String plannerSummary
   ) {}
   ```
 
 ### 4. Tri-State Study Plan Recommendations
 Map recommendations direct to UI layout:
-1. **Scheduled**: Confident date. Render in Calendar Grid.
-2. **Flexible / Later**: Actionable without target date. Render in Later Area.
-3. **Needs Context**: Missing details for confident scheduling. Render in Needs Context Area.
+1. **Scheduled**: Confident date (`scheduledDate != null`). Render in Calendar Grid.
+2. **Later**: Actionable with duration without target date (`scheduledDate == null && duration != null`). Render in Later Area.
+3. **Backlog**: Lacks date and duration estimate (`scheduledDate == null && duration == null`). Render in Backlog Area.
 
 ### 5. Append-Only Materialization (No Auto-Reconciliation)
 * AI extracts new entities from notes into fresh database rows (`Task`, `AcademicEvent`, `AcademicContext`).
@@ -122,7 +122,7 @@ Map recommendations direct to UI layout:
 ### 8. Preserve Uncertainty (Zero Data Fabrication)
 * Separate Extractability (raw note content) from Plannability (enough context to schedule).
 * Missing deadline or duration must stay `null`.
-* Route low-context tasks to Needs Context or Later. Never invent dates or durations.
+* Route low-context tasks to Backlog or Later. Never invent dates or durations.
 
 ### 9. Student Feedback Loop Without Record Mutation
 * Student feedback (example: "no time tonight"):

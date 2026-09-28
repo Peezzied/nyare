@@ -7,7 +7,7 @@ To maintain simplicity, predictability, and development velocity, Nyare enforces
 ## 1. No Micro-Scheduling / Time-Blocking
 
 * **Boundary**: Nyare performs **high-level planning**, not automated calendar time-blocking.
-* **What We Do**: Suggest a recommended calendar date (`Task.scheduledDate`) for working on a task, or categorize it as **Flexible / Later** or **Needs Context**.
+* **What We Do**: Suggest a recommended calendar date (`Task.scheduledDate`) for working on a task, or categorize it as **Later** or **Backlog**.
 * **What We Do NOT Do**:
   - Do NOT allocate specific hourly start and end times (e.g., *"Study calculus from 7:00 PM to 8:30 PM"*).
   - Do NOT automatically manipulate calendar blocks or rearrange open hour slots.
@@ -18,12 +18,16 @@ To maintain simplicity, predictability, and development velocity, Nyare enforces
 ## 2. No Automated Task Reconciliation, Merging, or Splitting
 
 * **Boundary**: Information extraction is **append-only** and additive.
-* **What We Do**: Extract newly mentioned tasks, academic events, and academic context from current notes and persist them as fresh records.
+* **What We Do**:
+  - Extract newly mentioned tasks, academic events, and academic context from current notes and persist them as fresh records.
+  - Generate preparation study tasks (`origin = AI_GENERATED`) for upcoming academic events within a 14-day window if no open `SCHEDULED` or `LATER` tasks exist.
+  - Persist and update `scheduledDate` and `duration` directly on `Task` records during study planning.
+  - Promote `BACKLOG` tasks when new academic context enables planning.
 * **What We Do NOT Do**:
   - Do NOT build an autonomous deduplication or merge engine that attempts to detect if a new note refers to an existing task.
-  - Do NOT automatically mutate or overwrite previously saved tasks when new information arrives.
+  - Do NOT automatically mutate or rewrite student-authored task titles or descriptions.
   - Do NOT split large tasks into subtasks automatically.
-* **Rationale**: General-purpose automated task reconciliation is error-prone and causes unexpected data mutations. Existing academic information is used as **context for planning**, not as targets for automated rewriting.
+* **Rationale**: General-purpose automated task reconciliation is error-prone and causes unexpected data mutations. The planner only updates scheduling fields (`scheduledDate`, `duration`) and creates event-anchored study tasks.
 
 ---
 
@@ -51,7 +55,9 @@ To maintain simplicity, predictability, and development velocity, Nyare enforces
 ## 5. No Study Plan Persistence Entity
 
 * **Boundary**: The **Study Plan is NOT a separate database entity**.
-* **What We Do**: Dynamically generate the Study Plan as a virtual response DTO that groups tasks into **Scheduled**, **Flexible / Later**, and **Needs Context**.
+* **What We Do**:
+  - Dynamically convey the Study Plan by grouping tasks into **Scheduled**, **Later**, and **Backlog** through derived task state.
+  - Persist study plan recommendations by updating `scheduledDate` and `duration` directly on `Task` records.
 * **What We Do NOT Do**:
   - Do NOT create a `study_plans` table or database entity.
   - Do NOT persist historical snapshots of generated plans in the database.
@@ -59,14 +65,14 @@ To maintain simplicity, predictability, and development velocity, Nyare enforces
 
 ---
 
-## 6. Strict Uncertainty Preservation (Zero Hallucination)
+## 6. Grounded Uncertainty Preservation
 
-* **Boundary**: Incomplete information must remain uncertain.
-* **What We Do**: Retain `null` or unassigned fields when deadlines, durations, or details are absent. Place ambiguous tasks in **Needs Context** or **Flexible / Later**.
+* **Boundary**: Incomplete information must remain uncertain unless grounded by commonsense baselines or academic context.
+* **What We Do**: Retain `null` or unassigned fields when deadlines or durations lack grounding. Devise rough duration estimates for standard setup tasks or when backed by academic context facts.
 * **What We Do NOT Do**:
   - Do NOT hallucinate or guess a deadline if one was not stated or reasonably inferred.
-  - Do NOT invent estimated durations or priorities just to fit a task into a calendar slot.
-* **Rationale**: Trust in an academic planner is broken immediately if it presents fabricated deadlines or false constraints.
+  - Do NOT invent arbitrary durations for complex tasks lacking context or measurable units.
+* **Rationale**: Trust in an academic planner is broken immediately if it presents fabricated deadlines or ungrounded constraints.
 
 ---
 
