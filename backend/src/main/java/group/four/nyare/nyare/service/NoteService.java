@@ -2,6 +2,7 @@ package group.four.nyare.nyare.service;
 
 import group.four.nyare.nyare.dto.NoteRequest;
 import group.four.nyare.nyare.dto.NoteResponse;
+import group.four.nyare.nyare.dto.NoteSummaryResponse;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 
 import java.util.List;
@@ -22,15 +23,16 @@ public interface NoteService {
     NoteResponse createNote(NoteRequest request);
 
     /**
-     * Retrieves notes ordered by creation timestamp descending.
-     * If courseId is provided, returns notes for that course.
-     * If courseId is null, returns all notes.
+     * Retrieves note summaries ordered by creation timestamp descending.
+     * If courseId is provided, returns summaries for that course.
+     * If courseId is null, returns all note summaries.
+     * Each summary carries a truncated markdown preview instead of full content.
      *
      * @param courseId the optional course ID to filter by
-     * @return list of note responses, newest first
+     * @return list of note summaries, newest first
      * @throws ResourceNotFoundException if the specified course does not exist
      */
-    List<NoteResponse> listNotes(Long courseId);
+    List<NoteSummaryResponse> listNotes(Long courseId);
 
     /**
      * Retrieves a single note by its unique identifier.

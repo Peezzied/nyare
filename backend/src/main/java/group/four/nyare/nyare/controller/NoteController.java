@@ -2,6 +2,7 @@ package group.four.nyare.nyare.controller;
 
 import group.four.nyare.nyare.dto.NoteRequest;
 import group.four.nyare.nyare.dto.NoteResponse;
+import group.four.nyare.nyare.dto.NoteSummaryResponse;
 import group.four.nyare.nyare.service.NoteService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -40,9 +41,9 @@ public class NoteController {
     }
 
     @GetMapping
-    public ResponseEntity<List<NoteResponse>> listNotes(
+    public ResponseEntity<List<NoteSummaryResponse>> listNotes(
             @RequestParam(required = false) Long courseId) {
-        List<NoteResponse> notes = noteService.listNotes(courseId);
+        List<NoteSummaryResponse> notes = noteService.listNotes(courseId);
         return ResponseEntity.ok(notes);
     }
 

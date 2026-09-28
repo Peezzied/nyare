@@ -2,6 +2,7 @@ package group.four.nyare.nyare.controller;
 
 import group.four.nyare.nyare.dto.NoteRequest;
 import group.four.nyare.nyare.dto.NoteResponse;
+import group.four.nyare.nyare.dto.NoteSummaryResponse;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.service.NoteService;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,11 +49,13 @@ class NoteControllerTest {
 
     private UUID noteId;
     private NoteResponse sampleResponse;
+    private NoteSummaryResponse sampleSummary;
 
     @BeforeEach
     void setUp() {
         noteId = UUID.randomUUID();
         sampleResponse = new NoteResponse(noteId, 1L, "Lecture Notes", Instant.now(), Instant.now());
+        sampleSummary = new NoteSummaryResponse(noteId, 1L, "Lecture Notes", false, 13, Instant.now(), Instant.now());
     }
 
     @Test
@@ -86,23 +89,26 @@ class NoteControllerTest {
     @Test
     void listNotes_withCourseId_returns200AndList() throws Exception {
         // given
-        when(noteService.listNotes(1L)).thenReturn(List.of(sampleResponse));
+        when(noteService.listNotes(1L)).thenReturn(List.of(sampleSummary));
 
         // when & then
         mockMvc.perform(get("/api/notes").param("courseId", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(noteId.toString()));
+                .andExpect(jsonPath("$[0].id").value(noteId.toString()))
+                .andExpect(jsonPath("$[0].preview").value("Lecture Notes"))
+                .andExpect(jsonPath("$[0].truncated").value(false));
     }
 
     @Test
     void listNotes_withoutCourseId_returns200AndList() throws Exception {
         // given
-        when(noteService.listNotes(null)).thenReturn(List.of(sampleResponse));
+        when(noteService.listNotes(null)).thenReturn(List.of(sampleSummary));
 
         // when & then
         mockMvc.perform(get("/api/notes"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(noteId.toString()));
+                .andExpect(jsonPath("$[0].id").value(noteId.toString()))
+                .andExpect(jsonPath("$[0].preview").value("Lecture Notes"));
     }
 
     @Test

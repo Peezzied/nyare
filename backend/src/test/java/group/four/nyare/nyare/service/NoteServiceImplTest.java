@@ -2,6 +2,7 @@ package group.four.nyare.nyare.service;
 
 import group.four.nyare.nyare.dto.NoteRequest;
 import group.four.nyare.nyare.dto.NoteResponse;
+import group.four.nyare.nyare.dto.NoteSummaryResponse;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.Note;
@@ -116,17 +117,18 @@ class NoteServiceImplTest {
     }
 
     @Test
-    void listNotes_withCourseId_returnsNotesForCourse() {
+    void listNotes_withCourseId_returnsSummariesForCourse() {
         // given
         when(courseRepository.existsById(1L)).thenReturn(true);
         when(noteRepository.findByCourseIdOrderByCreatedAtDesc(1L)).thenReturn(List.of(note));
 
         // when
-        List<NoteResponse> responses = noteService.listNotes(1L);
+        List<NoteSummaryResponse> responses = noteService.listNotes(1L);
 
         // then
         assertThat(responses).hasSize(1);
-        assertThat(responses.get(0).getContent()).isEqualTo("Study notes");
+        assertThat(responses.get(0).getPreview()).isEqualTo("Study notes");
+        assertThat(responses.get(0).isTruncated()).isFalse();
     }
 
     @Test
@@ -141,15 +143,33 @@ class NoteServiceImplTest {
     }
 
     @Test
-    void listNotes_withoutCourseId_returnsAllNotes() {
+    void listNotes_withoutCourseId_returnsAllSummaries() {
         // given
         when(noteRepository.findAllByOrderByCreatedAtDesc()).thenReturn(List.of(note));
 
         // when
-        List<NoteResponse> responses = noteService.listNotes(null);
+        List<NoteSummaryResponse> responses = noteService.listNotes(null);
 
         // then
         assertThat(responses).hasSize(1);
-        assertThat(responses.get(0).getContent()).isEqualTo("Study notes");
+        assertThat(responses.get(0).getPreview()).isEqualTo("Study notes");
+        assertThat(responses.get(0).isTruncated()).isFalse();
+    }
+
+    @Test
+    void listNotes_withLongContent_truncatesPreviewTo200Chars() {
+        // given
+        String longContent = "a".repeat(250);
+        Note longNote = new Note(course, longContent);
+        when(noteRepository.findAllByOrderByCreatedAtDesc()).thenReturn(List.of(longNote));
+
+        // when
+        List<NoteSummaryResponse> responses = noteService.listNotes(null);
+
+        // then
+        assertThat(responses).hasSize(1);
+        assertThat(responses.get(0).getPreview()).hasSize(200);
+        assertThat(responses.get(0).isTruncated()).isTrue();
+        assertThat(responses.get(0).getContentLength()).isEqualTo(250);
     }
 }
