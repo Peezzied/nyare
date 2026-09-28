@@ -1,5 +1,10 @@
+# Example template — copy to application.properties for local dev (real file is gitignored).
 spring.application.name=nyare
-spring.profiles.active=dev
+spring.profiles.active=dev,google
+
+# Test AI provider group: activating the test profile also pulls the provider
+# profile. Swap the single word to switch providers (groq | google).
+spring.profiles.group.test=groq
 
 # Server
 server.port=${SPRING_BOOT_PORT:8080}
@@ -20,15 +25,17 @@ spring.jpa.open-in-view=false
 # Jackson 3 / Spring Boot 4
 spring.jackson.deserialization.fail-on-null-for-primitives=false
 
-# AI Model
-spring.ai.google.genai.api-key=${GOOGLE_API_KEY:}
-spring.ai.google.genai.chat.options.model=gemini-3.5-flash-lite
-spring.ai.google.genai.chat.options.temperature=0.1
-spring.ai.google.genai.chat.options.top-p=0.8
-spring.ai.google.genai.chat.options.top-k=20
-spring.ai.google.genai.chat.options.max-output-tokens=4096
+# Centralized AI Parameters
+nyare.ai.temperature=0.1
+nyare.ai.top-p=0.8
+nyare.ai.max-tokens=4096
+
+# Default AI Provider (google-genai)
+spring.ai.model.chat=google-genai
 
 # Controller
 nyare.study-planner.sse-timeout-ms=60000
+
 # AI model request timeout (keep below sse-timeout-ms so slow-model timeouts surface as SSE error events)
 nyare.study-planner.ai-timeout-ms=50000
+nyare.image-processor.ai-timeout-ms=30000

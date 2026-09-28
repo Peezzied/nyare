@@ -66,3 +66,8 @@ replay_pid*
 
 opencode.json
 *.db
+
+# Local Spring config — real values stay on developer machines only.
+# Commit only the *.properties.example templates.
+src/**/application*.properties
+!src/**/application*.properties.example

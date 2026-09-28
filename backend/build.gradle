@@ -25,6 +25,7 @@ dependencies {
     implementation platform("org.springframework.ai:spring-ai-bom:2.0.0")
     implementation platform("me.paulschwarz:spring-dotenv-bom:5.1.0")
     implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai'
     implementation 'org.xerial:sqlite-jdbc'
     implementation 'org.hibernate.orm:hibernate-community-dialects'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -39,6 +40,7 @@ dependencies {
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
     jvmArgs '--enable-native-access=ALL-UNNAMED'
+    systemProperty 'spring.profiles.active', 'test'
 }
 
 tasks.withType(org.springframework.boot.gradle.tasks.run.BootRun).configureEach {

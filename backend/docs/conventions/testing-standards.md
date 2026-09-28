@@ -67,3 +67,14 @@ class CourseServiceImplTest {
 - Structure: `// given`, `// when`, `// then`.
 - Naming: `methodName_condition_expectedBehavior` (e.g. `createEvent_withInvalidCourse_throwsResourceNotFoundException`).
 
+## 4. Integration Test Execution Policy
+
+- Run integration tests one at a time.
+- Do not run integration tests in bulk.
+- Follow this workflow:
+  1. Run a single test method (`./gradlew test --tests "group.four.nyare.nyare.ClassName.methodName"`).
+  2. If you need more tests, ask the user for confirmation.
+  3. If you do not need more tests, complete the task.
+- Always ask the user before you execute additional integration tests.
+
+

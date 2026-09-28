@@ -44,8 +44,9 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
    - Always consult the `dr-jskill` skill before designing or refactoring backend features.
    - Query `spring-docs` MCP tools for official Spring APIs, reference docs, and configurations.
 5. **Modern Standards & Deprecation**:
+   - Follow modern Java practices across all application layers.
    - Avoid deprecated classes, methods, annotations, and APIs.
-   - Use modern features supported by Java 25 and Spring Boot.
+   - Use current features supported by Java 25 and Spring Boot.
 6. **AI System Prompt**:
    - The system prompt lives in `src/main/resources/system_prompt.st`.
    - Store all AI system instructions in this template file.
@@ -64,5 +65,14 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 ## Verification & Build Tiering
 
 1. **Tier 1 (Primary - IntelliJ MCP)**: Static analysis, symbol navigation, diagnostics, and in-memory compilation.
-2. **Tier 2 (Targeted)**: Specific test (`gradlew test --tests <Name>`) or compile (`gradlew compileJava`).
+2. **Tier 2 (Targeted)**: Specific test method (`gradlew test --tests <ClassName.methodName>`) or compile (`gradlew compileJava`).
 3. **Tier 3 (Last Resort)**: Full build (`gradlew build`) reserved strictly for final task verification.
+
+### Integration Test Execution Policy
+- Run integration tests one at a time.
+- Do not run integration tests in bulk.
+- Follow this workflow:
+  1. Run a single test method.
+  2. If you need more tests, ask the user for confirmation.
+  3. If you do not need more tests, complete the task.
+- Always ask the user before you run additional integration tests.
