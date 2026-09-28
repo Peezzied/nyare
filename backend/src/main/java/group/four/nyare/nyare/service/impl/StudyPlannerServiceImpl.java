@@ -9,6 +9,7 @@ import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.Note;
 import group.four.nyare.nyare.model.Schedule;
 import group.four.nyare.nyare.model.Task;
+import group.four.nyare.nyare.model.enums.TaskStatus;
 import group.four.nyare.nyare.repository.AcademicContextRepository;
 import group.four.nyare.nyare.repository.AcademicEventRepository;
 import group.four.nyare.nyare.repository.NoteRepository;
@@ -84,11 +85,11 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
                 .map(n -> n.getCourse().getId())
                 .collect(Collectors.toSet());
 
-        List<Task> existingTasks = taskRepository.findAllOpen();
-        List<AcademicEvent> existingEvents = academicEventRepository.findAllFromNow(LocalDateTime.now());
+        List<Task> existingTasks = taskRepository.findByStatusNotOrderByCreatedAtDesc(TaskStatus.COMPLETED);
+        List<AcademicEvent> existingEvents = academicEventRepository.findAllFiltered(null, true, LocalDateTime.now());
         List<AcademicContext> existingContexts =
                 academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(dirtyCourseIds);
-        List<Schedule> schedules = scheduleRepository.findAllOrderByDayAscStartTimeAsc();
+        List<Schedule> schedules = scheduleRepository.findAll();
 
         StudyPlannerEngine.ExtractedData extracted = studyPlannerEngine.process(
                 dirtyNotes, existingTasks, existingEvents, existingContexts, schedules);
