@@ -44,33 +44,39 @@ public final class PlannerAuditRecords {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record RawTask(
             @JsonProperty("noteRef")
+            @JsonAlias({"note_ref", "noteRef", "source_note", "note"})
             @JsonPropertyDescription("Reference identifier of the source note (e.g. n1) for new tasks")
             String noteRef,
 
             @JsonProperty("taskId")
-            @JsonAlias({"task_id", "taskId"})
+            @JsonAlias({"task_id", "taskId", "id"})
             @JsonPropertyDescription("Existing task ID (UUID) for updated existing tasks")
             UUID taskId,
 
             @JsonProperty(value = "title", required = true)
+            @JsonAlias({"task_title", "title", "name", "task"})
             @JsonPropertyDescription("Actionable title of the task")
             @Size(max = 255)
             String title,
 
             @JsonProperty(value = "description", required = true)
+            @JsonAlias({"task_description", "description", "desc", "details"})
             @JsonPropertyDescription("Details or instructions for the task")
             @Size(max = 2048)
             String description,
 
             @JsonProperty("scheduledDate")
+            @JsonAlias({"scheduled_date", "scheduledDate", "date", "target_date"})
             @JsonPropertyDescription("Target study date in YYYY-MM-DD format, or null if uncertain")
             LocalDate scheduledDate,
 
             @JsonProperty("estimatedMinutes")
+            @JsonAlias({"estimated_minutes", "estimatedMinutes", "duration", "duration_minutes", "minutes"})
             @JsonPropertyDescription("Estimated duration in minutes, or null if uncertain")
             Integer estimatedMinutes,
 
             @JsonProperty(value = "rationale", required = true)
+            @JsonAlias({"reason", "rationale", "explanation"})
             @JsonPropertyDescription("Explanation of the planning decision for task timing, duration, or backlog placement")
             String rationale) {
     }
@@ -78,24 +84,29 @@ public final class PlannerAuditRecords {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record RawEvent(
             @JsonProperty(value = "noteRef", required = true)
+            @JsonAlias({"note_ref", "noteRef", "source_note", "note"})
             @JsonPropertyDescription("Reference identifier of the source note (e.g. n1)")
             String noteRef,
 
             @JsonProperty(value = "title", required = true)
+            @JsonAlias({"event_title", "title", "name", "event"})
             @JsonPropertyDescription("Name of the academic event or deadline")
             @Size(max = 255)
             String title,
 
             @JsonProperty(value = "description", required = true)
+            @JsonAlias({"event_description", "description", "desc", "details"})
             @JsonPropertyDescription("Event details, coverage or instructions")
             @Size(max = 2048)
             String description,
 
             @JsonProperty(value = "deadline", required = true)
+            @JsonAlias({"due_date", "deadline", "due", "datetime", "timestamp"})
             @JsonPropertyDescription("Rigid deadline timestamp in ISO-8601 format (YYYY-MM-DDTHH:mm:ss)")
             LocalDateTime deadline,
 
             @JsonProperty(value = "rationale", required = true)
+            @JsonAlias({"reason", "rationale", "explanation"})
             @JsonPropertyDescription("Explanation of how the deadline timestamp was derived from context and schedule")
             String rationale) {
     }
