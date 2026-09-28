@@ -22,9 +22,11 @@ public interface NoteService {
     NoteResponse createNote(NoteRequest request);
 
     /**
-     * Retrieves all notes for a course ordered by creation timestamp descending.
+     * Retrieves notes ordered by creation timestamp descending.
+     * If courseId is provided, returns notes for that course.
+     * If courseId is null, returns all notes.
      *
-     * @param courseId the course ID to filter by
+     * @param courseId the optional course ID to filter by
      * @return list of note responses, newest first
      * @throws ResourceNotFoundException if the specified course does not exist
      */

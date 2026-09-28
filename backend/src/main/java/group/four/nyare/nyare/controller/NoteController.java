@@ -40,7 +40,8 @@ public class NoteController {
     }
 
     @GetMapping
-    public ResponseEntity<List<NoteResponse>> listNotes(@RequestParam Long courseId) {
+    public ResponseEntity<List<NoteResponse>> listNotes(
+            @RequestParam(required = false) Long courseId) {
         List<NoteResponse> notes = noteService.listNotes(courseId);
         return ResponseEntity.ok(notes);
     }
