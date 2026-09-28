@@ -200,8 +200,8 @@ public class Task {
      * Derives the planning category for this task from its current field state.
      *
      * @return {@link PlanCategory#SCHEDULED} if a scheduled date is set;
-     *         {@link PlanCategory#LATER} if duration is set without a scheduled date;
-     *         {@link PlanCategory#BACKLOG} if neither scheduled date nor duration is set
+     * {@link PlanCategory#LATER} if duration is set without a scheduled date;
+     * {@link PlanCategory#BACKLOG} if neither scheduled date nor duration is set
      */
     public PlanCategory getPlanCategory() {
         if (this.scheduledDate != null) {

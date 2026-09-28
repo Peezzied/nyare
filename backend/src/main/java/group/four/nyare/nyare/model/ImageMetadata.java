@@ -3,6 +3,7 @@ package group.four.nyare.nyare.model;
 import jakarta.validation.constraints.NotBlank;
 
 // TODO move this in dto/
+
 /**
  * Value object representing metadata and AI-extracted context for an embedded note image.
  */

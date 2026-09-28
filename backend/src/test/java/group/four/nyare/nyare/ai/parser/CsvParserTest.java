@@ -11,7 +11,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CsvParserTest {
 
-    record SampleTask(int ref, String title, String date) {}
+    record SampleTask(int ref, String title, String date) {
+    }
 
     @Test
     @DisplayName("toCsv formats generic items with custom headers and row mapper")

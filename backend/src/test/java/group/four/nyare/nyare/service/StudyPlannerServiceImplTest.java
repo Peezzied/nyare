@@ -9,7 +9,6 @@ import group.four.nyare.nyare.model.NoteContent;
 import group.four.nyare.nyare.model.Task;
 import group.four.nyare.nyare.repository.AcademicContextRepository;
 import group.four.nyare.nyare.repository.AcademicEventRepository;
-import group.four.nyare.nyare.repository.CourseRepository;
 import group.four.nyare.nyare.repository.NoteRepository;
 import group.four.nyare.nyare.repository.ScheduleRepository;
 import group.four.nyare.nyare.repository.TaskRepository;
@@ -26,7 +25,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -41,12 +39,18 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class StudyPlannerServiceImplTest {
 
-    @Mock NoteRepository noteRepository;
-    @Mock TaskRepository taskRepository;
-    @Mock AcademicEventRepository academicEventRepository;
-    @Mock AcademicContextRepository academicContextRepository;
-    @Mock ScheduleRepository scheduleRepository;
-    @Mock StudyPlannerEngine studyPlannerEngine;
+    @Mock
+    NoteRepository noteRepository;
+    @Mock
+    TaskRepository taskRepository;
+    @Mock
+    AcademicEventRepository academicEventRepository;
+    @Mock
+    AcademicContextRepository academicContextRepository;
+    @Mock
+    ScheduleRepository scheduleRepository;
+    @Mock
+    StudyPlannerEngine studyPlannerEngine;
 
     StudyPlannerServiceImpl service;
 
@@ -177,7 +181,9 @@ class StudyPlannerServiceImplTest {
             var f = Task.class.getDeclaredField("id");
             f.setAccessible(true);
             f.set(existingTask, taskId);
-        } catch (Exception e) { throw new RuntimeException(e); }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         StudyPlannerEngine.ExtractedTask promotion = new StudyPlannerEngine.ExtractedTask(
                 null, taskId, null, "Existing Study Task", null, LocalDate.of(2026, 9, 30), 60);
@@ -209,7 +215,9 @@ class StudyPlannerServiceImplTest {
             var f = Course.class.getDeclaredField("id");
             f.setAccessible(true);
             f.set(c, id);
-        } catch (Exception e) { throw new RuntimeException(e); }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return c;
     }
 
