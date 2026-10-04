@@ -48,28 +48,17 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<ScheduleResponse> listSchedules(Long courseId, DayOfWeek day) {
-        List<Schedule> schedules;
-
-        if (courseId != null && day != null) {
-            schedules = scheduleRepository.findByCourseIdAndDayOrderByStartTimeAsc(courseId, day);
-        } else if (courseId != null) {
-            schedules = scheduleRepository.findByCourseIdOrderByDayAscStartTimeAsc(courseId);
-        } else {
-            // No repository method exists for "all courses, filtered by day only" — filter in memory instead
-            schedules = scheduleRepository.findAll();
-            if (day != null) {
-                schedules = schedules.stream()
-                        .filter(s -> s.getDay() == day)
-                        .collect(Collectors.toList());
-            }
-            schedules.sort(Comparator.comparing(Schedule::getDay)
-                    .thenComparing(Schedule::getStartTime));
+    public List<ScheduleResponse> listSchedules(Long userId, Long courseId, DayOfWeek day) {
+        List<Schedule> schedules = scheduleRepository.findAllFiltered(userId, courseId);
+        if (day != null) {
+            schedules = schedules.stream()
+                    .filter(s -> s.getDay() == day)
+                    .toList();
         }
 
         return schedules.stream()
                 .map(this::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

@@ -27,7 +27,8 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
      */
     @Query("""
             SELECT t FROM Task t
-            WHERE (:courseId IS NULL OR t.course.id = :courseId)
+            WHERE (:userId IS NULL OR t.course.user.id = :userId)
+              AND (:courseId IS NULL OR t.course.id = :courseId)
               AND (:status IS NULL OR t.status = :status)
               AND (:scheduled IS NULL
                    OR (:scheduled = true AND t.scheduledDate IS NOT NULL)
@@ -35,10 +36,15 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
             ORDER BY t.createdAt DESC
             """)
     List<Task> findAllFiltered(
+            @Param("userId") Long userId,
             @Param("courseId") Long courseId,
             @Param("status") TaskStatus status,
             @Param("scheduled") Boolean scheduled
     );
+
+    default List<Task> findAllFiltered(Long courseId, TaskStatus status, Boolean scheduled) {
+        return findAllFiltered(null, courseId, status, scheduled);
+    }
 
     /**
      * Retrieves all tasks not having the specified status, ordered by creation

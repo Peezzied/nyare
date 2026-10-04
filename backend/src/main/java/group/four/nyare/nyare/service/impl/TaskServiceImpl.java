@@ -49,8 +49,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponse> listTasks(Long courseId, TaskStatus status, Boolean scheduled) {
-        return taskRepository.findAllFiltered(courseId, status, scheduled)
+    public List<TaskResponse> listTasks(Long userId, Long courseId, TaskStatus status, Boolean scheduled) {
+        return taskRepository.findAllFiltered(userId, courseId, status, scheduled)
                 .stream()
                 .map(this::toResponse)
                 .toList();

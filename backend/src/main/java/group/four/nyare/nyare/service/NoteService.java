@@ -32,7 +32,11 @@ public interface NoteService {
      * @return list of note summaries, newest first
      * @throws ResourceNotFoundException if the specified course does not exist
      */
-    List<NoteSummaryResponse> listNotes(Long courseId);
+    List<NoteSummaryResponse> listNotes(Long userId, Long courseId);
+
+    default List<NoteSummaryResponse> listNotes(Long courseId) {
+        return listNotes(null, courseId);
+    }
 
     /**
      * Retrieves a single note by its unique identifier.

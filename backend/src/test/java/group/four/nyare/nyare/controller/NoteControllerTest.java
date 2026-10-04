@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.controller;
 
+import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.dto.NoteRequest;
 import group.four.nyare.nyare.dto.NoteResponse;
 import group.four.nyare.nyare.dto.NoteSummaryResponse;
@@ -41,6 +42,9 @@ class NoteControllerTest {
 
     @MockitoBean
     private NoteService noteService;
+
+    @MockitoBean
+    private SessionContext sessionContext;
 
     @MockitoBean
     private JpaMetamodelMappingContext jpaMappingContext;
@@ -89,7 +93,7 @@ class NoteControllerTest {
     @Test
     void listNotes_withCourseId_returns200AndList() throws Exception {
         // given
-        when(noteService.listNotes(1L)).thenReturn(List.of(sampleSummary));
+        when(noteService.listNotes(any(), eq(1L))).thenReturn(List.of(sampleSummary));
 
         // when & then
         mockMvc.perform(get("/api/notes").param("courseId", "1"))
@@ -102,7 +106,7 @@ class NoteControllerTest {
     @Test
     void listNotes_withoutCourseId_returns200AndList() throws Exception {
         // given
-        when(noteService.listNotes(null)).thenReturn(List.of(sampleSummary));
+        when(noteService.listNotes(any(), any())).thenReturn(List.of(sampleSummary));
 
         // when & then
         mockMvc.perform(get("/api/notes"))

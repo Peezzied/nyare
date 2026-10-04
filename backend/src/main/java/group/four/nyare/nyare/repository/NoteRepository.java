@@ -32,6 +32,28 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
     List<Note> findAllByOrderByCreatedAtDesc();
 
     /**
+     * Returns all notes matching optional user and course filters, ordered by creation timestamp descending.
+     *
+     * @param userId   optional user ID filter
+     * @param courseId optional course ID filter
+     * @return notes ordered newest first
+     */
+    @Query("""
+            SELECT n FROM Note n
+            WHERE (:userId IS NULL OR n.course.user.id = :userId)
+              AND (:courseId IS NULL OR n.course.id = :courseId)
+            ORDER BY n.createdAt DESC
+            """)
+    List<Note> findAllFiltered(
+            @Param("userId") Long userId,
+            @Param("courseId") Long courseId
+    );
+
+    default List<Note> findAllFiltered(Long courseId) {
+        return findAllFiltered(null, courseId);
+    }
+
+    /**
      * Returns notes created on the given calendar date for a course.
      * Uses an index-friendly range query between the start and end of the date in the local timezone.
      *
@@ -67,22 +89,50 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
     );
 
     /**
-     * Returns notes created on the date window across all courses that are either unextracted or modified after last extraction.
+     * Returns notes created on the date window matching optional user filter that are either unextracted or modified after last extraction.
      *
+     * @param userId     optional user ID filter
      * @param startOfDay beginning of the date window (inclusive)
      * @param endOfDay   end of the date window (exclusive)
      * @return dirty notes matching the criteria
      */
     @Query("""
             SELECT n FROM Note n
-            WHERE n.createdAt >= :startOfDay
+            WHERE (:userId IS NULL OR n.course.user.id = :userId)
+              AND n.createdAt >= :startOfDay
               AND n.createdAt < :endOfDay
               AND (n.lastProcessedAt IS NULL OR n.updatedAt > n.lastProcessedAt)
             """)
     List<Note> findDirtyNotes(
+            @Param("userId") Long userId,
             @Param("startOfDay") Instant startOfDay,
             @Param("endOfDay") Instant endOfDay
     );
+
+    /**
+     * Convenience default method to query dirty notes for timestamp boundaries across all courses.
+     *
+     * @param startOfDay beginning of the date window (inclusive)
+     * @param endOfDay   end of the date window (exclusive)
+     * @return dirty notes matching the criteria
+     */
+    default List<Note> findDirtyNotes(Instant startOfDay, Instant endOfDay) {
+        return findDirtyNotes(null, startOfDay, endOfDay);
+    }
+
+    /**
+     * Convenience default method to query dirty notes for the given date matching optional user filter.
+     *
+     * @param userId optional user ID filter
+     * @param date   the calendar date
+     * @return dirty notes created or modified on the date
+     */
+    default List<Note> findDirtyNotes(Long userId, LocalDate date) {
+        ZoneId zone = ZoneId.systemDefault();
+        Instant startOfDay = date.atStartOfDay(zone).toInstant();
+        Instant endOfDay = date.plusDays(1).atStartOfDay(zone).toInstant();
+        return findDirtyNotes(userId, startOfDay, endOfDay);
+    }
 
     /**
      * Convenience default method to query dirty notes for the given date across all courses.
@@ -91,9 +141,6 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
      * @return dirty notes created or modified on the date
      */
     default List<Note> findDirtyNotes(LocalDate date) {
-        ZoneId zone = ZoneId.systemDefault();
-        Instant startOfDay = date.atStartOfDay(zone).toInstant();
-        Instant endOfDay = date.plusDays(1).atStartOfDay(zone).toInstant();
-        return findDirtyNotes(startOfDay, endOfDay);
+        return findDirtyNotes(null, date);
     }
 }
