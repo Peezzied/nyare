@@ -13,6 +13,12 @@
       "skillPath": "skills/shadcn-vue/SKILL.md",
       "computedHash": "7037ba3c62e72d5324dbe0bfebe21d4fb8cb7aba5a2200dce96a797e948dc368"
     },
+    "tiptap": {
+      "source": "ueberdosis/tiptap",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/tiptap/SKILL.md",
+      "computedHash": "4b9b69928eda79fa0904393c7bdfa520d5ca3fc5e5f5e3b7d02682078e671d72"
+    },
     "vue-best-practices": {
       "source": "vuejs-ai/skills",
       "sourceType": "github",

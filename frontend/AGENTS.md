@@ -18,10 +18,12 @@ The repository contains scaffold code and demo components.
 
 - Follow Ponytail minimalism rules in `.agents/rules/ponytail.md`.
 - Follow ASD-STE100 technical English rules in `.agents/rules/asd-ste100.md`.
+- Follow Vue skill rules in `.agents/rules/vue-skills.md`.
 
 ## Domain Documentation
 
 Read the domain documents before you create frontend components:
+
 - `docs/conceptual-model.md` defines domain entities and the virtual study plan.
 - `docs/system-workflows.md` defines system workflows and planner logic.
 
@@ -35,7 +37,6 @@ npm run lint:oxlint  # fast inner loop linter
 npm run lint         # oxlint + eslint with --fix
 npm run format       # prettier, src/ only
 npm run test:unit    # vitest unit tests (jsdom, e2e/ excluded)
-npx vitest run src/components/__tests__/HelloWorld.spec.ts  # single test file
 ```
 
 - Node engines: `^22.18.0 || >=24.12.0`.
@@ -86,3 +87,36 @@ Do not install Axios.
 - Define routes in `src/router/index.ts`.
 - Import route components dynamically.
 - Read skill guides in `.agents/skills/` before you write Vue code.
+
+## MCP Servers (`.agents/mcp_config.json`)
+
+The frontend configuration defines four MCP servers:
+
+### `shadcn`
+
+- **Purpose**: Search, view, and install shadcn-vue components.
+- **When to use**:
+  - Use this server when you add UI components to the frontend.
+  - Use this server to inspect component code and examples before you install components.
+  - Use this server to retrieve component audit checklists.
+
+### `schedule-x`
+
+- **Purpose**: Read Schedule-X calendar documentation and validate calendar configuration.
+- **When to use**:
+  - Use this server when you build or modify calendar views.
+  - Use this server to validate calendar configuration objects and event data.
+  - Use this server to find plugin instructions and starter templates.
+
+### `vue-docs`
+
+- **Purpose**: Read official Vue documentation.
+- **When to use**:
+  - Use this server when you verify Vue 3 APIs.
+  - Use this server when you clarify Composition API behavior.
+
+### `vscode`
+
+- **Purpose**: Connect to the VS Code editor.
+- **When to use**:
+  - Use this server when you interact with the editor workspace.
