@@ -97,4 +97,4 @@ Course Schedule → Course-linked Journal (JSON) → AI Processing (Today's Note
 
 ### 5. `graphify` ([`graphify/SKILL.md`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/.agents/skills/graphify/SKILL.md))
 - **Role**: Codebase knowledge graph in `graphify-out/`.
-- **Usage**: Query relationships (`graphify query "..."`), explain concepts (`graphify explain "..."`), and update graph (`graphify update .`) with `BypassSandbox: true`.
+- **Usage**: Query relationships (`graphify query "..."`) and explain concepts (`graphify explain "..."`) with `BypassSandbox: true`.
