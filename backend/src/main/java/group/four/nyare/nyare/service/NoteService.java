@@ -34,10 +34,6 @@ public interface NoteService {
      */
     List<NoteSummaryResponse> listNotes(Long userId, Long courseId);
 
-    default List<NoteSummaryResponse> listNotes(Long courseId) {
-        return listNotes(null, courseId);
-    }
-
     /**
      * Retrieves a single note by its unique identifier.
      *

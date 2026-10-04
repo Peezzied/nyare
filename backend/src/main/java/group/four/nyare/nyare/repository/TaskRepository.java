@@ -10,24 +10,22 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Spring Data JPA repository for {@link Task} entities.
- * Handles persistence, retrieval, and dynamic filtering for study plan tasks.
+ * Spring Data JPA repository for task entities with mandatory user scoping.
  */
 public interface TaskRepository extends JpaRepository<Task, UUID> {
 
     /**
-     * Retrieves all tasks matching optional course, status, and scheduling filters,
-     * ordered by creation timestamp in descending order.
+     * Retrieves all tasks matching user ID and optional course, status, and scheduled filters.
      *
-     * @param courseId  optional ID of the course to filter by; {@code null} matches any course
-     * @param status    optional lifecycle status to filter by; {@code null} matches any status
-     * @param scheduled optional scheduling filter: {@code true} for scheduled tasks (non-null date),
-     *                  {@code false} for unscheduled/later tasks (null date), or {@code null} for both
-     * @return a list of matching {@link Task} entities
+     * @param userId    mandatory user identifier
+     * @param courseId  optional course identifier
+     * @param status    optional task status
+     * @param scheduled optional scheduling filter
+     * @return list of matching tasks ordered by creation date descending
      */
     @Query("""
             SELECT t FROM Task t
-            WHERE (:userId IS NULL OR t.course.user.id = :userId)
+            WHERE t.course.user.id = :userId
               AND (:courseId IS NULL OR t.course.id = :courseId)
               AND (:status IS NULL OR t.status = :status)
               AND (:scheduled IS NULL
@@ -41,17 +39,4 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
             @Param("status") TaskStatus status,
             @Param("scheduled") Boolean scheduled
     );
-
-    default List<Task> findAllFiltered(Long courseId, TaskStatus status, Boolean scheduled) {
-        return findAllFiltered(null, courseId, status, scheduled);
-    }
-
-    /**
-     * Retrieves all tasks not having the specified status, ordered by creation
-     * timestamp descending.
-     *
-     * @param status the status to exclude
-     * @return open tasks matching the criteria
-     */
-    List<Task> findByStatusNotOrderByCreatedAtDesc(TaskStatus status);
 }

@@ -120,10 +120,10 @@ class NoteServiceImplTest {
     void listNotes_withCourseId_returnsSummariesForCourse() {
         // given
         when(courseRepository.existsById(1L)).thenReturn(true);
-        when(noteRepository.findByCourseIdOrderByCreatedAtDesc(1L)).thenReturn(List.of(note));
+        when(noteRepository.findAllFiltered(42L, 1L)).thenReturn(List.of(note));
 
         // when
-        List<NoteSummaryResponse> responses = noteService.listNotes(1L);
+        List<NoteSummaryResponse> responses = noteService.listNotes(42L, 1L);
 
         // then
         assertThat(responses).hasSize(1);
@@ -137,7 +137,7 @@ class NoteServiceImplTest {
         when(courseRepository.existsById(999L)).thenReturn(false);
 
         // when & then
-        assertThatThrownBy(() -> noteService.listNotes(999L))
+        assertThatThrownBy(() -> noteService.listNotes(42L, 999L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Course not found with ID: 999");
     }
@@ -145,10 +145,10 @@ class NoteServiceImplTest {
     @Test
     void listNotes_withoutCourseId_returnsAllSummaries() {
         // given
-        when(noteRepository.findAllByOrderByCreatedAtDesc()).thenReturn(List.of(note));
+        when(noteRepository.findAllFiltered(42L, null)).thenReturn(List.of(note));
 
         // when
-        List<NoteSummaryResponse> responses = noteService.listNotes(null);
+        List<NoteSummaryResponse> responses = noteService.listNotes(42L, null);
 
         // then
         assertThat(responses).hasSize(1);
@@ -161,10 +161,10 @@ class NoteServiceImplTest {
         // given
         String longContent = "a".repeat(250);
         Note longNote = new Note(course, longContent);
-        when(noteRepository.findAllByOrderByCreatedAtDesc()).thenReturn(List.of(longNote));
+        when(noteRepository.findAllFiltered(42L, null)).thenReturn(List.of(longNote));
 
         // when
-        List<NoteSummaryResponse> responses = noteService.listNotes(null);
+        List<NoteSummaryResponse> responses = noteService.listNotes(42L, null);
 
         // then
         assertThat(responses).hasSize(1);

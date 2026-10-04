@@ -38,10 +38,6 @@ public interface AcademicEventService {
      */
     List<AcademicEventResponse> listEvents(Long userId, Long courseId, Boolean upcoming);
 
-    default List<AcademicEventResponse> listEvents(Long courseId, Boolean upcoming) {
-        return listEvents(null, courseId, upcoming);
-    }
-
     /**
      * Retrieves a single academic event by its unique identifier.
      *

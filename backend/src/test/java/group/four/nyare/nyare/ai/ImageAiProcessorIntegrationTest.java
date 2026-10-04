@@ -112,7 +112,7 @@ public class ImageAiProcessorIntegrationTest {
         LocalDate today = LocalDate.now();
 
         // When: Trigger study planner note processing
-        studyPlannerService.processNotes(today);
+        studyPlannerService.processNotes(today, user.getId());
 
         // Then: Image description is now populated in database
         Image reloadedImage = imageRepository.findById(savedImage.getId()).orElseThrow();

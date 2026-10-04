@@ -10,24 +10,22 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Spring Data JPA repository for {@link AcademicEvent} entities.
- * Provides filtered retrieval and deadline-ordered listing for calendar and planner consumers.
+ * Spring Data JPA repository for academic event entities with mandatory user scoping.
  */
 public interface AcademicEventRepository extends JpaRepository<AcademicEvent, UUID> {
 
     /**
-     * Retrieves academic events matching optional course and upcoming filters,
-     * ordered by deadline ascending.
+     * Retrieves events matching user ID and optional course and upcoming filters.
      *
-     * @param courseId optional course ID filter; {@code null} matches any course
-     * @param upcoming optional filter: {@code true} for events with deadline in the future,
-     *                 {@code null} for all events
-     * @param now      the current timestamp used as the boundary for the upcoming filter
+     * @param userId   mandatory user identifier
+     * @param courseId optional course identifier
+     * @param upcoming optional upcoming filter flag
+     * @param now      current timestamp boundary
      * @return list of matching events ordered by deadline ascending
      */
     @Query("""
             SELECT e FROM AcademicEvent e
-            WHERE (:userId IS NULL OR e.course.user.id = :userId)
+            WHERE e.course.user.id = :userId
               AND (:courseId IS NULL OR e.course.id = :courseId)
               AND (:upcoming IS NULL
                    OR (:upcoming = true AND e.deadline >= :now))
@@ -38,40 +36,5 @@ public interface AcademicEventRepository extends JpaRepository<AcademicEvent, UU
             @Param("courseId") Long courseId,
             @Param("upcoming") Boolean upcoming,
             @Param("now") LocalDateTime now
-    );
-
-    default List<AcademicEvent> findAllFiltered(Long courseId, Boolean upcoming, LocalDateTime now) {
-        return findAllFiltered(null, courseId, upcoming, now);
-    }
-
-    /**
-     * Retrieves all events for a course ordered by deadline ascending.
-     * Used by the Planner service to load upcoming rigid constraints.
-     *
-     * @param courseId the course ID to filter by
-     * @return events ordered by deadline ascending
-     */
-    List<AcademicEvent> findByCourseIdOrderByDeadlineAsc(Long courseId);
-
-    /**
-     * Retrieves academic events for a course within a specific time window,
-     * ordered by deadline ascending.
-     *
-     * @param courseId the course ID to filter by
-     * @param start    start of the window (inclusive)
-     * @param end      end of the window (exclusive)
-     * @return matching events ordered by deadline ascending
-     */
-    @Query("""
-            SELECT e FROM AcademicEvent e
-            WHERE e.course.id = :courseId
-              AND e.deadline >= :start
-              AND e.deadline < :end
-            ORDER BY e.deadline ASC
-            """)
-    List<AcademicEvent> findUpcomingInWindow(
-            @Param("courseId") Long courseId,
-            @Param("start") LocalDateTime start,
-            @Param("end") LocalDateTime end
     );
 }
