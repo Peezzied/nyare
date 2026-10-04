@@ -2,6 +2,8 @@ package group.four.nyare.nyare.repository;
 
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.Note;
+import group.four.nyare.nyare.model.User;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,10 +28,20 @@ class NoteRepositoryTest {
     @Autowired
     private CourseRepository courseRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    private User defaultUser;
+
+    @BeforeEach
+    void setUp() {
+        defaultUser = userRepository.save(new User("testuser_" + UUID.randomUUID()));
+    }
+
     @Test
     @DisplayName("findDirtyNotes returns unprocessed and modified notes only")
     void findDirtyNotesFiltersCleanNotes() {
-        Course course = courseRepository.save(new Course("CS101", "Intro to CS"));
+        Course course = courseRepository.save(new Course("CS101", "Intro to CS", defaultUser));
 
         // Note 1: Never processed (lastProcessedAt is null) -> Dirty
         Note note1 = new Note(course, "Unprocessed note");
@@ -54,7 +67,7 @@ class NoteRepositoryTest {
     @Test
     @DisplayName("findAllByOrderByCreatedAtDesc returns notes ordered newest first")
     void findAllByOrderByCreatedAtDescReturnsOrderedNotes() {
-        Course course = courseRepository.save(new Course("CS102", "Data Structures"));
+        Course course = courseRepository.save(new Course("CS102", "Data Structures", defaultUser));
 
         Note olderNote = new Note(course, "Older Note");
         olderNote.setCreatedAt(Instant.now().minusSeconds(3600));

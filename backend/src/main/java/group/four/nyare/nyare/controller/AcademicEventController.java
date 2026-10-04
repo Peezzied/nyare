@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.controller;
 
+import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.dto.AcademicEventRequest;
 import group.four.nyare.nyare.dto.AcademicEventResponse;
 import group.four.nyare.nyare.service.AcademicEventService;
@@ -26,9 +27,11 @@ import java.util.UUID;
 public class AcademicEventController {
 
     private final AcademicEventService academicEventService;
+    private final SessionContext sessionContext;
 
-    public AcademicEventController(AcademicEventService academicEventService) {
+    public AcademicEventController(AcademicEventService academicEventService, SessionContext sessionContext) {
         this.academicEventService = academicEventService;
+        this.sessionContext = sessionContext;
     }
 
 
@@ -48,7 +51,8 @@ public class AcademicEventController {
             @RequestParam(required = false) Long courseId,
             @RequestParam(required = false) Boolean upcoming
     ) {
-        return ResponseEntity.ok(academicEventService.listEvents(courseId, upcoming));
+        Long userId = sessionContext.getUserId().orElse(null);
+        return ResponseEntity.ok(academicEventService.listEvents(userId, courseId, upcoming));
     }
 
 

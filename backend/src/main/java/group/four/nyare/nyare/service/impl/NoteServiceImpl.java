@@ -44,19 +44,14 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public List<NoteSummaryResponse> listNotes(Long courseId) {
+    public List<NoteSummaryResponse> listNotes(Long userId, Long courseId) {
         if (courseId != null) {
             if (!courseRepository.existsById(courseId)) {
                 throw new ResourceNotFoundException("Course not found with ID: " + courseId);
             }
-
-            return noteRepository.findByCourseIdOrderByCreatedAtDesc(courseId)
-                    .stream()
-                    .map(this::toSummary)
-                    .toList();
         }
 
-        return noteRepository.findAllByOrderByCreatedAtDesc()
+        return noteRepository.findAllFiltered(userId, courseId)
                 .stream()
                 .map(this::toSummary)
                 .toList();

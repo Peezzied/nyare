@@ -30,7 +30,11 @@ public interface TaskService {
      *                  {@code false} for unscheduled/later tasks, or {@code null} for all tasks
      * @return list of matching task responses, ordered by creation date descending
      */
-    List<TaskResponse> listTasks(Long courseId, TaskStatus status, Boolean scheduled);
+    List<TaskResponse> listTasks(Long userId, Long courseId, TaskStatus status, Boolean scheduled);
+
+    default List<TaskResponse> listTasks(Long courseId, TaskStatus status, Boolean scheduled) {
+        return listTasks(null, courseId, status, scheduled);
+    }
 
     /**
      * Retrieves a single task by its unique identifier.

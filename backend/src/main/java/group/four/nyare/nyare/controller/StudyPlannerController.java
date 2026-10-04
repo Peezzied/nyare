@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.controller;
 
+import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.dto.ProcessSummaryResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.service.StudyPlannerService;
@@ -24,28 +25,32 @@ public class StudyPlannerController {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final StudyPlannerService studyPlannerService;
+    private final SessionContext sessionContext;
     private final long sseTimeoutMs;
 
     public StudyPlannerController(
             StudyPlannerService studyPlannerService,
+            SessionContext sessionContext,
             @Value("${nyare.study-planner.sse-timeout-ms:60000}") long sseTimeoutMs) {
         this.studyPlannerService = studyPlannerService;
+        this.sessionContext = sessionContext;
         this.sseTimeoutMs = sseTimeoutMs;
     }
 
     /**
-     * Triggers AI-powered extraction of today's journal notes across all courses.
+     * Triggers AI-powered extraction of today's journal notes matching session user scope.
      * Streams a done event with summary counts or an error event if processing fails.
      *
      * @return SSE stream with a single done or error event
      */
     @PostMapping(value = "/process", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter process() {
+        Long userId = sessionContext.getUserId().orElse(null);
         SseEmitter emitter = new SseEmitter(this.sseTimeoutMs);
 
         Thread.ofVirtual().start(() -> {
             try {
-                ProcessSummaryResponse result = studyPlannerService.processNotes(LocalDate.now());
+                ProcessSummaryResponse result = studyPlannerService.processNotes(LocalDate.now(), userId);
                 String json = OBJECT_MAPPER.writeValueAsString(result);
                 emitter.send(SseEmitter.event().name("done").data(json));
                 emitter.complete();

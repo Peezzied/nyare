@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.controller;
 
+import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.dto.ScheduleRequest;
 import group.four.nyare.nyare.dto.ScheduleResponse;
 import group.four.nyare.nyare.service.ScheduleService;
@@ -17,16 +18,19 @@ import java.util.List;
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
+    private final SessionContext sessionContext;
 
-    public ScheduleController(ScheduleService scheduleService) {
+    public ScheduleController(ScheduleService scheduleService, SessionContext sessionContext) {
         this.scheduleService = scheduleService;
+        this.sessionContext = sessionContext;
     }
 
     @GetMapping
     public ResponseEntity<List<ScheduleResponse>> listSchedules(
             @RequestParam(required = false) Long courseId,
             @RequestParam(required = false) DayOfWeek day) {
-        return ResponseEntity.ok(scheduleService.listSchedules(courseId, day));
+        Long userId = sessionContext.getUserId().orElse(null);
+        return ResponseEntity.ok(scheduleService.listSchedules(userId, courseId, day));
     }
 
     @GetMapping("/{id}")

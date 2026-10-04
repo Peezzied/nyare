@@ -27,16 +27,22 @@ public interface AcademicEventRepository extends JpaRepository<AcademicEvent, UU
      */
     @Query("""
             SELECT e FROM AcademicEvent e
-            WHERE (:courseId IS NULL OR e.course.id = :courseId)
+            WHERE (:userId IS NULL OR e.course.user.id = :userId)
+              AND (:courseId IS NULL OR e.course.id = :courseId)
               AND (:upcoming IS NULL
                    OR (:upcoming = true AND e.deadline >= :now))
             ORDER BY e.deadline ASC
             """)
     List<AcademicEvent> findAllFiltered(
+            @Param("userId") Long userId,
             @Param("courseId") Long courseId,
             @Param("upcoming") Boolean upcoming,
             @Param("now") LocalDateTime now
     );
+
+    default List<AcademicEvent> findAllFiltered(Long courseId, Boolean upcoming, LocalDateTime now) {
+        return findAllFiltered(null, courseId, upcoming, now);
+    }
 
     /**
      * Retrieves all events for a course ordered by deadline ascending.

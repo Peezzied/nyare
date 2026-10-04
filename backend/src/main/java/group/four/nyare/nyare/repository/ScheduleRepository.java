@@ -2,6 +2,8 @@ package group.four.nyare.nyare.repository;
 
 import group.four.nyare.nyare.model.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.DayOfWeek;
 import java.util.List;
@@ -29,5 +31,27 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
      * @return schedules on the specified day ordered by start time ascending
      */
     List<Schedule> findByCourseIdAndDayOrderByStartTimeAsc(Long courseId, DayOfWeek day);
-}
 
+    /**
+     * Retrieves all recurring schedules matching optional user and course filters,
+     * ordered by day of week and start time ascending.
+     *
+     * @param userId   optional user ID filter
+     * @param courseId optional course ID filter
+     * @return matching schedules ordered chronologically
+     */
+    @Query("""
+            SELECT s FROM Schedule s
+            WHERE (:userId IS NULL OR s.course.user.id = :userId)
+              AND (:courseId IS NULL OR s.course.id = :courseId)
+            ORDER BY s.day ASC, s.startTime ASC
+            """)
+    List<Schedule> findAllFiltered(
+            @Param("userId") Long userId,
+            @Param("courseId") Long courseId
+    );
+
+    default List<Schedule> findAllFiltered(Long courseId) {
+        return findAllFiltered(null, courseId);
+    }
+}

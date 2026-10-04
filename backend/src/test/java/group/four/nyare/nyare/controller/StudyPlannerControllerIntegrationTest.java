@@ -6,6 +6,7 @@ import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.Note;
 import group.four.nyare.nyare.model.Schedule;
 import group.four.nyare.nyare.model.Task;
+import group.four.nyare.nyare.model.User;
 import group.four.nyare.nyare.model.enums.TaskStatus;
 import group.four.nyare.nyare.repository.AcademicContextRepository;
 import group.four.nyare.nyare.repository.AcademicEventRepository;
@@ -13,6 +14,7 @@ import group.four.nyare.nyare.repository.CourseRepository;
 import group.four.nyare.nyare.repository.NoteRepository;
 import group.four.nyare.nyare.repository.ScheduleRepository;
 import group.four.nyare.nyare.repository.TaskRepository;
+import group.four.nyare.nyare.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -63,6 +65,9 @@ class StudyPlannerControllerIntegrationTest {
     @Autowired
     private NoteRepository noteRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @BeforeEach
     void cleanDatabase() {
         academicContextRepository.deleteAll();
@@ -71,20 +76,23 @@ class StudyPlannerControllerIntegrationTest {
         noteRepository.deleteAll();
         scheduleRepository.deleteAll();
         courseRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
     @DisplayName("process with real academic dataset extracts entities, updates database, and emits SSE done event")
     void process_withRealAcademicDataset_extractsPersistsAndEmitsDoneEvent() throws Exception {
+        User testUser = userRepository.save(new User("planner_test_user"));
+
         // Given: Seed realistic courses from university schedule
-        Course compArch = courseRepository.save(new Course("Computer Architecture and Organization", "CS Core Course"));
-        Course ppl = courseRepository.save(new Course("Principles of Programming Languages", "CS Core Course"));
-        Course itEra = courseRepository.save(new Course("GE Elective 1 - Living in the IT Era", "General Education Elective"));
-        Course calc2 = courseRepository.save(new Course("Calculus 2", "Mathematics Course"));
-        Course rph = courseRepository.save(new Course("Readings in Philippine History", "General Education Course"));
-        Course mobComp = courseRepository.save(new Course("Mobile Computing", "CS Elective Course"));
-        Course oop = courseRepository.save(new Course("Object-Oriented Programming", "CS Core Course"));
-        Course pathfit = courseRepository.save(new Course("Physical Activities Toward Health & Fitness 3 (PATHFit 3)", "Physical Education"));
+        Course compArch = courseRepository.save(new Course("Computer Architecture and Organization", "CS Core Course", testUser));
+        Course ppl = courseRepository.save(new Course("Principles of Programming Languages", "CS Core Course", testUser));
+        Course itEra = courseRepository.save(new Course("GE Elective 1 - Living in the IT Era", "General Education Elective", testUser));
+        Course calc2 = courseRepository.save(new Course("Calculus 2", "Mathematics Course", testUser));
+        Course rph = courseRepository.save(new Course("Readings in Philippine History", "General Education Course", testUser));
+        Course mobComp = courseRepository.save(new Course("Mobile Computing", "CS Elective Course", testUser));
+        Course oop = courseRepository.save(new Course("Object-Oriented Programming", "CS Core Course", testUser));
+        Course pathfit = courseRepository.save(new Course("Physical Activities Toward Health & Fitness 3 (PATHFit 3)", "Physical Education", testUser));
 
         // Given: Seed weekly recurring class schedules
         scheduleRepository.saveAll(List.of(
@@ -211,7 +219,8 @@ class StudyPlannerControllerIntegrationTest {
     @DisplayName("process with no dirty notes emits SSE error event with 400 Bad Request")
     void process_withNoDirtyNotes_emitsSseErrorEvent400() throws Exception {
         // Given: Course and no notes for today
-        courseRepository.save(new Course("CS101", "Introduction to Computing"));
+        User testUser = userRepository.save(new User("test_user_empty"));
+        courseRepository.save(new Course("CS101", "Introduction to Computing", testUser));
 
         // When: Trigger study planner processing endpoint
         MvcResult mvcResult = mockMvc.perform(post("/api/study-planner/process")

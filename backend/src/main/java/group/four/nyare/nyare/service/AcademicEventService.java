@@ -36,7 +36,11 @@ public interface AcademicEventService {
      *                 or {@code null} for all events
      * @return list of matching academic events ordered by deadline ascending
      */
-    List<AcademicEventResponse> listEvents(Long courseId, Boolean upcoming);
+    List<AcademicEventResponse> listEvents(Long userId, Long courseId, Boolean upcoming);
+
+    default List<AcademicEventResponse> listEvents(Long courseId, Boolean upcoming) {
+        return listEvents(null, courseId, upcoming);
+    }
 
     /**
      * Retrieves a single academic event by its unique identifier.

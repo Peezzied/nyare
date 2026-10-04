@@ -11,6 +11,17 @@ import java.time.LocalDate;
 public interface StudyPlannerService {
 
     /**
+     * Processes dirty notes for the given date matching optional user filter, materializes
+     * extracted entities, and returns the count summary.
+     *
+     * @param date   the calendar date whose dirty notes will be processed
+     * @param userId optional user identifier to restrict processing scope
+     * @return summary count of created tasks, events, and contexts
+     * @throws BadRequestException if no dirty notes exist for the given date
+     */
+    ProcessSummaryResponse processNotes(LocalDate date, Long userId);
+
+    /**
      * Processes dirty notes for the given date across all courses, materializes
      * extracted entities, and returns the count summary.
      *
@@ -18,5 +29,7 @@ public interface StudyPlannerService {
      * @return summary count of created tasks, events, and contexts
      * @throws BadRequestException if no dirty notes exist for the given date
      */
-    ProcessSummaryResponse processNotes(LocalDate date);
+    default ProcessSummaryResponse processNotes(LocalDate date) {
+        return processNotes(date, null);
+    }
 }

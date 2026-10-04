@@ -90,7 +90,15 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
     @Override
     @Transactional
     public ProcessSummaryResponse processNotes(LocalDate date) {
-        List<Note> dirtyNotes = noteRepository.findDirtyNotes(date);
+        return processNotes(date, null);
+    }
+
+    @Override
+    @Transactional
+    public ProcessSummaryResponse processNotes(LocalDate date, Long userId) {
+        List<Note> dirtyNotes = userId != null
+                ? noteRepository.findDirtyNotes(userId, date)
+                : noteRepository.findDirtyNotes(date);
 
         if (dirtyNotes.isEmpty()) {
             throw new BadRequestException("No journal notes found for " + date + " to process");
@@ -105,11 +113,19 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         // Discover and update note images
         Map<UUID, List<Image>> noteImages = processAndPersistNoteImages(dirtyNotes);
 
-        List<Task> existingTasks = taskRepository.findByStatusNotOrderByCreatedAtDesc(TaskStatus.COMPLETED);
-        List<AcademicEvent> existingEvents = academicEventRepository.findAllFiltered(null, true, LocalDateTime.now());
+        List<Task> existingTasks = userId != null
+                ? taskRepository.findAllFiltered(userId, null, null, null).stream()
+                        .filter(t -> t.getStatus() != TaskStatus.COMPLETED)
+                        .toList()
+                : taskRepository.findByStatusNotOrderByCreatedAtDesc(TaskStatus.COMPLETED);
+        List<AcademicEvent> existingEvents = userId != null
+                ? academicEventRepository.findAllFiltered(userId, null, true, LocalDateTime.now())
+                : academicEventRepository.findAllFiltered(null, true, LocalDateTime.now());
         List<AcademicContext> existingContexts =
                 academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(dirtyCourseIds);
-        List<Schedule> schedules = scheduleRepository.findAll();
+        List<Schedule> schedules = userId != null
+                ? scheduleRepository.findAllFiltered(userId, null)
+                : scheduleRepository.findAll();
 
         StudyPlannerEngine.ExtractedData extracted = studyPlannerEngine.process(
                 dirtyNotes, existingTasks, existingEvents, existingContexts, schedules, noteImages);

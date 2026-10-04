@@ -56,9 +56,9 @@ public class AcademicEventServiceImpl implements AcademicEventService {
     }
 
     @Override
-    public List<AcademicEventResponse> listEvents(Long courseId, Boolean upcoming) {
+    public List<AcademicEventResponse> listEvents(Long userId, Long courseId, Boolean upcoming) {
         LocalDateTime now = LocalDateTime.now();
-        return academicEventRepository.findAllFiltered(courseId, upcoming, now)
+        return academicEventRepository.findAllFiltered(userId, courseId, upcoming, now)
                 .stream()
                 .map(this::toResponse)
                 .toList();

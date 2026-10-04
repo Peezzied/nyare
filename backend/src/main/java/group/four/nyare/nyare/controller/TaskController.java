@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.controller;
 
+import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.dto.TaskRequest;
 import group.four.nyare.nyare.dto.TaskResponse;
 import group.four.nyare.nyare.dto.TaskStatusRequest;
@@ -27,9 +28,11 @@ import java.util.UUID;
 public class TaskController {
 
     private final TaskService taskService;
+    private final SessionContext sessionContext;
 
-    public TaskController(TaskService taskService) {
+    public TaskController(TaskService taskService, SessionContext sessionContext) {
         this.taskService = taskService;
+        this.sessionContext = sessionContext;
     }
 
     @PostMapping
@@ -44,7 +47,8 @@ public class TaskController {
             @RequestParam(required = false) Long courseId,
             @RequestParam(required = false) TaskStatus status,
             @RequestParam(required = false) Boolean scheduled) {
-        List<TaskResponse> tasks = taskService.listTasks(courseId, status, scheduled);
+        Long userId = sessionContext.getUserId().orElse(null);
+        List<TaskResponse> tasks = taskService.listTasks(userId, courseId, status, scheduled);
         return ResponseEntity.ok(tasks);
     }
 

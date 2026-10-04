@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.controller;
 
+import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.dto.NoteRequest;
 import group.four.nyare.nyare.dto.NoteResponse;
 import group.four.nyare.nyare.dto.NoteSummaryResponse;
@@ -28,9 +29,11 @@ import java.util.UUID;
 public class NoteController {
 
     private final NoteService noteService;
+    private final SessionContext sessionContext;
 
-    public NoteController(NoteService noteService) {
+    public NoteController(NoteService noteService, SessionContext sessionContext) {
         this.noteService = noteService;
+        this.sessionContext = sessionContext;
     }
 
     @PostMapping
@@ -43,7 +46,8 @@ public class NoteController {
     @GetMapping
     public ResponseEntity<List<NoteSummaryResponse>> listNotes(
             @RequestParam(required = false) Long courseId) {
-        List<NoteSummaryResponse> notes = noteService.listNotes(courseId);
+        Long userId = sessionContext.getUserId().orElse(null);
+        List<NoteSummaryResponse> notes = noteService.listNotes(userId, courseId);
         return ResponseEntity.ok(notes);
     }
 

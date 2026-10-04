@@ -33,7 +33,11 @@ public interface ScheduleService {
      * @param day      optional day of week filter; {@code null} to match all days
      * @return list of matching schedule responses ordered chronologically
      */
-    List<ScheduleResponse> listSchedules(Long courseId, DayOfWeek day);
+    List<ScheduleResponse> listSchedules(Long userId, Long courseId, DayOfWeek day);
+
+    default List<ScheduleResponse> listSchedules(Long courseId, DayOfWeek day) {
+        return listSchedules(null, courseId, day);
+    }
 
     /**
      * Retrieves a single class schedule by its unique identifier.
