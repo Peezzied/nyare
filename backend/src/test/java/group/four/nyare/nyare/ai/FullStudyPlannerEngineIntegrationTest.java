@@ -11,6 +11,7 @@ import group.four.nyare.nyare.model.Image;
 import group.four.nyare.nyare.model.Note;
 import group.four.nyare.nyare.model.Schedule;
 import group.four.nyare.nyare.model.Task;
+import group.four.nyare.nyare.model.User;
 import group.four.nyare.nyare.model.enums.TaskStatus;
 import group.four.nyare.nyare.repository.AcademicContextRepository;
 import group.four.nyare.nyare.repository.AcademicEventRepository;
@@ -19,6 +20,7 @@ import group.four.nyare.nyare.repository.ImageRepository;
 import group.four.nyare.nyare.repository.NoteRepository;
 import group.four.nyare.nyare.repository.ScheduleRepository;
 import group.four.nyare.nyare.repository.TaskRepository;
+import group.four.nyare.nyare.repository.UserRepository;
 import group.four.nyare.nyare.service.StudyPlannerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -92,6 +94,9 @@ public class FullStudyPlannerEngineIntegrationTest {
     @Autowired
     private AcademicContextRepository academicContextRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @BeforeEach
     void cleanDatabase() {
         academicContextRepository.deleteAll();
@@ -101,13 +106,15 @@ public class FullStudyPlannerEngineIntegrationTest {
         imageRepository.deleteAll();
         scheduleRepository.deleteAll();
         courseRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
     @DisplayName("Engine: image descriptions flow into planning and image audit correlation is logged")
     void engineProcessesNotesWithImageDescriptions(CapturedOutput output, TestInfo testInfo) throws Exception {
         // given: same courses and schedules as StudyPlannerEngineIntegrationTest
-        List<Course> courses = seedCourses();
+        User user = new User("engine_test_user");
+        List<Course> courses = seedCourses(user);
         Course compArch = courses.get(0);
         Course calc2 = courses.get(3);
         Course mobComp = courses.get(5);
@@ -196,7 +203,9 @@ public class FullStudyPlannerEngineIntegrationTest {
     @DisplayName("Service: processNotes describes images, persists entities, and audits image context")
     void serviceProcessesNotesEndToEndWithImages(CapturedOutput output) throws Exception {
         // given: persisted courses and schedules
-        List<Course> courses = courseRepository.saveAll(seedCourses());
+        User user = userRepository.save(new User("planner_test_user"));
+        List<Course> rawCourses = seedCourses(user);
+        List<Course> courses = courseRepository.saveAll(rawCourses);
         Course compArch = courses.get(0);
         Course mobComp = courses.get(5);
         Course oop = courses.get(6);
@@ -227,7 +236,7 @@ public class FullStudyPlannerEngineIntegrationTest {
                         + "![Lecture Slide](/api/images/" + slideImage.getId() + ")"));
 
         // when: full pipeline runs image AI + note planning in one transaction
-        ProcessSummaryResponse summary = studyPlannerService.processNotes(LocalDate.now());
+        ProcessSummaryResponse summary = studyPlannerService.processNotes(LocalDate.now(), user.getId());
 
         // then: image descriptions populated by the image AI process
         Image reloadedSlide = imageRepository.findById(slideImage.getId()).orElseThrow();
@@ -248,16 +257,16 @@ public class FullStudyPlannerEngineIntegrationTest {
 
     // --- Seeds (same courses and schedules as StudyPlannerEngineIntegrationTest) ---
 
-    private static List<Course> seedCourses() {
+    private static List<Course> seedCourses(User user) {
         return List.of(
-                new Course("Computer Architecture and Organization", "CS Core Course"),
-                new Course("Principles of Programming Languages", "CS Core Course"),
-                new Course("GE Elective 1 - Living in the IT Era", "General Education Elective"),
-                new Course("Calculus 2", "Mathematics Course"),
-                new Course("Readings in Philippine History", "General Education Course"),
-                new Course("Mobile Computing", "CS Elective Course"),
-                new Course("Object-Oriented Programming", "CS Core Course"),
-                new Course("Physical Activities Toward Health & Fitness 3 (PATHFit 3)", "Physical Education"));
+                new Course("Computer Architecture and Organization", "CS Core Course", user),
+                new Course("Principles of Programming Languages", "CS Core Course", user),
+                new Course("GE Elective 1 - Living in the IT Era", "General Education Elective", user),
+                new Course("Calculus 2", "Mathematics Course", user),
+                new Course("Readings in Philippine History", "General Education Course", user),
+                new Course("Mobile Computing", "CS Elective Course", user),
+                new Course("Object-Oriented Programming", "CS Core Course", user),
+                new Course("Physical Activities Toward Health & Fitness 3 (PATHFit 3)", "Physical Education", user));
     }
 
     private static List<Schedule> seedSchedules(List<Course> courses) {

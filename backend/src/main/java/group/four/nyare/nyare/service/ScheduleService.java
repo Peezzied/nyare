@@ -35,10 +35,6 @@ public interface ScheduleService {
      */
     List<ScheduleResponse> listSchedules(Long userId, Long courseId, DayOfWeek day);
 
-    default List<ScheduleResponse> listSchedules(Long courseId, DayOfWeek day) {
-        return listSchedules(null, courseId, day);
-    }
-
     /**
      * Retrieves a single class schedule by its unique identifier.
      *

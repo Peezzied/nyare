@@ -32,10 +32,6 @@ public interface TaskService {
      */
     List<TaskResponse> listTasks(Long userId, Long courseId, TaskStatus status, Boolean scheduled);
 
-    default List<TaskResponse> listTasks(Long courseId, TaskStatus status, Boolean scheduled) {
-        return listTasks(null, courseId, status, scheduled);
-    }
-
     /**
      * Retrieves a single task by its unique identifier.
      *

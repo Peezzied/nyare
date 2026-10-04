@@ -78,27 +78,14 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         this.studyPlannerEngine = studyPlannerEngine;
     }
 
-    /**
-     * Processes dirty notes for the given date across all courses in one AI round-trip.
-     * Extracts tasks, events, and context. Persists new entities. Updates promoted tasks.
-     * Stamps lastProcessedAt on all processed notes.
-     *
-     * @param date the calendar date whose dirty notes will be processed
-     * @return summary count of created tasks, events, and contexts
-     * @throws BadRequestException when no dirty notes exist for the given date
-     */
-    @Override
-    @Transactional
-    public ProcessSummaryResponse processNotes(LocalDate date) {
-        return processNotes(date, null);
-    }
-
     @Override
     @Transactional
     public ProcessSummaryResponse processNotes(LocalDate date, Long userId) {
-        List<Note> dirtyNotes = userId != null
-                ? noteRepository.findDirtyNotes(userId, date)
-                : noteRepository.findDirtyNotes(date);
+        if (userId == null) {
+            throw new BadRequestException("User identifier is required for processing");
+        }
+
+        List<Note> dirtyNotes = noteRepository.findDirtyNotes(userId, date);
 
         if (dirtyNotes.isEmpty()) {
             throw new BadRequestException("No journal notes found for " + date + " to process");
@@ -113,19 +100,14 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         // Discover and update note images
         Map<UUID, List<Image>> noteImages = processAndPersistNoteImages(dirtyNotes);
 
-        List<Task> existingTasks = userId != null
-                ? taskRepository.findAllFiltered(userId, null, null, null).stream()
-                        .filter(t -> t.getStatus() != TaskStatus.COMPLETED)
-                        .toList()
-                : taskRepository.findByStatusNotOrderByCreatedAtDesc(TaskStatus.COMPLETED);
-        List<AcademicEvent> existingEvents = userId != null
-                ? academicEventRepository.findAllFiltered(userId, null, true, LocalDateTime.now())
-                : academicEventRepository.findAllFiltered(null, true, LocalDateTime.now());
+        List<Task> existingTasks = taskRepository.findAllFiltered(userId, null, null, null).stream()
+                .filter(t -> t.getStatus() != TaskStatus.COMPLETED)
+                .toList();
+        List<AcademicEvent> existingEvents =
+                academicEventRepository.findAllFiltered(userId, null, true, LocalDateTime.now());
         List<AcademicContext> existingContexts =
                 academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(dirtyCourseIds);
-        List<Schedule> schedules = userId != null
-                ? scheduleRepository.findAllFiltered(userId, null)
-                : scheduleRepository.findAll();
+        List<Schedule> schedules = scheduleRepository.findAllFiltered(userId, null);
 
         StudyPlannerEngine.ExtractedData extracted = studyPlannerEngine.process(
                 dirtyNotes, existingTasks, existingEvents, existingContexts, schedules, noteImages);

@@ -177,6 +177,7 @@ class StudyPlannerControllerIntegrationTest {
 
         // When: Trigger study planner processing endpoint
         MvcResult mvcResult = mockMvc.perform(post("/api/study-planner/process")
+                        .sessionAttr(UserController.SESSION_USER_ID, testUser.getId())
                         .accept(MediaType.TEXT_EVENT_STREAM_VALUE))
                 .andExpect(request().asyncStarted())
                 .andReturn();
@@ -197,7 +198,7 @@ class StudyPlannerControllerIntegrationTest {
         assertThat(responseBody).contains("\"contextsCreated\":");
 
         // Then: Validate database persistence
-        List<Note> dirtyNotesAfterProcessing = noteRepository.findDirtyNotes(LocalDate.now());
+        List<Note> dirtyNotesAfterProcessing = noteRepository.findDirtyNotes(testUser.getId(), LocalDate.now());
         assertThat(dirtyNotesAfterProcessing).isEmpty();
 
         List<Note> processedNotes = noteRepository.findAllById(List.of(
@@ -224,6 +225,7 @@ class StudyPlannerControllerIntegrationTest {
 
         // When: Trigger study planner processing endpoint
         MvcResult mvcResult = mockMvc.perform(post("/api/study-planner/process")
+                        .sessionAttr(UserController.SESSION_USER_ID, testUser.getId())
                         .accept(MediaType.TEXT_EVENT_STREAM_VALUE))
                 .andExpect(request().asyncStarted())
                 .andReturn();

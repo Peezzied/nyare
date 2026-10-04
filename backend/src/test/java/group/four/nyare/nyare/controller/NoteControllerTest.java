@@ -18,6 +18,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -93,7 +94,8 @@ class NoteControllerTest {
     @Test
     void listNotes_withCourseId_returns200AndList() throws Exception {
         // given
-        when(noteService.listNotes(any(), eq(1L))).thenReturn(List.of(sampleSummary));
+        when(sessionContext.getUserId()).thenReturn(Optional.of(42L));
+        when(noteService.listNotes(42L, 1L)).thenReturn(List.of(sampleSummary));
 
         // when & then
         mockMvc.perform(get("/api/notes").param("courseId", "1"))
@@ -101,18 +103,23 @@ class NoteControllerTest {
                 .andExpect(jsonPath("$[0].id").value(noteId.toString()))
                 .andExpect(jsonPath("$[0].preview").value("Lecture Notes"))
                 .andExpect(jsonPath("$[0].truncated").value(false));
+
+        verify(noteService).listNotes(42L, 1L);
     }
 
     @Test
     void listNotes_withoutCourseId_returns200AndList() throws Exception {
         // given
-        when(noteService.listNotes(any(), any())).thenReturn(List.of(sampleSummary));
+        when(sessionContext.getUserId()).thenReturn(Optional.of(42L));
+        when(noteService.listNotes(42L, null)).thenReturn(List.of(sampleSummary));
 
         // when & then
         mockMvc.perform(get("/api/notes"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(noteId.toString()))
                 .andExpect(jsonPath("$[0].preview").value("Lecture Notes"));
+
+        verify(noteService).listNotes(42L, null);
     }
 
     @Test

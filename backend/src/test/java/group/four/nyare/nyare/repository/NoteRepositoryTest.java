@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,57 +30,61 @@ class NoteRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
-    private User defaultUser;
+    private User user1;
+    private User user2;
+    private Course course1;
+    private Course course2;
 
     @BeforeEach
     void setUp() {
-        defaultUser = userRepository.save(new User("testuser_" + UUID.randomUUID()));
+        user1 = userRepository.save(new User("user1_" + UUID.randomUUID()));
+        user2 = userRepository.save(new User("user2_" + UUID.randomUUID()));
+        course1 = courseRepository.save(new Course("CS101", "Intro to CS", user1));
+        course2 = courseRepository.save(new Course("CS202", "Data Structures", user2));
     }
 
     @Test
-    @DisplayName("findDirtyNotes returns unprocessed and modified notes only")
-    void findDirtyNotesFiltersCleanNotes() {
-        Course course = courseRepository.save(new Course("CS101", "Intro to CS", defaultUser));
+    @DisplayName("findDirtyNotes returns unprocessed notes for user and excludes other users")
+    void findDirtyNotes_isolatesDirtyNotesByUser() {
+        Note note1 = noteRepository.save(new Note(course1, "User 1 dirty note"));
+        Note note2 = noteRepository.save(new Note(course2, "User 2 dirty note"));
 
-        // Note 1: Never processed (lastProcessedAt is null) -> Dirty
-        Note note1 = new Note(course, "Unprocessed note");
-        note1 = noteRepository.save(note1);
+        List<Note> user1DirtyNotes = noteRepository.findDirtyNotes(user1.getId(), LocalDate.now());
+        List<Note> user2DirtyNotes = noteRepository.findDirtyNotes(user2.getId(), LocalDate.now());
 
-        // Note 2: Processed after update -> Clean
-        Note note2 = new Note(course, "Processed note");
-        note2 = noteRepository.save(note2);
-        note2.setLastProcessedAt(Instant.now().plusSeconds(60));
-        note2 = noteRepository.save(note2);
-
-        LocalDate today = LocalDate.now();
-        ZoneId zone = ZoneId.systemDefault();
-        Instant startOfDay = today.atStartOfDay(zone).toInstant();
-        Instant endOfDay = today.plusDays(1).atStartOfDay(zone).toInstant();
-
-        List<Note> dirtyNotes = noteRepository.findDirtyNotes(startOfDay, endOfDay);
-
-        assertThat(dirtyNotes).extracting(Note::getId).contains(note1.getId());
-        assertThat(dirtyNotes).extracting(Note::getId).doesNotContain(note2.getId());
+        assertThat(user1DirtyNotes).extracting(Note::getId).containsExactly(note1.getId());
+        assertThat(user2DirtyNotes).extracting(Note::getId).containsExactly(note2.getId());
     }
 
     @Test
-    @DisplayName("findAllByOrderByCreatedAtDesc returns notes ordered newest first")
-    void findAllByOrderByCreatedAtDescReturnsOrderedNotes() {
-        Course course = courseRepository.save(new Course("CS102", "Data Structures", defaultUser));
+    @DisplayName("findDirtyNotes excludes processed notes not updated since last processing")
+    void findDirtyNotes_excludesCleanNotes() {
+        Note dirtyNote = noteRepository.save(new Note(course1, "Unprocessed note"));
 
-        Note olderNote = new Note(course, "Older Note");
-        olderNote.setCreatedAt(Instant.now().minusSeconds(3600));
-        noteRepository.save(olderNote);
+        Note cleanNote = new Note(course1, "Processed note");
+        cleanNote.setLastProcessedAt(Instant.now().plusSeconds(60));
+        cleanNote = noteRepository.save(cleanNote);
 
-        Note newerNote = new Note(course, "Newer Note");
-        newerNote.setCreatedAt(Instant.now());
-        noteRepository.save(newerNote);
+        List<Note> dirtyNotes = noteRepository.findDirtyNotes(user1.getId(), LocalDate.now());
 
-        List<Note> allNotes = noteRepository.findAllByOrderByCreatedAtDesc();
+        assertThat(dirtyNotes).extracting(Note::getId).contains(dirtyNote.getId());
+        assertThat(dirtyNotes).extracting(Note::getId).doesNotContain(cleanNote.getId());
+    }
 
-        assertThat(allNotes).isNotEmpty();
-        int newerIndex = allNotes.indexOf(newerNote);
-        int olderIndex = allNotes.indexOf(olderNote);
-        assertThat(newerIndex).isLessThan(olderIndex);
+    @Test
+    @DisplayName("findAllFiltered isolates notes between users and filters by course")
+    void findAllFiltered_isolatesNotesAndAppliesCourseFilter() {
+        Course course1b = courseRepository.save(new Course("CS103", "Algorithms", user1));
+
+        Note note1a = noteRepository.save(new Note(course1, "Note 1A"));
+        Note note1b = noteRepository.save(new Note(course1b, "Note 1B"));
+        Note note2 = noteRepository.save(new Note(course2, "Note 2"));
+
+        List<Note> user1AllNotes = noteRepository.findAllFiltered(user1.getId(), null);
+        assertThat(user1AllNotes).extracting(Note::getId).containsExactlyInAnyOrder(note1a.getId(), note1b.getId());
+        assertThat(user1AllNotes).extracting(Note::getId).doesNotContain(note2.getId());
+
+        List<Note> user1Course1Notes = noteRepository.findAllFiltered(user1.getId(), course1.getId());
+        assertThat(user1Course1Notes).extracting(Note::getId).containsExactly(note1a.getId());
     }
 }
