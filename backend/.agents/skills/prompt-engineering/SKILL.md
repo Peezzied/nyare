@@ -46,7 +46,6 @@ Nyare uses a structured prompt format:
 
 - Do not run IntelliJ MCP diagnostics (`get_file_problems`) on `system_prompt.st` or other StringTemplate files.
 - Verify prompt templates manually against domain constraints, token limits, and ASD-STE100 rules.
-- Use `graphify update .` to track codebase graph changes after modifying prompts.
 
 ## Related Skills & References
 

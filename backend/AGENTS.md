@@ -32,7 +32,7 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
    - Packages: strictly lowercase (`controller`, `service`, `repository`, `model`, `dto`, `exception`, `ai`).
    - Controllers never touch repositories; Entities never escape the service layer (DTOs only).
    - Class-level `@Transactional(readOnly = true)` on services; explicit `@Transactional` on mutations.
-   - Combined Processing & Planning: `StudyPlannerService.processTodayNotes()` executes note extraction, event-anchored study task generation, and date/duration updates in one transaction.
+    - Combined Processing & Planning: `StudyPlannerService.processNotes(LocalDate)` executes note extraction, event-anchored study task generation, and date/duration updates in one transaction.
 2. **Canonical Exceptions Only**:
    - Never create custom exception classes per entity/feature.
    - Throw only `ResourceNotFoundException` (404) or `BadRequestException` (400) with descriptive messages.
@@ -47,9 +47,9 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
    - Follow modern Java practices across all application layers.
    - Avoid deprecated classes, methods, annotations, and APIs.
    - Use current features supported by Java 25 and Spring Boot.
-6. **AI System Prompt**:
-   - The system prompt lives in `src/main/resources/system_prompt.st`.
-   - Store all AI system instructions in this template file.
+6. **AI System Prompts**:
+    - System prompts live in `src/main/resources/planner_sys-prompt.st` (planner) and `src/main/resources/image_sys-prompt.st` (image processor).
+    - Store all AI system instructions in these template files; shared params under `nyare.ai.*` in `application.properties`.
 
 ---
 
@@ -58,7 +58,6 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 `graphify` tracks codebase topology in `graphify-out/`.
 - Prioritize using graphify for project lookup or searching.
 - Query before navigating: `graphify query "<question>"` or `graphify explain "<concept>"`.
-- Update after edits: `graphify update .` (run outside sandbox with `BypassSandbox: true` and `Cwd` set to backend root).
 
 ---
 
