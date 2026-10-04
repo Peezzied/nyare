@@ -4,11 +4,16 @@ import group.four.nyare.nyare.NyareApplication;
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.Image;
 import group.four.nyare.nyare.model.Note;
+import group.four.nyare.nyare.model.User;
+import group.four.nyare.nyare.repository.AcademicContextRepository;
+import group.four.nyare.nyare.repository.AcademicEventRepository;
 import group.four.nyare.nyare.repository.CourseRepository;
 import group.four.nyare.nyare.repository.ImageRepository;
 import group.four.nyare.nyare.repository.NoteRepository;
 import group.four.nyare.nyare.repository.TaskRepository;
+import group.four.nyare.nyare.repository.UserRepository;
 import group.four.nyare.nyare.service.StudyPlannerService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,12 +52,15 @@ public class ImageAiProcessorIntegrationTest {
     private TaskRepository taskRepository;
 
     @Autowired
-    private group.four.nyare.nyare.repository.AcademicEventRepository academicEventRepository;
+    private AcademicEventRepository academicEventRepository;
 
     @Autowired
-    private group.four.nyare.nyare.repository.AcademicContextRepository academicContextRepository;
+    private AcademicContextRepository academicContextRepository;
 
-    @org.junit.jupiter.api.BeforeEach
+    @Autowired
+    private UserRepository userRepository;
+
+    @BeforeEach
     void cleanDatabase() {
         academicContextRepository.deleteAll();
         academicEventRepository.deleteAll();
@@ -60,6 +68,7 @@ public class ImageAiProcessorIntegrationTest {
         noteRepository.deleteAll();
         imageRepository.deleteAll();
         courseRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -84,8 +93,9 @@ public class ImageAiProcessorIntegrationTest {
     @Test
     @DisplayName("End-to-end: processNotes updates missing Image description in database and extracts study items")
     void processNotes_endToEnd_updatesImageMetadataAndExtractsPlan() throws IOException {
-        // Given: Seed course
-        Course course = courseRepository.save(new Course("Data Structures", "Core CS"));
+        // Given: Seed user and course
+        User user = userRepository.save(new User("image_test_user"));
+        Course course = courseRepository.save(new Course("Data Structures", "Core CS", user));
 
         // Given: Create synthetic image with handwritten note text
         byte[] imageBytes = createSyntheticNoteImage("Important: Submit Lab Report 3 before Friday midnight.");
