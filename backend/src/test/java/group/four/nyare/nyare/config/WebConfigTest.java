@@ -3,7 +3,6 @@ package group.four.nyare.nyare.config;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.servlet.config.annotation.CorsRegistration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 import java.util.Map;
@@ -13,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class WebConfigTest {
 
     @Test
-    @DisplayName("Should configure CORS mappings for /api/** with allowed origins and methods")
+    @DisplayName("Should configure CORS mappings for /api/** with allowed origins, methods, and credentials")
     void addCorsMappings_registersExpectedConfiguration() {
         WebConfig webConfig = new WebConfig();
         TestCorsRegistry registry = new TestCorsRegistry();
@@ -29,6 +28,7 @@ class WebConfigTest {
         assertThat(config.getAllowedMethods())
                 .containsExactlyInAnyOrder("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS");
         assertThat(config.getAllowedHeaders()).containsExactly("*");
+        assertThat(config.getAllowCredentials()).isTrue();
     }
 
     private static class TestCorsRegistry extends CorsRegistry {
