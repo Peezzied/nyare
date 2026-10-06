@@ -1,6 +1,6 @@
 # Nyare — Agent Guide
 
-Calendar-first academic planner. Class schedule → course-linked journal (`Note`) → explicit Process trigger → Tasks / Academic Events / Academic Context → virtual Study Plan → calendar view.
+Calendar-first academic planner. Class schedule → course-linked journal (`Note` with `entryDate`) → explicit Process trigger → Tasks / Academic Events / Academic Context → virtual Study Plan → calendar view.
 
 ## Repo layout
 
@@ -44,12 +44,12 @@ npm run test:unit    # vitest (jsdom, e2e/ excluded)
 - Services: class-level `@Transactional(readOnly = true)`, explicit `@Transactional` on mutations.
 - Exceptions: only `ResourceNotFoundException` (404) / `BadRequestException` (400); `@Valid` failures handled by `GlobalExceptionHandler` (RFC 7807). No new exception classes.
 - Tests: unit = JUnit5 + Mockito, no Spring (`@Mock` repos, `@InjectMocks` on `*Impl`); controllers = `@WebMvcTest` + `@MockitoBean` on the **service interface**. AssertJ, `// given/when/then`, name `method_condition_expected`.
-- Process entrypoint: `StudyPlannerService.processNotes(LocalDate)` (single transaction: extract → event-anchored tasks → date/duration updates). Exposed as `POST /api/study-planner/process` — SSE stream (`done`/`error` events) on a virtual thread; SSE timeout 60s exceeds AI timeouts (planner 50s, image 30s) so slow models surface as SSE error events.
+- Process entrypoints: `StudyPlannerService.getPlannerStatus(Long)` exposes pending dirty note counts/dates (`GET /api/study-planner/status`); `StudyPlannerService.processNotes(Long)` executes two-phase multi-day sequential extraction and today-anchored study planning. Exposed as `POST /api/study-planner/process` — SSE stream (`init`/`done`/`error` events) on a virtual thread; SSE timeout 60s exceeds AI timeouts (planner 50s, image 30s) so slow models surface as SSE error events.
 
 ## Domain rules (do not violate)
 
 - `StudyPlan` is virtual — never a DB table. Tri-state is derived per `Task`: `SCHEDULED` (has `scheduledDate`), `LATER` (no date + has `duration`), `BACKLOG` (neither).
-- Planner scope: only courses with notes processed today; generates `AI_GENERATED` prep tasks for events ≤14 days out, skipping courses that already have open `SCHEDULED`/`LATER` tasks. Planner may only write `scheduledDate`/`duration` (+ generate event tasks, promote `BACKLOG`); never rewrite/merge task titles, never invent deadlines, no priority scores, no time-blocking, day-level granularity only.
+- Planner scope: courses with dirty notes processed in current run; backdating horizon max 14 days; generates `AI_GENERATED` prep tasks for events ≤14 days out, skipping courses that already have open `SCHEDULED`/`LATER` tasks. Planner may only write `scheduledDate`/`duration` (+ generate event tasks, promote `BACKLOG`); never rewrite/merge task titles, never invent deadlines, no priority scores, no time-blocking, day-level granularity only.
 
 ## Environment bootstrap
 

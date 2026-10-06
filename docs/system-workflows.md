@@ -85,16 +85,19 @@ flowchart LR
 
 ### 3. Journal Processing Workflow
 
-Details how student notes transition into structured database entities. Processing is **explicit** (triggered by the student clicking "Process") and strictly scoped to **today's journal entries**.
+Details how student notes transition into structured database entities. Processing is **explicit** (triggered by the student clicking "Process") and scoped to **all pending dirty notes**, processed chronologically date by date.
 
 ```mermaid
 flowchart TD
-    Student[Student writes a journal entry]
-    Save[Save entry]
+    Student[Student writes or edits a journal entry]
+    Save[Save entry with entryDate]
     Stored[Stored course-linked journal entry]
+    Status[Client checks dirty status]
     Process[Student clicks Process]
-    Scope[Select today's journal entries]
-    AI[AI extracts academic information]
+    Scope[Select all pending dirty notes]
+    Order[Order chronologically by entryDate]
+    Clean[Clean prior uncompleted entities for edited notes]
+    AI[AI extracts academic information for date]
     Task[Task]
     Event[Academic Event]
     Context[Academic Context]
@@ -102,9 +105,12 @@ flowchart TD
 
     Student --> Save
     Save --> Stored
-    Stored ==> Process
+    Stored -.-> Status
+    Status -.-> Process
     Process ==> Scope
-    Scope ==> AI
+    Scope ==> Order
+    Order ==> Clean
+    Clean ==> AI
     AI ==> Task
     AI ==> Event
     AI ==> Context
@@ -146,7 +152,7 @@ flowchart TD
     UpdateDates ==> Plan
 ```
 
-- **Scope**: Scopes strictly to courses with notes processed today.
+- **Scope**: Scopes to courses with dirty notes processed in the current run.
 - **Event Lookahead**: Inspects upcoming academic events within a 14-day window.
 - **Task Generation**: Generates study tasks for events when no `SCHEDULED` or `LATER` tasks exist for that course.
 - **Persistence**: Persists and updates `scheduledDate` and `duration` directly on `Task` records.
@@ -264,7 +270,7 @@ flowchart TD
 
 ### 8. User Interface and Navigation
 
-Defines the screen navigation model: Calendar View is the interactive home, while Notes View is a read-only browser.
+Defines the screen navigation model: Calendar View is the interactive home, while Notes View allows browsing and editing entries by course and date.
 
 ```mermaid
 flowchart TD
@@ -272,12 +278,12 @@ flowchart TD
     Calendar[Calendar View]
     Notes[Notes View]
     Course[Select course or class]
-    Journal[Write journal entry]
+    Journal[Write or edit journal entry]
     Plan[View recommended tasks]
     Events[View academic events]
     Classes[View class schedule]
-    Browse[Browse journal entries by course]
-    Read[Read-only journal view]
+    Browse[Browse journal entries by course and date]
+    Editor[Interactive journal editor]
     Stored[Course-linked journal entry]
 
     Calendar ==> Course
@@ -291,7 +297,7 @@ flowchart TD
     Calendar -.-> Events
     Calendar -.-> Classes
     Notes -.-> Browse
-    Browse -.-> Read
+    Browse -.-> Editor
 ```
 
 ---
@@ -304,21 +310,23 @@ Shows the complete end-to-end user lifecycle from app startup to student feedbac
 flowchart TD
     Start[Student opens Nyare]
     Calendar[Calendar View]
+    StatusCheck[Check pending dirty notes status]
     Class[Student selects a course or class]
-    Journal[Student writes a journal entry]
+    Journal[Student writes or edits entry with entryDate]
     Save[Save entry]
     Process{Student clicks Process?}
     Stored[Entry remains saved]
-    Scope[Process today's entries]
-    Extract["AI extracts Tasks / Events / Context"]
+    Scope[Select pending dirty notes]
+    Extract["AI extracts Tasks / Events / Context chronologically"]
     AcademicInfo[Save academic information]
-    Planner[AI considers current academic situation]
+    Planner[AI plans study recommendations from today]
     StudyPlan[Generate Study Plan]
     Display[Display recommendations]
     Feedback[Student may provide feedback]
     Reconsider[AI reconsideration]
 
     Start ==> Calendar
+    Calendar -.-> StatusCheck
     Calendar ==> Class
     Class ==> Journal
     Journal ==> Save
@@ -338,6 +346,6 @@ flowchart TD
     Reconsider -.-> StudyPlan
 ```
 
-*Combined Flow*: When the student clicks Process, the system processes today's notes and runs study planning in one transaction. It extracts entities, generates study tasks for uncovered events, and updates `scheduledDate` and `duration` on open tasks for involved courses.
+*Sequential Flow*: When the student clicks Process, the system retrieves all pending dirty notes and processes them chronologically date by date. It cleans prior uncompleted entities for edited notes, extracts fresh entities, and runs study planning anchored to `LocalDate.now()` to schedule tasks on upcoming dates.
 
 *Feedback Loop*: When the student provides feedback (e.g. *"I have no time tonight"*), the feedback is incorporated into the planning context and the AI reconsiders task recommendations.

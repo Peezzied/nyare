@@ -76,11 +76,15 @@ To maintain simplicity, predictability, and development velocity, Nyare enforces
 
 ---
 
-## 7. Strict Processing Scope (Today's Notes Only)
+## 7. Strict Processing Scope & Backdating Horizon
 
-* **Boundary**: AI extraction is user-initiated and bounded to the current day.
-* **What We Do**: When the student clicks "Process", only notes with `createdAt` matching the current day are submitted for entity extraction.
+* **Boundary**: AI extraction is user-initiated and bounded to pending dirty notes within a configurable backdating horizon (default 14 days).
+* **What We Do**:
+  - When the student clicks "Process", all dirty notes (`lastProcessedAt IS NULL OR updatedAt > lastProcessedAt`) are processed chronologically date by date.
+  - Anchor final study planning task recommendations to `LocalDate.now()`.
+  - Expose pending dirty note counts and dates via `GET /api/study-planner/status` before processing.
 * **What We Do NOT Do**:
   - Do NOT run continuous background scraping of all historical journal notes.
-  - Do NOT re-process past weeks' entries on every execution.
-* **Rationale**: Scoping processing to the current day provides predictable operational boundaries, minimizes token costs, and keeps the student in explicit control of what the AI processes.
+  - Do NOT re-process clean past weeks' entries on every execution.
+  - Do NOT accept notes backdated further than the configurable horizon (14 days).
+* **Rationale**: Scoping processing to unhandled dirty notes within a 14-day horizon accommodates realistic student note-taking habits while preventing accidental token bloat and keeping the student in explicit control.
