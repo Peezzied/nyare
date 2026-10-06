@@ -5,6 +5,18 @@
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-vscode"],
       "disabled": false
+    },
+    "shadcn": {
+      "command": "npx",
+      "args": ["shadcn-vue@latest", "mcp"]
+    },
+    "schedule-x": {
+      "command": "npx",
+      "args": ["-y", "@schedule-x/mcp"]
+    },
+    "vue-docs": {
+      "type": "remote",
+      "url": "https://mcp.vue-mcp.org/mcp"
     }
   }
 }

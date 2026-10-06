@@ -11,9 +11,9 @@ The system operates along a clear, unidirectional information flow:
 ```text
 Course Schedule
       ↓
-Course-linked Journal Entry
+Course-linked Journal Entry (with entryDate)
       ↓
-AI Processing & Planning (combined trigger for today's notes)
+AI Processing & Planning (sequential trigger for all pending dirty notes)
       ↓
 Tasks / Academic Events / Academic Context
       ↓
@@ -51,8 +51,8 @@ Academic Term (Conceptual Grouping)
 * **Role**: Anchors the calendar view, providing context for when classes take place and serving as quick navigation points for writing journal notes.
 
 ### `Journal Entry` (`Note`)
-* **Definition**: The raw, student-authored text or notes written during or after class, stored in rich JSON format.
-* **Role**: The **immutable source of truth**. AI processes journal entries to extract structured entities.
+* **Definition**: The student-authored text or notes linked to a course and an academic `entryDate` within a configurable horizon (max 14 days back).
+* **Role**: The **primary source of truth**. Students can create backdated notes and edit existing entries. When edited, notes become dirty (`updatedAt > lastProcessedAt`), allowing the AI pipeline to re-extract updated entities.
 
 ### `Task`
 * **Definition**: An actionable academic work item that the student needs to complete (e.g., *"Finish research proposal"*, *"Read Chapter 4"*).
@@ -126,8 +126,8 @@ Academic Term (Conceptual Grouping)
 * **Uncertainty Rule**: If a task is extractable but not plannable (e.g., *"I have to work on my project"* with no deadline or duration), it is preserved as **Backlog** or **Later**, never forced onto a calendar date through fabricated information.
 
 ### 7. Source Information vs. Extracted Information (Materialization)
-* **Distinction**: The journal entry is the **Source Information** (unmodified student notes). Extracted Tasks, Events, and Context are the **Extracted Information** (structured entities materialized into application state).
-* **Materialization**: Saving extracted information into database tables is standard application behavior, not an autonomous reconciliation engine.
+* **Distinction**: The journal entry is the **Source Information** (student notes). Extracted Tasks, Events, and Context are the **Extracted Information** (structured entities materialized into application state).
+* **Materialization & Invalidation**: Saving extracted information into database tables is standard application behavior. When an edited note is re-processed, the system cleans previous uncompleted tasks, events, and contexts linked to that note before persisting fresh extractions.
 
 ### 8. Task Consideration vs. Task Updating
 * **Distinction**:

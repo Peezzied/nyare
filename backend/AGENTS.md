@@ -17,7 +17,7 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
 
 - **`Course`**: Academic subject organizing schedules, notes, tasks, events, and context.
 - **`Schedule`**: Recurring weekly class meeting times (`day`, `startTime`, `endTime`, `course`).
-- **`Note`**: Course-linked journal entry in JSON format (`content`, `course`, `createdAt`, `updatedAt`).
+- **`Note`**: Course-linked journal entry in JSON format (`content`, `course`, `entryDate`, `createdAt`, `updatedAt`, `lastProcessedAt`).
 - **`Task`**: Actionable item (`course`, `origin`, `scheduledDate`, `duration`, `status`, derived `planCategory`).
 - **`PlanCategory`**: Tri-state planning enum (`SCHEDULED`, `LATER`, `BACKLOG`) derived from task date and duration.
 - **`AcademicEvent`**: Rigid time constraint or deadline (`course`, `note`, `title`, `description`, `deadline`).
@@ -32,7 +32,7 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
    - Packages: strictly lowercase (`controller`, `service`, `repository`, `model`, `dto`, `exception`, `ai`).
    - Controllers never touch repositories; Entities never escape the service layer (DTOs only).
    - Class-level `@Transactional(readOnly = true)` on services; explicit `@Transactional` on mutations.
-    - Combined Processing & Planning: `StudyPlannerService.processNotes(LocalDate)` executes note extraction, event-anchored study task generation, and date/duration updates in one transaction.
+   - Combined Processing & Planning: `StudyPlannerService.processNotes(Long userId)` executes two-phase multi-day sequential extraction across pending dirty dates and anchors final task scheduling to `LocalDate.now()`. Pre-flight status query available via `getPlannerStatus(Long userId)`.
 2. **Canonical Exceptions Only**:
    - Never create custom exception classes per entity/feature.
    - Throw only `ResourceNotFoundException` (404) or `BadRequestException` (400) with descriptive messages.
