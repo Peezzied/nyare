@@ -1,6 +1,53 @@
 @import "tailwindcss";
 @import './base.css';
 
+@theme {
+  --font-logo: 'DynaPuff', cursive;
+  --font-sans: 'Quicksand', sans-serif;
+  --font-editor: 'Inter', sans-serif;
+
+  --color-app-bg: #F6F7EE;
+  --color-card: #FFFFFF;
+  --color-primary: #00A4C8;
+  --color-primary-bevel: #007B99;
+  --color-text-main: #334155;
+  --color-text-muted: #7B8B97;
+  --color-app-border: #CBD5E1;
+}
+
+:root {
+  --font-logo: 'DynaPuff', cursive;
+  --font-primary: 'Quicksand', sans-serif;
+  --font-secondary: 'Inter', sans-serif;
+  --color-app-bg: #F6F7EE;
+  --color-primary: #00A4C8;
+  --color-primary-bevel: #007B99;
+}
+
+body {
+  font-family: var(--font-primary);
+  background-color: var(--color-app-bg);
+  color: #334155;
+}
+
+input,
+textarea,
+select,
+.tiptap {
+  font-family: var(--font-secondary);
+}
+
+.btn-tactile {
+  background-color: var(--color-primary);
+  border-bottom: 4px solid var(--color-primary-bevel);
+  transition: transform 0.05s ease, border-bottom 0.05s ease;
+}
+
+.btn-tactile:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
 #app {
   max-width: 1280px;
   margin: 0 auto;

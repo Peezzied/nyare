@@ -5,9 +5,26 @@ Calendar-first academic planner. Class schedule → course-linked journal (`Note
 ## Repo layout
 
 - `backend/` — Spring Boot 4.1.1, Java 25 (toolchain), Gradle, JPA/Hibernate + SQLite (`nyare.db`, gitignored). Base package `group.four.nyare.nyare`.
-- `frontend/` — Vue 3 + Vite + TypeScript + Tailwind 4. Alias `@` → `src/`.
+- `frontend/` — Vue 3 + Vite + TypeScript + Tailwind 4. Alias `@` → `src/`. Design spec: `frontend/DESIGN.md`.
 - `docs/` — domain truth: `conceptual-model.md`, `system-workflows.md`, `mvp-boundaries.md`.
 - `backend/docs/conventions.md` — backend rule index (architecture, entities, DTOs, services, exceptions, REST, SQLite, testing). Read it before backend changes.
+
+## Tool Efficiency & Token Management
+
+- Prioritize native agent tools (`view_file`, `replace_file_content`, `write_to_file`) over shell commands (`run_command`), MCP servers, and external CLI tools.
+- Use read-only Git commands (`git ls-files`, `git status`, `git diff`, `git grep`) to survey project files. `git ls-files` automatically ignores untracked build artifacts.
+- Do not use shell cmdlets (`Get-Content`, `cat`, `dir`, `ls`) to inspect or search files.
+- Always specify `StartLine` and `EndLine` with `view_file`. Avoid full-file dumps.
+- Always filter out build artifacts and virtual directories (`node_modules/`, `target/`, `.git/`, `.gradle/`, `dist/`, `build/`, `*.db`) from searches, scans, and directory reads.
+- Use `graphify query`/`explain` and MCP tools only as secondary fallbacks when native file inspection does not provide sufficient context.
+- Follow `.agents/rules/tool-efficiency.md`.
+
+## Git Safety
+
+- Do not commit, push, tag, or create pull requests unless the user explicitly requests it.
+- Keep changes in the working tree. Stop after you edit and verify.
+- When the user requests a commit, use `git caveman-commit`.
+- Follow `.agents/rules/git-safety.md`.
 
 ## Backend commands (`backend/`)
 

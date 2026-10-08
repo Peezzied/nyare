@@ -1,6 +1,7 @@
 # Nyare Frontend — Agent Guide
 
 Vue 3, Vite, TypeScript, and Tailwind 4 run the frontend application.
+This is a mobile-first application.
 The repository contains scaffold code and demo components.
 
 ## Core Domain Rules
@@ -24,6 +25,7 @@ The repository contains scaffold code and demo components.
 
 Read the domain documents before you create frontend components:
 
+- `DESIGN.md` defines the UI/UX design system, brand fonts, colors, and component patterns.
 - `docs/conceptual-model.md` defines domain entities and the virtual study plan.
 - `docs/system-workflows.md` defines system workflows and planner logic.
 
@@ -31,12 +33,12 @@ Read the domain documents before you create frontend components:
 
 ```bash
 npm run dev          # vite dev server
-npm run build        # type-check + build-only in parallel (run-p)
 npm run type-check   # vue-tsc --build
 npm run lint:oxlint  # fast inner loop linter
 npm run lint         # oxlint + eslint with --fix
 npm run format       # prettier, src/ only
 npm run test:unit    # vitest unit tests (jsdom, e2e/ excluded)
+npm run build        # type-check + build-only (run only when necessary)
 ```
 
 - Node engines: `^22.18.0 || >=24.12.0`.
@@ -47,6 +49,7 @@ npm run test:unit    # vitest unit tests (jsdom, e2e/ excluded)
 Run `npm run lint:oxlint` when you edit code.
 Run `npm run type-check` after you edit TypeScript or Vue files.
 Run `npm run lint` to fix linting errors automatically.
+Do not run `npm run build` for routine verification. Run `npm run build` only when necessary.
 Fix all remaining errors before you finish tasks.
 
 ## State Management
@@ -90,7 +93,7 @@ Do not install Axios.
 
 ## MCP Servers (`.agents/mcp_config.json`)
 
-The frontend configuration defines four MCP servers:
+The frontend configuration defines three MCP servers:
 
 ### `shadcn`
 
@@ -114,9 +117,3 @@ The frontend configuration defines four MCP servers:
 - **When to use**:
   - Use this server when you verify Vue 3 APIs.
   - Use this server when you clarify Composition API behavior.
-
-### `vscode`
-
-- **Purpose**: Connect to the VS Code editor.
-- **When to use**:
-  - Use this server when you interact with the editor workspace.
