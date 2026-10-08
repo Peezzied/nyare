@@ -1,2 +1,11 @@
 graphify-out/
+/docs/temp/*
+/docs/superpowers/plans/*
 mcp_config.json
+
+.superpowers/
+
+# Python bytecode cache
+__pycache__/
+*.py[cod]
+*$py.class
