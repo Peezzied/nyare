@@ -63,8 +63,19 @@ The project does not require external state libraries.
 The backend server runs on port 8080.
 Configure `server.proxy` in `vite.config.ts` to route `/api` requests to `http://localhost:8080`.
 Use the native `fetch` function for REST endpoints.
-Use `EventSource` to receive Server-Sent Events from `POST /api/study-planner/process`.
+Use `fetch` with a `ReadableStream` reader to receive Server-Sent Events from `POST /api/study-planner/process` (`EventSource` supports `GET` only).
 Do not install Axios.
+
+## Backend Roundtrip Conventions
+
+Reduce HTTP roundtrips. Load each list once per intent.
+
+- Trust mutation responses. `POST`/`PUT`/`PATCH` return the saved DTO. Update local `ref` state from that response. Do not call `list()` again after `create()`, `update()`, `updateStatus()`, or `delete()` (remove deleted IDs locally). Courses expose `create()` and `delete()` only (no `update` endpoint); apply those responses to the catalog cache.
+- Filter on the server. Use `TaskListParams`, `ScheduleListParams`, `AcademicEventListParams`, `courseId`, `userId`, and `upcoming` query params. Never fetch the full list and filter in code when a param exists. The backend exposes no date-range params, so filter dates (calendar day, deadline windows) locally on the once-fetched cached list.
+- No N+1 reads. Never call `get(id)` in a loop to build a list. Fetch the parent `list()` once. Use `Promise.all()` only for user-selected IDs, not to reconstruct a list.
+- Derive locally. Compute tri-state (`SCHEDULED`/`LATER`/`BACKLOG`) with `getPlanCategory()` in `src/utils/planCategory.ts` and virtual `StudyPlan` views from cached tasks. Never add a backend endpoint for derived state.
+- Cache static data. Hold `courses` and `schedules` in `useCatalog()` (`src/composables/useCatalog.ts`). Refetch only after a course or schedule mutation. Do not refetch them on task, note, or event changes.
+- Refresh from Process summary. `studyPlannerApi.process()` resolves with `ProcessSummaryResponse`. Refetch only `tasks` plus `academic-events` for `affectedCourseIds` (fall back to full refetch of those two lists when counts are positive but no IDs are present). Do not refetch `courses`, `schedules`, or unaffected `notes`.
 
 ## TypeScript and Tests
 

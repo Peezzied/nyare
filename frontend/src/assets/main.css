@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @import './base.css';
 
 @theme {
@@ -6,22 +6,22 @@
   --font-sans: 'Quicksand', sans-serif;
   --font-editor: 'Inter', sans-serif;
 
-  --color-app-bg: #F6F7EE;
-  --color-card: #FFFFFF;
-  --color-primary: #00A4C8;
-  --color-primary-bevel: #007B99;
+  --color-app-bg: #f6f7ee;
+  --color-card: #ffffff;
+  --color-primary: #00a4c8;
+  --color-primary-bevel: #007b99;
   --color-text-main: #334155;
-  --color-text-muted: #7B8B97;
-  --color-app-border: #CBD5E1;
+  --color-text-muted: #7b8b97;
+  --color-app-border: #cbd5e1;
 }
 
 :root {
   --font-logo: 'DynaPuff', cursive;
   --font-primary: 'Quicksand', sans-serif;
   --font-secondary: 'Inter', sans-serif;
-  --color-app-bg: #F6F7EE;
-  --color-primary: #00A4C8;
-  --color-primary-bevel: #007B99;
+  --color-app-bg: #f6f7ee;
+  --color-primary: #00a4c8;
+  --color-primary-bevel: #007b99;
 }
 
 body {
@@ -40,7 +40,9 @@ select,
 .btn-tactile {
   background-color: var(--color-primary);
   border-bottom: 4px solid var(--color-primary-bevel);
-  transition: transform 0.05s ease, border-bottom 0.05s ease;
+  transition:
+    transform 0.05s ease,
+    border-bottom 0.05s ease;
 }
 
 .btn-tactile:active {
