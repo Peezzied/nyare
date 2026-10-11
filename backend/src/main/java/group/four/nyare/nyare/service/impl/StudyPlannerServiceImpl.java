@@ -116,6 +116,17 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
                 .filter(n -> n.getId() != null)
                 .collect(Collectors.toMap(Note::getId, n -> n, (a, b) -> a));
 
+        if (extracted.noteTitles() != null && !extracted.noteTitles().isEmpty()) {
+            extracted.noteTitles().forEach((noteId, title) -> {
+                if (title != null && !title.isBlank()) {
+                    Note note = noteMap.get(noteId);
+                    if (note != null) {
+                        note.setTitle(title.trim());
+                    }
+                }
+            });
+        }
+
         Map<UUID, Task> taskMap = existingTasks.stream()
                 .filter(t -> t.getId() != null)
                 .collect(Collectors.toMap(Task::getId, t -> t, (a, b) -> a));
@@ -182,7 +193,8 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         dirtyNotes.forEach(n -> n.setLastProcessedAt(processedAt));
         noteRepository.saveAll(dirtyNotes);
 
-        return new ProcessSummaryResponse((int) newTaskCount, eventsToSave.size(), contextsToSave.size());
+        return new ProcessSummaryResponse((int) newTaskCount, eventsToSave.size(), contextsToSave.size(),
+                dirtyCourseIds.stream().sorted().toList());
     }
 
     private Map<UUID, List<Image>> processAndPersistNoteImages(List<Note> dirtyNotes) {

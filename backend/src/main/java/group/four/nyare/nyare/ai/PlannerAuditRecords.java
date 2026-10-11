@@ -38,7 +38,33 @@ public final class PlannerAuditRecords {
 
             @JsonProperty(value = "ignoredNotes", required = true)
             @JsonPropertyDescription("Internal list of omitted unrelated statements or ignored outlier notes for system auditing")
-            List<RawIgnoredNote> ignoredNotes) {
+            List<RawIgnoredNote> ignoredNotes,
+
+            @JsonProperty(value = "noteTitles", required = false)
+            @JsonPropertyDescription("Generated concise titles for notes with missing or placeholder titles")
+            List<RawNoteTitle> noteTitles) {
+
+        public LlmPayload(
+                List<RawTask> tasks,
+                List<RawEvent> events,
+                List<StudyPlannerEngine.ExtractedContext> contexts,
+                List<RawIgnoredNote> ignoredNotes) {
+            this(tasks, events, contexts, ignoredNotes, List.of());
+        }
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record RawNoteTitle(
+            @JsonProperty(value = "noteRef", required = true)
+            @JsonAlias({"note_ref", "noteRef", "ref"})
+            @JsonPropertyDescription("Reference identifier of the source note (e.g. n1)")
+            String noteRef,
+
+            @JsonProperty(value = "title", required = true)
+            @JsonAlias({"title", "note_title", "name"})
+            @JsonPropertyDescription("Generated concise, descriptive title of the note")
+            @Size(max = 255)
+            String title) {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

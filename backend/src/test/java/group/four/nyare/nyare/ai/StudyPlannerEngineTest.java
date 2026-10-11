@@ -110,7 +110,7 @@ class StudyPlannerEngineTest {
         String sent = promptCaptor.getValue().getContents();
         assertThat(sent).contains("<temporal_context>");
         assertThat(sent).contains("<journal_notes>");
-        assertThat(sent).contains("note_ref,course,content");
+        assertThat(sent).contains("note_ref,course,title,content");
         assertThat(sent).contains("<existing_tasks>");
         assertThat(sent).contains("course,task_id,title,status,scheduled_date,duration_minutes");
         assertThat(sent).contains("<class_schedules>");
@@ -321,5 +321,50 @@ class StudyPlannerEngineTest {
 
         assertThat(newTask.isPromotion()).isFalse();
         assertThat(newTask.isNewTask()).isTrue();
+    }
+
+    @Test
+    @DisplayName("process includes note title or default in journal CSV")
+    void processIncludesNoteTitleInJournalCsv() {
+        Course course = new Course("CS101", "Computer Science");
+        Note noteWithTitle = new Note(course, "Chapter 4 Notes", "Content here");
+        Note noteWithoutTitle = new Note(course, "Other content");
+
+        ArgumentCaptor<Prompt> promptCaptor = ArgumentCaptor.forClass(Prompt.class);
+        when(chatClient.prompt(promptCaptor.capture()).advisors(any(Consumer.class)).call()
+                .entity(PlannerAuditRecords.LlmPayload.class))
+                .thenReturn(new PlannerAuditRecords.LlmPayload(List.of(), List.of(), List.of(), List.of()));
+
+        engine.process(List.of(noteWithTitle, noteWithoutTitle), List.of(), List.of(), List.of(), List.of());
+
+        String sent = promptCaptor.getValue().getContents();
+        assertThat(sent).contains("Chapter 4 Notes");
+        assertThat(sent).contains("Untitled Note");
+    }
+
+    @Test
+    @DisplayName("process decodes raw noteTitles into note UUID map")
+    void processDecodesNoteTitlesToUUIDs() {
+        Course course = new Course("CS101", "Computer Science");
+        Note note = new Note(course, "Some content");
+        UUID noteId = UUID.randomUUID();
+        ReflectionTestUtils.setField(note, "id", noteId);
+
+        PlannerAuditRecords.LlmPayload rawResponse = new PlannerAuditRecords.LlmPayload(
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList(),
+                List.of(new PlannerAuditRecords.RawNoteTitle("n1", "Generated AI Note Title"))
+        );
+
+        when(chatClient.prompt(any(Prompt.class)).advisors(any(Consumer.class)).call()
+                .entity(PlannerAuditRecords.LlmPayload.class))
+                .thenReturn(rawResponse);
+
+        StudyPlannerEngine.ExtractedData result =
+                engine.process(List.of(note), List.of(), List.of(), List.of(), List.of());
+
+        assertThat(result.noteTitles()).containsEntry(noteId, "Generated AI Note Title");
     }
 }

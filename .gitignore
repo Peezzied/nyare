@@ -1,9 +1,9 @@
 graphify-out/
 /docs/temp/*
-/docs/superpowers/plans/*
+**/docs/superpowers/
 mcp_config.json
 
-.superpowers/
+**/.superpowers/
 
 # Python bytecode cache
 __pycache__/

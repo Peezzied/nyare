@@ -17,6 +17,7 @@ public interface StudyPlannerService {
      * @param date   the calendar date whose dirty notes will be processed
      * @param userId the user identifier
      * @return summary count of created tasks, events, and contexts
+     *         with the identifiers of courses processed in this run
      * @throws BadRequestException if no dirty notes exist for the given date or userId is null
      */
     ProcessSummaryResponse processNotes(LocalDate date, Long userId);

@@ -247,6 +247,30 @@ public class StudyPlannerEngineIntegrationTest {
     }
 
     @Test
+    @DisplayName("process with untitled note generates descriptive note title in output")
+    void process_withUntitledNote_generatesDescriptiveNoteTitle(TestInfo testInfo) throws Exception {
+        // given: Course and note created without explicit title (defaulting to Untitled Note)
+        Course oop = new Course("Object-Oriented Programming", "CS Core Course");
+        String noteText = "Prof discussed recursion and binary trees today. We need to implement a binary search tree in Java before Friday lab.";
+        Note untitledNote = createNote(oop, noteText);
+        untitledNote.setTitle("Untitled Note");
+        UUID noteId = untitledNote.getId();
+
+        // when
+        StudyPlannerEngine.ExtractedData result = processWithEmptyState(List.of(untitledNote));
+
+        reportObservation(testInfo.getDisplayName(), result);
+
+        // then: AI generates a title for the untitled note
+        assertThat(result.noteTitles()).containsKey(noteId);
+        String generatedTitle = result.noteTitles().get(noteId);
+        assertThat(generatedTitle)
+                .isNotBlank()
+                .isNotEqualTo("Untitled Note")
+                .hasSizeLessThanOrEqualTo(255);
+    }
+
+    @Test
     @DisplayName("process with arts submission and financial quiz notes extracts tasks and events with schedule anchors")
     void process_withArtsAndFinanceNotes_extractsTasksAndEvents(TestInfo testInfo) throws Exception {
         // given: Dummy courses and weekly recurring schedules

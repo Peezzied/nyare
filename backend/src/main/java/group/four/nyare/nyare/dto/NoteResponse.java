@@ -10,6 +10,7 @@ public class NoteResponse {
 
     private UUID id;
     private Long courseId;
+    private String title;
     private String content;
     private Instant createdAt;
     private Instant updatedAt;
@@ -19,12 +20,21 @@ public class NoteResponse {
     }
 
     public NoteResponse(UUID id, Long courseId, String content, Instant createdAt, Instant updatedAt) {
-        this(id, courseId, content, createdAt, updatedAt, null);
+        this(id, courseId, "Untitled Note", content, createdAt, updatedAt, null);
     }
 
     public NoteResponse(UUID id, Long courseId, String content, Instant createdAt, Instant updatedAt, Instant lastProcessedAt) {
+        this(id, courseId, "Untitled Note", content, createdAt, updatedAt, lastProcessedAt);
+    }
+
+    public NoteResponse(UUID id, Long courseId, String title, String content, Instant createdAt, Instant updatedAt) {
+        this(id, courseId, title, content, createdAt, updatedAt, null);
+    }
+
+    public NoteResponse(UUID id, Long courseId, String title, String content, Instant createdAt, Instant updatedAt, Instant lastProcessedAt) {
         this.id = id;
         this.courseId = courseId;
+        this.title = title;
         this.content = content;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -45,6 +55,14 @@ public class NoteResponse {
 
     public void setCourseId(Long courseId) {
         this.courseId = courseId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getContent() {
