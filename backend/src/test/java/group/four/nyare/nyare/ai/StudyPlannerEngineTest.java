@@ -110,7 +110,7 @@ class StudyPlannerEngineTest {
         String sent = promptCaptor.getValue().getContents();
         assertThat(sent).contains("<temporal_context>");
         assertThat(sent).contains("<journal_notes>");
-        assertThat(sent).contains("note_ref,course,title,content");
+        assertThat(sent).contains("note_ref,course,title,entry_date,content");
         assertThat(sent).contains("<existing_tasks>");
         assertThat(sent).contains("course,task_id,title,status,scheduled_date,duration_minutes");
         assertThat(sent).contains("<class_schedules>");
@@ -366,5 +366,26 @@ class StudyPlannerEngineTest {
                 engine.process(List.of(note), List.of(), List.of(), List.of(), List.of());
 
         assertThat(result.noteTitles()).containsEntry(noteId, "Generated AI Note Title");
+    }
+
+    @Test
+    @DisplayName("process formats note entryDate as YYYY-MM-DD in journal CSV")
+    void processIncludesNoteEntryDateInJournalCsv() {
+        Course course = new Course("CS101", "Computer Science");
+        LocalDate pastDate = LocalDate.now().minusDays(3);
+        Note noteWithDate = new Note(course, "Chapter 4 Notes", "Content here", pastDate);
+        Note noteWithoutDate = new Note(course, "Other content");
+        ReflectionTestUtils.setField(noteWithoutDate, "entryDate", null);
+
+        ArgumentCaptor<Prompt> promptCaptor = ArgumentCaptor.forClass(Prompt.class);
+        when(chatClient.prompt(promptCaptor.capture()).advisors(any(Consumer.class)).call()
+                .entity(PlannerAuditRecords.LlmPayload.class))
+                .thenReturn(new PlannerAuditRecords.LlmPayload(List.of(), List.of(), List.of(), List.of()));
+
+        engine.process(List.of(noteWithDate, noteWithoutDate), List.of(), List.of(), List.of(), List.of());
+
+        String sent = promptCaptor.getValue().getContents();
+        assertThat(sent).contains(pastDate.toString());
+        assertThat(sent).contains(LocalDate.now().toString());
     }
 }

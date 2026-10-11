@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.service;
 
+import group.four.nyare.nyare.dto.PlannerStatusResponse;
 import group.four.nyare.nyare.dto.ProcessSummaryResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
 
@@ -9,6 +10,25 @@ import java.time.LocalDate;
  * Service contract for processing daily course journal notes.
  */
 public interface StudyPlannerService {
+
+    /**
+     * Retrieves pre-flight status on pending dirty notes for study planning.
+     *
+     * @param userId the user identifier
+     * @return pending status including dirty note count, distinct dates, and courses
+     */
+    PlannerStatusResponse getPlannerStatus(Long userId);
+
+    /**
+     * Processes all pending dirty notes for the specified user sequentially across dates,
+     * materializes extracted entities, and returns the aggregate count summary.
+     *
+     * @param userId the user identifier
+     * @return summary count of created tasks, events, and contexts
+     *         with the identifiers of courses processed in this run
+     * @throws BadRequestException if no dirty notes exist or userId is null
+     */
+    ProcessSummaryResponse processNotes(Long userId);
 
     /**
      * Processes dirty notes for the given date for the specified user, materializes
@@ -22,3 +42,4 @@ public interface StudyPlannerService {
      */
     ProcessSummaryResponse processNotes(LocalDate date, Long userId);
 }
+

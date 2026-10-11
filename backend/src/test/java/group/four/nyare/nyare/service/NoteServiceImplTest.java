@@ -3,6 +3,7 @@ package group.four.nyare.nyare.service;
 import group.four.nyare.nyare.dto.NoteRequest;
 import group.four.nyare.nyare.dto.NoteResponse;
 import group.four.nyare.nyare.dto.NoteSummaryResponse;
+import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.Note;
@@ -16,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -63,6 +65,34 @@ class NoteServiceImplTest {
         assertThat(response).isNotNull();
         assertThat(response.getTitle()).isEqualTo("Lecture 1");
         assertThat(response.getContent()).isEqualTo("Lecture 1");
+    }
+
+    @Test
+    void createNote_withCustomEntryDate_setsEntryDateOnNote() {
+        // given
+        LocalDate customDate = LocalDate.now().minusDays(3);
+        NoteRequest request = new NoteRequest(1L, "Past note content", customDate);
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(noteRepository.save(any(Note.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        // when
+        NoteResponse response = noteService.createNote(request);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getEntryDate()).isEqualTo(customDate);
+    }
+
+    @Test
+    void createNote_withEntryDateOlderThanHorizon_throwsBadRequestException() {
+        // given
+        LocalDate tooOldDate = LocalDate.now().minusDays(15);
+        NoteRequest request = new NoteRequest(1L, "Ancient note content", tooOldDate);
+
+        // when & then
+        assertThatThrownBy(() -> noteService.createNote(request))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("Entry date cannot be older than 14 days");
     }
 
     @Test

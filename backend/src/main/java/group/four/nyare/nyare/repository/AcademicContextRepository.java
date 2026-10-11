@@ -1,7 +1,9 @@
 package group.four.nyare.nyare.repository;
 
 import group.four.nyare.nyare.model.AcademicContext;
+import group.four.nyare.nyare.model.Note;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -46,4 +48,13 @@ public interface AcademicContextRepository extends JpaRepository<AcademicContext
      * @return context records ordered by createdAt descending
      */
     List<AcademicContext> findByCourseIdInOrderByCreatedAtDesc(Set<Long> courseIds);
+
+    /**
+     * Deletes academic context records associated with the specified notes.
+     *
+     * @param notes source notes to delete context records for
+     */
+    @Modifying
+    @Query("DELETE FROM AcademicContext c WHERE c.note IN :notes")
+    void deleteByNoteIn(@Param("notes") List<Note> notes);
 }

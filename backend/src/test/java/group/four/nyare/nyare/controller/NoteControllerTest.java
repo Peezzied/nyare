@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -82,6 +83,19 @@ class NoteControllerTest {
     void createNote_withInvalidPayload_returns400ProblemDetail() throws Exception {
         // given
         NoteRequest request = new NoteRequest(null, null);
+
+        // when & then
+        mockMvc.perform(post("/api/notes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Validation Failed"));
+    }
+
+    @Test
+    void createNote_withFutureEntryDate_returns400ProblemDetail() throws Exception {
+        // given
+        NoteRequest request = new NoteRequest(1L, "Future content", LocalDate.now().plusDays(2));
 
         // when & then
         mockMvc.perform(post("/api/notes")

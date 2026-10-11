@@ -2,6 +2,7 @@ package group.four.nyare.nyare.service.impl;
 
 import group.four.nyare.nyare.ai.ImageAiProcessor;
 import group.four.nyare.nyare.ai.StudyPlannerEngine;
+import group.four.nyare.nyare.dto.PlannerStatusResponse;
 import group.four.nyare.nyare.dto.ProcessSummaryResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.model.AcademicContext;
@@ -79,6 +80,53 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
     }
 
     @Override
+    public PlannerStatusResponse getPlannerStatus(Long userId) {
+        if (userId == null) {
+            throw new BadRequestException("User identifier is required");
+        }
+        List<Note> dirtyNotes = noteRepository.findDirtyNotes(userId);
+        if (dirtyNotes.isEmpty()) {
+            return new PlannerStatusResponse(false, 0, List.of(), List.of(), List.of());
+        }
+        List<LocalDate> dirtyDates = dirtyNotes.stream()
+                .map(n -> n.getEntryDate() != null ? n.getEntryDate() : LocalDate.now())
+                .distinct()
+                .sorted()
+                .toList();
+        List<String> courseNames = dirtyNotes.stream()
+                .filter(n -> n.getCourse() != null && n.getCourse().getName() != null)
+                .map(n -> n.getCourse().getName())
+                .distinct()
+                .sorted()
+                .toList();
+        List<PlannerStatusResponse.PendingNoteSummary> pendingSummaries = dirtyNotes.stream()
+                .map(n -> new PlannerStatusResponse.PendingNoteSummary(
+                        n.getId(),
+                        n.getTitle(),
+                        n.getCourse() != null ? n.getCourse().getName() : null,
+                        n.getEntryDate() != null ? n.getEntryDate() : LocalDate.now()
+                ))
+                .toList();
+        return new PlannerStatusResponse(true, dirtyNotes.size(), dirtyDates, courseNames, pendingSummaries);
+    }
+
+    @Override
+    @Transactional
+    public ProcessSummaryResponse processNotes(Long userId) {
+        if (userId == null) {
+            throw new BadRequestException("User identifier is required for processing");
+        }
+
+        List<Note> dirtyNotes = noteRepository.findDirtyNotes(userId);
+
+        if (dirtyNotes.isEmpty()) {
+            throw new BadRequestException("No journal notes found to process");
+        }
+
+        return processDirtyNotes(dirtyNotes, userId);
+    }
+
+    @Override
     @Transactional
     public ProcessSummaryResponse processNotes(LocalDate date, Long userId) {
         if (userId == null) {
@@ -91,110 +139,138 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
             throw new BadRequestException("No journal notes found for " + date + " to process");
         }
 
-        // Contexts are scoped to dirty-note courses. All other data is global.
-        Set<Long> dirtyCourseIds = dirtyNotes.stream()
-                .filter(n -> n.getCourse() != null && n.getCourse().getId() != null)
-                .map(n -> n.getCourse().getId())
-                .collect(Collectors.toSet());
+        return processDirtyNotes(dirtyNotes, userId);
+    }
 
-        // Discover and update note images
-        Map<UUID, List<Image>> noteImages = processAndPersistNoteImages(dirtyNotes);
-
-        List<Task> existingTasks = taskRepository.findAllFiltered(userId, null, null, null).stream()
-                .filter(t -> t.getStatus() != TaskStatus.COMPLETED)
-                .toList();
-        List<AcademicEvent> existingEvents =
-                academicEventRepository.findAllFiltered(userId, null, true, LocalDateTime.now());
-        List<AcademicContext> existingContexts =
-                academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(dirtyCourseIds);
-        List<Schedule> schedules = scheduleRepository.findAllFiltered(userId, null);
-
-        StudyPlannerEngine.ExtractedData extracted = studyPlannerEngine.process(
-                dirtyNotes, existingTasks, existingEvents, existingContexts, schedules, noteImages);
-
-        Map<UUID, Note> noteMap = dirtyNotes.stream()
-                .filter(n -> n.getId() != null)
-                .collect(Collectors.toMap(Note::getId, n -> n, (a, b) -> a));
-
-        if (extracted.noteTitles() != null && !extracted.noteTitles().isEmpty()) {
-            extracted.noteTitles().forEach((noteId, title) -> {
-                if (title != null && !title.isBlank()) {
-                    Note note = noteMap.get(noteId);
-                    if (note != null) {
-                        note.setTitle(title.trim());
-                    }
-                }
-            });
+    private ProcessSummaryResponse processDirtyNotes(List<Note> dirtyNotes, Long userId) {
+        SortedMap<LocalDate, List<Note>> notesByDate = new TreeMap<>();
+        for (Note note : dirtyNotes) {
+            LocalDate noteDate = note.getEntryDate() != null ? note.getEntryDate() : LocalDate.now();
+            notesByDate.computeIfAbsent(noteDate, k -> new ArrayList<>()).add(note);
         }
 
-        Map<UUID, Task> taskMap = existingTasks.stream()
-                .filter(t -> t.getId() != null)
-                .collect(Collectors.toMap(Task::getId, t -> t, (a, b) -> a));
+        int totalTasksCreated = 0;
+        int totalEventsCreated = 0;
+        int totalContextsCreated = 0;
+        Set<Long> affectedCourseIds = new TreeSet<>();
 
-        List<Task> tasksToSave = new ArrayList<>();
-        for (StudyPlannerEngine.ExtractedTask item : extracted.tasks()) {
-            if (item.title() == null || item.title().isBlank()) {
-                continue;
-            }
-            if (item.isPromotion()) {
-                Task existing = item.taskId() != null ? taskMap.get(item.taskId()) : null;
-                if (existing != null) {
-                    existing.setScheduledDate(item.scheduledDate());
-                    if (item.estimatedMinutes() != null && item.estimatedMinutes() > 0) {
-                        existing.setDuration(Duration.ofMinutes(item.estimatedMinutes()));
+        for (Map.Entry<LocalDate, List<Note>> entry : notesByDate.entrySet()) {
+            List<Note> dateNotes = entry.getValue();
+
+            // Delete uncompleted previous items linked to notes for this date
+            taskRepository.deleteByNoteInAndStatusNot(dateNotes, TaskStatus.COMPLETED);
+            academicEventRepository.deleteByNoteIn(dateNotes);
+            academicContextRepository.deleteByNoteIn(dateNotes);
+
+            // Discover and update note images
+            Map<UUID, List<Image>> noteImages = processAndPersistNoteImages(dateNotes);
+
+            Set<Long> dateCourseIds = dateNotes.stream()
+                    .filter(n -> n.getCourse() != null && n.getCourse().getId() != null)
+                    .map(n -> n.getCourse().getId())
+                    .collect(Collectors.toSet());
+
+            List<Task> existingTasks = taskRepository.findAllFiltered(userId, null, null, null).stream()
+                    .filter(t -> t.getStatus() != TaskStatus.COMPLETED)
+                    .toList();
+            List<AcademicEvent> existingEvents =
+                    academicEventRepository.findAllFiltered(userId, null, true, LocalDateTime.now());
+            List<AcademicContext> existingContexts = dateCourseIds.isEmpty()
+                    ? Collections.emptyList()
+                    : academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(dateCourseIds);
+            List<Schedule> schedules = scheduleRepository.findAllFiltered(userId, null);
+
+            StudyPlannerEngine.ExtractedData extracted = studyPlannerEngine.process(
+                    dateNotes, existingTasks, existingEvents, existingContexts, schedules, noteImages);
+
+            Map<UUID, Note> noteMap = dateNotes.stream()
+                    .filter(n -> n.getId() != null)
+                    .collect(Collectors.toMap(Note::getId, n -> n, (a, b) -> a));
+
+            if (extracted.noteTitles() != null && !extracted.noteTitles().isEmpty()) {
+                extracted.noteTitles().forEach((noteId, title) -> {
+                    if (title != null && !title.isBlank()) {
+                        Note note = noteMap.get(noteId);
+                        if (note != null) {
+                            note.setTitle(title.trim());
+                        }
                     }
-                    tasksToSave.add(existing);
+                });
+            }
+
+            Map<UUID, Task> taskMap = existingTasks.stream()
+                    .filter(t -> t.getId() != null)
+                    .collect(Collectors.toMap(Task::getId, t -> t, (a, b) -> a));
+
+            List<Task> tasksToSave = new ArrayList<>();
+            for (StudyPlannerEngine.ExtractedTask item : extracted.tasks()) {
+                if (item.title() == null || item.title().isBlank()) {
+                    continue;
                 }
-            } else {
+                if (item.isPromotion()) {
+                    Task existing = item.taskId() != null ? taskMap.get(item.taskId()) : null;
+                    if (existing != null) {
+                        existing.setScheduledDate(item.scheduledDate());
+                        if (item.estimatedMinutes() != null && item.estimatedMinutes() > 0) {
+                            existing.setDuration(Duration.ofMinutes(item.estimatedMinutes()));
+                        }
+                        tasksToSave.add(existing);
+                    }
+                } else {
+                    Note note = item.noteId() != null ? noteMap.get(item.noteId()) : null;
+                    Course course = note != null ? note.getCourse() : null;
+                    if (course == null) continue;
+                    Task task = new Task(course, item.title());
+                    task.setNote(note);
+                    task.setDescription(item.description());
+                    task.setScheduledDate(item.scheduledDate());
+                    if (item.estimatedMinutes() != null && item.estimatedMinutes() > 0) {
+                        task.setDuration(Duration.ofMinutes(item.estimatedMinutes()));
+                    }
+                    tasksToSave.add(task);
+                }
+            }
+
+            List<AcademicEvent> eventsToSave = new ArrayList<>();
+            for (StudyPlannerEngine.ExtractedEvent item : extracted.events()) {
+                if (item.title() == null || item.title().isBlank() || item.deadline() == null) {
+                    continue;
+                }
                 Note note = item.noteId() != null ? noteMap.get(item.noteId()) : null;
                 Course course = note != null ? note.getCourse() : null;
                 if (course == null) continue;
-                Task task = new Task(course, item.title());
-                task.setNote(note);
-                task.setDescription(item.description());
-                task.setScheduledDate(item.scheduledDate());
-                if (item.estimatedMinutes() != null && item.estimatedMinutes() > 0) {
-                    task.setDuration(Duration.ofMinutes(item.estimatedMinutes()));
+                eventsToSave.add(new AcademicEvent(course, note, item.title(), item.description(), item.deadline()));
+            }
+
+            List<AcademicContext> contextsToSave = new ArrayList<>();
+            for (StudyPlannerEngine.ExtractedContext item : extracted.contexts()) {
+                if (item.value() == null || item.value().isBlank()) {
+                    continue;
                 }
-                tasksToSave.add(task);
+                Note note = item.noteId() != null ? noteMap.get(item.noteId()) : null;
+                Course course = note != null ? note.getCourse() : null;
+                if (course == null) continue;
+                contextsToSave.add(new AcademicContext(course, note, item.value()));
             }
+
+            long newTaskCount = tasksToSave.stream().filter(t -> t.getId() == null).count();
+
+            taskRepository.saveAll(tasksToSave);
+            academicEventRepository.saveAll(eventsToSave);
+            academicContextRepository.saveAll(contextsToSave);
+
+            Instant processedAt = Instant.now().plusSeconds(1);
+            dateNotes.forEach(n -> n.setLastProcessedAt(processedAt));
+            noteRepository.saveAll(dateNotes);
+
+            totalTasksCreated += (int) newTaskCount;
+            totalEventsCreated += eventsToSave.size();
+            totalContextsCreated += contextsToSave.size();
+            affectedCourseIds.addAll(dateCourseIds);
         }
 
-        List<AcademicEvent> eventsToSave = new ArrayList<>();
-        for (StudyPlannerEngine.ExtractedEvent item : extracted.events()) {
-            if (item.title() == null || item.title().isBlank() || item.deadline() == null) {
-                continue;
-            }
-            Note note = item.noteId() != null ? noteMap.get(item.noteId()) : null;
-            Course course = note != null ? note.getCourse() : null;
-            if (course == null) continue;
-            eventsToSave.add(new AcademicEvent(course, note, item.title(), item.description(), item.deadline()));
-        }
-
-        List<AcademicContext> contextsToSave = new ArrayList<>();
-        for (StudyPlannerEngine.ExtractedContext item : extracted.contexts()) {
-            if (item.value() == null || item.value().isBlank()) {
-                continue;
-            }
-            Note note = item.noteId() != null ? noteMap.get(item.noteId()) : null;
-            Course course = note != null ? note.getCourse() : null;
-            if (course == null) continue;
-            contextsToSave.add(new AcademicContext(course, note, item.value()));
-        }
-
-        // Count only new tasks; promotions update existing rows.
-        long newTaskCount = tasksToSave.stream().filter(t -> t.getId() == null).count();
-
-        taskRepository.saveAll(tasksToSave);
-        academicEventRepository.saveAll(eventsToSave);
-        academicContextRepository.saveAll(contextsToSave);
-
-        Instant processedAt = Instant.now().plusSeconds(1);
-        dirtyNotes.forEach(n -> n.setLastProcessedAt(processedAt));
-        noteRepository.saveAll(dirtyNotes);
-
-        return new ProcessSummaryResponse((int) newTaskCount, eventsToSave.size(), contextsToSave.size(),
-                dirtyCourseIds.stream().sorted().toList());
+        return new ProcessSummaryResponse(totalTasksCreated, totalEventsCreated, totalContextsCreated,
+                affectedCourseIds.stream().sorted().toList());
     }
 
     private Map<UUID, List<Image>> processAndPersistNoteImages(List<Note> dirtyNotes) {

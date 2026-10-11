@@ -87,4 +87,19 @@ class NoteRepositoryTest {
         List<Note> user1Course1Notes = noteRepository.findAllFiltered(user1.getId(), course1.getId());
         assertThat(user1Course1Notes).extracting(Note::getId).containsExactly(note1a.getId());
     }
+
+    @Test
+    @DisplayName("findDirtyNotes returns backdated dirty notes ordered chronologically")
+    void findDirtyNotes_returnsBackdatedDirtyNotesOrdered() {
+        Note olderNote = new Note(course1, "Monday note", LocalDate.now().minusDays(2));
+        Note newerNote = new Note(course1, "Wednesday note", LocalDate.now());
+        noteRepository.save(newerNote);
+        noteRepository.save(olderNote);
+
+        List<Note> dirtyNotes = noteRepository.findDirtyNotes(user1.getId());
+
+        assertThat(dirtyNotes).extracting(Note::getId)
+                .containsExactly(olderNote.getId(), newerNote.getId());
+    }
 }
+

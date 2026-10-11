@@ -3,15 +3,18 @@ package group.four.nyare.nyare.service.impl;
 import group.four.nyare.nyare.dto.NoteRequest;
 import group.four.nyare.nyare.dto.NoteResponse;
 import group.four.nyare.nyare.dto.NoteSummaryResponse;
+import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.Note;
 import group.four.nyare.nyare.repository.CourseRepository;
 import group.four.nyare.nyare.repository.NoteRepository;
 import group.four.nyare.nyare.service.NoteService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,9 +25,14 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class NoteServiceImpl implements NoteService {
 
+    public static final int DEFAULT_MAX_BACKDATE_DAYS = 14;
+
     private static final int PREVIEW_MAX_LENGTH = 200;
     private static final int TITLE_MAX_LENGTH = 60;
     private static final String DEFAULT_TITLE = "Untitled Note";
+
+    @Value("${nyare.notes.max-backdate-days:14}")
+    private int maxBackdateDays = DEFAULT_MAX_BACKDATE_DAYS;
 
     private final NoteRepository noteRepository;
     private final CourseRepository courseRepository;
@@ -37,6 +45,8 @@ public class NoteServiceImpl implements NoteService {
     @Override
     @Transactional
     public NoteResponse createNote(NoteRequest request) {
+        validateEntryDate(request.getEntryDate());
+
         Course course = courseRepository.findById(request.getCourseId())
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + request.getCourseId()));
 
@@ -47,7 +57,8 @@ public class NoteServiceImpl implements NoteService {
             title = computeFallbackTitle(request.getContent());
         }
 
-        Note note = new Note(course, title, request.getContent());
+        LocalDate entryDate = request.getEntryDate() != null ? request.getEntryDate() : LocalDate.now();
+        Note note = new Note(course, title, request.getContent(), entryDate);
         Note savedNote = noteRepository.save(note);
         return toResponse(savedNote);
     }
@@ -76,6 +87,10 @@ public class NoteServiceImpl implements NoteService {
     @Override
     @Transactional
     public NoteResponse updateNote(UUID id, NoteRequest request) {
+        if (request.getEntryDate() != null) {
+            validateEntryDate(request.getEntryDate());
+        }
+
         Note note = noteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Note not found with ID: " + id));
 
@@ -84,6 +99,10 @@ public class NoteServiceImpl implements NoteService {
 
         note.setCourse(course);
         note.setContent(request.getContent());
+
+        if (request.getEntryDate() != null) {
+            note.setEntryDate(request.getEntryDate());
+        }
 
         if (request.getTitle() != null && !request.getTitle().isBlank()) {
             note.setTitle(request.getTitle().trim());
@@ -103,12 +122,27 @@ public class NoteServiceImpl implements NoteService {
         noteRepository.delete(note);
     }
 
+    private void validateEntryDate(LocalDate entryDate) {
+        if (entryDate == null) {
+            return;
+        }
+        LocalDate today = LocalDate.now();
+        if (entryDate.isAfter(today)) {
+            throw new BadRequestException("Entry date cannot be in the future");
+        }
+        LocalDate oldestAllowed = today.minusDays(maxBackdateDays);
+        if (entryDate.isBefore(oldestAllowed)) {
+            throw new BadRequestException("Entry date cannot be older than " + maxBackdateDays + " days");
+        }
+    }
+
     private NoteResponse toResponse(Note note) {
         return new NoteResponse(
                 note.getId(),
                 note.getCourse() != null ? note.getCourse().getId() : null,
                 note.getTitle(),
                 note.getContent(),
+                note.getEntryDate(),
                 note.getCreatedAt(),
                 note.getUpdatedAt(),
                 note.getLastProcessedAt()
@@ -126,6 +160,7 @@ public class NoteServiceImpl implements NoteService {
                 preview,
                 truncated,
                 content.length(),
+                note.getEntryDate(),
                 note.getCreatedAt(),
                 note.getUpdatedAt()
         );
