@@ -8,7 +8,7 @@ You recommend task dates without creating hourly time blocks.
 <input_specification>
 You receive data in the following input placeholders:
 - `{time}`: Current reference date and day of week.
-- `{journal}`: CSV table of student notes (`note_ref`, `course`, `content`).
+- `{journal}`: CSV table of student notes (`note_ref`, `course`, `title`, `content`).
 - `{image}`: CSV table of note images (`image_ref`, `note_ref`, `description`).
 - `{tasks}`: CSV table of current tasks (`course`, `task_id`, `title`, `status`, `scheduled_date`, `duration_minutes`).
 - `{events}`: CSV table of fixed events (`course`, `event_id`, `title`, `deadline`).
@@ -56,6 +56,11 @@ Do not keep raw slang, abbreviations, or mixed languages in the output.
 - When an entire note contains no course-relevant academic information:
   - Do not extract tasks, events, or contexts from that note.
   - Record the entire note internally under `ignoredNotes` with `noteRef`, `part` (the full text that induced the audit), and an English `reason` for system auditing.
+
+5. Note Title Generation:
+- Generate a concise, descriptive English title (under 60 characters) for any note where `title` is 'Untitled Note' or blank.
+- Output generated titles in `noteTitles` with `noteRef` and `title`.
+- Omit notes that already have custom user-specified titles from `noteTitles`.
 </extraction_rules>
 
 <procedure>
@@ -143,5 +148,6 @@ Academic Context Rules:
 8. Always normalize extracted titles, descriptions, and context values into standard English.
 9. Record all omitted unrelated statements and fully ignored notes internally under `ignoredNotes` with `noteRef`, `part`, and an English `reason` for system auditing.
 10. Include an explanatory English `rationale` for each task and event, stating the duration source.
-11. Output valid JSON matching the schema.
+11. Provide generated note titles in `noteTitles` for notes with missing or 'Untitled Note' titles.
+12. Output valid JSON matching the schema.
 </domain_invariants>

@@ -31,6 +31,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -223,6 +224,7 @@ class StudyPlannerServiceImplTest {
         assertThat(existingTask.getScheduledDate()).isEqualTo(LocalDate.of(2026, 9, 30));
         assertThat(existingTask.getDuration()).isEqualTo(Duration.ofMinutes(60));
         assertThat(response.getTasksCreated()).isEqualTo(0);
+        assertThat(response.getAffectedCourseIds()).containsExactly(1L);
     }
 
     @Test
@@ -321,6 +323,40 @@ class StudyPlannerServiceImplTest {
 
         verify(imageAiProcessor, never()).describeImage(any(), any());
         verify(imageRepository, never()).saveAll(anyList());
+    }
+
+    @Test
+    @DisplayName("processNotes updates and persists generated note titles")
+    void processNotes_extractedNoteTitlesPresent_updatesAndPersistsNoteTitles() {
+        // given
+        UUID noteId = UUID.randomUUID();
+        Course course = courseWithId(1L, "CS101");
+        Note note = noteWithCourse(course);
+        note.setTitle("Untitled Note");
+        ReflectionTestUtils.setField(note, "id", noteId);
+
+        StudyPlannerEngine.ExtractedData extracted = new StudyPlannerEngine.ExtractedData(
+                List.of(), List.of(), List.of(), Map.of(noteId, "  Derivatives and Integrals  "));
+
+        when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE))).thenReturn(List.of(note));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any())).thenReturn(List.of());
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull())).thenReturn(List.of());
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(taskRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
+        when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+
+        // when
+        service.processNotes(DATE, USER_ID);
+
+        // then
+        assertThat(note.getTitle()).isEqualTo("Derivatives and Integrals");
+        verify(noteRepository).saveAll(argThat((List<Note> notes) ->
+                notes.stream().anyMatch(n -> "Derivatives and Integrals".equals(n.getTitle()))
+        ));
     }
 
     // --- helpers ---

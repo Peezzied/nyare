@@ -47,7 +47,7 @@ import java.util.function.Function;
 public class StudyPlannerEngine {
 
     private static final class CsvHeaders {
-        static final String[] NOTE = {"note_ref", "course", "content"};
+        static final String[] NOTE = {"note_ref", "course", "title", "content"};
         static final String[] IMAGE = {"image_ref", "note_ref", "description"};
         static final String[] TASK = {"course", "task_id", "title", "status", "scheduled_date", "duration_minutes"};
         static final String[] EVENT = {"course", "event_id", "title", "deadline"};
@@ -297,6 +297,7 @@ public class StudyPlannerEngine {
                 note -> new Object[]{
                         noteCodec.encode(note),
                         note.getCourse() != null ? note.getCourse().getName() : "",
+                        note.getTitle() != null ? note.getTitle() : "Untitled Note",
                         note.getContent()
                 }
         );
@@ -444,7 +445,19 @@ public class StudyPlannerEngine {
         }).toList()
                 : Collections.emptyList();
 
-        return new ExtractedData(tasks, events, contexts);
+        Map<UUID, String> noteTitles = new HashMap<>();
+        if (raw.noteTitles() != null) {
+            for (PlannerAuditRecords.RawNoteTitle item : raw.noteTitles()) {
+                if (item != null && item.noteRef() != null && item.title() != null && !item.title().isBlank()) {
+                    Note note = noteCodec.decode(item.noteRef());
+                    if (note != null && note.getId() != null) {
+                        noteTitles.put(note.getId(), item.title().trim());
+                    }
+                }
+            }
+        }
+
+        return new ExtractedData(tasks, events, contexts, noteTitles);
     }
 
     private static ExtractedData emptyExtractedData() {
@@ -521,6 +534,15 @@ public class StudyPlannerEngine {
 
             List<ExtractedEvent> events,
 
-            List<ExtractedContext> contexts) {
+            List<ExtractedContext> contexts,
+
+            Map<UUID, String> noteTitles) {
+
+        public ExtractedData(
+                List<ExtractedTask> tasks,
+                List<ExtractedEvent> events,
+                List<ExtractedContext> contexts) {
+            this(tasks, events, contexts, Collections.emptyMap());
+        }
     }
 }

@@ -11,6 +11,7 @@ public class NoteSummaryResponse {
 
     private UUID id;
     private Long courseId;
+    private String title;
     private String preview;
     private boolean truncated;
     private int contentLength;
@@ -21,8 +22,13 @@ public class NoteSummaryResponse {
     }
 
     public NoteSummaryResponse(UUID id, Long courseId, String preview, boolean truncated, int contentLength, Instant createdAt, Instant updatedAt) {
+        this(id, courseId, "Untitled Note", preview, truncated, contentLength, createdAt, updatedAt);
+    }
+
+    public NoteSummaryResponse(UUID id, Long courseId, String title, String preview, boolean truncated, int contentLength, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.courseId = courseId;
+        this.title = title;
         this.preview = preview;
         this.truncated = truncated;
         this.contentLength = contentLength;
@@ -44,6 +50,14 @@ public class NoteSummaryResponse {
 
     public void setCourseId(Long courseId) {
         this.courseId = courseId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getPreview() {

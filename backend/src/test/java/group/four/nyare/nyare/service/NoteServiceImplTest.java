@@ -61,7 +61,71 @@ class NoteServiceImplTest {
 
         // then
         assertThat(response).isNotNull();
+        assertThat(response.getTitle()).isEqualTo("Lecture 1");
         assertThat(response.getContent()).isEqualTo("Lecture 1");
+    }
+
+    @Test
+    void createNote_withExplicitTitle_savesAndReturnsExplicitTitle() {
+        // given
+        NoteRequest request = new NoteRequest(1L, "Explicit Title", "Note content");
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        NoteResponse response = noteService.createNote(request);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getTitle()).isEqualTo("Explicit Title");
+        assertThat(response.getContent()).isEqualTo("Note content");
+    }
+
+    @Test
+    void createNote_withNullTitle_generatesFallbackTitleFromContent() {
+        // given
+        NoteRequest request = new NoteRequest(1L, null, "# Heading Title\nBody content");
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        NoteResponse response = noteService.createNote(request);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getTitle()).isEqualTo("Heading Title");
+        assertThat(response.getContent()).isEqualTo("# Heading Title\nBody content");
+    }
+
+    @Test
+    void createNote_withBlankTitleAndEmptyContent_usesUntitledNoteFallback() {
+        // given
+        NoteRequest request = new NoteRequest(1L, "   ", "   ");
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        NoteResponse response = noteService.createNote(request);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getTitle()).isEqualTo("Untitled Note");
+    }
+
+    @Test
+    void createNote_withLongFirstLine_truncatesFallbackTitleToSixtyChars() {
+        // given
+        String longLine = "A".repeat(80);
+        NoteRequest request = new NoteRequest(1L, null, "## " + longLine);
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        NoteResponse response = noteService.createNote(request);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getTitle()).isEqualTo("A".repeat(60));
     }
 
     @Test
@@ -93,6 +157,59 @@ class NoteServiceImplTest {
     }
 
     @Test
+    void updateNote_withNewTitle_updatesTitle() {
+        // given
+        NoteRequest request = new NoteRequest(1L, "Updated Title", "Updated notes");
+        when(noteRepository.findById(noteId)).thenReturn(Optional.of(note));
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        NoteResponse response = noteService.updateNote(noteId, request);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getTitle()).isEqualTo("Updated Title");
+        assertThat(response.getContent()).isEqualTo("Updated notes");
+    }
+
+    @Test
+    void updateNote_withNullTitleAndCustomExistingTitle_preservesExistingTitle() {
+        // given
+        Note customNote = new Note(course, "Custom Title", "Original content");
+        NoteRequest request = new NoteRequest(1L, null, "Updated notes without title");
+        when(noteRepository.findById(noteId)).thenReturn(Optional.of(customNote));
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        NoteResponse response = noteService.updateNote(noteId, request);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getTitle()).isEqualTo("Custom Title");
+        assertThat(response.getContent()).isEqualTo("Updated notes without title");
+    }
+
+    @Test
+    void updateNote_withNullTitleAndDefaultExistingTitle_computesFallbackTitle() {
+        // given
+        Note defaultNote = new Note(course, "Untitled Note", "Original content");
+        NoteRequest request = new NoteRequest(1L, null, "### New Section Header\nNew body");
+        when(noteRepository.findById(noteId)).thenReturn(Optional.of(defaultNote));
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        NoteResponse response = noteService.updateNote(noteId, request);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getTitle()).isEqualTo("New Section Header");
+        assertThat(response.getContent()).isEqualTo("### New Section Header\nNew body");
+    }
+
+    @Test
     void updateNote_withNonExistentNote_throwsResourceNotFoundException() {
         // given
         NoteRequest request = new NoteRequest(1L, "Updated notes");
@@ -117,6 +234,20 @@ class NoteServiceImplTest {
     }
 
     @Test
+    void getNote_withValidId_returnsResponseWithTitle() {
+        // given
+        when(noteRepository.findById(noteId)).thenReturn(Optional.of(note));
+
+        // when
+        NoteResponse response = noteService.getNote(noteId);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getTitle()).isEqualTo("Untitled Note");
+        assertThat(response.getContent()).isEqualTo("Study notes");
+    }
+
+    @Test
     void listNotes_withCourseId_returnsSummariesForCourse() {
         // given
         when(courseRepository.existsById(1L)).thenReturn(true);
@@ -127,6 +258,7 @@ class NoteServiceImplTest {
 
         // then
         assertThat(responses).hasSize(1);
+        assertThat(responses.get(0).getTitle()).isEqualTo("Untitled Note");
         assertThat(responses.get(0).getPreview()).isEqualTo("Study notes");
         assertThat(responses.get(0).isTruncated()).isFalse();
     }
@@ -152,6 +284,7 @@ class NoteServiceImplTest {
 
         // then
         assertThat(responses).hasSize(1);
+        assertThat(responses.get(0).getTitle()).isEqualTo("Untitled Note");
         assertThat(responses.get(0).getPreview()).isEqualTo("Study notes");
         assertThat(responses.get(0).isTruncated()).isFalse();
     }

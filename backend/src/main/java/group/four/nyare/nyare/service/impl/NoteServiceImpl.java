@@ -23,6 +23,8 @@ import java.util.UUID;
 public class NoteServiceImpl implements NoteService {
 
     private static final int PREVIEW_MAX_LENGTH = 200;
+    private static final int TITLE_MAX_LENGTH = 60;
+    private static final String DEFAULT_TITLE = "Untitled Note";
 
     private final NoteRepository noteRepository;
     private final CourseRepository courseRepository;
@@ -38,7 +40,14 @@ public class NoteServiceImpl implements NoteService {
         Course course = courseRepository.findById(request.getCourseId())
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + request.getCourseId()));
 
-        Note note = new Note(course, request.getContent());
+        String title;
+        if (request.getTitle() != null && !request.getTitle().isBlank()) {
+            title = request.getTitle().trim();
+        } else {
+            title = computeFallbackTitle(request.getContent());
+        }
+
+        Note note = new Note(course, title, request.getContent());
         Note savedNote = noteRepository.save(note);
         return toResponse(savedNote);
     }
@@ -75,6 +84,13 @@ public class NoteServiceImpl implements NoteService {
 
         note.setCourse(course);
         note.setContent(request.getContent());
+
+        if (request.getTitle() != null && !request.getTitle().isBlank()) {
+            note.setTitle(request.getTitle().trim());
+        } else if (note.getTitle() == null || note.getTitle().isBlank() || DEFAULT_TITLE.equalsIgnoreCase(note.getTitle().trim())) {
+            note.setTitle(computeFallbackTitle(request.getContent()));
+        }
+
         Note savedNote = noteRepository.save(note);
         return toResponse(savedNote);
     }
@@ -91,9 +107,11 @@ public class NoteServiceImpl implements NoteService {
         return new NoteResponse(
                 note.getId(),
                 note.getCourse() != null ? note.getCourse().getId() : null,
+                note.getTitle(),
                 note.getContent(),
                 note.getCreatedAt(),
-                note.getUpdatedAt()
+                note.getUpdatedAt(),
+                note.getLastProcessedAt()
         );
     }
 
@@ -104,11 +122,34 @@ public class NoteServiceImpl implements NoteService {
         return new NoteSummaryResponse(
                 note.getId(),
                 note.getCourse() != null ? note.getCourse().getId() : null,
+                note.getTitle(),
                 preview,
                 truncated,
                 content.length(),
                 note.getCreatedAt(),
                 note.getUpdatedAt()
         );
+    }
+
+    private String computeFallbackTitle(String content) {
+        if (content == null || content.isBlank()) {
+            return DEFAULT_TITLE;
+        }
+
+        for (String rawLine : content.lines().toList()) {
+            String line = rawLine.trim();
+            if (line.isEmpty()) {
+                continue;
+            }
+
+            String stripped = line.replaceFirst("^[#\\-*\\s>]+", "").trim();
+            if (!stripped.isEmpty()) {
+                return stripped.length() > TITLE_MAX_LENGTH
+                        ? stripped.substring(0, TITLE_MAX_LENGTH)
+                        : stripped;
+            }
+        }
+
+        return DEFAULT_TITLE;
     }
 }
