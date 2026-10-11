@@ -19,6 +19,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -54,6 +55,10 @@ public class Note {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @NotNull(message = "Entry date is required")
+    @Column(name = "entry_date", nullable = false)
+    private LocalDate entryDate;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
@@ -71,6 +76,21 @@ public class Note {
     }
 
     /**
+     * Creates a new Note linked to a course with a title, markdown content, and entry date.
+     *
+     * @param course    the course this note belongs to
+     * @param title     the title of the note
+     * @param content   the markdown note content
+     * @param entryDate the entry date
+     */
+    public Note(Course course, String title, String content, LocalDate entryDate) {
+        this.course = course;
+        this.title = title;
+        this.content = content;
+        this.entryDate = entryDate != null ? entryDate : LocalDate.now();
+    }
+
+    /**
      * Creates a new Note linked to a course with a title and markdown content.
      *
      * @param course  the course this note belongs to
@@ -78,9 +98,18 @@ public class Note {
      * @param content the markdown note content
      */
     public Note(Course course, String title, String content) {
-        this.course = course;
-        this.title = title;
-        this.content = content;
+        this(course, title, content, LocalDate.now());
+    }
+
+    /**
+     * Creates a new Note linked to a course with markdown content and custom entry date.
+     *
+     * @param course    the course this note belongs to
+     * @param content   the markdown note content
+     * @param entryDate the entry date
+     */
+    public Note(Course course, String content, LocalDate entryDate) {
+        this(course, "Untitled Note", content, entryDate);
     }
 
     /**
@@ -90,7 +119,7 @@ public class Note {
      * @param content the markdown note content
      */
     public Note(Course course, String content) {
-        this(course, "Untitled Note", content);
+        this(course, "Untitled Note", content, LocalDate.now());
     }
 
     public UUID getId() {
@@ -143,6 +172,14 @@ public class Note {
 
     public void setLastProcessedAt(Instant lastProcessedAt) {
         this.lastProcessedAt = lastProcessedAt;
+    }
+
+    public LocalDate getEntryDate() {
+        return entryDate;
+    }
+
+    public void setEntryDate(LocalDate entryDate) {
+        this.entryDate = entryDate;
     }
 
     @Override

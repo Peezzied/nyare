@@ -1,6 +1,7 @@
 package group.four.nyare.nyare.dto;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -12,6 +13,7 @@ public class NoteResponse {
     private Long courseId;
     private String title;
     private String content;
+    private LocalDate entryDate;
     private Instant createdAt;
     private Instant updatedAt;
     private Instant lastProcessedAt;
@@ -20,22 +22,39 @@ public class NoteResponse {
     }
 
     public NoteResponse(UUID id, Long courseId, String content, Instant createdAt, Instant updatedAt) {
-        this(id, courseId, "Untitled Note", content, createdAt, updatedAt, null);
+        this(id, courseId, "Untitled Note", content, LocalDate.now(), createdAt, updatedAt, null);
     }
 
     public NoteResponse(UUID id, Long courseId, String content, Instant createdAt, Instant updatedAt, Instant lastProcessedAt) {
-        this(id, courseId, "Untitled Note", content, createdAt, updatedAt, lastProcessedAt);
+        this(id, courseId, "Untitled Note", content, LocalDate.now(), createdAt, updatedAt, lastProcessedAt);
+    }
+
+    public NoteResponse(UUID id, Long courseId, String content, LocalDate entryDate, Instant createdAt, Instant updatedAt) {
+        this(id, courseId, "Untitled Note", content, entryDate, createdAt, updatedAt, null);
+    }
+
+    public NoteResponse(UUID id, Long courseId, String content, LocalDate entryDate, Instant createdAt, Instant updatedAt, Instant lastProcessedAt) {
+        this(id, courseId, "Untitled Note", content, entryDate, createdAt, updatedAt, lastProcessedAt);
     }
 
     public NoteResponse(UUID id, Long courseId, String title, String content, Instant createdAt, Instant updatedAt) {
-        this(id, courseId, title, content, createdAt, updatedAt, null);
+        this(id, courseId, title, content, LocalDate.now(), createdAt, updatedAt, null);
     }
 
     public NoteResponse(UUID id, Long courseId, String title, String content, Instant createdAt, Instant updatedAt, Instant lastProcessedAt) {
+        this(id, courseId, title, content, LocalDate.now(), createdAt, updatedAt, lastProcessedAt);
+    }
+
+    public NoteResponse(UUID id, Long courseId, String title, String content, LocalDate entryDate, Instant createdAt, Instant updatedAt) {
+        this(id, courseId, title, content, entryDate, createdAt, updatedAt, null);
+    }
+
+    public NoteResponse(UUID id, Long courseId, String title, String content, LocalDate entryDate, Instant createdAt, Instant updatedAt, Instant lastProcessedAt) {
         this.id = id;
         this.courseId = courseId;
         this.title = title;
         this.content = content;
+        this.entryDate = entryDate != null ? entryDate : LocalDate.now();
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.lastProcessedAt = lastProcessedAt;
@@ -71,6 +90,14 @@ public class NoteResponse {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public LocalDate getEntryDate() {
+        return entryDate;
+    }
+
+    public void setEntryDate(LocalDate entryDate) {
+        this.entryDate = entryDate;
     }
 
     public Instant getCreatedAt() {

@@ -22,4 +22,18 @@ class NoteTest {
 
         assertThat(note.getLastProcessedAt()).isEqualTo(processedTime);
     }
+
+    @Test
+    @DisplayName("Note stores and updates entryDate")
+    void noteStoresAndUpdatesEntryDate() {
+        Course course = new Course("CS101", "Computer Science");
+        java.time.LocalDate pastDate = java.time.LocalDate.now().minusDays(2);
+        Note note = new Note(course, "Past lecture content", pastDate);
+
+        assertThat(note.getEntryDate()).isEqualTo(pastDate);
+
+        java.time.LocalDate updatedDate = java.time.LocalDate.now().minusDays(1);
+        note.setEntryDate(updatedDate);
+        assertThat(note.getEntryDate()).isEqualTo(updatedDate);
+    }
 }

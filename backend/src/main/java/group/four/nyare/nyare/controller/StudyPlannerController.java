@@ -1,11 +1,14 @@
 package group.four.nyare.nyare.controller;
 
 import group.four.nyare.nyare.config.SessionContext;
+import group.four.nyare.nyare.dto.PlannerStatusResponse;
 import group.four.nyare.nyare.dto.ProcessSummaryResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.service.StudyPlannerService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,6 +41,18 @@ public class StudyPlannerController {
     }
 
     /**
+     * Retrieves pre-flight planner status for pending dirty notes.
+     *
+     * @return pre-flight planner status response
+     */
+    @GetMapping("/status")
+    public ResponseEntity<PlannerStatusResponse> getStatus() {
+        Long userId = sessionContext.getUserId().orElse(null);
+        PlannerStatusResponse response = studyPlannerService.getPlannerStatus(userId);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
      * Triggers AI-powered extraction of today's journal notes matching session user scope.
      * Streams a done event with summary counts or an error event if processing fails.
      *
@@ -50,7 +65,10 @@ public class StudyPlannerController {
 
         Thread.ofVirtual().start(() -> {
             try {
-                ProcessSummaryResponse result = studyPlannerService.processNotes(LocalDate.now(), userId);
+                PlannerStatusResponse status = studyPlannerService.getPlannerStatus(userId);
+                emitter.send(SseEmitter.event().name("init").data(OBJECT_MAPPER.writeValueAsString(status)));
+
+                ProcessSummaryResponse result = studyPlannerService.processNotes(userId);
                 String json = OBJECT_MAPPER.writeValueAsString(result);
                 emitter.send(SseEmitter.event().name("done").data(json));
                 emitter.complete();

@@ -2,6 +2,7 @@ package group.four.nyare.nyare.service;
 
 import group.four.nyare.nyare.ai.ImageAiProcessor;
 import group.four.nyare.nyare.ai.StudyPlannerEngine;
+import group.four.nyare.nyare.dto.PlannerStatusResponse;
 import group.four.nyare.nyare.dto.ProcessSummaryResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.model.AcademicContext;
@@ -43,9 +44,11 @@ import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.mockito.InOrder;
 
 @ExtendWith(MockitoExtension.class)
 class StudyPlannerServiceImplTest {
@@ -84,6 +87,9 @@ class StudyPlannerServiceImplTest {
     @Test
     @DisplayName("processNotes throws BadRequestException when userId is null")
     void processNotes_nullUserId_throwsBadRequest() {
+        assertThatThrownBy(() -> service.processNotes((Long) null))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("User identifier is required for processing");
         assertThatThrownBy(() -> service.processNotes(DATE, null))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining("User identifier is required for processing");
@@ -92,11 +98,139 @@ class StudyPlannerServiceImplTest {
     @Test
     @DisplayName("processNotes throws BadRequestException when no dirty notes exist")
     void processNotes_noDirtyNotes_throwsBadRequest() {
+        when(noteRepository.findDirtyNotes(USER_ID)).thenReturn(List.of());
+
+        assertThatThrownBy(() -> service.processNotes(USER_ID))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("No journal notes found to process");
+
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE))).thenReturn(List.of());
 
         assertThatThrownBy(() -> service.processNotes(DATE, USER_ID))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining("No journal notes found");
+    }
+
+    @Test
+    @DisplayName("getPlannerStatus throws BadRequestException when userId is null")
+    void getPlannerStatus_nullUserId_throwsBadRequest() {
+        assertThatThrownBy(() -> service.getPlannerStatus(null))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("User identifier is required");
+    }
+
+    @Test
+    @DisplayName("getPlannerStatus returns empty summary when no dirty notes exist")
+    void getPlannerStatus_noDirtyNotes_returnsEmptySummary() {
+        when(noteRepository.findDirtyNotes(USER_ID)).thenReturn(List.of());
+
+        PlannerStatusResponse response = service.getPlannerStatus(USER_ID);
+
+        assertThat(response.isHasPendingNotes()).isFalse();
+        assertThat(response.getDirtyNoteCount()).isEqualTo(0);
+        assertThat(response.getDirtyDates()).isEmpty();
+        assertThat(response.getCourseNames()).isEmpty();
+        assertThat(response.getPendingNotes()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("getPlannerStatus returns pending note counts and distinct dates")
+    void getPlannerStatus_withDirtyNotes_returnsPendingSummary() {
+        Course course = courseWithId(1L, "CS101");
+        Note note1 = new Note(course, "Monday note", "Content 1", LocalDate.of(2026, 10, 1));
+        Note note2 = new Note(course, "Wednesday note", "Content 2", LocalDate.of(2026, 10, 3));
+        UUID id1 = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+        ReflectionTestUtils.setField(note1, "id", id1);
+        ReflectionTestUtils.setField(note2, "id", id2);
+        when(noteRepository.findDirtyNotes(USER_ID)).thenReturn(List.of(note1, note2));
+
+        PlannerStatusResponse response = service.getPlannerStatus(USER_ID);
+
+        assertThat(response.isHasPendingNotes()).isTrue();
+        assertThat(response.getDirtyNoteCount()).isEqualTo(2);
+        assertThat(response.getDirtyDates()).containsExactly(LocalDate.of(2026, 10, 1), LocalDate.of(2026, 10, 3));
+        assertThat(response.getCourseNames()).containsExactly("CS101");
+        assertThat(response.getPendingNotes()).isNotNull().hasSize(2);
+
+        PlannerStatusResponse.PendingNoteSummary first = response.getPendingNotes().get(0);
+        assertThat(first.getId()).isEqualTo(id1);
+        assertThat(first.getTitle()).isEqualTo("Monday note");
+        assertThat(first.getCourseName()).isEqualTo("CS101");
+        assertThat(first.getEntryDate()).isEqualTo(LocalDate.of(2026, 10, 1));
+
+        PlannerStatusResponse.PendingNoteSummary second = response.getPendingNotes().get(1);
+        assertThat(second.getId()).isEqualTo(id2);
+        assertThat(second.getTitle()).isEqualTo("Wednesday note");
+        assertThat(second.getCourseName()).isEqualTo("CS101");
+        assertThat(second.getEntryDate()).isEqualTo(LocalDate.of(2026, 10, 3));
+    }
+
+    @Test
+    @DisplayName("processNotes processes dirty notes chronologically per date, deletes old uncompleted items, and aggregates summary")
+    void processNotes_multiDaySequential_processesChronologicallyAndDeletesOldItems() {
+        Course course1 = courseWithId(1L, "CS101");
+        Course course2 = courseWithId(2L, "CS202");
+
+        LocalDate day1 = LocalDate.of(2026, 10, 1);
+        LocalDate day2 = LocalDate.of(2026, 10, 3);
+
+        Note noteDay1 = new Note(course1, "Day 1 content", day1);
+        Note noteDay2 = new Note(course2, "Day 2 content", day2);
+        ReflectionTestUtils.setField(noteDay1, "id", UUID.randomUUID());
+        ReflectionTestUtils.setField(noteDay2, "id", UUID.randomUUID());
+
+        // Note repository returns notes out of order; service groups and sorts chronologically
+        when(noteRepository.findDirtyNotes(USER_ID)).thenReturn(List.of(noteDay2, noteDay1));
+
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any())).thenReturn(List.of());
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull())).thenReturn(List.of());
+
+        StudyPlannerEngine.ExtractedTask task1 = new StudyPlannerEngine.ExtractedTask(
+                null, null, noteDay1.getId(), "Task 1", "Desc 1", day1.plusDays(1), 30);
+        StudyPlannerEngine.ExtractedTask task2 = new StudyPlannerEngine.ExtractedTask(
+                null, null, noteDay2.getId(), "Task 2", "Desc 2", day2.plusDays(1), 45);
+
+        StudyPlannerEngine.ExtractedEvent event1 = new StudyPlannerEngine.ExtractedEvent(
+                null, noteDay1.getId(), "Event 1", "Event Desc 1", day1.plusDays(2).atTime(9, 0));
+        StudyPlannerEngine.ExtractedContext context2 = new StudyPlannerEngine.ExtractedContext(
+                null, noteDay2.getId(), "Fact 2");
+
+        when(studyPlannerEngine.process(eq(List.of(noteDay1)), any(), any(), any(), any(), any()))
+                .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(task1), List.of(event1), List.of()));
+        when(studyPlannerEngine.process(eq(List.of(noteDay2)), any(), any(), any(), any(), any()))
+                .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(task2), List.of(), List.of(context2)));
+
+        when(taskRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+        when(academicEventRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+        when(academicContextRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+        when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+
+        ProcessSummaryResponse summary = service.processNotes(USER_ID);
+
+        // Verify chronological execution order and cleanup
+        InOrder inOrder = inOrder(studyPlannerEngine, taskRepository, academicEventRepository, academicContextRepository);
+        inOrder.verify(taskRepository).deleteByNoteInAndStatusNot(List.of(noteDay1), TaskStatus.COMPLETED);
+        inOrder.verify(academicEventRepository).deleteByNoteIn(List.of(noteDay1));
+        inOrder.verify(academicContextRepository).deleteByNoteIn(List.of(noteDay1));
+        inOrder.verify(studyPlannerEngine).process(eq(List.of(noteDay1)), any(), any(), any(), any(), any());
+
+        inOrder.verify(taskRepository).deleteByNoteInAndStatusNot(List.of(noteDay2), TaskStatus.COMPLETED);
+        inOrder.verify(academicEventRepository).deleteByNoteIn(List.of(noteDay2));
+        inOrder.verify(academicContextRepository).deleteByNoteIn(List.of(noteDay2));
+        inOrder.verify(studyPlannerEngine).process(eq(List.of(noteDay2)), any(), any(), any(), any(), any());
+
+        // Verify aggregated summary
+        assertThat(summary.getTasksCreated()).isEqualTo(2);
+        assertThat(summary.getEventsCreated()).isEqualTo(1);
+        assertThat(summary.getContextsCreated()).isEqualTo(1);
+        assertThat(summary.getAffectedCourseIds()).containsExactly(1L, 2L);
+
+        // Verify notes stamped with lastProcessedAt
+        assertThat(noteDay1.getLastProcessedAt()).isNotNull();
+        assertThat(noteDay2.getLastProcessedAt()).isNotNull();
     }
 
     @Test

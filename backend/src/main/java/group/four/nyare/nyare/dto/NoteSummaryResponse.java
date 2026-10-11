@@ -1,6 +1,7 @@
 package group.four.nyare.nyare.dto;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -15,6 +16,7 @@ public class NoteSummaryResponse {
     private String preview;
     private boolean truncated;
     private int contentLength;
+    private LocalDate entryDate;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -22,16 +24,25 @@ public class NoteSummaryResponse {
     }
 
     public NoteSummaryResponse(UUID id, Long courseId, String preview, boolean truncated, int contentLength, Instant createdAt, Instant updatedAt) {
-        this(id, courseId, "Untitled Note", preview, truncated, contentLength, createdAt, updatedAt);
+        this(id, courseId, "Untitled Note", preview, truncated, contentLength, LocalDate.now(), createdAt, updatedAt);
+    }
+
+    public NoteSummaryResponse(UUID id, Long courseId, String preview, boolean truncated, int contentLength, LocalDate entryDate, Instant createdAt, Instant updatedAt) {
+        this(id, courseId, "Untitled Note", preview, truncated, contentLength, entryDate, createdAt, updatedAt);
     }
 
     public NoteSummaryResponse(UUID id, Long courseId, String title, String preview, boolean truncated, int contentLength, Instant createdAt, Instant updatedAt) {
+        this(id, courseId, title, preview, truncated, contentLength, LocalDate.now(), createdAt, updatedAt);
+    }
+
+    public NoteSummaryResponse(UUID id, Long courseId, String title, String preview, boolean truncated, int contentLength, LocalDate entryDate, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.courseId = courseId;
         this.title = title;
         this.preview = preview;
         this.truncated = truncated;
         this.contentLength = contentLength;
+        this.entryDate = entryDate != null ? entryDate : LocalDate.now();
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -82,6 +93,14 @@ public class NoteSummaryResponse {
 
     public void setContentLength(int contentLength) {
         this.contentLength = contentLength;
+    }
+
+    public LocalDate getEntryDate() {
+        return entryDate;
+    }
+
+    public void setEntryDate(LocalDate entryDate) {
+        this.entryDate = entryDate;
     }
 
     public Instant getCreatedAt() {

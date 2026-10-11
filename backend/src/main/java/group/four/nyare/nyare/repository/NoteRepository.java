@@ -35,6 +35,20 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
     );
 
     /**
+     * Returns all dirty notes for a user across all dates.
+     *
+     * @param userId mandatory user identifier
+     * @return dirty notes matching criteria
+     */
+    @Query("""
+            SELECT n FROM Note n
+            WHERE n.course.user.id = :userId
+              AND (n.lastProcessedAt IS NULL OR n.updatedAt > n.lastProcessedAt)
+            ORDER BY n.entryDate ASC, n.createdAt ASC
+            """)
+    List<Note> findDirtyNotes(@Param("userId") Long userId);
+
+    /**
      * Returns dirty notes for a user within a timestamp boundary.
      *
      * @param userId     mandatory user identifier

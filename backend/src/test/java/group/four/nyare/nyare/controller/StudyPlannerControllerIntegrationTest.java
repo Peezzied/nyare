@@ -35,8 +35,10 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -243,4 +245,28 @@ class StudyPlannerControllerIntegrationTest {
         assertThat(responseBody).contains("\"title\":\"Bad Request\"");
         assertThat(responseBody).contains("No journal notes found");
     }
+
+    @Test
+    @DisplayName("getStatus with dirty notes returns pending summary")
+    void getStatus_withDirtyNotes_returnsPendingSummary() throws Exception {
+        User testUser = userRepository.save(new User("status_test_user"));
+        Course course = courseRepository.save(new Course("CS101", "Computer Science", testUser));
+        LocalDate pastDate = LocalDate.now().minusDays(3);
+        Note note = new Note(course, "Past lecture note", pastDate);
+        noteRepository.save(note);
+
+        mockMvc.perform(get("/api/study-planner/status")
+                        .sessionAttr(UserController.SESSION_USER_ID, testUser.getId())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.hasPendingNotes").value(true))
+                .andExpect(jsonPath("$.dirtyNoteCount").value(1))
+                .andExpect(jsonPath("$.dirtyDates[0]").value(pastDate.toString()))
+                .andExpect(jsonPath("$.courseNames[0]").value("CS101"))
+                .andExpect(jsonPath("$.pendingNotes[0].id").value(note.getId().toString()))
+                .andExpect(jsonPath("$.pendingNotes[0].title").value("Untitled Note"))
+                .andExpect(jsonPath("$.pendingNotes[0].courseName").value("CS101"))
+                .andExpect(jsonPath("$.pendingNotes[0].entryDate").value(pastDate.toString()));
+    }
 }
+

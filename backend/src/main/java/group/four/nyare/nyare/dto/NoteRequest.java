@@ -2,7 +2,10 @@ package group.four.nyare.nyare.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
+
+import java.time.LocalDate;
 
 /**
  * Request payload for creating or fully updating a Note.
@@ -18,6 +21,9 @@ public class NoteRequest {
     @NotBlank(message = "Note content cannot be blank")
     private String content;
 
+    @PastOrPresent(message = "Entry date cannot be in the future")
+    private LocalDate entryDate;
+
     public NoteRequest() {
     }
 
@@ -26,10 +32,23 @@ public class NoteRequest {
         this.content = content;
     }
 
+    public NoteRequest(Long courseId, String content, LocalDate entryDate) {
+        this.courseId = courseId;
+        this.content = content;
+        this.entryDate = entryDate;
+    }
+
     public NoteRequest(Long courseId, String title, String content) {
         this.courseId = courseId;
         this.title = title;
         this.content = content;
+    }
+
+    public NoteRequest(Long courseId, String title, String content, LocalDate entryDate) {
+        this.courseId = courseId;
+        this.title = title;
+        this.content = content;
+        this.entryDate = entryDate;
     }
 
     public Long getCourseId() {
@@ -54,6 +73,14 @@ public class NoteRequest {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public LocalDate getEntryDate() {
+        return entryDate;
+    }
+
+    public void setEntryDate(LocalDate entryDate) {
+        this.entryDate = entryDate;
     }
 }
 

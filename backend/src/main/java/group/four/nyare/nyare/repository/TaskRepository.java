@@ -1,8 +1,10 @@
 package group.four.nyare.nyare.repository;
 
+import group.four.nyare.nyare.model.Note;
 import group.four.nyare.nyare.model.Task;
 import group.four.nyare.nyare.model.enums.TaskStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -39,4 +41,14 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
             @Param("status") TaskStatus status,
             @Param("scheduled") Boolean scheduled
     );
+
+    /**
+     * Deletes tasks associated with the specified notes where status does not match.
+     *
+     * @param notes  source notes to delete tasks for
+     * @param status status to exclude from deletion
+     */
+    @Modifying
+    @Query("DELETE FROM Task t WHERE t.note IN :notes AND t.status != :status")
+    void deleteByNoteInAndStatusNot(@Param("notes") List<Note> notes, @Param("status") TaskStatus status);
 }

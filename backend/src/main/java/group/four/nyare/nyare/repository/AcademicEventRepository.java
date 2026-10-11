@@ -1,7 +1,9 @@
 package group.four.nyare.nyare.repository;
 
 import group.four.nyare.nyare.model.AcademicEvent;
+import group.four.nyare.nyare.model.Note;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -37,4 +39,13 @@ public interface AcademicEventRepository extends JpaRepository<AcademicEvent, UU
             @Param("upcoming") Boolean upcoming,
             @Param("now") LocalDateTime now
     );
+
+    /**
+     * Deletes academic events associated with the specified notes.
+     *
+     * @param notes source notes to delete events for
+     */
+    @Modifying
+    @Query("DELETE FROM AcademicEvent e WHERE e.note IN :notes")
+    void deleteByNoteIn(@Param("notes") List<Note> notes);
 }
