@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DuckotaButton from './DuckotaButton.vue'
+import mockupImg from '@/assets/mascot/duckota_button.png'
 
 function initState() {
   return {
@@ -104,6 +105,26 @@ function initState() {
       </div>
     </Variant>
 
+    <Variant title="Artwork Comparison">
+      <div class="flex flex-col items-center gap-6 p-8">
+        <div class="flex items-center justify-center gap-10">
+          <div class="flex flex-col items-center gap-2">
+            <DuckotaButton size="lg" />
+            <span class="text-xs font-semibold text-slate-600">Materialized Element</span>
+            <span class="text-[11px] text-slate-400">Interactive CSS button</span>
+          </div>
+          <div class="flex flex-col items-center gap-2">
+            <img :src="mockupImg" alt="Static Mockup" class="size-20 object-contain" />
+            <span class="text-xs font-semibold text-slate-600">Original Artwork</span>
+            <span class="text-[11px] text-slate-400">duckota_button.png</span>
+          </div>
+        </div>
+        <p class="text-xs text-slate-500">
+          Side-by-side comparison of materialized button vs original concept illustration
+        </p>
+      </div>
+    </Variant>
+
     <Variant title="Disabled">
       <div class="flex items-center justify-center p-8">
         <DuckotaButton disabled />
@@ -113,17 +134,36 @@ function initState() {
     <Variant title="Interactive" :init-state="initState">
       <template #default="{ state }">
         <div class="flex items-center justify-center p-8">
-          <DuckotaButton :size="state.size" :variant="state.variant" :label="state.label" :badge="state.badge"
-            :badge-color="state.badgeColor" :processing="state.processing" :disabled="state.disabled" />
+          <DuckotaButton
+            :size="state.size"
+            :variant="state.variant"
+            :label="state.label"
+            :badge="state.badge"
+            :badge-color="state.badgeColor"
+            :processing="state.processing"
+            :disabled="state.disabled"
+          />
         </div>
       </template>
 
       <template #controls="{ state }">
-        <HstSelect v-model="state.size" title="Size" :options="['sm', 'md', 'lg']" />
-        <HstSelect v-model="state.variant" title="Variant" :options="['tactile', 'floating', 'plain']" />
+        <HstSelect
+          v-model="state.size"
+          title="Size"
+          :options="['sm', 'md', 'lg']"
+        />
+        <HstSelect
+          v-model="state.variant"
+          title="Variant"
+          :options="['tactile', 'floating', 'plain']"
+        />
         <HstText v-model="state.label" title="Label" />
         <HstText v-model="state.badge" title="Badge" />
-        <HstSelect v-model="state.badgeColor" title="Badge Color" :options="['destructive', 'primary', 'warning']" />
+        <HstSelect
+          v-model="state.badgeColor"
+          title="Badge Color"
+          :options="['destructive', 'primary', 'warning']"
+        />
         <HstCheckbox v-model="state.processing" title="Processing" />
         <HstCheckbox v-model="state.disabled" title="Disabled" />
       </template>
