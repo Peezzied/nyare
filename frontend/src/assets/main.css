@@ -13,6 +13,7 @@
 
   --color-app-bg: #f6f7ee;
   --color-card: #ffffff;
+  --color-nav-bg: #fdfef7;
   --color-primary: #00a4c8;
   --color-primary-bevel: #007b99;
   --color-text-main: #334155;
@@ -25,6 +26,7 @@
   --font-primary: 'Quicksand', sans-serif;
   --font-secondary: 'Inter', sans-serif;
   --color-app-bg: #f6f7ee;
+  --color-nav-bg: #fdfef7;
   --color-primary: #00a4c8;
   --color-primary-bevel: #007b99;
   --radius: 0.625rem;
