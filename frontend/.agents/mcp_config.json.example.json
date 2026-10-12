@@ -11,6 +11,12 @@
     "vue-docs": {
       "type": "remote",
       "url": "https://mcp.vue-mcp.org/mcp"
+    },
+    "stitch": {
+      "serverUrl": "https://stitch.googleapis.com/mcp",
+      "headers": {
+        "X-Goog-Api-Key": "YOUR_STITCH_API_KEY"
+      }
     }
   }
 }
