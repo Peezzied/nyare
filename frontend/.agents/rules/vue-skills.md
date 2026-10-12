@@ -37,6 +37,9 @@ Select skills based on the task:
 8. **Options API**:
    - Read `vue-options-api-best-practices` only when the user explicitly requests Options API.
 
+9. **Component Stories**:
+   - Read `histoire` when you create, update, or preview Histoire component stories.
+
 ## Documentation Lookups
 
 Use `vue-docs` tools to verify Vue APIs and patterns:

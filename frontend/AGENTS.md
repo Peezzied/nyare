@@ -101,6 +101,8 @@ Reduce HTTP roundtrips. Load each list once per intent.
 - Define routes in `src/router/index.ts`.
 - Import route components dynamically.
 - Read skill guides in `.agents/skills/` before you write Vue code.
+- Run `npm run story` to preview component stories with Histoire.
+- Do not include test code or test files when creating component stories (`.story.vue`).
 
 ## MCP Servers (`.agents/mcp_config.json`)
 

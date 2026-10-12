@@ -1171,7 +1171,7 @@ async function snapshot(opts: Opts): Promise<void> {
 
         // Use matchAll to handle multiple url() references
         const urlPattern =
-          /url\(['"]?(https?:\/\/[^'"\)\s]+)['"]?\)/g;
+          /url\(['"]?(https?:\/\/[^'")\s]+)['"]?\)/g;
         const matches = [...style.matchAll(urlPattern)];
         if (matches.length === 0) continue;
 

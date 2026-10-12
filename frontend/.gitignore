@@ -46,3 +46,6 @@ __screenshots__/
 *.pidb
 *.resources
 test-results/
+
+# Histoire
+.histoire/
