@@ -2,6 +2,7 @@ graphify-out/
 /docs/temp/*
 **/docs/superpowers/
 mcp_config.json
+!/.agents/mcp_config.json
 
 **/.superpowers/
 
