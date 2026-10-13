@@ -231,7 +231,9 @@ describe('API Services', () => {
       const mockNote: NoteResponse = {
         id: 'note-1',
         courseId: 10,
+        title: 'Lecture notes',
         content: 'Lecture notes',
+        entryDate: '2026-10-08',
         createdAt: '2026-10-08T00:00:00Z',
         updatedAt: '2026-10-08T00:00:00Z',
       }
@@ -247,7 +249,9 @@ describe('API Services', () => {
       const mockNote: NoteResponse = {
         id: 'note-2',
         courseId: 10,
+        title: 'New note',
         content: payload.content,
+        entryDate: '2026-10-08',
         createdAt: '2026-10-08T00:00:00Z',
         updatedAt: '2026-10-08T00:00:00Z',
       }
@@ -263,7 +267,9 @@ describe('API Services', () => {
       const mockNote: NoteResponse = {
         id: 'note-2',
         courseId: 10,
+        title: 'Updated title',
         content: payload.content,
+        entryDate: '2026-10-08',
         createdAt: '2026-10-08T00:00:00Z',
         updatedAt: '2026-10-08T01:00:00Z',
       }

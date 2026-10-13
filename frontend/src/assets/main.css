@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Quicksand:wght@300..700&display=swap');
 
 @import 'tailwindcss';
 @import './base.css';
@@ -7,7 +8,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-logo: 'DynaPuff', cursive;
+  --font-logo: 'DynaPuff', sans-serif;
   --font-sans: 'Quicksand', sans-serif;
   --font-editor: 'Inter', sans-serif;
 
@@ -63,17 +64,19 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-body {
-  font-family: var(--font-primary);
-  background-color: var(--color-app-bg);
-  color: #334155;
-}
+@layer base {
+  body {
+    font-family: var(--font-primary, var(--font-sans));
+    background-color: var(--color-app-bg);
+    color: #334155;
+  }
 
-input,
-textarea,
-select,
-.tiptap {
-  font-family: var(--font-secondary);
+  input,
+  textarea,
+  select,
+  .tiptap {
+    font-family: var(--font-secondary, var(--font-editor));
+  }
 }
 
 .btn-tactile {
@@ -87,40 +90,6 @@ select,
 .btn-tactile:active {
   transform: translateY(2px);
   border-bottom-width: 2px;
-}
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
-}
-
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
 }
 
 @theme inline {

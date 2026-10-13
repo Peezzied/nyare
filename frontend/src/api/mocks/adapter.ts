@@ -292,10 +292,13 @@ export function mockRouter(
       return badRequest('Course ID and content are required')
     }
     const now = new Date().toISOString()
+    const today = now.slice(0, 10)
     const newNote: NoteResponse = {
       id: `note-${crypto.randomUUID()}`,
       courseId: req.courseId,
+      title: req.title?.trim() || 'Untitled Note',
       content: req.content,
+      entryDate: req.entryDate || today,
       createdAt: now,
       updatedAt: now,
       lastProcessedAt: null,
@@ -327,7 +330,12 @@ export function mockRouter(
       const updated: NoteResponse = {
         ...existing,
         courseId: req.courseId,
+        title: req.title !== undefined && req.title !== null ? req.title : existing.title,
         content: req.content,
+        entryDate:
+          req.entryDate !== undefined && req.entryDate !== null
+            ? req.entryDate
+            : existing.entryDate,
         updatedAt: new Date().toISOString(),
       }
       state.notes[index] = updated
@@ -541,13 +549,37 @@ export function mockRouter(
 
   // Images endpoints
   if (method === 'POST' && pathname === '/api/images') {
+    let fileObj: File | null = null
+    if (body instanceof FormData) {
+      const entry = body.get('file')
+      if (entry instanceof File) {
+        fileObj = entry
+      }
+    }
+
     const id = crypto.randomUUID()
     const now = new Date().toISOString()
+    const isTestEnv = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test'
+    let url = `/api/images/${id}`
+
+    if (
+      !isTestEnv &&
+      fileObj &&
+      typeof URL !== 'undefined' &&
+      typeof URL.createObjectURL === 'function'
+    ) {
+      try {
+        url = URL.createObjectURL(fileObj)
+      } catch {
+        url = `/api/images/${id}`
+      }
+    }
+
     const img: ImageUploadResponse = {
       id,
-      url: `/api/images/${id}`,
-      contentType: 'image/png',
-      size: 1024,
+      url,
+      contentType: fileObj?.type || 'image/png',
+      size: fileObj?.size || 1024,
       createdAt: now,
     }
     images.push(img)

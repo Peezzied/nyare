@@ -17,6 +17,16 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue'),
     },
+    {
+      path: '/notes/new',
+      name: 'note-new',
+      component: () => import('../views/NoteEditor.vue'),
+    },
+    {
+      path: '/notes/:id',
+      name: 'note-edit',
+      component: () => import('../views/NoteEditor.vue'),
+    },
   ],
 })
 
