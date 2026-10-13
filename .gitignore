@@ -10,3 +10,6 @@ mcp_config.json
 __pycache__/
 *.py[cod]
 *$py.class
+.specify/bridge-snapshots/
+.specify/bridge-events.jsonl
+.specify/superpowers-handoff.json
