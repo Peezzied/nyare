@@ -1,14 +1,20 @@
 <script setup lang="ts">
+// Round mascot button with an optional badge and an AI processing ring.
+// Only DuckotaButton.story.vue renders it now.
 import { computed } from 'vue'
 import duckotaImg from '@/assets/mascot/duckota_in_button.png'
 import { COURSE_PALETTE_24 } from '@/constants/palette'
 
 export interface DuckotaButtonProps {
   size?: 'sm' | 'md' | 'lg'
+  /** Visual style: tactile has a solid drop shadow, floating has a soft shadow, plain has no shadow. */
   variant?: 'tactile' | 'floating' | 'plain'
+  /** Accessible name. The button aria-label and the mascot image alt text use it. */
   label?: string
+  /** Text in the corner badge. An undefined value or an empty string hides the badge. */
   badge?: string | number
   badgeColor?: 'destructive' | 'primary' | 'warning'
+  /** Shows the spinning rainbow ring and blocks clicks. Set it while an AI Process run is active. */
   processing?: boolean
   disabled?: boolean
 }
@@ -23,9 +29,11 @@ const props = withDefaults(defineProps<DuckotaButtonProps>(), {
 })
 
 const emit = defineEmits<{
+  /** Fires on click when the button is not disabled or processing. Payload is the native MouseEvent. */
   (e: 'click', event: MouseEvent): void
 }>()
 
+// The last ID repeats the first ID so the conic gradient has no color seam at 360 degrees.
 const RAINBOW_COURSE_IDS = [
   'peacock',
   'sage',

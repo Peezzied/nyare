@@ -15,6 +15,7 @@ const schedule: ScheduleResponse = {
 describe('useCatalog', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
+    // The cache is module-level state, so clear it to isolate each test.
     useCatalog().resetCatalog()
   })
 

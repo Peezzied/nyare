@@ -30,6 +30,7 @@ interface MockImage {
   createdAt: string
 }
 
+// In-memory data store. Mutations last until resetMockFixtures() or a page reload.
 let state: FixtureState = createInitialFixtures()
 let images: MockImage[] = []
 
@@ -55,11 +56,16 @@ function badRequest(detail: string): { status: number; data: ProblemDetail } {
   }
 }
 
+/** Restores the mock data to the initial fixtures and removes all uploaded images. */
 export function resetMockFixtures(): void {
   state = createInitialFixtures()
   images = []
 }
 
+/**
+ * In-memory `MockHandler` that imitates the backend REST routes, filters, and error responses.
+ * @returns the mock response, or `null` when no route matches so the request goes to `fetch`.
+ */
 export function mockRouter(
   method: string,
   url: string,
@@ -68,6 +74,7 @@ export function mockRouter(
   let pathname = url
   let searchParams = new URLSearchParams()
 
+  // A dummy base lets `URL` parse the relative API paths. The catch handles malformed input.
   try {
     const parsed = new URL(url, 'http://localhost')
     pathname = parsed.pathname
@@ -396,6 +403,7 @@ export function mockRouter(
     return { status: 201, data: newTask }
   }
 
+  // Match the status sub-route before the generic task ID route.
   const taskStatusMatch = pathname.match(/^\/api\/tasks\/([^/]+)\/status$/)
   if (taskStatusMatch?.[1]) {
     const id = taskStatusMatch[1]
@@ -476,6 +484,7 @@ export function mockRouter(
     }
     const upcomingParam = searchParams.get('upcoming')
     if (upcomingParam === 'true') {
+      // A string compare of ISO values. It treats the zone-less deadlines as UTC times.
       const now = new Date().toISOString()
       list = list.filter((e) => e.deadline >= now)
     }
@@ -543,6 +552,7 @@ export function mockRouter(
   }
 
   // Study planner endpoints
+  // The mock does not track dirty notes, so the status always reports no pending notes.
   if (method === 'GET' && pathname === '/api/study-planner/status') {
     return {
       status: 200,
@@ -556,6 +566,7 @@ export function mockRouter(
     }
   }
 
+  // This route serves only apiClient.post(). streamProcess() uses the patched `fetch` below.
   if (method === 'POST' && pathname === '/api/study-planner/process') {
     return { status: 200, data: state.processSummary }
   }
@@ -575,6 +586,8 @@ export function mockRouter(
     const isTestEnv = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test'
     let url = `/api/images/${id}`
 
+    // In the browser, a blob URL lets the editor show the image without a backend.
+    // Tests keep the stable API path, so assertions can match it.
     if (
       !isTestEnv &&
       fileObj &&
@@ -622,11 +635,18 @@ export function mockRouter(
   return null
 }
 
+/**
+ * Routes API calls to the in-memory mock backend.
+ * `main.ts` calls it when `VITE_USE_MOCKS` is `'true'`. Repeated calls are safe.
+ */
 export function initMockAdapter(): void {
   setMockHandler(mockRouter)
 
+  // streamProcess() calls `fetch` directly, so the apiClient mock handler cannot answer it.
+  // Patch `fetch` once to return a one-frame SSE `done` response for Process.
   if (typeof globalThis.fetch === 'function') {
     const currentFetch = globalThis.fetch
+    // The marker stops a second call from wrapping the patched `fetch` again.
     if (!(currentFetch as { __nyare_mock__?: boolean }).__nyare_mock__) {
       const patchedFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
         const urlStr =

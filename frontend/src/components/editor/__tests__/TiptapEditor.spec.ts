@@ -4,6 +4,7 @@ import TiptapEditor from '../TiptapEditor.vue'
 import { imagesApi } from '@/api/images'
 import type { ImageUploadResponse } from '@/types/api'
 
+// Mock the upload API so that the tests send no HTTP requests.
 vi.mock('@/api/images', () => ({
   imagesApi: {
     upload: vi.fn<(file: File | FormData) => Promise<ImageUploadResponse>>(),
@@ -41,6 +42,7 @@ describe('TiptapEditor', () => {
     const toolbar = wrapper.findComponent({ name: 'TiptapToolbar' })
     const testFile = new File(['content'], 'test.png', { type: 'image/png' })
 
+    // Emit from the toolbar directly because jsdom cannot open a native file picker.
     await toolbar.vm.$emit('upload-image', testFile)
     await flushPromises()
 

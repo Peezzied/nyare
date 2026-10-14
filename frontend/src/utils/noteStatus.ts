@@ -1,14 +1,19 @@
 // ponytail: note status derivation and word count utilities.
 
+/** AI processing state of a note. `getNoteProcessingStatus` defines each value. */
 export type NoteProcessingStatus = 'draft' | 'unprocessed' | 'dirty' | 'processed'
 
+/** Note fields that `getNoteProcessingStatus` reads. */
 export interface NoteStatusInput {
+  /** True when the note exists on the backend. */
   readonly isSaved: boolean
+  /** True when the editor holds edits that are not saved yet. */
   readonly isDirty?: boolean
   readonly updatedAt?: string | null
   readonly lastProcessedAt?: string | null
 }
 
+/** Label and Tailwind classes for a note status badge. */
 export interface NoteStatusConfig {
   readonly label: string
   readonly classes: string
@@ -31,6 +36,7 @@ export function getNoteProcessingStatus(input: NoteStatusInput): NoteProcessingS
   if (input.isDirty) {
     return 'dirty'
   }
+  // Skip the timestamp check when either timestamp fails to parse.
   if (input.updatedAt) {
     const updated = new Date(input.updatedAt).getTime()
     const processed = new Date(input.lastProcessedAt).getTime()
@@ -86,6 +92,7 @@ export function countWords(content?: string | null): number {
   if (!clean) {
     return 0
   }
+  // Count only tokens with a letter or digit, so leftover punctuation does not count as a word.
   return clean
     .split(/\s+/)
     .filter((token) => /[\p{L}\p{N}]/u.test(token))

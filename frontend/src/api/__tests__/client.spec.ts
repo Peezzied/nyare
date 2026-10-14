@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { apiClient, ApiError, setMockHandler } from '../client'
 import type { ProblemDetail } from '@/types/api'
 
+// Builds a partial Response with only the members that the client reads.
 function createMockResponse(options: {
   ok: boolean
   status: number
@@ -21,6 +22,7 @@ function createMockResponse(options: {
 describe('ApiClient', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
+    // Remove the mock handler, so requests reach the stubbed `fetch`.
     setMockHandler(null)
   })
 
@@ -181,6 +183,7 @@ describe('ApiClient', () => {
     const callArgs = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0]
     const options = callArgs?.[1] as RequestInit
     expect(options.body).toBeInstanceOf(FormData)
+    // The browser sets Content-Type with the multipart boundary, so the client must not set it.
     expect((options.headers as Record<string, string>)?.['Content-Type']).toBeUndefined()
   })
 

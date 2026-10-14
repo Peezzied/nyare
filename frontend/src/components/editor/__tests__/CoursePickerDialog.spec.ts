@@ -23,6 +23,7 @@ describe('CoursePickerDialog.vue', () => {
         selectedCourseId: null,
       },
       global: {
+        // The real DialogContent teleports to document.body. These stubs render the content inside the wrapper.
         stubs: {
           Dialog: { template: '<div><slot /></div>' },
           DialogContent: { template: '<div data-slot="dialog-content"><slot /></div>' },

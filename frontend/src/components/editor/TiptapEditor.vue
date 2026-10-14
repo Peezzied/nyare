@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// Rich text body of NoteEditor. It uploads images that TiptapToolbar picks and inserts them.
 import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
@@ -10,9 +11,12 @@ import { imagesApi } from '@/api/images'
 import type { ImageUploadResponse } from '@/types/api'
 
 interface Props {
+  /** Editor content as HTML. NoteEditor converts Markdown to HTML before it passes the value. */
   modelValue?: string
   placeholder?: string
+  /** False makes the content read-only and disables the toolbar. */
   editable?: boolean
+  /** Error text from the parent. It replaces the internal upload error in the banner. */
   errorMessage?: string | null
 }
 
@@ -24,8 +28,11 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
+  /** Fires on each content change, including image inserts. Payload is the full editor HTML. */
   (e: 'update:modelValue', value: string): void
+  /** Fires when the toolbar rejects a file or the upload request fails. Payload is the error. */
   (e: 'upload-error', error: Error): void
+  /** Fires after the server stores an image and the editor inserts it. Payload is the upload response. */
   (e: 'image-uploaded', response: ImageUploadResponse): void
 }>()
 
@@ -68,6 +75,8 @@ const editor = useEditor({
   },
 })
 
+// The parent echoes each emitted HTML back through modelValue. Skip equal values so
+// setContent does not reset the cursor. emitUpdate false prevents an update loop.
 watch(
   () => props.modelValue,
   (newValue) => {
@@ -81,6 +90,7 @@ watch(
   },
 )
 
+// useEditor reads editable only at creation. This watcher applies later changes.
 watch(
   () => props.editable,
   (newEditable) => {
@@ -162,6 +172,7 @@ onBeforeUnmount(() => {
       />
     </div>
 
+    <!-- Optional row between the content and the toolbar. NoteEditor puts its status bar here. -->
     <slot name="status-bar" />
 
     <TiptapToolbar

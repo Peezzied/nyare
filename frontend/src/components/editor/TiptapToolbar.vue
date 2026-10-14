@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// Bottom toolbar of TiptapEditor. It checks picked image files and emits them. TiptapEditor uploads them.
 import { computed, ref } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
 import {
@@ -22,7 +23,9 @@ import { Button } from '@/components/ui/button'
 import type { ToolbarActionItem } from './types'
 
 interface Props {
+  /** Tiptap instance that the buttons control. Undefined disables all buttons. */
   editor?: Editor
+  /** Disables all buttons. TiptapEditor sets it when the editor is locked or an upload runs. */
   disabled?: boolean
 }
 
@@ -32,7 +35,9 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
+  /** Fires when the user picks an image file of 10 MB or less. Payload is the file. */
   (e: 'upload-image', file: File): void
+  /** Fires when the picked file is not an image or is larger than 10 MB. Payload is the error. */
   (e: 'upload-error', error: Error): void
 }>()
 
@@ -40,6 +45,7 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
 
 const triggerImagePicker = () => {
   if (fileInputRef.value) {
+    // Clear the old value so that a second pick of the same file still fires change.
     fileInputRef.value.value = ''
     fileInputRef.value.click()
   }

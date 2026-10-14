@@ -85,6 +85,7 @@ describe('createInitialFixtures', () => {
     expect(stateA.users).not.toBe(stateB.users)
     expect(stateA.tasks).not.toBe(stateB.tasks)
 
+    // The DTO fields are readonly, so the cast allows a mutation that proves the deep copy.
     const mutableFirstTask = stateA.tasks[0] as { title: string }
     mutableFirstTask.title = 'Mutated Task Title'
     expect(stateB.tasks[0]!.title).not.toBe('Mutated Task Title')

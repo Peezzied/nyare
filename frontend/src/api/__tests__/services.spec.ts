@@ -487,6 +487,7 @@ describe('API Services', () => {
       }
       const sseText = `event: done\ndata: ${JSON.stringify(summary)}\n\n`
 
+      // `body: null` makes streamProcess read the whole SSE text through `text()`.
       globalThis.fetch = vi.fn<typeof fetch>().mockResolvedValue({
         ok: true,
         status: 200,
@@ -594,6 +595,7 @@ describe('API Services', () => {
         eventsCreated: 2,
         contextsCreated: 1,
       }
+      // Split the frame inside the event name, so the parser must carry the tail to the next chunk.
       const chunk1 = new TextEncoder().encode('event: do')
       const chunk2 = new TextEncoder().encode(`ne\ndata: ${JSON.stringify(summary)}\n\n`)
 
@@ -659,6 +661,7 @@ describe('API Services', () => {
       }
       const sseText =
         `event: init\ndata: ${JSON.stringify(status)}\n\n` +
+        // Heartbeat comment frame. The backend sends one at a fixed interval.
         `:ping\n\n` +
         `event: progress\ndata: ${JSON.stringify(progress)}\n\n` +
         `event: done\ndata: ${JSON.stringify(summary)}\n\n`
@@ -690,6 +693,7 @@ describe('API Services', () => {
       const controller = new AbortController()
       controller.abort()
 
+      // Real `fetch` rejects with an AbortError when the signal is already aborted.
       globalThis.fetch = vi
         .fn<typeof fetch>()
         .mockRejectedValue(new DOMException('aborted', 'AbortError'))
@@ -715,6 +719,7 @@ describe('API Services', () => {
         .fn<typeof fetch>()
         .mockRejectedValue(new DOMException('aborted', 'AbortError'))
 
+      // process() rejects with `signal.reason`, not with the error from `fetch`.
       await expect(studyPlannerApi.process(controller.signal)).rejects.toBe(
         controller.signal.reason,
       )

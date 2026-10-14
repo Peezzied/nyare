@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// Fixed bottom tab bar for the Tasks, Calendar, and Notes pages.
+// Only NavigationBar.story.vue and its unit test render it now.
 import { ref, computed, inject } from 'vue'
 import { routerKey, routeLocationKey } from 'vue-router'
 import { ClipboardList, Calendar, SquarePen } from '@lucide/vue'
@@ -11,7 +13,9 @@ const props = withDefaults(defineProps<NavigationBarProps & { showLabels?: boole
 })
 
 const emit = defineEmits<{
+  /** Fires when the user clicks a tab. Payload is the tab item id. */
   (e: 'update:modelValue', id: string): void
+  /** Fires after update:modelValue on each tab click. Payload is the clicked item. */
   (e: 'navigate', item: NavigationItem): void
 }>()
 
@@ -44,6 +48,8 @@ const navigationItems = computed(() => props.items ?? defaultItems)
 
 const internalActiveId = ref<string>('calendar')
 
+// Active tab priority: the modelValue prop, then a route path match, then the last clicked tab.
+// The prefix match keeps the tab active on child routes such as /notes/:id.
 const activeId = computed(() => {
   if (props.modelValue !== undefined) {
     return props.modelValue

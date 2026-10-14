@@ -26,6 +26,14 @@ Calendar-first academic planner. Class schedule → course-linked journal (`Note
 - When the user requests a commit, use `git caveman-commit`.
 - Follow `.agents/rules/git-safety.md`.
 
+## Code Comments
+
+- Write self-documenting code with clear names.
+- Add comments sparingly to prevent visual noise.
+- Apply conventional comments only to interfaces, methods, and tests.
+- Document intent, parameters, return values, and edge cases.
+- Do not add comments for self-explanatory code.
+
 ## Backend commands (`backend/`)
 
 ```bash

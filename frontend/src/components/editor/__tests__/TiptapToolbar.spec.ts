@@ -21,6 +21,7 @@ interface MockChain {
   run: () => boolean
 }
 
+// Fake Tiptap editor. Each chain command returns the same chainMock, so tests can assert on its calls.
 function createMockEditor(overrides: Record<string, unknown> = {}) {
   const chainMock: MockChain = {
     focus: vi.fn<() => MockChain>().mockReturnThis(),
@@ -215,6 +216,7 @@ describe('TiptapToolbar', () => {
       type: 'image/png',
     })
 
+    // Tests cannot construct a FileList. Define files with an array to simulate a picked file.
     Object.defineProperty(fileInput.element, 'files', {
       value: [validFile],
       configurable: true,
@@ -262,6 +264,7 @@ describe('TiptapToolbar', () => {
     const largeFile = new File([''], 'huge-photo.jpg', {
       type: 'image/jpeg',
     })
+    // Override the size so the test does not allocate a real 11 MB buffer.
     Object.defineProperty(largeFile, 'size', {
       value: 11 * 1024 * 1024,
     })

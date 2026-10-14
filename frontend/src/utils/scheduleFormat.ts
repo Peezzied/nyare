@@ -36,6 +36,7 @@ export function formatCourseSchedule(schedules?: ScheduleResponse[] | null): str
     return 'No set schedule'
   }
 
+  // Unknown day values from the API sort last and print unchanged.
   uniqueDays.sort((a, b) => (DAY_ORDER[a] ?? 99) - (DAY_ORDER[b] ?? 99))
 
   return uniqueDays.map((day) => DAY_SHORTHAND[day] ?? day).join(', ')

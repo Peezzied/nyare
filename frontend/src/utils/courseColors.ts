@@ -1,38 +1,52 @@
 // ponytail: 24-color course palette utility with deterministic index resolver.
 
+/** Tailwind arbitrary-value classes for a course badge. */
 export interface CourseBadgeClasses {
   readonly bg: string
   readonly text: string
   readonly border: string
 }
 
+/** Inline CSS colors for a course badge. */
 export interface CourseBadgeStyle {
   readonly backgroundColor: string
   readonly color: string
   readonly borderColor: string
 }
 
+/** Inline CSS color for a solid course marker dot. */
 export interface CourseDotStyle {
   readonly backgroundColor: string
 }
 
+/** One course palette entry with hex colors, alias fields, and prebuilt Tailwind classes. */
 export interface CourseColorDef {
+  /** Position in `COURSE_COLORS` (0-23). */
   readonly index: number
   readonly name: string
+  /** Full-strength hex color for marker dots. */
   readonly solid: string
+  /** Alias of `solid`. */
   readonly solidMarker: string
   readonly badgeBg: string
+  /** Alias of `badgeBg`. */
   readonly badgeBackground: string
   readonly badgeText: string
   readonly badgeBorder: string
+  /** Alias of `badgeBg`. */
   readonly bg: string
+  /** Alias of `badgeText`. */
   readonly text: string
+  /** Alias of `badgeBorder`. */
   readonly border: string
   readonly badgeClasses: CourseBadgeClasses
+  /** `badgeClasses` joined into one space-separated string. */
   readonly badgeClassString: string
+  /** Tailwind background class for the `solid` color. */
   readonly dotClass: string
 }
 
+/** Builds a palette entry with alias fields and Tailwind classes from four hex colors. */
 function defineColor(
   index: number,
   name: string,
@@ -98,6 +112,7 @@ export const COURSE_COLORS: readonly CourseColorDef[] = [
  * Uses Graphite (index 23, neutral gray).
  */
 export const DEFAULT_COURSE_COLOR: CourseColorDef = COURSE_COLORS[23]!
+/** Alias of `DEFAULT_COURSE_COLOR`. */
 export const FALLBACK_COURSE_COLOR: CourseColorDef = DEFAULT_COURSE_COLOR
 
 /**

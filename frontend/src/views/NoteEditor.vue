@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// Full-screen journal note editor for /notes/new and /notes/:id. An id route param selects edit mode.
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import {
@@ -38,12 +39,19 @@ import {
 import type { ImageUploadResponse, NoteResponse } from '@/types/api'
 
 interface Props {
+  /** Prefills the title. A loaded note replaces it in edit mode. */
   initialTitle?: string
+  /** Prefills the course of a new note. It takes precedence over the courseId query param. */
   initialCourseId?: number | null
+  /** Prefills the entry date as YYYY-MM-DD. It takes precedence over the entryDate query param. Undefined means today. */
   initialDate?: string
+  /** Prefills the note body as Markdown. */
   initialContent?: string
+  /** Extra image URLs that save accepts, in addition to URLs in initial or loaded content and images uploaded in this session. */
   validImageUrls?: string[]
+  /** Seeds the processing status badge until a load or save returns server values. */
   initialLastProcessedAt?: string | null
+  /** Seeds the processing status badge until a load or save returns server values. */
   initialUpdatedAt?: string | null
 }
 
@@ -71,6 +79,7 @@ function getTodayString(): string {
   return `${year}-${month}-${day}`
 }
 
+// Notes may backdate at most 14 days. The backend rejects dates outside its own horizon (default 14 days).
 function getMinDateString(maxDaysBack = 14): string {
   const d = new Date()
   d.setDate(d.getDate() - maxDaysBack)
@@ -202,6 +211,8 @@ const isDirty = ref(false)
 const isSaving = ref(false)
 const isLoading = ref(false)
 const errorMessage = ref<string | null>(null)
+// Image URLs that saveNote accepts: prop URLs, URLs in initial or loaded content, and session uploads.
+// This blocks references to images that were never uploaded.
 const knownImageUrls = ref(new Set<string>())
 
 // Initialize known images from initial props
@@ -288,10 +299,12 @@ function validateEmbeddedImages(markdown: string): { valid: boolean; error?: str
 }
 
 function onEditorContentChange(newHtml: string) {
+  // Ignore editor updates while loadNote applies server content, so the load does not mark the note dirty.
   if (isLoading.value) {
     return
   }
   const newMarkdown = htmlToMarkdown(newHtml)
+  // Editor HTML that converts to the same Markdown leaves the saved content unchanged, so a clean note stays clean.
   if (newMarkdown.trim() === contentMarkdown.value.trim() && !isDirty.value) {
     htmlContent.value = newHtml
     return
@@ -322,6 +335,7 @@ function hasMeaningfulContent(): boolean {
 }
 
 function navigateBack() {
+  // Clear the dirty flag first so the onBeforeRouteLeave guard does not ask again after a save or discard.
   isDirty.value = false
   if (router) {
     router.back()
@@ -437,6 +451,7 @@ async function saveNote() {
   }
 }
 
+// These watchers apply late prefill props only to empty fields, so they never overwrite user input.
 watch(
   () => props.initialContent,
   (newContent) => {
@@ -474,6 +489,7 @@ const viewportHeight = ref<number | null>(null)
 function updateViewportHeight() {
   if (typeof window !== 'undefined' && window.visualViewport) {
     viewportHeight.value = window.visualViewport.height
+    // Mobile browsers may scroll the page when the keyboard opens. Reset it so the header stays visible.
     if (window.scrollY !== 0) {
       window.scrollTo(0, 0)
     }
@@ -490,6 +506,7 @@ onMounted(async () => {
   if (activeNoteId.value) {
     await loadNote(activeNoteId.value)
   } else {
+    // New note: props take precedence over the courseId and entryDate query params.
     if (props.initialCourseId !== null && props.initialCourseId !== undefined) {
       selectedCourseId.value = props.initialCourseId
     } else if (route?.query?.courseId) {

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// Modal course list that sets the course of a note. NoteEditor opens it from the course pill.
 import { computed } from 'vue'
 import { Check } from '@lucide/vue'
 import {
@@ -13,9 +14,12 @@ import { formatCourseSchedule } from '@/utils/scheduleFormat'
 import type { CourseResponse, ScheduleResponse } from '@/types/api'
 
 interface Props {
+  /** Dialog visibility. Bind it with v-model:open. */
   open: boolean
+  /** Course that gets the check mark. Null means no course is selected. */
   selectedCourseId?: number | null
   courses: CourseResponse[]
+  /** All class schedules. The dialog filters them by course to show a meeting-day summary. */
   schedules?: ScheduleResponse[]
 }
 
@@ -25,7 +29,9 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
+  /** Fires when the dialog opens or closes. It also fires with false after a course selection. */
   (e: 'update:open', value: boolean): void
+  /** Fires when the user clicks a course. Payload is the course id. */
   (e: 'select', courseId: number): void
 }>()
 

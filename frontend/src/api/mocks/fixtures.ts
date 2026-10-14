@@ -8,17 +8,21 @@ import type {
   ProcessSummaryResponse,
 } from '@/types/api'
 
+/** Full in-memory data set of the mock backend. */
 export interface FixtureState {
   users: UserResponse[]
+  /** Session user. `null` means logged out. */
   currentUser: UserResponse | null
   courses: CourseResponse[]
   schedules: ScheduleResponse[]
   notes: NoteResponse[]
   tasks: TaskResponse[]
   academicEvents: AcademicEventResponse[]
+  /** Fixed summary that every mock Process run returns. */
   processSummary: ProcessSummaryResponse
 }
 
+// The tasks cover each tri-state category (SCHEDULED, LATER, BACKLOG) and each task status.
 const INITIAL_FIXTURES: FixtureState = {
   users: [
     {
@@ -224,6 +228,10 @@ const INITIAL_FIXTURES: FixtureState = {
   },
 }
 
+/**
+ * Returns a deep copy of the initial mock data.
+ * Each call gives an independent copy, so mutations do not leak between resets or tests.
+ */
 export function createInitialFixtures(): FixtureState {
   return structuredClone(INITIAL_FIXTURES)
 }

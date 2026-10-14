@@ -1,5 +1,6 @@
 // ponytail: minimal bidirectional markdown-to-html and html-to-markdown serialization.
 
+/** Converts inline markdown (code, images, bold, italic, strikethrough) in one line to HTML. */
 function parseInline(text: string): string {
   if (!text) {
     return ''
@@ -26,6 +27,7 @@ function parseInline(text: string): string {
 
   // Italic: *text* or _text_
   result = result.replace(/\*(.+?)\*/g, '<em>$1</em>')
+  // The word-character guards keep underscores inside words such as snake_case unchanged.
   result = result.replace(/(?<!\w)_(.+?)_(?!\w)/g, '<em>$1</em>')
 
   // Strikethrough: ~~text~~
@@ -40,6 +42,15 @@ function parseInline(text: string): string {
   return result
 }
 
+/**
+ * Converts note markdown to HTML for the note editor.
+ * Supports headings, rules, images, blockquotes, lists, paragraphs, and inline marks.
+ * Lines in one paragraph join with `<br>`.
+ * It does not parse links and does not escape raw HTML in the input.
+ *
+ * @example
+ * markdownToHtml('# Title\n\n- **one**') // '<h1>Title</h1><ul><li><strong>one</strong></li></ul>'
+ */
 export function markdownToHtml(markdown: string): string {
   if (!markdown || !markdown.trim()) {
     return ''
@@ -199,6 +210,7 @@ function serializeInline(node: Node): string {
       return inner.trim() ? `~~${inner}~~` : ''
     }
     case 'u': {
+      // Markdown has no underline syntax, so keep the raw <u> tag.
       const inner = serializeInlineChildren(el)
       return inner.trim() ? `<u>${inner}</u>` : ''
     }
@@ -225,6 +237,7 @@ function serializeInline(node: Node): string {
   }
 }
 
+/** Serializes one list item to a single line. Tiptap wraps item text in `<p>` elements. */
 function serializeListItem(li: HTMLElement): string {
   const pChildren = Array.from(li.children).filter((c) => c.tagName.toLowerCase() === 'p')
   if (pChildren.length > 0) {
@@ -233,6 +246,7 @@ function serializeListItem(li: HTMLElement): string {
   return serializeInlineChildren(li).trim()
 }
 
+/** Serializes container children into markdown blocks. Adjacent inline nodes form one block. */
 function serializeContainerToBlocks(container: HTMLElement): string[] {
   const blocks: string[] = []
   let inlineBuffer = ''
@@ -283,6 +297,7 @@ function serializeContainerToBlocks(container: HTMLElement): string[] {
       const innerBlocks = serializeContainerToBlocks(el)
       if (innerBlocks.length > 0) {
         const quoteText = innerBlocks.join('\n')
+        // Lines from a nested blockquote already start with '>', so nesting flattens to one level.
         const lines = quoteText.split('\n').map((l) => (l.startsWith('>') ? l : `> ${l}`))
         blocks.push(lines.join('\n'))
       }
@@ -326,6 +341,11 @@ function serializeContainerToBlocks(container: HTMLElement): string[] {
   return blocks
 }
 
+/**
+ * Converts editor HTML, such as Tiptap output, back to markdown.
+ * Blocks join with a blank line. It skips block-level `script` and `style` elements.
+ * It needs a DOM (`DOMParser`), so it runs only in the browser or jsdom.
+ */
 export function htmlToMarkdown(html: string): string {
   if (!html || !html.trim()) {
     return ''
@@ -338,6 +358,12 @@ export function htmlToMarkdown(html: string): string {
   return blocks.join('\n\n').trim()
 }
 
+/**
+ * Returns the unique `/api/images/{id}` URLs in markdown or HTML content, in first-seen order.
+ *
+ * @example
+ * extractImageUrls('![a](/api/images/x1) <img src="/api/images/x1">') // ['/api/images/x1']
+ */
 export function extractImageUrls(content: string): string[] {
   if (!content) {
     return []

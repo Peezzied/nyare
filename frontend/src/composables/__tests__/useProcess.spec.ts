@@ -113,6 +113,7 @@ describe('useProcess', () => {
 
   it('aborts the stream when cancel is called', async () => {
     let signal: AbortSignal | undefined
+    // The stub stays open until abort and then resolves, like the real streamProcess.
     vi.spyOn(studyPlannerApi, 'streamProcess').mockImplementation(
       (callbacks: StreamProcessCallbacks) =>
         new Promise<void>((resolve) => {
@@ -172,6 +173,7 @@ describe('useProcess', () => {
     await promise
 
     await vi.waitFor(() => expect(statusSpy).toHaveBeenCalled())
+    // Let the background verifyCancel() finish before the assertions.
     await new Promise((r) => setTimeout(r))
 
     expect(proc.cancelled.value).toBe(true)
@@ -181,6 +183,7 @@ describe('useProcess', () => {
 
   it('flips to savedAfterCancel when the run committed despite cancel', async () => {
     let resolveStatus: (s: PlannerStatusResponse) => void = () => {}
+    // Hold the status recheck open to assert the state before it resolves.
     vi.spyOn(studyPlannerApi, 'status').mockReturnValue(
       new Promise<PlannerStatusResponse>((resolve) => {
         resolveStatus = resolve
@@ -246,6 +249,7 @@ describe('useProcess', () => {
     )
 
     const onSavedAfterCancel = vi.fn<() => void>()
+    // effectScope stands in for a component. scope.stop() triggers onScopeDispose.
     const scope = effectScope()
     const proc = scope.run(() => useProcess({ onSavedAfterCancel }))!
 
@@ -259,6 +263,7 @@ describe('useProcess', () => {
     expect(signal?.aborted).toBe(true)
     expect(proc.cancelled.value).toBe(true)
     expect(proc.running.value).toBe(false)
+    // A committed status is mocked, but dispose must skip the recheck.
     expect(statusSpy).not.toHaveBeenCalled()
     expect(proc.savedAfterCancel.value).toBe(false)
     expect(onSavedAfterCancel).not.toHaveBeenCalled()

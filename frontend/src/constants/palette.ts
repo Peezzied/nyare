@@ -1,12 +1,18 @@
+/** Hex colors for one course palette entry. */
 export interface CoursePaletteColor {
   id: string
   name: string
+  /** Full-strength color for marker dots. */
   solid: string
+  /** Badge background color. */
   bg: string
+  /** Badge text color. */
   text: string
+  /** Badge border color. */
   border: string
 }
 
+/** 24-color course palette with the same hex values as `COURSE_COLORS` in `@/utils/courseColors`. */
 export const COURSE_PALETTE_24: readonly CoursePaletteColor[] = [
   // Warm Reds & Corals
   {
@@ -207,6 +213,7 @@ export const COURSE_PALETTE_24: readonly CoursePaletteColor[] = [
 export function getCourseColor(courseIdOrIndex: number): CoursePaletteColor {
   const index = Math.abs(courseIdOrIndex) % COURSE_PALETTE_24.length
   const color = COURSE_PALETTE_24[index]
+  // A NaN or fractional input gives no entry, so fall back to the first color.
   if (!color) {
     return COURSE_PALETTE_24[0]!
   }

@@ -103,6 +103,11 @@ Reduce HTTP roundtrips. Load each list once per intent.
 - Read skill guides in `.agents/skills/` before you write Vue code.
 - Run `npm run story` to preview component stories with Histoire.
 - Do not include test code or test files when creating component stories (`.story.vue`).
+- Write self-documenting code with clear names.
+- Add comments sparingly to prevent visual noise.
+- Apply conventional comments only to interfaces, methods, and tests.
+- Document intent, parameters, return values, and edge cases.
+- Do not add comments for self-explanatory code.
 
 ## MCP Servers (`.agents/mcp_config.json`)
 

@@ -18,6 +18,7 @@ const mockRouter = {
   push: vi.fn<(to: string) => void>(),
 }
 
+// The vue-router mock stores the onBeforeRouteLeave callback here, so tests can call the guard directly.
 let beforeRouteLeaveCallback: ((to?: unknown, from?: unknown, next?: unknown) => boolean | void) | null = null
 
 vi.mock('vue-router', () => ({
@@ -41,6 +42,7 @@ vi.mock('@/api/notes', () => ({
 describe('NoteEditor.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    // useCatalog keeps module-level state. Reset it so each test loads the mocked catalog again.
     useCatalog().resetCatalog()
     mockRoute.params = {}
     mockRoute.query = {}
@@ -216,6 +218,7 @@ describe('NoteEditor.vue', () => {
   it('shows unsaved changes dialog when navigating back with unsaved content', async () => {
     const confirmSpy = vi.spyOn(window, 'confirm')
 
+    // Attach to document.body because the dialog content teleports there.
     const wrapper = mount(NoteEditor, {
       props: {
         initialCourseId: 1,
@@ -528,6 +531,7 @@ describe('NoteEditor.vue', () => {
       dispatchEvent: vi.fn<(event: Event) => boolean>(() => true),
     }
 
+    // jsdom has no visualViewport. The stub records listeners so the test can fire a resize.
     vi.stubGlobal('visualViewport', mockVisualViewport)
 
     const wrapper = mount(NoteEditor)

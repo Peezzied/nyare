@@ -17,6 +17,7 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue'),
     },
+    // Optional query params `courseId` and `entryDate` prefill the new note.
     {
       path: '/notes/new',
       name: 'note-new',

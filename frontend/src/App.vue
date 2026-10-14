@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// Root component. It still shows the Vite scaffold header above the RouterView outlet.
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 </script>
