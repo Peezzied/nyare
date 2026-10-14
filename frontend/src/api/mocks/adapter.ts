@@ -543,6 +543,19 @@ export function mockRouter(
   }
 
   // Study planner endpoints
+  if (method === 'GET' && pathname === '/api/study-planner/status') {
+    return {
+      status: 200,
+      data: {
+        hasPendingNotes: false,
+        dirtyNoteCount: 0,
+        dirtyDates: [],
+        courseNames: [],
+        pendingNotes: [],
+      },
+    }
+  }
+
   if (method === 'POST' && pathname === '/api/study-planner/process') {
     return { status: 200, data: state.processSummary }
   }

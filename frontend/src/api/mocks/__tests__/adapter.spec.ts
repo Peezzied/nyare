@@ -292,6 +292,13 @@ describe('Mock Adapter', () => {
       })
     })
 
+    it('returns no pending notes on study planner status', async () => {
+      const result = await studyPlannerApi.status()
+      expect(result.hasPendingNotes).toBe(false)
+      expect(result.dirtyNoteCount).toBe(0)
+      expect(result.pendingNotes).toEqual([])
+    })
+
     it('supports image upload and deletion', async () => {
       const file = new File(['dummy bytes'], 'avatar.png', { type: 'image/png' })
       const uploaded = await imagesApi.upload(file)

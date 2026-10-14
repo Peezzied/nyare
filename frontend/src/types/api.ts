@@ -154,6 +154,27 @@ export interface ImageUploadResponse {
   readonly createdAt: string
 }
 
+export interface PendingNoteSummary {
+  readonly id: string
+  readonly title: string | null
+  readonly courseName: string | null
+  readonly entryDate: string
+}
+
+export interface PlannerStatusResponse {
+  readonly hasPendingNotes: boolean
+  readonly dirtyNoteCount: number
+  readonly dirtyDates: string[]
+  readonly courseNames: string[]
+  readonly pendingNotes: PendingNoteSummary[]
+}
+
+export interface ProcessProgressEvent {
+  readonly date: string
+  readonly index: number
+  readonly total: number
+}
+
 export interface ProcessSummaryResponse {
   readonly tasksCreated: number
   readonly eventsCreated: number

@@ -63,7 +63,7 @@ The project does not require external state libraries.
 The backend server runs on port 8080.
 Configure `server.proxy` in `vite.config.ts` to route `/api` requests to `http://localhost:8080`.
 Use the native `fetch` function for REST endpoints.
-Use `fetch` with a `ReadableStream` reader to receive Server-Sent Events from `POST /api/study-planner/process` (`EventSource` supports `GET` only).
+Use `fetch` with a `ReadableStream` reader to receive Server-Sent Events from `POST /api/study-planner/process` (`EventSource` supports `GET` only). Pass an `AbortSignal` to `streamProcess`/`process` to cancel a run; the backend then stops at the next checkpoint and rolls back. After a cancel, `useProcess` rechecks `GET /api/study-planner/status`; a run that committed anyway sets `savedAfterCancel` and calls `onSavedAfterCancel` for a full tasks and events refetch.
 Do not install Axios.
 
 ## Backend Roundtrip Conventions

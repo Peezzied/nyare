@@ -19,6 +19,8 @@ import type {
   TaskResponse,
   AcademicEventResponse,
   ProcessSummaryResponse,
+  PlannerStatusResponse,
+  ProcessProgressEvent,
   ImageUploadResponse,
 } from '@/types/api'
 
@@ -462,6 +464,21 @@ describe('API Services', () => {
   })
 
   describe('studyPlannerApi', () => {
+    it('status calls GET /api/study-planner/status', async () => {
+      const mockStatus: PlannerStatusResponse = {
+        hasPendingNotes: false,
+        dirtyNoteCount: 0,
+        dirtyDates: [],
+        courseNames: [],
+        pendingNotes: [],
+      }
+      const getSpy = vi.spyOn(apiClient, 'get').mockResolvedValue(mockStatus)
+
+      const result = await studyPlannerApi.status()
+      expect(result).toEqual(mockStatus)
+      expect(getSpy).toHaveBeenCalledWith('/api/study-planner/status')
+    })
+
     it('streamProcess parses done event and triggers onDone callback', async () => {
       const summary: ProcessSummaryResponse = {
         tasksCreated: 3,
@@ -624,6 +641,84 @@ describe('API Services', () => {
       await expect(studyPlannerApi.process()).rejects.toThrow(
         'Stream ended without completion event',
       )
+    })
+
+    it('streamProcess routes init and progress events and ignores ping comments', async () => {
+      const status: PlannerStatusResponse = {
+        hasPendingNotes: true,
+        dirtyNoteCount: 2,
+        dirtyDates: ['2026-10-01', '2026-10-03'],
+        courseNames: ['CS101'],
+        pendingNotes: [],
+      }
+      const progress = { date: '2026-10-01', index: 1, total: 2 }
+      const summary: ProcessSummaryResponse = {
+        tasksCreated: 1,
+        eventsCreated: 0,
+        contextsCreated: 0,
+      }
+      const sseText =
+        `event: init\ndata: ${JSON.stringify(status)}\n\n` +
+        `:ping\n\n` +
+        `event: progress\ndata: ${JSON.stringify(progress)}\n\n` +
+        `event: done\ndata: ${JSON.stringify(summary)}\n\n`
+
+      globalThis.fetch = vi.fn<typeof fetch>().mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ 'content-type': 'text/event-stream' }),
+        text: async () => sseText,
+        body: null,
+      } as unknown as Response)
+
+      const onInit = vi.fn<(s: PlannerStatusResponse) => void>()
+      const onProgress = vi.fn<(p: ProcessProgressEvent) => void>()
+      const onDone = vi.fn<(s: ProcessSummaryResponse) => void>()
+      const onError = vi.fn<(error: unknown) => void>()
+
+      await studyPlannerApi.streamProcess({ onDone, onError, onInit, onProgress })
+
+      expect(onInit).toHaveBeenCalledWith(status)
+      expect(onProgress).toHaveBeenCalledWith(progress)
+      expect(onDone).toHaveBeenCalledWith(summary)
+      expect(onError).not.toHaveBeenCalled()
+      expect(onInit).toHaveBeenCalledTimes(1)
+      expect(onProgress).toHaveBeenCalledTimes(1)
+    })
+
+    it('streamProcess passes signal to fetch and swallows abort errors silently', async () => {
+      const controller = new AbortController()
+      controller.abort()
+
+      globalThis.fetch = vi
+        .fn<typeof fetch>()
+        .mockRejectedValue(new DOMException('aborted', 'AbortError'))
+
+      const onDone = vi.fn<(s: ProcessSummaryResponse) => void>()
+      const onError = vi.fn<(error: unknown) => void>()
+
+      await studyPlannerApi.streamProcess({ onDone, onError, signal: controller.signal })
+
+      expect(globalThis.fetch).toHaveBeenCalledWith(
+        '/api/study-planner/process',
+        expect.objectContaining({ signal: controller.signal }),
+      )
+      expect(onDone).not.toHaveBeenCalled()
+      expect(onError).not.toHaveBeenCalled()
+    })
+
+    it('process rejects with the AbortError when aborted', async () => {
+      const controller = new AbortController()
+      controller.abort()
+
+      globalThis.fetch = vi
+        .fn<typeof fetch>()
+        .mockRejectedValue(new DOMException('aborted', 'AbortError'))
+
+      await expect(studyPlannerApi.process(controller.signal)).rejects.toBe(
+        controller.signal.reason,
+      )
+      expect((controller.signal.reason as DOMException).name).toBe('AbortError')
     })
   })
 

@@ -1,9 +1,17 @@
-import { ApiError } from './client'
-import type { ProblemDetail, ProcessSummaryResponse } from '@/types/api'
+import { apiClient, ApiError } from './client'
+import type {
+  PlannerStatusResponse,
+  ProblemDetail,
+  ProcessProgressEvent,
+  ProcessSummaryResponse,
+} from '@/types/api'
 
 export interface StreamProcessCallbacks {
   onDone: (summary: ProcessSummaryResponse) => void
   onError?: (error: unknown) => void
+  onInit?: (status: PlannerStatusResponse) => void
+  onProgress?: (progress: ProcessProgressEvent) => void
+  signal?: AbortSignal
 }
 
 function handleError(error: unknown, callbacks: StreamProcessCallbacks): void {
@@ -50,13 +58,30 @@ function parseSseEvents(buffer: string, callbacks: StreamProcessCallbacks): stri
       } catch {
         handleError(dataStr, callbacks)
       }
+    } else if (eventName === 'init') {
+      try {
+        callbacks.onInit?.(JSON.parse(dataStr) as PlannerStatusResponse)
+      } catch (err) {
+        handleError(err, callbacks)
+      }
+    } else if (eventName === 'progress') {
+      try {
+        callbacks.onProgress?.(JSON.parse(dataStr) as ProcessProgressEvent)
+      } catch (err) {
+        handleError(err, callbacks)
+      }
     }
   }
 
   return remainder
 }
 
+export function status(): Promise<PlannerStatusResponse> {
+  return apiClient.get<PlannerStatusResponse>('/api/study-planner/status')
+}
+
 export async function streamProcess(callbacks: StreamProcessCallbacks): Promise<void> {
+  const signal = callbacks.signal
   try {
     const response = await fetch('/api/study-planner/process', {
       method: 'POST',
@@ -64,6 +89,7 @@ export async function streamProcess(callbacks: StreamProcessCallbacks): Promise<
         Accept: 'text/event-stream',
       },
       credentials: 'include',
+      signal,
     })
 
     if (!response.ok) {
@@ -109,15 +135,19 @@ export async function streamProcess(callbacks: StreamProcessCallbacks): Promise<
       parseSseEvents(text + '\n\n', callbacks)
     }
   } catch (err) {
+    if (signal?.aborted) {
+      return
+    }
     handleError(err, callbacks)
   }
 }
 
-export function process(): Promise<ProcessSummaryResponse> {
+export function process(signal?: AbortSignal): Promise<ProcessSummaryResponse> {
   return new Promise((resolve, reject) => {
     let resolved = false
 
     streamProcess({
+      signal,
       onDone: (summary) => {
         resolved = true
         resolve(summary)
@@ -144,7 +174,11 @@ export function process(): Promise<ProcessSummaryResponse> {
     })
       .then(() => {
         if (!resolved) {
-          reject(new Error('Stream ended without completion event'))
+          if (signal?.aborted) {
+            reject(signal.reason)
+          } else {
+            reject(new Error('Stream ended without completion event'))
+          }
         }
       })
       .catch((err) => {
@@ -156,6 +190,7 @@ export function process(): Promise<ProcessSummaryResponse> {
 }
 
 export const studyPlannerApi = {
+  status,
   streamProcess,
   process,
 }
