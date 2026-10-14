@@ -28,6 +28,12 @@ const router = createRouter({
       name: 'note-edit',
       component: () => import('../views/NoteEditor.vue'),
     },
+    {
+      path: '/select-account',
+      alias: '/accounts',
+      name: 'select-account',
+      component: () => import('../views/AccountSelectView.vue'),
+    },
   ],
 })
 

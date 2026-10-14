@@ -31,6 +31,24 @@ const INITIAL_FIXTURES: FixtureState = {
       createdAt: '2026-09-01T08:00:00Z',
       updatedAt: '2026-09-01T08:00:00Z',
     },
+    {
+      id: 2,
+      username: 'elena_r',
+      createdAt: '2026-09-14T09:30:00Z',
+      updatedAt: '2026-09-14T09:30:00Z',
+    },
+    {
+      id: 3,
+      username: 'marcus.chen',
+      createdAt: '2026-10-02T14:15:00Z',
+      updatedAt: '2026-10-02T14:15:00Z',
+    },
+    {
+      id: 4,
+      username: 'samira_k',
+      createdAt: '2026-10-11T16:45:00Z',
+      updatedAt: '2026-10-11T16:45:00Z',
+    },
   ],
   currentUser: {
     id: 1,

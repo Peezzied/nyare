@@ -49,6 +49,7 @@ npm run build        # type-check + build-only (run only when necessary)
 Run `npm run lint:oxlint` when you edit code.
 Run `npm run type-check` after you edit TypeScript or Vue files.
 Run `npm run lint` to fix linting errors automatically.
+Run the smallest test scope that verifies the change (see TypeScript and Tests).
 Do not run `npm run build` for routine verification. Run `npm run build` only when necessary.
 Fix all remaining errors before you finish tasks.
 
@@ -84,7 +85,7 @@ Reduce HTTP roundtrips. Load each list once per intent.
 - The compiler enables `noUncheckedIndexedAccess`.
 - Vitest executes tests in the `jsdom` environment.
 - Store unit test files in `src/**/__tests__/*.spec.ts`.
-- Run `npx vitest run <file>` to test a single file.
+- Run tests with the smallest scope that verifies the change. Use `npx vitest run <file>` for one file, or `npx vitest run <file> -t '<name>'` for one test. Prefer a targeted run over `npm run test:unit` (the full suite).
 
 ## Lint and Format
 
