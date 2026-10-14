@@ -295,7 +295,9 @@ export function mockRouter(
     const newNote: NoteResponse = {
       id: `note-${crypto.randomUUID()}`,
       courseId: req.courseId,
+      title: req.title?.trim() ? req.title : 'Untitled Note',
       content: req.content,
+      entryDate: req.entryDate ?? now.slice(0, 10),
       createdAt: now,
       updatedAt: now,
       lastProcessedAt: null,
@@ -327,7 +329,9 @@ export function mockRouter(
       const updated: NoteResponse = {
         ...existing,
         courseId: req.courseId,
+        title: req.title?.trim() ? req.title : existing.title,
         content: req.content,
+        entryDate: req.entryDate ?? existing.entryDate,
         updatedAt: new Date().toISOString(),
       }
       state.notes[index] = updated

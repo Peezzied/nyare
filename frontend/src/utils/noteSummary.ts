@@ -11,9 +11,11 @@ export function toNoteSummary(note: NoteResponse): NoteSummaryResponse {
   return {
     id: note.id,
     courseId: note.courseId,
+    title: note.title,
     preview,
     truncated,
     contentLength: content.length,
+    entryDate: note.entryDate,
     createdAt: note.createdAt,
     updatedAt: note.updatedAt,
   }

@@ -121,7 +121,9 @@ describe('API Types Contract', () => {
     const note: NoteResponse = {
       id: 'note-uuid-1',
       courseId: 1,
+      title: 'Lecture notes',
       content: '# Lecture notes',
+      entryDate: '2026-10-08',
       createdAt: '2026-10-08T09:00:00Z',
       updatedAt: '2026-10-08T09:30:00Z',
       lastProcessedAt: null,
@@ -129,18 +131,24 @@ describe('API Types Contract', () => {
     const summary: NoteSummaryResponse = {
       id: 'note-uuid-1',
       courseId: 1,
+      title: 'Lecture notes',
       preview: 'Lecture notes preview',
       truncated: false,
       contentLength: 15,
+      entryDate: '2026-10-08',
       createdAt: '2026-10-08T09:00:00Z',
       updatedAt: '2026-10-08T09:30:00Z',
     }
     const noteReq: NoteRequest = {
       courseId: 1,
+      title: 'Lecture notes',
       content: '# Lecture notes',
+      entryDate: '2026-10-08',
     }
 
     expect(note.content).toContain('Lecture notes')
+    expect(note.title).toBe('Lecture notes')
+    expect(note.entryDate).toBe('2026-10-08')
     expect(summary.truncated).toBe(false)
     expect(noteReq.courseId).toBe(1)
   })
