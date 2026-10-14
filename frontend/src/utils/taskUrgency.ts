@@ -5,10 +5,10 @@ export type TaskUrgency = 'OVERDUE_OR_TODAY' | 'APPROACHING' | 'FUTURE' | 'NONE'
 
 /** Urgency hex colors keyed by urgency level. */
 export const URGENCY_COLORS: Record<TaskUrgency, string> = {
-  OVERDUE_OR_TODAY: '#D50000',
-  APPROACHING: '#F6BF26',
-  FUTURE: '#0B8043',
-  NONE: '#7B8B97',
+  OVERDUE_OR_TODAY: 'var(--color-urgency-red)',
+  APPROACHING: 'var(--color-urgency-yellow)',
+  FUTURE: 'var(--color-urgency-green)',
+  NONE: 'var(--color-text-muted)',
 }
 
 /**
