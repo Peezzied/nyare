@@ -97,6 +97,10 @@
   border-bottom-width: 2px;
 }
 
+#app {
+  font-weight: normal;
+}
+
 @theme inline {
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -174,7 +178,7 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
 }
+
+/* Desktop scaffold layout disabled: onboarding screens are mobile-first and full-height. */
+
