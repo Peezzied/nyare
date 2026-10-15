@@ -3,7 +3,7 @@ import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft } from 'lucide-vue-next'
 import { tasksApi } from '@/api/tasks'
-import BottomNav from '@/components/BottomNav.vue'
+import { TODO_FIXTURE_TASKS_V2 } from '@/api/mocks/fixtures'
 
 const route = useRoute()
 const router = useRouter()
@@ -17,7 +17,10 @@ onMounted(async () => {
   try {
     await tasksApi.get(id)
   } catch {
-    router.replace('/')
+    const isFixtureTask = TODO_FIXTURE_TASKS_V2.some((t) => t.id === id)
+    if (!isFixtureTask) {
+      router.replace('/')
+    }
   }
 })
 
@@ -51,7 +54,5 @@ function goBack() {
     </header>
 
     <main class="flex-1 pb-20" />
-
-    <BottomNav />
   </div>
 </template>

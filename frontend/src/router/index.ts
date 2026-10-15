@@ -9,16 +9,6 @@ const router = createRouter({
       component: () => import('@/views/TodoView.vue'),
     },
     {
-      path: '/calendar',
-      name: 'calendar',
-      component: () => import('@/views/CalendarView.vue'),
-    },
-    {
-      path: '/notes',
-      name: 'notes',
-      component: () => import('@/views/NotesView.vue'),
-    },
-    {
       path: '/tasks/:id',
       name: 'task-detail',
       component: () => import('@/views/TaskDetailView.vue'),

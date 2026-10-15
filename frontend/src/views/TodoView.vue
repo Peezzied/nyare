@@ -4,11 +4,15 @@ import { useRouter } from 'vue-router'
 import { ChevronDown, ChevronRight } from 'lucide-vue-next'
 import { tasksApi } from '@/api/tasks'
 import { useCatalog } from '@/composables/useCatalog'
-import { TASK_DISPLAY_TIMES, TASK_DUE_DATES, TODO_FIXTURE_TASKS_V2 } from '@/api/mocks/fixtures'
+import {
+  TASK_DISPLAY_TIMES,
+  TASK_DUE_DATES,
+  TODO_FIXTURE_TASKS_V2,
+  TODO_FIXTURE_COURSES,
+} from '@/api/mocks/fixtures'
 import { getPlanCategory } from '@/utils/planCategory'
 import TodoHeader from '@/components/TodoHeader.vue'
 import TaskRow from '@/components/TaskRow.vue'
-import BottomNav from '@/components/BottomNav.vue'
 import type { TaskResponse, PlanCategory } from '@/types/api'
 
 type ActiveFilter = 'ALL' | PlanCategory
@@ -36,7 +40,9 @@ const expandedSections = ref<Record<PlanCategory, boolean>>({
 
 function getCourseName(courseId: number): string {
   const found = catalog.courses.value.find((c) => c.id === courseId)
-  return found?.name ?? `Course ${courseId}`
+  if (found) return found.name
+  const fixtureCourse = TODO_FIXTURE_COURSES.find((c) => c.id === courseId)
+  return fixtureCourse?.name ?? `Course ${courseId}`
 }
 
 function getCategory(task: TaskResponse): PlanCategory {
@@ -103,7 +109,10 @@ async function toggleTask(task: TaskResponse) {
     const updated = await tasksApi.updateStatus(task.id, nextStatus)
     tasks.value = tasks.value.map((t) => (t.id === task.id ? updated : t))
   } catch {
-    tasks.value = tasks.value.map((t) => (t.id === task.id ? { ...t, status: previous } : t))
+    const isFixtureTask = TODO_FIXTURE_TASKS_V2.some((t) => t.id === task.id)
+    if (!isFixtureTask) {
+      tasks.value = tasks.value.map((t) => (t.id === task.id ? { ...t, status: previous } : t))
+    }
   }
 }
 
@@ -205,7 +214,5 @@ onMounted(loadData)
         </section>
       </template>
     </main>
-
-    <BottomNav />
   </div>
 </template>
