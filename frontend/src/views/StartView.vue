@@ -30,9 +30,9 @@ function begin() {
     />
 
     <!-- Brand title -->
-    <div class="relative z-10 flex w-full flex-col items-center pt-[15svh]">
+    <div class="relative z-10 flex w-full flex-col items-center pt-[17svh]">
       <h1
-        class="font-logo text-8xl font-semibold leading-tight tracking-tight text-[#00A4C8] sm:text-7xl"
+        class="font-logo text-8xl font-semibold leading-tight tracking-tight text-[#00A4C8] sm:text-8xl"
       >
         'Nyare
       </h1>
