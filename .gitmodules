@@ -1,3 +1,9 @@
 [submodule "frontend/.impeccable"]
 	path = frontend/.impeccable
 	url = https://github.com/pbakaus/impeccable
+[submodule ".agents/plugins/ponytail"]
+	path = .agents/plugins/ponytail
+	url = https://github.com/DietrichGebert/ponytail.git
+[submodule ".agents/plugins/superpowers"]
+	path = .agents/plugins/superpowers
+	url = https://github.com/obra/superpowers.git

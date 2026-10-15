@@ -20,6 +20,11 @@
   --color-text-main: #334155;
   --color-text-muted: #7b8b97;
   --color-app-border: #cbd5e1;
+
+  /* Task urgency tokens (FR-016) */
+  --color-urgency-red: #d50000;
+  --color-urgency-yellow: #f6bf26;
+  --color-urgency-green: #0b8043;
 }
 
 :root {

@@ -6,7 +6,7 @@ function buildNote(content: string): NoteResponse {
   return {
     id: 'note-1',
     courseId: 1,
-    title: 'Lecture Note',
+    title: 'Lecture 7',
     content,
     entryDate: '2026-10-05',
     createdAt: '2026-10-05T09:30:00Z',
@@ -22,7 +22,7 @@ describe('toNoteSummary', () => {
     expect(summary).toEqual({
       id: 'note-1',
       courseId: 1,
-      title: 'Lecture Note',
+      title: 'Lecture 7',
       preview: 'Short lecture note',
       truncated: false,
       contentLength: 18,

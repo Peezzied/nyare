@@ -182,12 +182,16 @@ describe('Mock Adapter', () => {
 
       const avlSummary = noteSummaries.find((n) => n.id === 'note-cs201-avl')
       expect(avlSummary).toBeDefined()
+      expect(avlSummary?.title).toBe('Lecture 7: Self-Balancing Trees')
+      expect(avlSummary?.entryDate).toBe('2026-10-05')
       expect(avlSummary?.truncated).toBe(true)
       // 200 is the preview limit that the backend also uses.
       expect(avlSummary?.preview.length).toBe(200)
       expect(avlSummary?.contentLength).toBeGreaterThan(200)
 
       const fullNote = await notesApi.get('note-cs201-avl')
+      expect(fullNote.title).toBe(avlSummary?.title)
+      expect(fullNote.entryDate).toBe(avlSummary?.entryDate)
       expect(fullNote.content.length).toBe(avlSummary?.contentLength)
       expect(fullNote.content.startsWith(avlSummary?.preview ?? '')).toBe(true)
     })
@@ -200,20 +204,30 @@ describe('Mock Adapter', () => {
     it('supports note creation, modification, and deletion', async () => {
       const newNote = await notesApi.create({
         courseId: 3,
+        title: 'Lab notes',
         content: 'Short note content',
+        entryDate: '2026-10-07',
       })
       expect(newNote.id).toBeDefined()
+      expect(newNote.title).toBe('Lab notes')
+      expect(newNote.entryDate).toBe('2026-10-07')
 
       const summaryList = await notesApi.list(3)
       const foundSummary = summaryList.find((n) => n.id === newNote.id)
+      expect(foundSummary?.title).toBe('Lab notes')
+      expect(foundSummary?.entryDate).toBe('2026-10-07')
       expect(foundSummary?.truncated).toBe(false)
       expect(foundSummary?.preview).toBe('Short note content')
 
       const updated = await notesApi.update(newNote.id, {
         courseId: 3,
+        title: 'Updated lab notes',
         content: 'Updated note content',
+        entryDate: '2026-10-08',
       })
+      expect(updated.title).toBe('Updated lab notes')
       expect(updated.content).toBe('Updated note content')
+      expect(updated.entryDate).toBe('2026-10-08')
 
       await notesApi.delete(newNote.id)
       await expect(notesApi.get(newNote.id)).rejects.toThrow(ApiError)
