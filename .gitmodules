@@ -1,0 +1,6 @@
+[submodule ".agents/plugins/ponytail"]
+	path = .agents/plugins/ponytail
+	url = https://github.com/DietrichGebert/ponytail.git
+[submodule ".agents/plugins/superpowers"]
+	path = .agents/plugins/superpowers
+	url = https://github.com/obra/superpowers.git
