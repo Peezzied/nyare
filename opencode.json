@@ -1,0 +1,11 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": [
+    "./.agents/plugins/ponytail/.opencode/plugins/ponytail.mjs",
+    "./.agents/plugins/superpowers/.opencode/plugins/superpowers.js"
+  ],
+  "skills": {
+    "paths": ["./.agents/plugins/ponytail/skills", "./.agents/plugins/superpowers/skills"]
+  },
+  "instructions": [".agents/rules/*.md"]
+}
