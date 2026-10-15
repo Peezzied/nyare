@@ -8,17 +8,21 @@ import type {
   ProcessSummaryResponse,
 } from '@/types/api'
 
+/** Full in-memory data set of the mock backend. */
 export interface FixtureState {
   users: UserResponse[]
+  /** Session user. `null` means logged out. */
   currentUser: UserResponse | null
   courses: CourseResponse[]
   schedules: ScheduleResponse[]
   notes: NoteResponse[]
   tasks: TaskResponse[]
   academicEvents: AcademicEventResponse[]
+  /** Fixed summary that every mock Process run returns. */
   processSummary: ProcessSummaryResponse
 }
 
+// The tasks cover each tri-state category (SCHEDULED, LATER, BACKLOG) and each task status.
 const INITIAL_FIXTURES: FixtureState = {
   users: [
     {
@@ -26,6 +30,24 @@ const INITIAL_FIXTURES: FixtureState = {
       username: 'karol',
       createdAt: '2026-09-01T08:00:00Z',
       updatedAt: '2026-09-01T08:00:00Z',
+    },
+    {
+      id: 2,
+      username: 'elena_r',
+      createdAt: '2026-09-14T09:30:00Z',
+      updatedAt: '2026-09-14T09:30:00Z',
+    },
+    {
+      id: 3,
+      username: 'marcus.chen',
+      createdAt: '2026-10-02T14:15:00Z',
+      updatedAt: '2026-10-02T14:15:00Z',
+    },
+    {
+      id: 4,
+      username: 'samira_k',
+      createdAt: '2026-10-11T16:45:00Z',
+      updatedAt: '2026-10-11T16:45:00Z',
     },
   ],
   currentUser: {

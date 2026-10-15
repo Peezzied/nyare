@@ -1,7 +1,13 @@
 import type { ProblemDetail } from '@/types/api'
 
+/**
+ * Error for a failed API call, such as a non-2xx HTTP response or a Process `error` event.
+ * The message is the ProblemDetail `detail`, its `title`, the body text, or a generic text.
+ */
 export class ApiError extends Error {
+  /** HTTP status code of the failure. */
   readonly status: number
+  /** Parsed RFC 7807 body. It is absent when the response body is not JSON. */
   readonly problem?: ProblemDetail
 
   constructor(status: number, message: string, problem?: ProblemDetail) {
@@ -9,10 +15,15 @@ export class ApiError extends Error {
     this.name = 'ApiError'
     this.status = status
     this.problem = problem
+    // Restore the prototype chain so that `instanceof ApiError` works on transpiled targets.
     Object.setPrototypeOf(this, new.target.prototype)
   }
 }
 
+/**
+ * Function that answers requests in place of `fetch`.
+ * Return `null` to let the request go to the network.
+ */
 export type MockHandler = (
   method: string,
   url: string,
@@ -21,10 +32,12 @@ export type MockHandler = (
 
 let mockHandler: MockHandler | null = null
 
+/** Registers a mock handler for all `apiClient` requests. Pass `null` to remove it. */
 export function setMockHandler(handler: MockHandler | null): void {
   mockHandler = handler
 }
 
+/** Query parameters for a GET request. The client skips `undefined` and `null` values. */
 export type QueryParams = Record<string, unknown> | object
 
 function buildUrl(path: string, params?: QueryParams): string {
@@ -66,6 +79,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
         if (err instanceof ApiError) {
           throw err
         }
+        // The body claims JSON but does not parse. Keep the status and use a generic message.
         throw new ApiError(response.status, `HTTP Error ${response.status}`)
       }
     }
@@ -88,6 +102,8 @@ async function request<T>(
 ): Promise<T> {
   const fullUrl = buildUrl(path, options?.params)
 
+  // The mock handler sees the URL with its query string, so it can filter like the backend.
+  // A `null` result means the mock has no route, and the request goes to `fetch`.
   if (mockHandler) {
     const mockResult = await mockHandler(method, fullUrl, options?.body)
     if (mockResult) {
@@ -118,6 +134,7 @@ async function request<T>(
 
   let body: BodyInit | undefined
   if (options?.body !== undefined) {
+    // Do not set Content-Type for FormData. The browser adds it with the multipart boundary.
     if (options.body instanceof FormData) {
       body = options.body
     } else {
@@ -126,6 +143,7 @@ async function request<T>(
     }
   }
 
+  // The backend keeps the user in a session cookie, so each request sends credentials.
   const response = await fetch(fullUrl, {
     method,
     headers,
@@ -136,27 +154,41 @@ async function request<T>(
   return handleResponse<T>(response)
 }
 
+/**
+ * JSON REST client for the Nyare backend.
+ * Each method resolves with the parsed JSON body, the text body, or `undefined` for HTTP 204.
+ * Each method rejects with an `ApiError` for a non-2xx response.
+ */
 export const apiClient = {
+  /** Sends a GET request and appends `params` as the query string. */
   get<T>(url: string, params?: QueryParams): Promise<T> {
     return request<T>('GET', url, { params })
   },
 
+  /** Sends a POST request with `body` as JSON. */
   post<T>(url: string, body?: unknown): Promise<T> {
     return request<T>('POST', url, { body })
   },
 
+  /** Sends a PUT request with `body` as JSON. */
   put<T>(url: string, body?: unknown): Promise<T> {
     return request<T>('PUT', url, { body })
   },
 
+  /** Sends a PATCH request with `body` as JSON. */
   patch<T>(url: string, body?: unknown): Promise<T> {
     return request<T>('PATCH', url, { body })
   },
 
+  /** Sends a DELETE request. */
   delete(url: string): Promise<void> {
     return request<void>('DELETE', url)
   },
 
+  /**
+   * Sends a multipart POST request.
+   * A `File` goes in the `file` form field. A `FormData` value goes unchanged.
+   */
   upload<T>(url: string, file: File | FormData): Promise<T> {
     let body: FormData
     if (file instanceof FormData) {

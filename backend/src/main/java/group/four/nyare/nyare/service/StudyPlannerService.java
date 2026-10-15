@@ -31,6 +31,22 @@ public interface StudyPlannerService {
     ProcessSummaryResponse processNotes(Long userId);
 
     /**
+     * Processes all pending dirty notes for the specified user sequentially across dates,
+     * materializes extracted entities, and returns the aggregate count summary. The supplied
+     * listener receives per-date progress callbacks and is polled at checkpoints for
+     * cooperative cancellation.
+     *
+     * @param userId   the user identifier
+     * @param listener observer reporting per-date progress and cancellation state
+     * @return summary count of created tasks, events, and contexts
+     *         with the identifiers of courses processed in this run
+     * @throws BadRequestException if no dirty notes exist or userId is null
+     * @throws java.util.concurrent.CancellationException when the listener reports
+     *         cancellation; the whole run rolls back
+     */
+    ProcessSummaryResponse processNotes(Long userId, ProcessListener listener);
+
+    /**
      * Processes dirty notes for the given date for the specified user, materializes
      * extracted entities, and returns the count summary.
      *

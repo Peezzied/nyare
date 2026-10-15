@@ -28,6 +28,7 @@ function mockCatalog(): void {
 describe('NotesView', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
+    vi.stubEnv('VITE_USE_MOCKS', 'false')
     useCatalog().resetCatalog()
     useNotes().resetNotes()
   })

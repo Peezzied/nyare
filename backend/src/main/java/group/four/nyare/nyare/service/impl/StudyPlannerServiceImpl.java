@@ -19,6 +19,7 @@ import group.four.nyare.nyare.repository.ImageRepository;
 import group.four.nyare.nyare.repository.NoteRepository;
 import group.four.nyare.nyare.repository.ScheduleRepository;
 import group.four.nyare.nyare.repository.TaskRepository;
+import group.four.nyare.nyare.service.ProcessListener;
 import group.four.nyare.nyare.service.StudyPlannerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CancellationException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -113,6 +115,12 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
     @Override
     @Transactional
     public ProcessSummaryResponse processNotes(Long userId) {
+        return processNotes(userId, ProcessListener.NONE);
+    }
+
+    @Override
+    @Transactional
+    public ProcessSummaryResponse processNotes(Long userId, ProcessListener listener) {
         if (userId == null) {
             throw new BadRequestException("User identifier is required for processing");
         }
@@ -123,7 +131,8 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
             throw new BadRequestException("No journal notes found to process");
         }
 
-        return processDirtyNotes(dirtyNotes, userId);
+        ProcessListener effectiveListener = listener != null ? listener : ProcessListener.NONE;
+        return processDirtyNotes(dirtyNotes, userId, effectiveListener);
     }
 
     @Override
@@ -139,10 +148,16 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
             throw new BadRequestException("No journal notes found for " + date + " to process");
         }
 
-        return processDirtyNotes(dirtyNotes, userId);
+        return processDirtyNotes(dirtyNotes, userId, ProcessListener.NONE);
     }
 
-    private ProcessSummaryResponse processDirtyNotes(List<Note> dirtyNotes, Long userId) {
+    private void checkCancelled(ProcessListener listener) {
+        if (listener.isCancelled()) {
+            throw new CancellationException("Processing cancelled");
+        }
+    }
+
+    private ProcessSummaryResponse processDirtyNotes(List<Note> dirtyNotes, Long userId, ProcessListener listener) {
         SortedMap<LocalDate, List<Note>> notesByDate = new TreeMap<>();
         for (Note note : dirtyNotes) {
             LocalDate noteDate = note.getEntryDate() != null ? note.getEntryDate() : LocalDate.now();
@@ -154,7 +169,13 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         int totalContextsCreated = 0;
         Set<Long> affectedCourseIds = new TreeSet<>();
 
+        int index = 0;
+        int total = notesByDate.size();
         for (Map.Entry<LocalDate, List<Note>> entry : notesByDate.entrySet()) {
+            index++;
+            checkCancelled(listener);
+            listener.onDateStarted(entry.getKey(), index, total);
+
             List<Note> dateNotes = entry.getValue();
 
             // Delete uncompleted previous items linked to notes for this date
@@ -164,6 +185,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
 
             // Discover and update note images
             Map<UUID, List<Image>> noteImages = processAndPersistNoteImages(dateNotes);
+            checkCancelled(listener);
 
             Set<Long> dateCourseIds = dateNotes.stream()
                     .filter(n -> n.getCourse() != null && n.getCourse().getId() != null)
@@ -182,6 +204,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
 
             StudyPlannerEngine.ExtractedData extracted = studyPlannerEngine.process(
                     dateNotes, existingTasks, existingEvents, existingContexts, schedules, noteImages);
+            checkCancelled(listener);
 
             Map<UUID, Note> noteMap = dateNotes.stream()
                     .filter(n -> n.getId() != null)

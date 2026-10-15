@@ -11,6 +11,7 @@ describe('notesPrototypePreview', () => {
   })
 
   it('stays disabled outside mock mode', () => {
+    vi.stubEnv('VITE_USE_MOCKS', 'false')
     expect(prototypePreviewEnabled()).toBe(false)
   })
 
