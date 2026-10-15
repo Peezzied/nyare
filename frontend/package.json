@@ -16,11 +16,18 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "@preact/signals": "^2.11.3",
+    "@schedule-x/calendar": "^4.9.1",
+    "@schedule-x/date-picker": "^4.2.0",
+    "@schedule-x/theme-default": "^4.9.1",
+    "@schedule-x/vue": "^4.1.0",
     "@tailwindcss/vite": "^4.3.3",
     "@tiptap/pm": "^3.31.4",
     "@tiptap/starter-kit": "^3.31.4",
     "@tiptap/vue-3": "^3.31.4",
+    "preact": "^11.0.1",
     "tailwindcss": "^4.3.3",
+    "temporal-polyfill": "^1.0.6",
     "vue": "^3.5.42",
     "vue-router": "^5.3.1"
   },
