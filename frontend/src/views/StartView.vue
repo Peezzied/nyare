@@ -78,7 +78,7 @@ function begin() {
 
     <!-- CTA: original TactileButton sizing preserved -->
     <div
-    class="absolute bottom-[18svh] left-6 right-6 z-20 flex flex-col items-center"
+    class="absolute bottom-[20svh] left-0 right-0 z-20 flex flex-col items-stretch px-6"
     >
     <TactileButton aria-label="Get started with Nyare" @click="begin">
       <span

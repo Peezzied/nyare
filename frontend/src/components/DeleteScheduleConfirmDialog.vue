@@ -111,7 +111,7 @@ async function confirm() {
         :src="duckotaFeedback"
         alt=""
         aria-hidden="true"
-        class="pointer-events-none absolute -right-4 -top-15 h-29 w-29 object-contain"
+        class="pointer-events-none absolute -right-12 -top-20 h-[175px] w-[175px] object-contain"
         style="filter: drop-shadow(1px 0 0 #ffffff) drop-shadow(-1px 0 0 #ffffff) drop-shadow(0 1px 0 #ffffff) drop-shadow(0 -1px 0 #ffffff) drop-shadow(1px 1px 0 #ffffff) drop-shadow(-1px 1px 0 #ffffff) drop-shadow(1px -1px 0 #ffffff) drop-shadow(-1px -1px 0 #ffffff);"      >
 
       <h2
@@ -159,7 +159,7 @@ async function confirm() {
           ref="backButton"
           type="button"
           :disabled="isDeleting"
-          class="min-h-[44px] rounded-xl border-b-4 border-[#CBD5E1] bg-[#E2E8F0] px-4 py-2.5 text-sm font-semibold text-[#334155] transition-all duration-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+          class="min-h-[44px] rounded-xl border-b-4 border-[#CBD5E1] bg-[#E2E8F0] px-4 py-2.5 text-sm font-semibold text-[#334155] transition-all duration-75 hover:bg-[#D7DEE8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:border-b-0 active:translate-y-1 disabled:cursor-not-allowed disabled:opacity-60"
           style="font-family: 'Quicksand', sans-serif; font-weight: 600"
           @click="dismiss"
         >

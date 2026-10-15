@@ -28,7 +28,7 @@ function proceed() {
 
 <template>
   <div
-    class="relative mx-auto flex h-[100svh] w-full max-w-[420px] flex-col overflow-hidden bg-[#F6F7EE] px-6"
+    class="relative mx-auto flex h-[100svh] w-full max-w-[420px] flex-col overflow-hidden bg-[#F6F7EE] px-6 pt-8"
   >
     <!-- Static background: same as Start -->
     <img
@@ -55,7 +55,7 @@ function proceed() {
 
     <!-- Heading: moved lower -->
     <div
-      class="relative z-10 mt-[7svh] translate-y-15 w-full shrink-0"
+      class="relative z-10 mt-[13svh] translate-y-20 w-full shrink-0"
       :class="{ 'welcome-enter welcome-delay-2': entered }"
     >
       <h1
@@ -74,7 +74,7 @@ function proceed() {
 
     <!-- Name input: moved lower -->
     <div
-      class="relative top-18 z-10 mt-7 w-full shrink-0"
+      class="relative top-24 z-10 mt-10 w-full shrink-0"
       :class="{ 'welcome-enter welcome-delay-3': entered }"
     >
       <label for="student-name" class="sr-only">Your name</label>
@@ -114,7 +114,7 @@ function proceed() {
 
     <!-- Duckota and speech bubble: moved lower -->
     <div
-      class="relative z-10 mt-10 translate-y-25 flex w-full items-center justify-between gap-3"
+      class="relative z-10 mt-14 translate-y-30 flex w-full items-center justify-between gap-3"
     >
       <img
         src="@/assets/mascot/duckuta_greet.png"
@@ -145,7 +145,7 @@ function proceed() {
 
     <!-- Continue: same position as Start -->
     <div
-      class="absolute bottom-[18svh] left-6 right-6 z-20"
+      class="absolute bottom-[20svh] left-0 right-0 z-20 flex flex-col items-stretch px-6"
       :class="{ 'welcome-enter welcome-delay-6': entered }"
     >
       <TactileButton
