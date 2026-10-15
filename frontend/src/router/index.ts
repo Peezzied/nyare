@@ -13,6 +13,11 @@ const router = createRouter({
       name: 'task-detail',
       component: () => import('@/views/TaskDetailView.vue'),
     },
+    {
+      path: '/notes',
+      name: 'notes',
+      component: () => import('../views/NotesView.vue'),
+    },
   ],
 })
 

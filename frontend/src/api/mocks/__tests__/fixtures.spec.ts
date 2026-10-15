@@ -32,8 +32,10 @@ describe('createInitialFixtures', () => {
     expect(fixtures.notes.length).toBeGreaterThanOrEqual(2)
     for (const note of fixtures.notes) {
       expect(note.courseId).toBeGreaterThan(0)
+      expect(note.title).toBeTruthy()
       expect(note.content).toMatch(/^#\s+.+/m)
       expect(note.content).toMatch(/^-\s+.+/m)
+      expect(note.entryDate).toMatch(/^\d{4}-\d{2}-\d{2}$/)
     }
 
     expect(fixtures.tasks.length).toBeGreaterThanOrEqual(5)
