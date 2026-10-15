@@ -21,6 +21,8 @@ spring.jpa.database-platform=org.hibernate.community.dialect.SQLiteDialect
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=false
 spring.jpa.open-in-view=false
+spring.jpa.defer-datasource-initialization=true
+spring.sql.init.mode=always
 
 # Jackson 3 / Spring Boot 4
 spring.jackson.deserialization.fail-on-null-for-primitives=false
