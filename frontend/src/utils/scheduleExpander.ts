@@ -1,4 +1,5 @@
-import type { CourseResponse, DayEvent, DayOfWeek, ScheduleResponse } from '../types/api'
+import type { CourseResponse, DayOfWeek, ScheduleResponse } from '../types/api'
+import type { DayEvent } from '../types/calendar'
 
 const COLOR_PALETTE: ('green' | 'blue' | 'purple' | 'orange')[] = [
   'green',

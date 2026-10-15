@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { HOUR_HEIGHT } from '../../constants/calendar'
-import type { DayEvent } from '../../types/api'
+import type { DayEvent } from '../../types/calendar'
 import { calculateGridBoundaries } from '../../utils/scheduleExpander'
 import type { UntimedDayItem } from '../../utils/untimedItems'
 import AllDayStrip from './AllDayStrip.vue'

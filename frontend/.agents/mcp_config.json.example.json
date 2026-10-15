@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "shadcn": {
+      "command": "npx",
+      "args": ["shadcn-vue@latest", "mcp"]
+    },
+    "schedule-x": {
+      "command": "npx",
+      "args": ["-y", "@schedule-x/mcp"]
+    },
+    "vue-docs": {
+      "type": "remote",
+      "url": "https://mcp.vue-mcp.org/mcp"
+    },
+    "stitch": {
+      "serverUrl": "https://stitch.googleapis.com/mcp",
+      "headers": {
+        "X-Goog-Api-Key": "YOUR_STITCH_API_KEY"
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { DayEvent } from '../../types/api'
+import type { DayEvent } from '../../types/calendar'
 
 // Compact class pill for the 7-column week grid
 const props = defineProps<{

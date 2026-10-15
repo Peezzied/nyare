@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { DayEvent } from '../../types/api'
+import type { DayEvent } from '../../types/calendar'
 import { formatTimeRange } from '../../utils/scheduleExpander'
 
 const props = withDefaults(
