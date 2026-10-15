@@ -1,22 +1,22 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-- Version: 1.0.0 (Initial Ratification)
-- Status: Initial Adoption
-- Principles Ratified:
-  * I. Virtual Study Plan and Tri-State Planning
-  * II. Course Anchor and Single Parentage
-  * III. Grounded Uncertainty Preservation
-  * IV. Non-Destructive Additive Planning
-  * V. Strict Architectural Layer Isolation
-  * VI. Canonical Error Strategy
-  * VII. Ponytail Minimalism and Native Features
-  * VIII. Evidence-First Verification and Surgical Edits
-- Sections:
-  * Core Principles
-  * Architectural Standards and System Boundaries
-  * Verification, Tooling, and Quality Gates
-  * Governance
+- Version: 1.0.0 → 1.1.0 (Backend Domain Rule Enforcement in Frontend)
+- Status: Amended
+- Principles Ratified / Modified:
+  * I. Virtual Study Plan and Tri-State Planning (Preserved)
+  * II. Course Anchor and Single Parentage (Preserved)
+  * III. Grounded Uncertainty Preservation (Preserved)
+  * IV. Non-Destructive Additive Planning (Preserved)
+  * V. Strict Architectural Layer Isolation (Preserved)
+  * VI. Canonical Error Strategy (Preserved)
+  * VII. Ponytail Minimalism and Native Features (Preserved)
+  * VIII. Evidence-First Verification and Surgical Edits (Preserved)
+  * IX. Frontend-Backend Domain Rule Alignment (Added)
+- Sections Modified:
+  * Core Principles: Added Principle IX
+  * Frontend Architecture and State Management: Added domain rule compliance
+  * Frontend Data Flow and Cache Conventions: Added server filtering and roundtrip invariants
 - Follow-up TODOs:
   * None
 -->
@@ -93,6 +93,17 @@ Developers must not reformat adjacent unaffected code or comments.
 Developers must verify tests before and after structural refactoring to prove behavior preservation.
 Rationale: Speculative edits and unverified claims introduce software defects and waste engineering effort.
 
+### IX. Frontend-Backend Domain Rule Alignment
+Frontend components and composables must follow all backend domain rules without exception.
+Developers must not bypass backend business logic or build conflicting client behaviors.
+The client derives planning categories (`SCHEDULED`, `LATER`, `BACKLOG`) locally from task fields.
+The client must never persist virtual entities or request backend endpoints for derived study plans.
+The user interface must not offer hourly time-blocking or numerical priority scores.
+The frontend displays tasks with day-level granularity only.
+The client preserves missing dates as blank values without default dates.
+Frontend views must link all academic items to a parent course.
+Rationale: Client domain deviations corrupt data contracts and break planner behavior.
+
 ## Architectural Standards and System Boundaries
 
 ### Backend Architecture
@@ -114,14 +125,23 @@ Composables manage application state using `ref` and `reactive` primitives.
 The client proxies `/api` endpoints to port 8080 during development.
 The client streams planning events from `POST /api/study-planner/process` using native fetch.
 The application assigns course colors deterministically using a 24-color palette modulo course identifier.
+The frontend derives all study plan presentations dynamically from cached tasks.
+Components calculate task planning categories using `getPlanCategory()`.
+The client must not create time-blocking grids or numerical priority calculations.
 
 ### Frontend Data Flow and Cache Conventions
 The client loads entity lists once per user intent.
-Mutation handlers must update local reactive state directly from saved response transfer objects.
+Mutation handlers update local reactive state directly from saved response transfer objects.
 Components must not refetch complete lists after create, update, or delete mutations.
+Courses provide create and delete endpoints only.
 The client caches courses and schedules inside `useCatalog`.
 The client refetches courses or schedules only after catalogue mutations.
-After planner execution, the client refetches only tasks and events for affected courses.
+Developers must filter collections on the server with backend query parameters.
+The client must not request full entity collections when server query parameters exist.
+The backend exposes no date range query parameters.
+The client filters calendar dates and deadline windows in memory from cached collections.
+After planner execution, the client refetches tasks and academic events only for courses in `affectedCourseIds`.
+If the planner summary shows positive item counts without course identifiers, the client queries all tasks and events.
 Components must not call single-item retrieval endpoints inside collection loops.
 
 ### Mobile Design System and Touch Standards
@@ -200,4 +220,4 @@ The version follows semantic versioning rules:
 - **PATCH**: Wording improvements, non-semantic clarifications, and typo corrections.
 Developers must review constitution compliance during all code reviews.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-12
+**Version**: 1.1.0 | **Ratified**: 2026-10-12 | **Last Amended**: 2026-10-13

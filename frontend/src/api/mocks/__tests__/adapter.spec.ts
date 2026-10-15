@@ -17,6 +17,7 @@ import type { ProcessSummaryResponse } from '@/types/api'
 describe('Mock Adapter', () => {
   beforeEach(() => {
     initMockAdapter()
+    // The mock store is module state, so each test starts from fresh fixtures.
     resetMockFixtures()
   })
 
@@ -141,6 +142,7 @@ describe('Mock Adapter', () => {
 
   describe('auth and user management', () => {
     it('executes login, me, and logout cycle', async () => {
+      // The fixtures start with 'karol' logged in.
       const initialMe = await authApi.getCurrentUser()
       expect(initialMe.username).toBe('karol')
 
@@ -183,6 +185,7 @@ describe('Mock Adapter', () => {
       expect(avlSummary?.title).toBe('Lecture 7: Self-Balancing Trees')
       expect(avlSummary?.entryDate).toBe('2026-10-05')
       expect(avlSummary?.truncated).toBe(true)
+      // 200 is the preview limit that the backend also uses.
       expect(avlSummary?.preview.length).toBe(200)
       expect(avlSummary?.contentLength).toBeGreaterThan(200)
 
@@ -289,6 +292,7 @@ describe('Mock Adapter', () => {
     })
 
     it('returns processSummary on study planner process trigger', async () => {
+      // apiClient.post() uses the mock router. process() uses the patched `fetch` SSE stream.
       const result = await apiClient.post<ProcessSummaryResponse>('/api/study-planner/process')
       expect(result).toEqual({
         tasksCreated: 2,
@@ -306,10 +310,18 @@ describe('Mock Adapter', () => {
       })
     })
 
+    it('returns no pending notes on study planner status', async () => {
+      const result = await studyPlannerApi.status()
+      expect(result.hasPendingNotes).toBe(false)
+      expect(result.dirtyNoteCount).toBe(0)
+      expect(result.pendingNotes).toEqual([])
+    })
+
     it('supports image upload and deletion', async () => {
       const file = new File(['dummy bytes'], 'avatar.png', { type: 'image/png' })
       const uploaded = await imagesApi.upload(file)
       expect(uploaded.id).toBeDefined()
+      // In tests the mock skips blob URLs and returns the API path.
       expect(uploaded.url).toContain('/api/images/')
 
       const fetchedImage = await apiClient.get<{ id: string }>(`/api/images/${uploaded.id}`)

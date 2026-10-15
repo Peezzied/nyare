@@ -69,8 +69,8 @@ public class StudyPlannerEngine {
     private static final int PLANNING_SCOPE_DAYS = 14;
 
     /**
-     * Default guard for a single model round-trip. Kept below the SSE timeout
-     * so slow-model failures surface as SSE error events instead of a dropped stream.
+     * Default guard for a single model round-trip. Bounds each model call so a
+     * slow model surfaces as an SSE error event instead of hanging the run.
      */
     private static final long DEFAULT_AI_TIMEOUT_MS = 50_000;
 

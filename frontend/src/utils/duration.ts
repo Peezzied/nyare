@@ -20,6 +20,7 @@ export function durationToMinutes(iso: string | null | undefined): number | null
   }
 
   const [, daysStr, hoursStr, minsStr, secsStr] = match
+  // The regex also matches a bare 'P' or 'PT'. Reject them because they hold no value.
   if (!daysStr && !hoursStr && !minsStr && !secsStr) {
     return null
   }
@@ -48,6 +49,7 @@ export function minutesToDuration(mins: number | null | undefined): string | nul
   }
 
   const totalMinutes = Math.round(mins)
+  // Hours do not fold into days, so 1560 formats as 'PT26H'.
   const hours = Math.floor(totalMinutes / 60)
   const remainingMinutes = totalMinutes % 60
 

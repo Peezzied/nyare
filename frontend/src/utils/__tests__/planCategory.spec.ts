@@ -15,6 +15,7 @@ describe('getPlanCategory', () => {
   it('derives BACKLOG when neither date nor duration is set', () => {
     expect(getPlanCategory({ scheduledDate: null, duration: null })).toBe('BACKLOG')
     expect(getPlanCategory({})).toBe('BACKLOG')
+    // Empty strings are falsy, so they count as unset.
     expect(getPlanCategory({ scheduledDate: '', duration: '' })).toBe('BACKLOG')
   })
 })

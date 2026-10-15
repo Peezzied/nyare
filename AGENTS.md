@@ -26,6 +26,14 @@ Calendar-first academic planner. Class schedule → course-linked journal (`Note
 - When the user requests a commit, use `git caveman-commit`.
 - Follow `.agents/rules/git-safety.md`.
 
+## Code Comments
+
+- Write self-documenting code with clear names.
+- Add comments sparingly to prevent visual noise.
+- Apply conventional comments only to interfaces, methods, and tests.
+- Document intent, parameters, return values, and edge cases.
+- Do not add comments for self-explanatory code.
+
 ## Backend commands (`backend/`)
 
 ```bash
@@ -61,7 +69,7 @@ npm run test:unit    # vitest (jsdom, e2e/ excluded)
 - Services: class-level `@Transactional(readOnly = true)`, explicit `@Transactional` on mutations.
 - Exceptions: only `ResourceNotFoundException` (404) / `BadRequestException` (400); `@Valid` failures handled by `GlobalExceptionHandler` (RFC 7807). No new exception classes.
 - Tests: unit = JUnit5 + Mockito, no Spring (`@Mock` repos, `@InjectMocks` on `*Impl`); controllers = `@WebMvcTest` + `@MockitoBean` on the **service interface**. AssertJ, `// given/when/then`, name `method_condition_expected`.
-- Process entrypoints: `StudyPlannerService.getPlannerStatus(Long)` exposes pending dirty note counts/dates (`GET /api/study-planner/status`); `StudyPlannerService.processNotes(Long)` executes two-phase multi-day sequential extraction and today-anchored study planning. Exposed as `POST /api/study-planner/process` — SSE stream (`init`/`done`/`error` events) on a virtual thread; SSE timeout 60s exceeds AI timeouts (planner 50s, image 30s) so slow models surface as SSE error events.
+- Process entrypoints: `StudyPlannerService.getPlannerStatus(Long)` exposes pending dirty note counts/dates (`GET /api/study-planner/status`); `StudyPlannerService.processNotes(Long)` executes two-phase multi-day sequential extraction and today-anchored study planning. Exposed as `POST /api/study-planner/process` — SSE stream (`init`/`progress`/`done`/`error` events plus `:ping` heartbeat comments) on a virtual thread; no stream timeout (each AI call has its own timeout); a client disconnect cancels the run at the next checkpoint and rolls back the transaction.
 
 ## Domain rules (do not violate)
 

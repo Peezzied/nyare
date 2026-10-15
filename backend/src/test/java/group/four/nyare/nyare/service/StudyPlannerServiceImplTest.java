@@ -493,6 +493,100 @@ class StudyPlannerServiceImplTest {
         ));
     }
 
+    @Test
+    @DisplayName("processNotes cancelled before first date throws CancellationException and skips engine")
+    void processNotes_listenerCancelledBeforeFirstDate_throwsCancellationAndSkipsEngine() {
+        // given
+        Course course = courseWithId(1L, "CS101");
+        Note note = noteWithCourse(course);
+        when(noteRepository.findDirtyNotes(USER_ID)).thenReturn(List.of(note));
+
+        ProcessListener listener = new ProcessListener() {
+            @Override
+            public boolean isCancelled() {
+                return true;
+            }
+        };
+
+        // when/then
+        assertThatThrownBy(() -> service.processNotes(USER_ID, listener))
+                .isInstanceOf(java.util.concurrent.CancellationException.class)
+                .hasMessageContaining("Processing cancelled");
+
+        verify(studyPlannerEngine, never()).process(any(), any(), any(), any(), any(), any());
+        verify(taskRepository, never()).saveAll(anyList());
+    }
+
+    @Test
+    @DisplayName("processNotes cancelled during engine call throws CancellationException without persisting")
+    void processNotes_cancelledDuringEngineCall_throwsCancellationWithoutPersisting() {
+        // given
+        Course course = courseWithId(1L, "CS101");
+        Note note = noteWithCourse(course);
+        when(noteRepository.findDirtyNotes(USER_ID)).thenReturn(List.of(note));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any())).thenReturn(List.of());
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull())).thenReturn(List.of());
+
+        java.util.concurrent.atomic.AtomicBoolean engineCalled = new java.util.concurrent.atomic.AtomicBoolean();
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+                .thenAnswer(inv -> {
+                    engineCalled.set(true);
+                    return new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of());
+                });
+
+        ProcessListener listener = new ProcessListener() {
+            @Override
+            public boolean isCancelled() {
+                return engineCalled.get();
+            }
+        };
+
+        // when/then
+        assertThatThrownBy(() -> service.processNotes(USER_ID, listener))
+                .isInstanceOf(java.util.concurrent.CancellationException.class)
+                .hasMessageContaining("Processing cancelled");
+
+        verify(taskRepository, never()).saveAll(anyList());
+        verify(academicEventRepository, never()).saveAll(anyList());
+        verify(academicContextRepository, never()).saveAll(anyList());
+        verify(noteRepository, never()).saveAll(anyList());
+    }
+
+    @Test
+    @DisplayName("processNotes reports onDateStarted progress per date in chronological order")
+    void processNotes_multipleDates_reportsProgressPerDateInOrder() {
+        // given
+        Course course = courseWithId(1L, "CS101");
+        LocalDate day1 = LocalDate.of(2026, 10, 1);
+        LocalDate day2 = LocalDate.of(2026, 10, 3);
+        Note noteDay1 = new Note(course, "Day 1 content", day1);
+        Note noteDay2 = new Note(course, "Day 2 content", day2);
+
+        when(noteRepository.findDirtyNotes(USER_ID)).thenReturn(List.of(noteDay1, noteDay2));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any())).thenReturn(List.of());
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull())).thenReturn(List.of());
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+                .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of()));
+        when(taskRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
+        when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+
+        ProcessListener listener = org.mockito.Mockito.mock(ProcessListener.class);
+
+        // when
+        service.processNotes(USER_ID, listener);
+
+        // then
+        InOrder inOrder = inOrder(listener);
+        inOrder.verify(listener).onDateStarted(day1, 1, 2);
+        inOrder.verify(listener).onDateStarted(day2, 2, 2);
+    }
+
     // --- helpers ---
 
     private Course courseWithId(long id, String name) {

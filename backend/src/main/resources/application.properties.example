@@ -34,8 +34,9 @@ nyare.ai.max-tokens=4096
 spring.ai.model.chat=google-genai
 
 # Controller
-nyare.study-planner.sse-timeout-ms=60000
+# Interval between SSE heartbeat comments; writes let the container detect client disconnects.
+nyare.study-planner.sse-heartbeat-ms=2000
 
-# AI model request timeout (keep below sse-timeout-ms so slow-model timeouts surface as SSE error events)
+# AI model request timeout (bounds each model call; a timeout surfaces as an SSE error event)
 nyare.study-planner.ai-timeout-ms=50000
 nyare.image-processor.ai-timeout-ms=30000

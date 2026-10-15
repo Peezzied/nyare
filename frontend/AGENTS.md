@@ -49,6 +49,7 @@ npm run build        # type-check + build-only (run only when necessary)
 Run `npm run lint:oxlint` when you edit code.
 Run `npm run type-check` after you edit TypeScript or Vue files.
 Run `npm run lint` to fix linting errors automatically.
+Run the smallest test scope that verifies the change (see TypeScript and Tests).
 Do not run `npm run build` for routine verification. Run `npm run build` only when necessary.
 Fix all remaining errors before you finish tasks.
 
@@ -63,7 +64,7 @@ The project does not require external state libraries.
 The backend server runs on port 8080.
 Configure `server.proxy` in `vite.config.ts` to route `/api` requests to `http://localhost:8080`.
 Use the native `fetch` function for REST endpoints.
-Use `fetch` with a `ReadableStream` reader to receive Server-Sent Events from `POST /api/study-planner/process` (`EventSource` supports `GET` only).
+Use `fetch` with a `ReadableStream` reader to receive Server-Sent Events from `POST /api/study-planner/process` (`EventSource` supports `GET` only). Pass an `AbortSignal` to `streamProcess`/`process` to cancel a run; the backend then stops at the next checkpoint and rolls back. After a cancel, `useProcess` rechecks `GET /api/study-planner/status`; a run that committed anyway sets `savedAfterCancel` and calls `onSavedAfterCancel` for a full tasks and events refetch.
 Do not install Axios.
 
 ## Backend Roundtrip Conventions
@@ -84,7 +85,7 @@ Reduce HTTP roundtrips. Load each list once per intent.
 - The compiler enables `noUncheckedIndexedAccess`.
 - Vitest executes tests in the `jsdom` environment.
 - Store unit test files in `src/**/__tests__/*.spec.ts`.
-- Run `npx vitest run <file>` to test a single file.
+- Run tests with the smallest scope that verifies the change. Use `npx vitest run <file>` for one file, or `npx vitest run <file> -t '<name>'` for one test. Prefer a targeted run over `npm run test:unit` (the full suite).
 
 ## Lint and Format
 
@@ -101,6 +102,13 @@ Reduce HTTP roundtrips. Load each list once per intent.
 - Define routes in `src/router/index.ts`.
 - Import route components dynamically.
 - Read skill guides in `.agents/skills/` before you write Vue code.
+- Run `npm run story` to preview component stories with Histoire.
+- Do not include test code or test files when creating component stories (`.story.vue`).
+- Write self-documenting code with clear names.
+- Add comments sparingly to prevent visual noise.
+- Apply conventional comments only to interfaces, methods, and tests.
+- Document intent, parameters, return values, and edge cases.
+- Do not add comments for self-explanatory code.
 
 ## MCP Servers (`.agents/mcp_config.json`)
 
