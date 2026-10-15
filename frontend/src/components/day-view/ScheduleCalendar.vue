@@ -6,19 +6,26 @@ import { createCalendar, createViewDay } from '@schedule-x/calendar'
 import { Temporal } from 'temporal-polyfill'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useNow } from '../../composables/useNow'
+import { HOUR_HEIGHT } from '../../constants/calendar'
 import type { DayEvent } from '../../types/api'
+import type { UntimedDayItem } from '../../utils/untimedItems'
 import { calculateGridBoundaries } from '../../utils/scheduleExpander'
+import AllDayStrip from './AllDayStrip.vue'
 import CourseCard from './CourseCard.vue'
 import TimeIndicator from './TimeIndicator.vue'
 
 const props = defineProps<{
   events: DayEvent[]
+  untimedItems: UntimedDayItem[]
   selectedDate: Date
+}>()
+
+const emit = defineEmits<{
+  (e: 'selectUntimed', item: UntimedDayItem): void
 }>()
 
 const PILL_INSET_LEFT = 0 // must match the left padding on .sx__time-grid-event
 const PILL_INSET_RIGHT = 8 // must match the right padding on .sx__time-grid-event
-const HOUR_HEIGHT = 80 // pixels per hour, must match the design
 const TZ = 'Asia/Manila'
 
 const now = useNow()
@@ -42,6 +49,7 @@ function toSxEvents(events: DayEvent[]) {
 // ---- Calendar instance ----
 // Schedule X cannot change dayBoundaries after creation, so the calendar is
 // rebuilt (new key) whenever the date or boundaries change.
+// Untimed items are NOT part of it: they live in the AllDayStrip above.
 const calendarKey = ref(0)
 
 const calendarApp = computed(() => {
@@ -70,10 +78,6 @@ const calendarApp = computed(() => {
     },
     events: toSxEvents(props.events),
   })
-})
-
-watch([() => props.selectedDate, boundaries], () => {
-  calendarKey.value++
 })
 
 // ---- Current time ----
@@ -110,8 +114,9 @@ const nowLabel = computed(() => {
   return 'No class'
 })
 
-// ---- DOM references inside Schedule X ----
-const wrapperRef = ref<HTMLElement | null>(null)
+// ---- DOM references ----
+const wrapperRef = ref<HTMLElement | null>(null) // whole component (strip + grid)
+const areaRef = ref<HTMLElement | null>(null) // the Schedule X area below the strip
 const dayColEl = ref<HTMLElement | null>(null) // the positioned day column
 const scrollEl = ref<HTMLElement | null>(null) // the element that scrolls
 const scrollTop = ref(0)
@@ -119,18 +124,33 @@ const viewHeight = ref(0)
 let scrollCleanup: (() => void) | null = null
 let resizeObserver: ResizeObserver | null = null
 
-// Where the time line sits, in pixels relative to our wrapper
+// Where the time line sits, in pixels relative to the Schedule X area
 const overlay = ref({ top: 0, left: 0, width: 0 })
+// Left edge of the day column, so the all-day strip lines up with the grid pills
+const gutterLeft = ref(0)
+
+// Scroll memory: the first build scrolls to "now"; later rebuilds (swipes)
+// restore the position you were at, like Google Calendar.
+let didInitialScroll = false
+let savedScrollTop = 0
+
+// Rebuild the calendar when the date or boundaries change
+watch([() => props.selectedDate, boundaries], () => {
+  if (scrollEl.value) savedScrollTop = scrollEl.value.scrollTop
+  calendarKey.value++
+})
 
 function updateOverlay() {
-  const wrap = wrapperRef.value
+  const area = areaRef.value
   const col = dayColEl.value
-  if (!wrap || !col || nowTop.value === null) return
-  const w = wrap.getBoundingClientRect()
+  if (!area || !col) return
+  const a = area.getBoundingClientRect()
   const c = col.getBoundingClientRect()
+  gutterLeft.value = Math.max(Math.round(c.left - a.left), 0)
+  if (nowTop.value === null) return
   overlay.value = {
-    top: c.top - w.top + nowTop.value,
-    left: c.left - w.left + PILL_INSET_LEFT,
+    top: c.top - a.top + nowTop.value,
+    left: c.left - a.left + PILL_INSET_LEFT,
     width: c.width - PILL_INSET_LEFT - PILL_INSET_RIGHT,
   }
 }
@@ -148,6 +168,7 @@ function observeLayout() {
   resizeObserver?.disconnect()
   resizeObserver = new ResizeObserver(() => measure())
   if (wrapperRef.value) resizeObserver.observe(wrapperRef.value)
+  if (areaRef.value) resizeObserver.observe(areaRef.value)
   if (dayColEl.value) resizeObserver.observe(dayColEl.value)
   if (scrollEl.value) resizeObserver.observe(scrollEl.value)
 }
@@ -167,7 +188,7 @@ function settle(frames = 90) {
 }
 
 function findDayCol(tries = 40) {
-  const el = wrapperRef.value?.querySelector<HTMLElement>('.sx__time-grid-day') ?? null
+  const el = areaRef.value?.querySelector<HTMLElement>('.sx__time-grid-day') ?? null
   if (el) {
     dayColEl.value = el
     observeLayout()
@@ -186,7 +207,7 @@ function attachScrollListener(tries = 40) {
     scrollCleanup()
     scrollCleanup = null
   }
-  const el = wrapperRef.value?.querySelector<HTMLElement>('.sx__view-container') ?? null
+  const el = areaRef.value?.querySelector<HTMLElement>('.sx__view-container') ?? null
   if (!el) {
     if (tries > 0) {
       requestAnimationFrame(() => attachScrollListener(tries - 1))
@@ -197,10 +218,20 @@ function attachScrollListener(tries = 40) {
   }
   scrollEl.value = el
   observeLayout()
-  measure()
   el.addEventListener('scroll', measure, { passive: true })
   scrollCleanup = () => el.removeEventListener('scroll', measure)
-  scrollToNow('auto')
+  if (didInitialScroll) {
+    // Rebuild after a swipe: keep the scroll position
+    el.scrollTop = savedScrollTop
+  } else {
+    didInitialScroll = true
+    scrollToNow('auto')
+  }
+  measure()
+  // Tell the swiper this day is on screen and scrolled into place
+  requestAnimationFrame(() => {
+    wrapperRef.value?.dispatchEvent(new CustomEvent('day-ready', { bubbles: true }))
+  })
 }
 
 function setup() {
@@ -232,6 +263,13 @@ watch(calendarKey, () => {
 
 watch(nowTop, () => nextTick(updateOverlay))
 
+// ---- Untimed items ----
+function onSelectUntimed(item: UntimedDayItem) {
+  // Placeholder: no backend calls yet
+  console.log('[DayView] Untimed item tapped:', item.title)
+  emit('selectUntimed', item)
+}
+
 // ---- Jump button ----
 const nowDirection = computed<'up' | 'down' | null>(() => {
   if (nowTop.value === null) return null
@@ -251,49 +289,61 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
           ),
         )
       : null
-    const target = nowTop.value ?? firstTop ?? (8 - boundaries.value.startHour) * HOUR_HEIGHT
+  const target = nowTop.value ?? firstTop ?? (8 - boundaries.value.startHour) * HOUR_HEIGHT
   el.scrollTo({ top: Math.max(target - 120, 0), behavior })
 }
 </script>
 
 <template>
-  <div ref="wrapperRef" class="relative flex-1 min-h-0 sx-nyare-wrapper">
-    <!-- Absolute box: always exactly the size of the free space, so Schedule X
-         gets a real height and scrolls inside it -->
-    <div class="absolute inset-0 sx-nyare-fill">
-      <ScheduleXCalendar :calendar-app="calendarApp" :key="calendarKey">
-        <template #timeGridEvent="{ calendarEvent }">
-          <CourseCard :event="(calendarEvent as any)._raw as DayEvent" embedded />
-        </template>
-      </ScheduleXCalendar>
-    </div>
+  <div ref="wrapperRef" class="relative flex min-h-0 flex-1 flex-col">
+    <!-- Tasks/events without a time: sits on top like Google Calendar's all-day row -->
+    <AllDayStrip
+      v-if="untimedItems.length > 0"
+      class="shrink-0"
+      :items="untimedItems"
+      :style="{ paddingLeft: `${gutterLeft}px` }"
+      @select="onSelectUntimed"
+    />
 
-    <!-- Time line: a normal Vue overlay above the calendar, clipped to this area -->
-    <div
-      v-if="dayColEl !== null && nowTop !== null"
-      class="absolute inset-0 z-20 overflow-hidden pointer-events-none"
-    >
-      <div
-        class="absolute"
-        :style="{
-          top: `${overlay.top}px`,
-          left: `${overlay.left}px`,
-          width: `${overlay.width}px`,
-        }"
-      >
-        <TimeIndicator :top="0" :label="nowLabel" />
+    <!-- Schedule X area: takes all the remaining space and scrolls inside -->
+    <div ref="areaRef" class="relative min-h-0 flex-1 sx-nyare-wrapper">
+      <!-- Absolute box: always exactly the size of the free space, so Schedule X
+           gets a real height and scrolls inside it -->
+      <div class="absolute inset-0 sx-nyare-fill">
+        <ScheduleXCalendar :calendar-app="calendarApp" :key="calendarKey">
+          <template #timeGridEvent="{ calendarEvent }">
+            <CourseCard :event="(calendarEvent as any)._raw as DayEvent" embedded />
+          </template>
+        </ScheduleXCalendar>
       </div>
-    </div>
 
-    <!-- Now jump button: bottom LEFT (right side is reserved for a teammate) -->
-    <button
-      v-if="nowDirection"
-      type="button"
-      class="absolute bottom-4 left-4 z-30 rounded-full bg-[#0E7490] px-4 py-2 text-sm font-bold text-white shadow-lg active:scale-95 transition-transform"
-      @click="scrollToNow()"
-    >
-      {{ nowDirection === 'up' ? '↑' : '↓' }} Now
-    </button>
+      <!-- Time line: a normal Vue overlay above the calendar, clipped to this area -->
+      <div
+        v-if="dayColEl !== null && nowTop !== null"
+        class="absolute inset-0 z-20 overflow-hidden pointer-events-none"
+      >
+        <div
+          class="absolute"
+          :style="{
+            top: `${overlay.top}px`,
+            left: `${overlay.left}px`,
+            width: `${overlay.width}px`,
+          }"
+        >
+          <TimeIndicator :top="0" :label="nowLabel" />
+        </div>
+      </div>
+
+      <!-- Now jump button: bottom LEFT (right side is reserved for a teammate) -->
+      <button
+        v-if="nowDirection"
+        type="button"
+        class="absolute bottom-4 left-4 z-30 rounded-full bg-[#0E7490] px-4 py-2 text-sm font-bold text-white shadow-lg active:scale-95 transition-transform"
+        @click="scrollToNow()"
+      >
+        {{ nowDirection === 'up' ? '↑' : '↓' }} Now
+      </button>
+    </div>
   </div>
 </template>
 
@@ -310,9 +360,11 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
   border-radius: 0;
 }
 
-/* Hide Schedule X's own toolbar and date header (DayViewHeader is used instead) */
+/* Hide Schedule X's own toolbar, date header and all-day row
+   (DayViewHeader and AllDayStrip are used instead) */
 .sx-nyare-wrapper :deep(.sx__calendar-header),
-.sx-nyare-wrapper :deep(.sx__week-grid__date-axis) {
+.sx-nyare-wrapper :deep(.sx__week-grid__date-axis),
+.sx-nyare-wrapper :deep(.sx__date-grid) {
   display: none !important;
 }
 

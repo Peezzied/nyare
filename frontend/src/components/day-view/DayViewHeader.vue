@@ -1,11 +1,12 @@
 <script setup lang="ts">
 defineProps<{
   dateTitle: string
+  mode: 'day' | 'week'
 }>()
 
 const emit = defineEmits<{
   (e: 'toggleMenu'): void
-  (e: 'openArchive'): void
+  (e: 'toggleView'): void
 }>()
 </script>
 
@@ -34,32 +35,32 @@ const emit = defineEmits<{
         </svg>
       </button>
 
-      <!-- Date Title -->
+      <!-- Date / week title -->
       <h1 class="text-2xl font-bold tracking-tight text-stone-700 font-sans">
         {{ dateTitle }}
       </h1>
 
-      <!-- Schedule Archive Button (Calendar with 7) -->
+      <!-- Day / Week switch: "7" = go to the week, "1" = go to a day -->
       <button
         type="button"
         class="p-2 -mr-2 text-stone-800 hover:text-stone-900 transition-colors focus:outline-none"
-        aria-label="Schedule archive"
-        @click="emit('openArchive')"
+        :aria-label="mode === 'day' ? 'Switch to week view' : 'Switch to day view'"
+        @click="emit('toggleView')"
       >
         <svg class="w-7 h-7" viewBox="0 0 24 24" fill="currentColor">
           <path
             d="M19 4h-1V2h-2v2H8V2H6v2H5C3.89 4 3 4.9 3 6v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"
           />
           <text
-            x="12"
-            y="17.5"
-            font-size="8.5"
-            font-weight="bold"
-            text-anchor="middle"
-            fill="white"
-          >
-            7
-          </text>
+  x="12"
+  y="17.5"
+  font-size="8.5"
+  font-weight="bold"
+  text-anchor="middle"
+  fill="currentColor"
+>
+  {{ mode === 'day' ? '7' : '1' }}
+</text>
         </svg>
       </button>
     </div>

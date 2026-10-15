@@ -22,8 +22,8 @@
 
 **Purpose**: Baseline evidence + shared fixtures before any implementation
 
-- [ ] T001 [P] Record baseline verification evidence by running `npm run type-check` in `frontend/` and confirming zero errors before edits
-- [ ] T002 [P] Add untimed fixtures (2 date-only tasks + 1 deadline-date event for 2026-10-14, 1 task for 2026-10-15) to `frontend/src/mocks/calendarData.ts`
+- [X] T001 [P] Record baseline verification evidence by running `npm run type-check` in `frontend/` and confirming zero errors before edits
+- [X] T002 [P] Add untimed fixtures (2 date-only tasks + 1 deadline-date event for 2026-10-14, 1 task for 2026-10-15) to `frontend/src/mocks/calendarData.ts`
 
 **Checkpoint**: Baseline green; fixtures available for US2/US3 independent tests
 
@@ -35,11 +35,11 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 [P] Write failing unit spec for date-key helpers (`toDateKey`, `addDays`, `isSameDay`, local-parts only, never `toISOString`) in `frontend/src/utils/__tests__/dayKey.spec.ts`
-- [ ] T004 [P] Write failing unit spec for untimed derivation (task included when `scheduledDate` day equals active day; event included when `deadline` day equals active day; `category` is `"task"` or `"event"` verbatim; `completed` is `status === 'COMPLETED'` for tasks and `false` for events) in `frontend/src/utils/__tests__/untimedItems.spec.ts`
-- [ ] T005 Implement date-key helpers in `frontend/src/utils/dayKey.ts` until `frontend/src/utils/__tests__/dayKey.spec.ts` passes
-- [ ] T006 Implement `deriveUntimedItems` in `frontend/src/utils/untimedItems.ts` until `frontend/src/utils/__tests__/untimedItems.spec.ts` passes
-- [ ] T007 Load tasks once per intent via `tasksApi.list()` from `frontend/src/api/tasks.ts` and events once per intent via `academicEventsApi.list()` from `frontend/src/api/academicEvents.ts` in `frontend/src/components/day-view/DayViewContainer.vue` (local refs; no store; no re-fetch on swipe; filter active day locally with helpers from `frontend/src/utils/dayKey.ts`)
+- [X] T003 [P] Write failing unit spec for date-key helpers (`toDateKey`, `addDays`, `isSameDay`, local-parts only, never `toISOString`) in `frontend/src/utils/__tests__/dayKey.spec.ts`
+- [X] T004 [P] Write failing unit spec for untimed derivation (task included when `scheduledDate` day equals active day; event included when `deadline` day equals active day; `category` is `"task"` or `"event"` verbatim; `completed` is `status === 'COMPLETED'` for tasks and `false` for events) in `frontend/src/utils/__tests__/untimedItems.spec.ts`
+- [X] T005 Implement date-key helpers in `frontend/src/utils/dayKey.ts` until `frontend/src/utils/__tests__/dayKey.spec.ts` passes
+- [X] T006 Implement `deriveUntimedItems` in `frontend/src/utils/untimedItems.ts` until `frontend/src/utils/__tests__/untimedItems.spec.ts` passes
+- [X] T007 Load tasks once per intent via `tasksApi.list()` from `frontend/src/api/tasks.ts` and events once per intent via `academicEventsApi.list()` from `frontend/src/api/academicEvents.ts` in `frontend/src/components/day-view/DayViewContainer.vue` (local refs; no store; no re-fetch on swipe; filter active day locally with helpers from `frontend/src/utils/dayKey.ts`)
 
 **Checkpoint**: Foundation ready — helpers tested, lists load once, user stories can begin
 
@@ -55,14 +55,14 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T008 [P] [US1] Write failing unit spec for `resolveSwipe` (`|dx| >= 30` within 300ms commits `targetDayOffset` of `-1` for left or `+1` for right; sub-threshold returns `0`; `|dy| > |dx|` returns `0` for vertical passthrough) in `frontend/src/utils/__tests__/swipeGesture.spec.ts`
+- [X] T008 [P] [US1] Write failing unit spec for `resolveSwipe` (`|dx| >= 30` within 300ms commits `targetDayOffset` of `-1` for left or `+1` for right; sub-threshold returns `0`; `|dy| > |dx|` returns `0` for vertical passthrough) in `frontend/src/utils/__tests__/swipeGesture.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T009 [US1] Implement `resolveSwipe` in `frontend/src/utils/swipeGesture.ts` until `frontend/src/utils/__tests__/swipeGesture.spec.ts` passes
-- [ ] T010 [US1] Wire PointerEvents swipe on the day-view column in `frontend/src/components/day-view/DayViewContainer.vue` (axis-lock on first decisive displacement; commit calls `addDays` from `frontend/src/utils/dayKey.ts`; existing `calendarKey` rebuild in `frontend/src/components/day-view/ScheduleCalendar.vue` must not be duplicated)
-- [ ] T011 [US1] Set `touch-action: pan-y` on the swipe surface and confirm `.sx__view-container` native vertical scroll is untouched in `frontend/src/components/day-view/ScheduleCalendar.vue`
-- [ ] T012 [US1] Verify header updates from `selectedDate` via existing `formatDateHeader` in `frontend/src/utils/scheduleExpander.ts` and swipe-to-render completes under 300ms per SC-001
+- [X] T009 [US1] Implement `resolveSwipe` in `frontend/src/utils/swipeGesture.ts` until `frontend/src/utils/__tests__/swipeGesture.spec.ts` passes
+- [X] T010 [US1] Wire PointerEvents swipe on the day-view column in `frontend/src/components/day-view/DayViewContainer.vue` (axis-lock on first decisive displacement; commit calls `addDays` from `frontend/src/utils/dayKey.ts`; existing `calendarKey` rebuild in `frontend/src/components/day-view/ScheduleCalendar.vue` must not be duplicated)
+- [X] T011 [US1] Set `touch-action: pan-y` on the swipe surface and confirm `.sx__view-container` native vertical scroll is untouched in `frontend/src/components/day-view/ScheduleCalendar.vue`
+- [X] T012 [US1] Verify header updates from `selectedDate` via existing `formatDateHeader` in `frontend/src/utils/scheduleExpander.ts` and swipe-to-render completes under 300ms per SC-001
 
 **Checkpoint**: US1 independently testable — swipe navigates days, vertical scroll unaffected
 
@@ -78,14 +78,14 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T013 [P] [US2] Write failing unit spec asserting untimed mapping emits `Temporal.PlainDate` start/end (same date) while timed mapping keeps `Temporal.ZonedDateTime`, in `frontend/src/utils/__tests__/untimedItems.spec.ts` (extend T004 spec file, new `describe` block)
+- [X] T013 [P] [US2] Write failing unit spec asserting untimed mapping emits `Temporal.PlainDate` start/end (same date) while timed mapping keeps `Temporal.ZonedDateTime`, in `frontend/src/utils/__tests__/untimedItems.spec.ts` (extend T004 spec file, new `describe` block)
 
 ### Implementation for User Story 2
 
-- [ ] T014 [P] [US2] Create `UntimedPill.vue` in `frontend/src/components/day-view/UntimedPill.vue` (single-item pill: truncated title, `courseId % 24` color, task checkbox affordance vs event flag; receives item via `#dateGridEvent` slot scope)
-- [ ] T015 [US2] Branch event mapping in `frontend/src/components/day-view/ScheduleCalendar.vue` (timed `DayEvent` → existing `ZonedDateTime` path; `deriveUntimedItems` output → `Temporal.PlainDate` start/end with `_raw` passthrough) and register the `#dateGridEvent` slot rendering `frontend/src/components/day-view/UntimedPill.vue`
-- [ ] T016 [US2] Cap the native all-day row at ≤25% viewport height with existing 8px rhythm in `frontend/src/components/day-view/ScheduleCalendar.vue` (`<style scoped>` `:deep(.sx__date-grid)` rules only; do not restyle the time grid)
-- [ ] T017 [US2] Verify empty-day collapse (no untimed items → row contributes no height, no console warnings) in `frontend/src/components/day-view/DayViewContainer.vue` wiring
+- [X] T014 [P] [US2] Create `UntimedPill.vue` in `frontend/src/components/day-view/UntimedPill.vue` (single-item pill: truncated title, `courseId % 24` color, task checkbox affordance vs event flag; receives item via `#dateGridEvent` slot scope)
+- [X] T015 [US2] Branch event mapping in `frontend/src/components/day-view/ScheduleCalendar.vue` (timed `DayEvent` → existing `ZonedDateTime` path; `deriveUntimedItems` output → `Temporal.PlainDate` start/end with `_raw` passthrough) and register the `#dateGridEvent` slot rendering `frontend/src/components/day-view/UntimedPill.vue`
+- [X] T016 [US2] Cap the native all-day row at ≤25% viewport height with existing 8px rhythm in `frontend/src/components/day-view/ScheduleCalendar.vue` (`<style scoped>` `:deep(.sx__date-grid)` rules only; do not restyle the time grid)
+- [X] T017 [US2] Verify empty-day collapse (no untimed items → row contributes no height, no console warnings) in `frontend/src/components/day-view/DayViewContainer.vue` wiring
 
 **Checkpoint**: US1 + US2 both work — swipe navigates, untimed items render exclusively in the native all-day row (SC-002)
 
@@ -99,9 +99,9 @@
 
 ### Implementation for User Story 3
 
-- [ ] T018 [P] [US3] Implement title ellipsis truncation inside bounded pills in `frontend/src/components/day-view/UntimedPill.vue` (CSS `text-overflow: ellipsis`; no viewport overflow on 390px baseline)
-- [ ] T019 [US3] Implement expand/collapse toggle for the native all-day row in `frontend/src/components/day-view/ScheduleCalendar.vue` (collapsed shows compact pills within the ≤25% cap; expanded reveals all items; `aria-expanded` managed; keyboard-focusable)
-- [ ] T020 [US3] Verify toggle with 4+ fixtures from `frontend/src/mocks/calendarData.ts` and confirm tri-state display still derives via `getPlanCategory` in `frontend/src/utils/planCategory.ts` (no recomputation in the pill)
+- [X] T018 [P] [US3] Implement title ellipsis truncation inside bounded pills in `frontend/src/components/day-view/UntimedPill.vue` (CSS `text-overflow: ellipsis`; no viewport overflow on 390px baseline)
+- [X] T019 [US3] Implement expand/collapse toggle for the native all-day row in `frontend/src/components/day-view/ScheduleCalendar.vue` (collapsed shows compact pills within the ≤25% cap; expanded reveals all items; `aria-expanded` managed; keyboard-focusable)
+- [X] T020 [US3] Verify toggle with 4+ fixtures from `frontend/src/mocks/calendarData.ts` and confirm tri-state display still derives via `getPlanCategory` in `frontend/src/utils/planCategory.ts` (no recomputation in the pill)
 
 **Checkpoint**: All user stories independently functional
 
@@ -111,10 +111,10 @@
 
 **Purpose**: End-to-end validation + constitution sweeps, no new scope
 
-- [ ] T021 [P] Run all 8 `specs/002-swipeable-day-calendar/quickstart.md` validation scenarios and record pass/fail evidence
-- [ ] T022 [P] Verify Constitution I–V on the final diff (tri-state derived locally; every item carries `courseId`; no invented times/durations/scores; no title rewrites; native fetch only, no new endpoint/package/store)
-- [ ] T023 Run `npm run type-check` in `frontend/` and `npx vitest run src/utils/__tests__/dayKey.spec.ts src/utils/__tests__/untimedItems.spec.ts src/utils/__tests__/swipeGesture.spec.ts` in `frontend/` and record fresh passing output
-- [ ] T024 Run `npm run lint:oxlint` in `frontend/` and fix only violations introduced by this feature's files
+- [X] T021 [P] Run all 8 `specs/002-swipeable-day-calendar/quickstart.md` validation scenarios and record pass/fail evidence
+- [X] T022 [P] Verify Constitution I–V on the final diff (tri-state derived locally; every item carries `courseId`; no invented times/durations/scores; no title rewrites; native fetch only, no new endpoint/package/store)
+- [X] T023 Run `npm run type-check` in `frontend/` and `npx vitest run src/utils/__tests__/dayKey.spec.ts src/utils/__tests__/untimedItems.spec.ts src/utils/__tests__/swipeGesture.spec.ts` in `frontend/` and record fresh passing output
+- [X] T024 Run `npm run lint:oxlint` in `frontend/` and fix only violations introduced by this feature's files
 
 ---
 
