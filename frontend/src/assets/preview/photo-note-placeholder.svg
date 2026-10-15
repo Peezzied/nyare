@@ -1,0 +1,16 @@
+<!-- Prototype-only placeholder art for the picture-note example card. Not user data. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300" role="img" aria-label="Prototype photo placeholder">
+  <title>Prototype photo placeholder</title>
+  <defs>
+    <linearGradient id="morning" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FEF9E7"/>
+      <stop offset="0.6" stop-color="#E8F8F0"/>
+      <stop offset="1" stop-color="#E1F5FE"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#morning)"/>
+  <circle cx="200" cy="118" r="44" fill="#F6BF26"/>
+  <path d="M0 210 Q100 175 200 205 T400 195 V300 H0 Z" fill="#A2E2BF"/>
+  <path d="M0 245 Q120 215 240 240 T400 235 V300 H0 Z" fill="#7CB342"/>
+  <text x="200" y="286" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#7B8B97">Prototype photo placeholder</text>
+</svg>

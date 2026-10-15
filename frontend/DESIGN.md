@@ -43,6 +43,7 @@ Theme Mode: **Light mode only** for the initial MVP. Dark mode is deferred.
 | :--- | :--- | :--- |
 | `--color-bg-app` | `#F6F7EE` | Warm parchment background across all pages |
 | `--color-surface-card` | `#FFFFFF` | Clean white card and sheet background |
+| `--color-nav-bg` | `#FDFEF7` | Warm cream parchment background for bottom navigation bar |
 | `--color-primary` | `#00A4C8` | Ocean Cyan primary action color and active indicators |
 | `--color-primary-bevel` | `#007B99` | Darker cyan for 3D tactile button bottom borders |
 | `--color-text-main` | `#334155` | Slate body text and primary labels |
@@ -144,7 +145,7 @@ Calendar items share course colors but differentiate block types through fill, b
   2. **Calendar** (Calendar icon)
   3. **Notes** (Pencil and paper icon)
 - Height: `64px` plus safe-area padding.
-- Surface: White (`#FFFFFF`) with top border `#CBD5E1`.
+- Surface: Cream parchment (`#FDFEF7` / `--color-nav-bg`) with top border `#CBD5E1`.
 
 ### 7.2 Task View (Tri-State Planner)
 - Segmented filter control: `All` | `Scheduled` | `Later` | `Backlog`.

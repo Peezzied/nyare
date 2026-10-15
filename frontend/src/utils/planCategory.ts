@@ -2,6 +2,7 @@
 
 import type { PlanCategory } from '@/types/api'
 
+/** Task fields that decide the plan category. */
 interface Plannable {
   readonly scheduledDate?: string | null
   readonly duration?: string | null

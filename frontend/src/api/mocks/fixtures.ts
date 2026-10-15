@@ -8,17 +8,21 @@ import type {
   ProcessSummaryResponse,
 } from '@/types/api'
 
+/** Full in-memory data set of the mock backend. */
 export interface FixtureState {
   users: UserResponse[]
+  /** Session user. `null` means logged out. */
   currentUser: UserResponse | null
   courses: CourseResponse[]
   schedules: ScheduleResponse[]
   notes: NoteResponse[]
   tasks: TaskResponse[]
   academicEvents: AcademicEventResponse[]
+  /** Fixed summary that every mock Process run returns. */
   processSummary: ProcessSummaryResponse
 }
 
+// The tasks cover each tri-state category (SCHEDULED, LATER, BACKLOG) and each task status.
 const INITIAL_FIXTURES: FixtureState = {
   users: [
     {
@@ -26,6 +30,24 @@ const INITIAL_FIXTURES: FixtureState = {
       username: 'karol',
       createdAt: '2026-09-01T08:00:00Z',
       updatedAt: '2026-09-01T08:00:00Z',
+    },
+    {
+      id: 2,
+      username: 'elena_r',
+      createdAt: '2026-09-14T09:30:00Z',
+      updatedAt: '2026-09-14T09:30:00Z',
+    },
+    {
+      id: 3,
+      username: 'marcus.chen',
+      createdAt: '2026-10-02T14:15:00Z',
+      updatedAt: '2026-10-02T14:15:00Z',
+    },
+    {
+      id: 4,
+      username: 'samira_k',
+      createdAt: '2026-10-11T16:45:00Z',
+      updatedAt: '2026-10-11T16:45:00Z',
     },
   ],
   currentUser: {
@@ -96,8 +118,10 @@ const INITIAL_FIXTURES: FixtureState = {
     {
       id: 'note-cs201-avl',
       courseId: 1,
+      title: 'Lecture 7: Self-Balancing Trees',
       content:
         '# Lecture 7: Self-Balancing Trees (AVL Trees)\n\n## Binary Search Tree Invariant\nFor every node $X$:\n- Keys in left subtree are smaller than $X.key$\n- Keys in right subtree are greater than $X.key$\n\n## AVL Balance Factor\nBalance factor is defined as `height(left) - height(right)`.\n- Allowed balance factors: -1, 0, +1.\n- When balance factor becomes +/-2, perform rotations.\n\n### Rotations\n- Single Left Rotation (Right-Right heavy)\n- Single Right Rotation (Left-Left heavy)\n- Left-Right Double Rotation\n- Right-Left Double Rotation\n\n## Action Items\n- Complete problem set 3 rotation implementations.\n- Prepare for midterm examination review session.',
+      entryDate: '2026-10-05',
       createdAt: '2026-10-05T09:30:00Z',
       updatedAt: '2026-10-05T11:00:00Z',
       lastProcessedAt: '2026-10-05T11:30:00Z',
@@ -105,8 +129,10 @@ const INITIAL_FIXTURES: FixtureState = {
     {
       id: 'note-math204-eigen',
       courseId: 2,
+      title: 'Lecture 12: Eigenvalues and Diagonalization',
       content:
         '# Lecture 12: Eigenvalues and Diagonalization\n\n## Characteristic Equation\nLet $A$ be an $n \\times n$ matrix.\n- Solve characteristic polynomial $\\det(A - \\lambda I) = 0$.\n- Find roots $\\lambda_1, \\lambda_2, \\dots, \\lambda_k$.\n\n## Eigenspaces\nFor each eigenvalue $\\lambda$:\n- Solve $(A - \\lambda I)v = 0$ for non-trivial eigenvector $v$.\n- Dimension of eigenspace is geometric multiplicity.\n\n## Diagonalization Conditions\n- $A$ is diagonalizable if and only if geometric multiplicity equals algebraic multiplicity for each eigenvalue.\n\n## Weekly Goals\n- Practice finding eigenvectors for 3x3 symmetric matrices.\n- Verify homework solutions with peers.',
+      entryDate: '2026-10-06',
       createdAt: '2026-10-06T14:15:00Z',
       updatedAt: '2026-10-06T15:45:00Z',
       lastProcessedAt: null,
@@ -219,6 +245,184 @@ const INITIAL_FIXTURES: FixtureState = {
     affectedCourseIds: [2],
   },
 }
+
+export const TODO_FIXTURE_COURSES: CourseResponse[] = [
+  { id: 4, name: 'Object-Oriented Programming', description: null, userId: 1 },
+  { id: 5, name: 'Computer Architecture and Organization', description: null, userId: 1 },
+  { id: 6, name: 'Reading in Philippine History', description: null, userId: 1 },
+  { id: 7, name: 'Calculus 2', description: null, userId: 1 },
+]
+
+export const TODO_FIXTURE_TASKS: TaskResponse[] = [
+  {
+    id: 'task-oop-midterm',
+    courseId: 4,
+    noteId: null,
+    title: 'Midterm Long Quiz',
+    description: 'Covers encapsulation, polymorphism, inheritance, and interface abstraction.',
+    scheduledDate: '2026-10-08',
+    duration: 'PT2H',
+    status: 'TODO',
+    planCategory: 'SCHEDULED',
+    createdAt: '2026-10-01T08:00:00Z',
+    updatedAt: '2026-10-01T08:00:00Z',
+  },
+  {
+    id: 'task-cao-lab-exp',
+    courseId: 5,
+    noteId: null,
+    title: 'Laboratory Experiment',
+    description: 'Implement ALU arithmetic micro-operations and verify control unit logic.',
+    scheduledDate: '2026-10-10',
+    duration: 'PT3H',
+    status: 'TODO',
+    planCategory: 'SCHEDULED',
+    createdAt: '2026-10-01T09:00:00Z',
+    updatedAt: '2026-10-01T09:00:00Z',
+  },
+  {
+    id: 'task-rph-guide-q',
+    courseId: 6,
+    noteId: null,
+    title: 'Guide Questions',
+    description: 'Primary source analysis on the Proclamation of Independence.',
+    scheduledDate: '2026-10-10',
+    duration: 'PT1H',
+    status: 'TODO',
+    planCategory: 'SCHEDULED',
+    createdAt: '2026-10-01T10:00:00Z',
+    updatedAt: '2026-10-01T10:00:00Z',
+  },
+  {
+    id: 'task-oop-proj-prop',
+    courseId: 4,
+    noteId: null,
+    title: 'Final Project Proposal',
+    description: 'Draft software architecture proposal and design patterns document.',
+    scheduledDate: '2026-10-23',
+    duration: 'PT2H',
+    status: 'TODO',
+    planCategory: 'SCHEDULED',
+    createdAt: '2026-10-02T11:00:00Z',
+    updatedAt: '2026-10-02T11:00:00Z',
+  },
+  {
+    id: 'task-calc2-finals-quiz',
+    courseId: 7,
+    noteId: null,
+    title: 'Finals Quiz',
+    description: 'Integration by parts, trigonometric substitution, and partial fraction decomposition.',
+    scheduledDate: '2026-10-28',
+    duration: 'PT1H30M',
+    status: 'TODO',
+    planCategory: 'SCHEDULED',
+    createdAt: '2026-10-02T12:00:00Z',
+    updatedAt: '2026-10-02T12:00:00Z',
+  },
+]
+
+export const TASK_DISPLAY_TIMES: Record<string, string> = {
+  'task-oop-midterm': '3:00 PM',
+  'task-cao-lab-exp': '11:59 PM',
+  'task-rph-guide-q': '5:30 PM',
+  'task-oop-proj-prop': '7:30 AM',
+  'task-calc2-finals-quiz': '1:00 PM',
+  'task-cs201-hw1': '2:00 PM',
+  'task-cs201-avl-impl': '10:00 AM',
+  'task-math204-pset4': '4:00 PM',
+  'task-phys102-lab-report': '11:59 PM',
+  'task-cs201-graph-preview': '8:00 AM',
+}
+
+/** Due-date map for urgency calculation in the redesigned task list.
+ *  Values are yyyy-MM-dd strings relative to 2026-10-15 (spec FR-024). */
+function offsetDate(days: number): string {
+  const d = new Date('2026-10-15T00:00:00')
+  d.setDate(d.getDate() + days)
+  return d.toISOString().slice(0, 10)
+}
+
+export const TASK_DUE_DATES: Record<string, string> = {
+  'task-oop-midterm': offsetDate(0),
+  'task-cao-lab-exp': offsetDate(1),
+  'task-rph-guide-q': offsetDate(2),
+  'task-oop-proj-prop': offsetDate(3),
+  'task-calc2-finals-quiz': offsetDate(5),
+  'task-cs201-avl-impl': offsetDate(15),
+  'task-math204-pset4': offsetDate(40),
+}
+
+/** Extended dummy tasks covering SCHEDULED, LATER, and BACKLOG categories. */
+export const TODO_FIXTURE_TASKS_V2: TaskResponse[] = [
+  ...TODO_FIXTURE_TASKS,
+  // LATER tasks (duration, no scheduledDate)
+  {
+    id: 'task-phys102-lab-later',
+    courseId: 3,
+    noteId: null,
+    title: 'Draft Physics Lab 3 Report',
+    description: 'Synthesize Gauss Law experiment data.',
+    scheduledDate: null,
+    duration: 'PT30M',
+    status: 'TODO',
+    planCategory: 'LATER',
+    createdAt: '2026-10-07T08:00:00Z',
+    updatedAt: '2026-10-07T08:00:00Z',
+  },
+  {
+    id: 'task-math204-review',
+    courseId: 2,
+    noteId: null,
+    title: 'Review Eigenvalue Decomposition',
+    description: 'Re-read textbook chapter 5.',
+    scheduledDate: null,
+    duration: 'PT1H',
+    status: 'TODO',
+    planCategory: 'LATER',
+    createdAt: '2026-10-08T08:00:00Z',
+    updatedAt: '2026-10-08T08:00:00Z',
+  },
+  {
+    id: 'task-cs201-refactor',
+    courseId: 1,
+    noteId: null,
+    title: 'Refactor BST Insert Method',
+    description: 'Clean up recursive insert for clarity.',
+    scheduledDate: null,
+    duration: 'PT1H30M',
+    status: 'TODO',
+    planCategory: 'LATER',
+    createdAt: '2026-10-09T10:00:00Z',
+    updatedAt: '2026-10-09T10:00:00Z',
+  },
+  // BACKLOG tasks (no date, no duration)
+  {
+    id: 'task-cs201-graph-preview',
+    courseId: 1,
+    noteId: null,
+    title: 'Preview Graph Traversal Algorithms',
+    description: 'Read textbook section 8.2.',
+    scheduledDate: null,
+    duration: null,
+    status: 'TODO',
+    planCategory: 'BACKLOG',
+    createdAt: '2026-10-07T10:00:00Z',
+    updatedAt: '2026-10-07T10:00:00Z',
+  },
+  {
+    id: 'task-oop-patterns',
+    courseId: 4,
+    noteId: null,
+    title: 'Study Design Patterns Catalog',
+    description: 'Review GoF patterns for final exam.',
+    scheduledDate: null,
+    duration: null,
+    status: 'TODO',
+    planCategory: 'BACKLOG',
+    createdAt: '2026-10-10T08:00:00Z',
+    updatedAt: '2026-10-10T08:00:00Z',
+  },
+]
 
 export function createInitialFixtures(): FixtureState {
   return structuredClone(INITIAL_FIXTURES)

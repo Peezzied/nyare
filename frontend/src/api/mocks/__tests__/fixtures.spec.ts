@@ -32,8 +32,10 @@ describe('createInitialFixtures', () => {
     expect(fixtures.notes.length).toBeGreaterThanOrEqual(2)
     for (const note of fixtures.notes) {
       expect(note.courseId).toBeGreaterThan(0)
+      expect(note.title).toBeTruthy()
       expect(note.content).toMatch(/^#\s+.+/m)
       expect(note.content).toMatch(/^-\s+.+/m)
+      expect(note.entryDate).toMatch(/^\d{4}-\d{2}-\d{2}$/)
     }
 
     expect(fixtures.tasks.length).toBeGreaterThanOrEqual(5)
@@ -85,6 +87,7 @@ describe('createInitialFixtures', () => {
     expect(stateA.users).not.toBe(stateB.users)
     expect(stateA.tasks).not.toBe(stateB.tasks)
 
+    // The DTO fields are readonly, so the cast allows a mutation that proves the deep copy.
     const mutableFirstTask = stateA.tasks[0] as { title: string }
     mutableFirstTask.title = 'Mutated Task Title'
     expect(stateB.tasks[0]!.title).not.toBe('Mutated Task Title')

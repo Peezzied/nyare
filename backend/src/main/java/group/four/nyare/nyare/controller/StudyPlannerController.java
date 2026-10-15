@@ -4,6 +4,7 @@ import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.dto.PlannerStatusResponse;
 import group.four.nyare.nyare.dto.ProcessSummaryResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
+import group.four.nyare.nyare.service.ProcessListener;
 import group.four.nyare.nyare.service.StudyPlannerService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -15,8 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import tools.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * REST controller for AI-powered journal processing.
@@ -29,15 +33,15 @@ public class StudyPlannerController {
 
     private final StudyPlannerService studyPlannerService;
     private final SessionContext sessionContext;
-    private final long sseTimeoutMs;
+    private final long sseHeartbeatMs;
 
     public StudyPlannerController(
             StudyPlannerService studyPlannerService,
             SessionContext sessionContext,
-            @Value("${nyare.study-planner.sse-timeout-ms:60000}") long sseTimeoutMs) {
+            @Value("${nyare.study-planner.sse-heartbeat-ms:2000}") long sseHeartbeatMs) {
         this.studyPlannerService = studyPlannerService;
         this.sessionContext = sessionContext;
-        this.sseTimeoutMs = sseTimeoutMs;
+        this.sseHeartbeatMs = sseHeartbeatMs;
     }
 
     /**
@@ -53,50 +57,98 @@ public class StudyPlannerController {
     }
 
     /**
-     * Triggers AI-powered extraction of today's journal notes matching session user scope.
-     * Streams a done event with summary counts or an error event if processing fails.
+     * Triggers AI-powered extraction of pending journal notes matching session user scope.
+     * Streams init, per-date progress, and a terminal done or error event, plus ping
+     * heartbeat comments. A client disconnect cancels the run cooperatively and
+     * rolls it back.
      *
-     * @return SSE stream with a single done or error event
+     * @return SSE stream with init/progress/done/error events and heartbeat comments
      */
     @PostMapping(value = "/process", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter process() {
         Long userId = sessionContext.getUserId().orElse(null);
-        SseEmitter emitter = new SseEmitter(this.sseTimeoutMs);
+        PlannerStatusResponse status = studyPlannerService.getPlannerStatus(userId);
+
+        // 0 disables the async timeout (servlet spec): the run is bounded by the
+        // per-call AI timeouts and cancelled when the client disconnects.
+        SseEmitter emitter = new SseEmitter(0L);
+        AtomicBoolean cancelled = new AtomicBoolean();
+
+        emitter.onCompletion(() -> cancelled.set(true));
+        emitter.onError(ex -> cancelled.set(true));
+
+        ProcessListener listener = new ProcessListener() {
+            @Override
+            public boolean isCancelled() {
+                return cancelled.get();
+            }
+
+            @Override
+            public void onDateStarted(LocalDate date, int index, int total) {
+                try {
+                    emitter.send(SseEmitter.event().name("progress").data(OBJECT_MAPPER.writeValueAsString(
+                            Map.of("date", date.toString(), "index", index, "total", total))));
+                } catch (IOException | IllegalStateException ex) {
+                    cancelled.set(true);
+                }
+            }
+        };
 
         Thread.ofVirtual().start(() -> {
+            Thread heartbeat = startHeartbeat(emitter, cancelled);
             try {
-                PlannerStatusResponse status = studyPlannerService.getPlannerStatus(userId);
                 emitter.send(SseEmitter.event().name("init").data(OBJECT_MAPPER.writeValueAsString(status)));
 
-                ProcessSummaryResponse result = studyPlannerService.processNotes(userId);
-                String json = OBJECT_MAPPER.writeValueAsString(result);
-                emitter.send(SseEmitter.event().name("done").data(json));
+                ProcessSummaryResponse result = studyPlannerService.processNotes(userId, listener);
+                emitter.send(SseEmitter.event().name("done").data(OBJECT_MAPPER.writeValueAsString(result)));
                 emitter.complete();
+            } catch (CancellationException ex) {
+                // Run cancelled and rolled back; the container completes the request.
             } catch (BadRequestException ex) {
-                try {
-                    Map<String, Object> errorPayload = Map.of(
-                            "status", 400,
-                            "title", "Bad Request",
-                            "detail", ex.getMessage()
-                    );
-                    emitter.send(SseEmitter.event().name("error").data(OBJECT_MAPPER.writeValueAsString(errorPayload)));
-                } catch (Exception ignored) {
-                }
+                sendQuietly(emitter, "error", Map.of(
+                        "status", 400,
+                        "title", "Bad Request",
+                        "detail", ex.getMessage()));
                 emitter.complete();
             } catch (Exception ex) {
-                try {
-                    Map<String, Object> errorPayload = Map.of(
-                            "status", 500,
-                            "title", "Internal Server Error",
-                            "detail", ex.getMessage() != null ? ex.getMessage() : "Unknown error"
-                    );
-                    emitter.send(SseEmitter.event().name("error").data(OBJECT_MAPPER.writeValueAsString(errorPayload)));
-                } catch (Exception ignored) {
-                }
+                sendQuietly(emitter, "error", Map.of(
+                        "status", 500,
+                        "title", "Internal Server Error",
+                        "detail", ex.getMessage() != null ? ex.getMessage() : "Unknown error"));
                 emitter.completeWithError(ex);
+            } finally {
+                heartbeat.interrupt();
             }
         });
 
         return emitter;
+    }
+
+    /**
+     * Starts a virtual thread emitting SSE comment heartbeats. Servlet containers only
+     * detect a client disconnect when a write fails, so periodic writes are required
+     * for cancellation on disconnect to work.
+     */
+    private Thread startHeartbeat(SseEmitter emitter, AtomicBoolean cancelled) {
+        return Thread.ofVirtual().start(() -> {
+            try {
+                while (!cancelled.get()) {
+                    Thread.sleep(sseHeartbeatMs);
+                    emitter.send(SseEmitter.event().comment("ping"));
+                }
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            } catch (IOException | IllegalStateException ex) {
+                cancelled.set(true);
+            }
+        });
+    }
+
+    private void sendQuietly(SseEmitter emitter, String name, Object payload) {
+        try {
+            emitter.send(SseEmitter.event().name(name).data(OBJECT_MAPPER.writeValueAsString(payload)));
+        } catch (IOException | IllegalStateException ex) {
+            // Client already gone; cancellation is handled through the emitter callbacks.
+        }
     }
 }

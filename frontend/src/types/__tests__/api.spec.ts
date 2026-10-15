@@ -121,7 +121,9 @@ describe('API Types Contract', () => {
     const note: NoteResponse = {
       id: 'note-uuid-1',
       courseId: 1,
+      title: 'Lecture 1',
       content: '# Lecture notes',
+      entryDate: '2026-10-08',
       createdAt: '2026-10-08T09:00:00Z',
       updatedAt: '2026-10-08T09:30:00Z',
       lastProcessedAt: null,
@@ -129,20 +131,30 @@ describe('API Types Contract', () => {
     const summary: NoteSummaryResponse = {
       id: 'note-uuid-1',
       courseId: 1,
+      title: 'Lecture 1',
       preview: 'Lecture notes preview',
       truncated: false,
       contentLength: 15,
+      entryDate: '2026-10-08',
       createdAt: '2026-10-08T09:00:00Z',
       updatedAt: '2026-10-08T09:30:00Z',
     }
     const noteReq: NoteRequest = {
       courseId: 1,
+      title: 'Lecture 1',
       content: '# Lecture notes',
+      entryDate: '2026-10-08',
     }
 
     expect(note.content).toContain('Lecture notes')
+    expect(note.title).toBe('Lecture 1')
+    expect(note.entryDate).toBe('2026-10-08')
     expect(summary.truncated).toBe(false)
+    expect(summary.title).toBe('Lecture 1')
+    expect(summary.entryDate).toBe('2026-10-08')
     expect(noteReq.courseId).toBe(1)
+    expect(noteReq.title).toBe('Lecture 1')
+    expect(noteReq.entryDate).toBe('2026-10-08')
   })
 
   it('instantiates valid AcademicEvent and AcademicContext contracts', () => {

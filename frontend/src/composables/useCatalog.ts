@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { coursesApi, schedulesApi } from '@/api'
 import type { CourseResponse, ScheduleResponse } from '@/types/api'
 
+// Module-level state, so every useCatalog() caller shares one cache.
 const courses = ref<CourseResponse[]>([])
 const schedules = ref<ScheduleResponse[]>([])
 const loaded = ref(false)
@@ -13,10 +14,15 @@ let pending: Promise<void> | null = null
  * of refetching. Task, note, and event changes never invalidate this cache.
  */
 export function useCatalog() {
+  /**
+   * Loads courses and schedules once. Later calls return at once unless `force` is true.
+   * Concurrent calls share one in-flight request.
+   */
   async function loadCatalog(force = false): Promise<void> {
     if (loaded.value && !force) {
       return
     }
+    // Views that mount at the same time wait for one request instead of sending duplicates.
     if (pending) {
       await pending
       return
@@ -37,6 +43,7 @@ export function useCatalog() {
     courses.value = [...courses.value, course]
   }
 
+  /** Removes the course and its schedules from the cache. */
   function applyCourseDeleted(id: number): void {
     courses.value = courses.value.filter((course) => course.id !== id)
     schedules.value = schedules.value.filter((schedule) => schedule.courseId !== id)
@@ -56,6 +63,7 @@ export function useCatalog() {
     schedules.value = schedules.value.filter((schedule) => schedule.id !== id)
   }
 
+  /** Clears the cache so the next `loadCatalog()` call fetches again. */
   function resetCatalog(): void {
     courses.value = []
     schedules.value = []

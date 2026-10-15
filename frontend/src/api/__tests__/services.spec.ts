@@ -19,6 +19,8 @@ import type {
   TaskResponse,
   AcademicEventResponse,
   ProcessSummaryResponse,
+  PlannerStatusResponse,
+  ProcessProgressEvent,
   ImageUploadResponse,
 } from '@/types/api'
 
@@ -231,7 +233,9 @@ describe('API Services', () => {
       const mockNote: NoteResponse = {
         id: 'note-1',
         courseId: 10,
+        title: 'Lecture notes',
         content: 'Lecture notes',
+        entryDate: '2026-10-08',
         createdAt: '2026-10-08T00:00:00Z',
         updatedAt: '2026-10-08T00:00:00Z',
       }
@@ -247,7 +251,9 @@ describe('API Services', () => {
       const mockNote: NoteResponse = {
         id: 'note-2',
         courseId: 10,
+        title: 'New note',
         content: payload.content,
+        entryDate: '2026-10-08',
         createdAt: '2026-10-08T00:00:00Z',
         updatedAt: '2026-10-08T00:00:00Z',
       }
@@ -263,7 +269,9 @@ describe('API Services', () => {
       const mockNote: NoteResponse = {
         id: 'note-2',
         courseId: 10,
+        title: 'Updated title',
         content: payload.content,
+        entryDate: '2026-10-08',
         createdAt: '2026-10-08T00:00:00Z',
         updatedAt: '2026-10-08T01:00:00Z',
       }
@@ -456,6 +464,21 @@ describe('API Services', () => {
   })
 
   describe('studyPlannerApi', () => {
+    it('status calls GET /api/study-planner/status', async () => {
+      const mockStatus: PlannerStatusResponse = {
+        hasPendingNotes: false,
+        dirtyNoteCount: 0,
+        dirtyDates: [],
+        courseNames: [],
+        pendingNotes: [],
+      }
+      const getSpy = vi.spyOn(apiClient, 'get').mockResolvedValue(mockStatus)
+
+      const result = await studyPlannerApi.status()
+      expect(result).toEqual(mockStatus)
+      expect(getSpy).toHaveBeenCalledWith('/api/study-planner/status')
+    })
+
     it('streamProcess parses done event and triggers onDone callback', async () => {
       const summary: ProcessSummaryResponse = {
         tasksCreated: 3,
@@ -464,6 +487,7 @@ describe('API Services', () => {
       }
       const sseText = `event: done\ndata: ${JSON.stringify(summary)}\n\n`
 
+      // `body: null` makes streamProcess read the whole SSE text through `text()`.
       globalThis.fetch = vi.fn<typeof fetch>().mockResolvedValue({
         ok: true,
         status: 200,
@@ -571,6 +595,7 @@ describe('API Services', () => {
         eventsCreated: 2,
         contextsCreated: 1,
       }
+      // Split the frame inside the event name, so the parser must carry the tail to the next chunk.
       const chunk1 = new TextEncoder().encode('event: do')
       const chunk2 = new TextEncoder().encode(`ne\ndata: ${JSON.stringify(summary)}\n\n`)
 
@@ -618,6 +643,87 @@ describe('API Services', () => {
       await expect(studyPlannerApi.process()).rejects.toThrow(
         'Stream ended without completion event',
       )
+    })
+
+    it('streamProcess routes init and progress events and ignores ping comments', async () => {
+      const status: PlannerStatusResponse = {
+        hasPendingNotes: true,
+        dirtyNoteCount: 2,
+        dirtyDates: ['2026-10-01', '2026-10-03'],
+        courseNames: ['CS101'],
+        pendingNotes: [],
+      }
+      const progress = { date: '2026-10-01', index: 1, total: 2 }
+      const summary: ProcessSummaryResponse = {
+        tasksCreated: 1,
+        eventsCreated: 0,
+        contextsCreated: 0,
+      }
+      const sseText =
+        `event: init\ndata: ${JSON.stringify(status)}\n\n` +
+        // Heartbeat comment frame. The backend sends one at a fixed interval.
+        `:ping\n\n` +
+        `event: progress\ndata: ${JSON.stringify(progress)}\n\n` +
+        `event: done\ndata: ${JSON.stringify(summary)}\n\n`
+
+      globalThis.fetch = vi.fn<typeof fetch>().mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ 'content-type': 'text/event-stream' }),
+        text: async () => sseText,
+        body: null,
+      } as unknown as Response)
+
+      const onInit = vi.fn<(s: PlannerStatusResponse) => void>()
+      const onProgress = vi.fn<(p: ProcessProgressEvent) => void>()
+      const onDone = vi.fn<(s: ProcessSummaryResponse) => void>()
+      const onError = vi.fn<(error: unknown) => void>()
+
+      await studyPlannerApi.streamProcess({ onDone, onError, onInit, onProgress })
+
+      expect(onInit).toHaveBeenCalledWith(status)
+      expect(onProgress).toHaveBeenCalledWith(progress)
+      expect(onDone).toHaveBeenCalledWith(summary)
+      expect(onError).not.toHaveBeenCalled()
+      expect(onInit).toHaveBeenCalledTimes(1)
+      expect(onProgress).toHaveBeenCalledTimes(1)
+    })
+
+    it('streamProcess passes signal to fetch and swallows abort errors silently', async () => {
+      const controller = new AbortController()
+      controller.abort()
+
+      // Real `fetch` rejects with an AbortError when the signal is already aborted.
+      globalThis.fetch = vi
+        .fn<typeof fetch>()
+        .mockRejectedValue(new DOMException('aborted', 'AbortError'))
+
+      const onDone = vi.fn<(s: ProcessSummaryResponse) => void>()
+      const onError = vi.fn<(error: unknown) => void>()
+
+      await studyPlannerApi.streamProcess({ onDone, onError, signal: controller.signal })
+
+      expect(globalThis.fetch).toHaveBeenCalledWith(
+        '/api/study-planner/process',
+        expect.objectContaining({ signal: controller.signal }),
+      )
+      expect(onDone).not.toHaveBeenCalled()
+      expect(onError).not.toHaveBeenCalled()
+    })
+
+    it('process rejects with the AbortError when aborted', async () => {
+      const controller = new AbortController()
+      controller.abort()
+
+      globalThis.fetch = vi
+        .fn<typeof fetch>()
+        .mockRejectedValue(new DOMException('aborted', 'AbortError'))
+
+      // process() rejects with `signal.reason`, not with the error from `fetch`.
+      await expect(studyPlannerApi.process(controller.signal)).rejects.toBe(
+        controller.signal.reason,
+      )
+      expect((controller.signal.reason as DOMException).name).toBe('AbortError')
     })
   })
 

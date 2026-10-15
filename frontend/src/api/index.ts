@@ -1,3 +1,4 @@
+// Single import point for the HTTP client, the per-resource API services, and the DTO types.
 export { apiClient, ApiError, setMockHandler } from './client'
 export type { MockHandler } from './client'
 
