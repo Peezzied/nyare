@@ -96,8 +96,10 @@ const INITIAL_FIXTURES: FixtureState = {
     {
       id: 'note-cs201-avl',
       courseId: 1,
+      title: 'Lecture 7: Self-Balancing Trees',
       content:
         '# Lecture 7: Self-Balancing Trees (AVL Trees)\n\n## Binary Search Tree Invariant\nFor every node $X$:\n- Keys in left subtree are smaller than $X.key$\n- Keys in right subtree are greater than $X.key$\n\n## AVL Balance Factor\nBalance factor is defined as `height(left) - height(right)`.\n- Allowed balance factors: -1, 0, +1.\n- When balance factor becomes +/-2, perform rotations.\n\n### Rotations\n- Single Left Rotation (Right-Right heavy)\n- Single Right Rotation (Left-Left heavy)\n- Left-Right Double Rotation\n- Right-Left Double Rotation\n\n## Action Items\n- Complete problem set 3 rotation implementations.\n- Prepare for midterm examination review session.',
+      entryDate: '2026-10-05',
       createdAt: '2026-10-05T09:30:00Z',
       updatedAt: '2026-10-05T11:00:00Z',
       lastProcessedAt: '2026-10-05T11:30:00Z',
@@ -105,8 +107,10 @@ const INITIAL_FIXTURES: FixtureState = {
     {
       id: 'note-math204-eigen',
       courseId: 2,
+      title: 'Lecture 12: Eigenvalues and Diagonalization',
       content:
         '# Lecture 12: Eigenvalues and Diagonalization\n\n## Characteristic Equation\nLet $A$ be an $n \\times n$ matrix.\n- Solve characteristic polynomial $\\det(A - \\lambda I) = 0$.\n- Find roots $\\lambda_1, \\lambda_2, \\dots, \\lambda_k$.\n\n## Eigenspaces\nFor each eigenvalue $\\lambda$:\n- Solve $(A - \\lambda I)v = 0$ for non-trivial eigenvector $v$.\n- Dimension of eigenspace is geometric multiplicity.\n\n## Diagonalization Conditions\n- $A$ is diagonalizable if and only if geometric multiplicity equals algebraic multiplicity for each eigenvalue.\n\n## Weekly Goals\n- Practice finding eigenvectors for 3x3 symmetric matrices.\n- Verify homework solutions with peers.',
+      entryDate: '2026-10-06',
       createdAt: '2026-10-06T14:15:00Z',
       updatedAt: '2026-10-06T15:45:00Z',
       lastProcessedAt: null,

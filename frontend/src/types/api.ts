@@ -66,7 +66,9 @@ export interface ScheduleRequest {
 export interface NoteResponse {
   readonly id: string
   readonly courseId: number
+  readonly title: string
   readonly content: string
+  readonly entryDate: string
   readonly createdAt: string
   readonly updatedAt: string
   readonly lastProcessedAt?: string | null
@@ -75,16 +77,20 @@ export interface NoteResponse {
 export interface NoteSummaryResponse {
   readonly id: string
   readonly courseId: number
+  readonly title: string
   readonly preview: string
   readonly truncated: boolean
   readonly contentLength: number
+  readonly entryDate: string
   readonly createdAt: string
   readonly updatedAt: string
 }
 
 export interface NoteRequest {
   readonly courseId: number
+  readonly title?: string | null
   readonly content: string
+  readonly entryDate?: string | null
 }
 
 export interface TaskResponse {
