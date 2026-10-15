@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import DayViewContainer from './components/day-view/DayViewContainer.vue'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <DayViewContainer />
+  <div class="mx-auto min-h-screen w-full max-w-[390px] bg-[var(--color-app-bg)] shadow-sm">
+    <RouterView />
+  </div>
 </template>

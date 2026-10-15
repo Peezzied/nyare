@@ -1,0 +1,5 @@
+export { DialogRoot as Dialog, DialogTrigger, DialogClose } from 'reka-ui'
+export { default as DialogOverlay } from './DialogOverlay.vue'
+export { default as DialogContent } from './DialogContent.vue'
+export { default as DialogTitle } from './DialogTitle.vue'
+export { default as DialogDescription } from './DialogDescription.vue'
