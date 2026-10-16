@@ -60,11 +60,6 @@ const router = createRouter({
       name: 'select-account',
       component: () => import('../views/AccountSelectView.vue'),
     },
-    {
-      path: '/about',
-      name: 'about',
-      component: () => import('../views/AboutView.vue'),
-    },
   ],
 })
 
