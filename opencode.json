@@ -7,5 +7,15 @@
   "skills": {
     "paths": ["./.agents/plugins/ponytail/skills", "./.agents/plugins/superpowers/skills"]
   },
+  "mcp": {
+    "github": {
+      "type": "remote",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "enabled": true,
+      "headers": {
+        "Authorization": "Bearer {env:GITHUB_TOKEN}"
+      }
+    }
+  },
   "instructions": [".agents/rules/*.md"]
 }
