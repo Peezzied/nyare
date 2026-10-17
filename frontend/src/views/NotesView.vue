@@ -13,15 +13,18 @@ import {
   prototypeBadgeFor,
   prototypePreviewEnabled,
 } from '@/api/mocks/notesPrototypePreview'
+import { rememberHero } from '@/router/noteHero'
 
 const catalog = useCatalog()
 const router = useRouter()
 
 function openNote(id: string) {
+  rememberHero(id)
   router.push({ name: 'note-edit', params: { id } })
 }
 
 function newNote() {
+  rememberHero('fab')
   router.push({ name: 'note-new' })
 }
 const { notes, loading, error, loadNotes } = useNotes()
@@ -114,7 +117,7 @@ onMounted(async () => {
       </div>
     </header>
 
-    <p v-if="loading" class="mt-6 text-center text-sm text-text-muted" data-testid="notes-loading">
+    <p v-if="loading && notes.length === 0" class="mt-6 text-center text-sm text-text-muted" data-testid="notes-loading">
       Notes are loading.
     </p>
 
@@ -149,6 +152,7 @@ onMounted(async () => {
           :note="note"
           :course-name="courseNameFor(note)"
           :badge-color="badgeColorFor(note)"
+          :data-hero-key="note.id"
           @open="openNote(note.id)"
         />
       </div>
@@ -161,6 +165,7 @@ onMounted(async () => {
           :title="pictureNotePreview.note.title"
           :text="pictureNotePreview.note.preview"
           :entry-date="pictureNotePreview.note.entryDate"
+          :data-hero-key="pictureNotePreview.note.id"
           @open="openNote(pictureNotePreview.note.id)"
         />
       </div>
@@ -170,6 +175,7 @@ onMounted(async () => {
       type="button"
       aria-label="Add note"
       data-testid="notes-fab"
+      data-hero-key="fab"
       @click="newNote"
       class="fixed right-6 bottom-6 z-10 flex min-h-14 min-w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-lg"
     >

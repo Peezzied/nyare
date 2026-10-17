@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+import { heroEnabled } from '@/router/noteHero'
 
-// ponytail: notes pages play an entrance animation on mount; other screens stay instant.
+// ponytail: fallback entrance animation for browsers without view transitions.
 function enterClass(name: unknown, transition: unknown): string | undefined {
-  if (transition !== 'note') return undefined
+  if (heroEnabled || transition !== 'note') return undefined
   return name === 'notes'
     ? 'animate-in fade-in duration-200 motion-reduce:animate-none'
     : 'animate-in fade-in slide-in-from-bottom-8 duration-300 motion-reduce:animate-none'
