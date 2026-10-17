@@ -1,13 +1,20 @@
+import { ref } from 'vue'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import type { DayOfWeek } from '@/types/api'
 import CreateScheduleView from '../CreateScheduleView.vue'
-import * as api from '@/api'
+import { useCourseDrafts } from '@/composables/useCourseDrafts'
+
+const mockCourses = ref<any[]>([])
+const mockSchedules = ref<any[]>([])
+const mockLoadCatalog = vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
 
 vi.mock('@/composables/useCatalog', () => ({
   useCatalog: () => ({
-    loadCatalog: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    courses: mockCourses,
+    schedules: mockSchedules,
+    loadCatalog: mockLoadCatalog,
     applyCourseCreated: vi.fn<(course: unknown) => void>(),
     applyScheduleCreated: vi.fn<(schedule: unknown) => void>(),
   }),
@@ -41,6 +48,10 @@ describe('CreateScheduleView', () => {
   beforeEach(() => {
     router = makeRouter()
     vi.clearAllMocks()
+    mockCourses.value = []
+    mockSchedules.value = []
+    mockLoadCatalog.mockResolvedValue(undefined)
+    useCourseDrafts().resetDrafts()
   })
 
   it('does not render step progress for the direct create route', async () => {
@@ -123,16 +134,7 @@ describe('CreateScheduleView', () => {
     expect(wrapper.findAll('article').length).toBe(2)
   })
 
-  it('creates one schedule request per selected weekday and omits color and room', async () => {
-    const createdCourse = { id: 42, name: 'Math', description: null, userId: 7 }
-    const mondaySchedule = { id: 101, courseId: 42, day: 'MONDAY' as DayOfWeek, startTime: '09:00', endTime: '10:00' }
-    const wednesdaySchedule = { id: 102, courseId: 42, day: 'WEDNESDAY' as DayOfWeek, startTime: '09:00', endTime: '10:00' }
-
-    vi.mocked(api.coursesApi.create).mockResolvedValueOnce(createdCourse)
-    vi.mocked(api.schedulesApi.create)
-      .mockResolvedValueOnce(mondaySchedule)
-      .mockResolvedValueOnce(wednesdaySchedule)
-
+  it('stages course and schedules in useCourseDrafts on save', async () => {
     const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
     await router.isReady()
 
@@ -145,28 +147,20 @@ describe('CreateScheduleView', () => {
     await wrapper.find('[aria-label="Confirm"]').trigger('click')
     await flushPromises()
 
-    expect(api.coursesApi.create).toHaveBeenCalledWith({ name: 'Math' })
-    expect(api.schedulesApi.create).toHaveBeenNthCalledWith(1, {
-      courseId: 42,
-      day: 'MONDAY',
-      startTime: '09:00',
-      endTime: '10:00',
-    })
-    expect(api.schedulesApi.create).toHaveBeenNthCalledWith(2, {
-      courseId: 42,
-      day: 'WEDNESDAY',
-      startTime: '09:00',
-      endTime: '10:00',
-    })
+    const { draftCourses, draftSchedules } = useCourseDrafts()
+    expect(draftCourses.value).toHaveLength(1)
+    expect(draftCourses.value[0]?.name).toBe('Math')
+    expect(draftSchedules.value).toHaveLength(2)
+    expect(draftSchedules.value.map((s) => s.day)).toEqual(['MONDAY', 'WEDNESDAY'])
+    expect(wrapper.find('[role="status"]').text()).toContain('saved successfully')
   })
 
-  it('does not create schedules when course creation fails', async () => {
-    vi.mocked(api.coursesApi.create).mockRejectedValueOnce(new Error('Course unavailable'))
-
+  it('blocks save and displays duplicate message when course name already exists', async () => {
+    mockCourses.value = [{ id: 1, name: 'CS 101' }]
     const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
     await router.isReady()
 
-    await wrapper.find('input[type="text"]').setValue('Math')
+    await wrapper.find('input[type="text"]').setValue('cs 101')
     await wrapper.find('[aria-label="MONDAY"]').trigger('click')
     await wrapper.findAll('input[type="time"]')[0]!.setValue('09:00')
     await wrapper.findAll('input[type="time"]')[1]!.setValue('10:00')
@@ -174,59 +168,231 @@ describe('CreateScheduleView', () => {
     await wrapper.find('[aria-label="Confirm"]').trigger('click')
     await flushPromises()
 
-    expect(api.schedulesApi.create).not.toHaveBeenCalled()
-    expect(wrapper.find('[role="alert"]').text()).toContain('Course unavailable')
+    expect(wrapper.find('[role="alert"]').text()).toContain('cs 101')
+    expect(useCourseDrafts().draftCourses.value).toHaveLength(0)
   })
 
-  it('keeps failed records and retries only failed schedule requests', async () => {
-    const createdCourse = { id: 7, name: 'Science', description: null, userId: 1 }
-
-    vi.mocked(api.coursesApi.create).mockResolvedValueOnce(createdCourse)
-    vi.mocked(api.schedulesApi.create)
-      .mockResolvedValueOnce({
-        id: 201,
-        courseId: 7,
-        day: 'MONDAY' as DayOfWeek,
-        startTime: '09:00',
-        endTime: '10:00',
-      })
-      .mockRejectedValueOnce(new Error('Schedule unavailable'))
-      .mockResolvedValueOnce({
-        id: 202,
-        courseId: 7,
-        day: 'WEDNESDAY' as DayOfWeek,
-        startTime: '09:00',
-        endTime: '10:00',
-      })
-
+  it('keeps staged course in known set and allows retry of same course without duplicate error', async () => {
     const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
     await router.isReady()
 
-    await wrapper.find('input[type="text"]').setValue('Science')
+    await wrapper.find('input[type="text"]').setValue('Physics 101')
     await wrapper.find('[aria-label="MONDAY"]').trigger('click')
-    await wrapper.find('[aria-label="WEDNESDAY"]').trigger('click')
     await wrapper.findAll('input[type="time"]')[0]!.setValue('09:00')
     await wrapper.findAll('input[type="time"]')[1]!.setValue('10:00')
 
     await wrapper.find('[aria-label="Confirm"]').trigger('click')
     await flushPromises()
 
-    expect(api.schedulesApi.create).toHaveBeenCalledTimes(2)
-    expect(wrapper.text()).toContain('Retry failed')
+    expect(useCourseDrafts().draftCourses.value).toHaveLength(1)
 
-    const retryButton = wrapper
-      .findAll('button')
-      .find((button) => button.text().includes('Retry'))!
-    await retryButton.trigger('click')
+    // Re-saving the same form instance does not flag duplicate against itself
+    await wrapper.find('[aria-label="Confirm"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[role="status"]').text()).toContain('saved successfully')
+
+    // But a new attempt with the same name is blocked
+    const wrapper2 = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+    await wrapper2.find('input[type="text"]').setValue('physics 101')
+    await wrapper2.find('[aria-label="TUESDAY"]').trigger('click')
+    await wrapper2.findAll('input[type="time"]')[0]!.setValue('11:00')
+    await wrapper2.findAll('input[type="time"]')[1]!.setValue('12:00')
+
+    await wrapper2.find('[aria-label="Confirm"]').trigger('click')
+    await flushPromises()
+    expect(wrapper2.find('[role="alert"]').text()).toContain('physics 101')
+  })
+
+  it('allows save to proceed when catalog cannot be loaded (FR-016)', async () => {
+    mockCourses.value = [{ id: 1, name: 'CS 101' }]
+    mockLoadCatalog.mockRejectedValueOnce(new Error('Network failure'))
+
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    await wrapper.find('input[type="text"]').setValue('cs 101')
+    await wrapper.find('[aria-label="MONDAY"]').trigger('click')
+    await wrapper.findAll('input[type="time"]')[0]!.setValue('09:00')
+    await wrapper.findAll('input[type="time"]')[1]!.setValue('10:00')
+
+    await wrapper.find('[aria-label="Confirm"]').trigger('click')
     await flushPromises()
 
-    expect(api.schedulesApi.create).toHaveBeenCalledTimes(3)
-    expect(api.schedulesApi.create).toHaveBeenLastCalledWith({
-      courseId: 7,
-      day: 'WEDNESDAY',
+    expect(useCourseDrafts().draftCourses.value).toHaveLength(1)
+  })
+
+  it('blocks save when class time clashes with a known course on the same weekday', async () => {
+    mockCourses.value = [{ id: 1, name: 'CS 101' }]
+    mockSchedules.value = [
+      { id: 10, courseId: 1, day: 'MONDAY' as DayOfWeek, startTime: '09:00', endTime: '10:00' },
+    ]
+
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    await wrapper.find('input[type="text"]').setValue('Math 201')
+    await wrapper.find('[aria-label="MONDAY"]').trigger('click')
+    await wrapper.findAll('input[type="time"]')[0]!.setValue('09:30')
+    await wrapper.findAll('input[type="time"]')[1]!.setValue('10:30')
+
+    await wrapper.find('[aria-label="Confirm"]').trigger('click')
+    await flushPromises()
+
+    const alert = wrapper.find('[role="alert"]')
+    expect(alert.exists()).toBe(true)
+    expect(alert.text()).toContain('CS 101')
+    expect(alert.text()).toContain('MONDAY')
+    expect(useCourseDrafts().draftCourses.value).toHaveLength(0)
+  })
+
+  it('blocks save when two sibling blocks in the same course overlap on the same weekday', async () => {
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    await wrapper.find('input[type="text"]').setValue('Biology')
+    await wrapper.find('[aria-label="MONDAY"]').trigger('click')
+    await wrapper.findAll('input[type="time"]')[0]!.setValue('09:00')
+    await wrapper.findAll('input[type="time"]')[1]!.setValue('10:30')
+
+    await wrapper.find('[data-testid="add-another-time"]').trigger('click')
+    const cards = wrapper.findAllComponents({ name: 'TimeBlockCard' })
+    expect(cards).toHaveLength(2)
+
+    await cards[1]!.find('[aria-label="MONDAY"]').trigger('click')
+    await cards[1]!.findAll('input[type="time"]')[0]!.setValue('10:00')
+    await cards[1]!.findAll('input[type="time"]')[1]!.setValue('11:00')
+
+    await wrapper.find('[aria-label="Confirm"]').trigger('click')
+    await flushPromises()
+
+    const alert = wrapper.find('[role="alert"]')
+    expect(alert.exists()).toBe(true)
+    expect(alert.text()).toContain('overlap on MONDAY')
+  })
+
+  it('protects unsaved changes on close with confirm dialog', async () => {
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    const dialogBefore = wrapper.findComponent({ name: 'DiscardDraftConfirmDialog' })
+    expect(dialogBefore.props('open')).toBe(false)
+
+    // Make an edit (type a title)
+    await wrapper.find('input[type="text"]').setValue('Draft Course')
+
+    // Click Go Back
+    await wrapper.find('[aria-label="Go back"]').trigger('click')
+    await flushPromises()
+
+    const dialog = wrapper.findComponent({ name: 'DiscardDraftConfirmDialog' })
+    expect(dialog.props('open')).toBe(true)
+
+    // Choose Keep editing
+    await dialog.vm.$emit('keepEditing')
+    await flushPromises()
+    expect(dialog.props('open')).toBe(false)
+    expect((wrapper.find('input[type="text"]').element as HTMLInputElement).value).toBe(
+      'Draft Course',
+    )
+
+    // Click Go Back again, and choose Discard
+    await wrapper.find('[aria-label="Go back"]').trigger('click')
+    await flushPromises()
+    expect(dialog.props('open')).toBe(true)
+
+    await dialog.vm.$emit('discard')
+    await flushPromises()
+    expect(dialog.props('open')).toBe(false)
+    expect(wrapper.find('input[type="text"]').exists()).toBe(false)
+    expect((wrapper.vm as any).courseName).toBe('')
+    expect(wrapper.emitted('close')).toBeDefined()
+  })
+
+  it('closes immediately without dialog when form is untouched or already saved', async () => {
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    // Untouched close
+    await wrapper.find('[aria-label="Go back"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.findComponent({ name: 'DiscardDraftConfirmDialog' }).props('open')).toBe(false)
+    expect(wrapper.emitted('close')).toHaveLength(1)
+
+    // Mount fresh and save successfully
+    const wrapper2 = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+    await wrapper2.find('input[type="text"]').setValue('Saved Course')
+    await wrapper2.find('[aria-label="FRIDAY"]').trigger('click')
+    await wrapper2.findAll('input[type="time"]')[0]!.setValue('09:00')
+    await wrapper2.findAll('input[type="time"]')[1]!.setValue('10:00')
+    await wrapper2.find('[aria-label="Confirm"]').trigger('click')
+    await flushPromises()
+
+    // Now close - should not prompt
+    await wrapper2.find('[aria-label="Go back"]').trigger('click')
+    await flushPromises()
+    expect(wrapper2.findComponent({ name: 'DiscardDraftConfirmDialog' }).props('open')).toBe(false)
+    expect(wrapper2.emitted('close')).toHaveLength(1)
+  })
+
+  it('clears selected weekday when block time change introduces a clash', async () => {
+    mockCourses.value = [{ id: 1, name: 'CS 101' }]
+    mockSchedules.value = [
+      { id: 10, courseId: 1, day: 'MONDAY' as DayOfWeek, startTime: '09:00', endTime: '10:00' },
+    ]
+
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    // Initially select Monday at non-clashing time 14:00-15:00
+    await wrapper.find('[aria-label="MONDAY"]').trigger('click')
+    const timeInputs = wrapper.findAll('input[type="time"]')
+    await timeInputs[0]!.setValue('14:00')
+    await timeInputs[1]!.setValue('15:00')
+
+    const card = wrapper.findComponent({ name: 'TimeBlockCard' })
+    expect(card.props('block').selectedDays).toContain('MONDAY')
+
+    // Change start time to 09:30 which clashes with CS 101 (09:00-10:00)
+    await timeInputs[0]!.setValue('09:30')
+    await timeInputs[1]!.setValue('10:30')
+    await flushPromises()
+
+    // Monday should be cleared from selectedDays and marked unavailable
+    expect(card.props('block').selectedDays).not.toContain('MONDAY')
+    expect(card.props('unavailableDays')).toContain('MONDAY')
+  })
+
+  it('disables add-another-time action when all seven weekdays clash', async () => {
+    mockCourses.value = [{ id: 1, name: 'CS 101' }]
+    const days: DayOfWeek[] = [
+      'SUNDAY',
+      'MONDAY',
+      'TUESDAY',
+      'WEDNESDAY',
+      'THURSDAY',
+      'FRIDAY',
+      'SATURDAY',
+    ]
+    mockSchedules.value = days.map((day, idx) => ({
+      id: idx + 1,
+      courseId: 1,
+      day,
       startTime: '09:00',
       endTime: '10:00',
-    })
+    }))
+
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    const timeInputs = wrapper.findAll('input[type="time"]')
+    await timeInputs[0]!.setValue('09:00')
+    await timeInputs[1]!.setValue('10:00')
+    await flushPromises()
+
+    const addBtn = wrapper.find('[data-testid="add-another-time"]')
+    expect(addBtn.attributes('disabled')).toBeDefined()
   })
 
   it('renders a week calendar preview grid in the background', async () => {
@@ -253,7 +419,7 @@ describe('CreateScheduleView', () => {
     expect(wrapper.find('[role="grid"]').text()).toContain('CS 101')
   })
 
-  it('handles empty-space tap in preview to prefill class time and set pendingSlot', async () => {
+  it('handles empty-space tap in preview to prefill class time, set pendingSlot, and show drawer in full mode', async () => {
     const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
     await router.isReady()
 
@@ -269,6 +435,7 @@ describe('CreateScheduleView', () => {
 
     const startInput = wrapper.find('input[type="time"]')
     expect((startInput.element as HTMLInputElement).value).toBe('10:00')
+    expect((wrapper.vm as any).stage).toBe('full')
     expect(weekPreview.props('pendingSlot')).toEqual({
       day: 'MONDAY',
       startTime: '10:00',
@@ -289,22 +456,57 @@ describe('CreateScheduleView', () => {
     await flushPromises()
 
     expect(weekPreview.props('pendingSlot')).not.toBeNull()
+    expect((wrapper.vm as any).hasUnsavedChanges).toBe(false)
 
     const back = wrapper.find('[aria-label="Go back"]')
     await back.trigger('click')
     await flushPromises()
 
+    const dialog = wrapper.findComponent({ name: 'DiscardDraftConfirmDialog' })
+    expect(dialog.props('open')).toBe(false)
+    expect(wrapper.emitted('close')).toHaveLength(1)
     expect(weekPreview.props('pendingSlot')).toBeNull()
   })
 
-  it('opens sheet to edit on selectBlock without starting a new class time', async () => {
+  it('shows discard dialog when closing after user modified a prefilled slot', async () => {
     const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
     await router.isReady()
+
+    const weekPreview = wrapper.findComponent({ name: 'WeekPreview' })
+    await weekPreview.vm.$emit('selectSlot', {
+      day: 'MONDAY',
+      startTime: '10:00',
+      endTime: '11:00',
+    })
+    await flushPromises()
+
+    const timeInputs = wrapper.findAll('input[type="time"]')
+    await timeInputs[0]!.setValue('09:00')
+    await flushPromises()
+
+    expect((wrapper.vm as any).hasUnsavedChanges).toBe(true)
+
+    const back = wrapper.find('[aria-label="Go back"]')
+    await back.trigger('click')
+    await flushPromises()
+
+    const dialog = wrapper.findComponent({ name: 'DiscardDraftConfirmDialog' })
+    expect(dialog.props('open')).toBe(true)
+  })
+
+  it('opens sheet in partial mode on selectBlock without starting a new class time', async () => {
+    const wrapper = mount(CreateScheduleView, {
+      props: { initialStage: 'full' },
+      global: { plugins: [router] },
+    })
+    await router.isReady()
+    expect((wrapper.vm as any).stage).toBe('full')
 
     const weekPreview = wrapper.findComponent({ name: 'WeekPreview' })
     await weekPreview.vm.$emit('selectBlock', 'block-0')
     await flushPromises()
 
+    expect((wrapper.vm as any).stage).toBe('partial')
     expect(weekPreview.props('pendingSlot')).toBeNull()
   })
 
@@ -351,7 +553,9 @@ describe('CreateScheduleView', () => {
     const input = wrapper.find('input[type="text"]')
     expect(input.attributes('readonly')).toBeUndefined()
     expect(wrapper.find('[aria-labelledby="time-blocks-heading"]').exists()).toBe(true)
-    expect(wrapper.find('[aria-label="Confirm"]').attributes('style') ?? '').not.toContain('display: none')
+    expect(wrapper.find('[aria-label="Confirm"]').attributes('style') ?? '').not.toContain(
+      'display: none',
+    )
 
     const content = wrapper.find('[data-slot="drawer-content"]')
     expect(content.classes().some((cls) => cls.includes('rounded-none'))).toBe(true)
@@ -376,7 +580,9 @@ describe('CreateScheduleView', () => {
     await flushPromises()
 
     expect(wrapper.find('input[type="text"]').attributes('readonly')).toBeUndefined()
-    expect(wrapper.find('[aria-label="Confirm"]').attributes('style') ?? '').not.toContain('display: none')
+    expect(wrapper.find('[aria-label="Confirm"]').attributes('style') ?? '').not.toContain(
+      'display: none',
+    )
   })
 
   it('switches between stages on vertical swipe gestures', async () => {
@@ -395,7 +601,9 @@ describe('CreateScheduleView', () => {
     await flushPromises()
 
     expect(wrapper.find('input[type="text"]').attributes('readonly')).toBeUndefined()
-    expect(wrapper.find('[aria-label="Confirm"]').attributes('style') ?? '').not.toContain('display: none')
+    expect(wrapper.find('[aria-label="Confirm"]').attributes('style') ?? '').not.toContain(
+      'display: none',
+    )
 
     // Swipe down (deltaY positive)
     await content.trigger('touchstart', {

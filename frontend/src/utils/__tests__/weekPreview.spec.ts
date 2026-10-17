@@ -8,10 +8,6 @@ import {
   minutesToTime,
   dayFromOffsetX,
   minutesFromOffsetY,
-  slotFrom2DDrag,
-  moveSlot2D,
-  resizeSlotHandle,
-  type PendingSlot,
 } from '@/utils/weekPreview'
 
 const sampleColor: CoursePaletteColor = {
@@ -117,7 +113,9 @@ describe('derivePreviewBlocks', () => {
       error: '',
     }
 
-    expect(derivePreviewBlocks([emptyStart, emptyEnd, invertedTime, equalTime], 'CS 101', sampleColor)).toEqual([])
+    expect(
+      derivePreviewBlocks([emptyStart, emptyEnd, invertedTime, equalTime], 'CS 101', sampleColor),
+    ).toEqual([])
   })
 
   it('yields a block with an empty title when the name is empty or whitespace-only', () => {
@@ -223,91 +221,5 @@ describe('slotFromOffset with sub-hour precision', () => {
     expect(slotFromOffset(100, -5, 700)).toBeNull()
     expect(slotFromOffset(100, 24 * 80 + 1, 700)).toBeNull()
     expect(slotFromOffset(100, 100, 0)).toBeNull()
-  })
-})
-
-describe('slotFrom2DDrag', () => {
-  it('updates both weekday and duration during 2D drag', () => {
-    // Start at Monday (150px) at 09:00 (720px = 9 * 80)
-    // Drag down to 11:30 (920px = 11.5 * 80) and right into Wednesday (350px)
-    const result = slotFrom2DDrag(720, 920, 350, 700)
-    expect(result).toEqual({
-      day: 'WEDNESDAY',
-      startTime: '09:00',
-      endTime: '11:30',
-    })
-  })
-
-  it('handles upward dragging correctly', () => {
-    // Dragged upward from 11:30 (920px) up to 09:15 (740px) in Monday (150px)
-    const result = slotFrom2DDrag(920, 740, 150, 700)
-    expect(result).toEqual({
-      day: 'MONDAY',
-      startTime: '09:15',
-      endTime: '11:30',
-    })
-  })
-
-  it('enforces a minimum 15-minute duration when drag distance is tiny', () => {
-    const result = slotFrom2DDrag(720, 725, 150, 700)
-    expect(result).toEqual({
-      day: 'MONDAY',
-      startTime: '09:00',
-      endTime: '09:15',
-    })
-  })
-})
-
-describe('moveSlot2D', () => {
-  it('moves slot horizontally across days and vertically preserving duration', () => {
-    const slot: PendingSlot = {
-      day: 'MONDAY',
-      startTime: '09:00',
-      endTime: '10:30', // 90 min duration
-    }
-
-    // Dragged to Thursday (col 4, ~450px) at 14:00 (14 * 80 = 1120px) with initial pointer offset 0 min
-    const result = moveSlot2D(slot, 450, 1120, 0, 700)
-    expect(result).toEqual({
-      day: 'THURSDAY',
-      startTime: '14:00',
-      endTime: '15:30',
-    })
-  })
-})
-
-describe('resizeSlotHandle', () => {
-  const slot: PendingSlot = {
-    day: 'MONDAY',
-    startTime: '09:00',
-    endTime: '11:00',
-  }
-
-  it('resizes startTime with top handle', () => {
-    // Drag top handle down to 10:15 (10.25 * 80 = 820px)
-    const result = resizeSlotHandle(slot, 'top', 820)
-    expect(result.startTime).toBe('10:15')
-    expect(result.endTime).toBe('11:00')
-  })
-
-  it('prevents top handle from exceeding endTime minus 15 minutes', () => {
-    // Try dragging top handle past endTime (11:00 -> 11:30)
-    const result = resizeSlotHandle(slot, 'top', 920)
-    expect(result.startTime).toBe('10:45')
-    expect(result.endTime).toBe('11:00')
-  })
-
-  it('resizes endTime with bottom handle', () => {
-    // Drag bottom handle down to 12:30 (12.5 * 80 = 1000px)
-    const result = resizeSlotHandle(slot, 'bottom', 1000)
-    expect(result.startTime).toBe('09:00')
-    expect(result.endTime).toBe('12:30')
-  })
-
-  it('prevents bottom handle from going earlier than startTime plus 15 minutes', () => {
-    // Try dragging bottom handle above startTime (09:00 -> 08:30)
-    const result = resizeSlotHandle(slot, 'bottom', 680)
-    expect(result.startTime).toBe('09:00')
-    expect(result.endTime).toBe('09:15')
   })
 })

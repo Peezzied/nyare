@@ -24,11 +24,7 @@ const dots = computed(() => Array.from({ length: total.value }, (_, index) => in
 </script>
 
 <template>
-  <div
-    role="status"
-    class="flex items-center gap-2"
-    :aria-label="`Step ${active} of ${total}`"
-  >
+  <div role="status" class="flex items-center gap-2" :aria-label="`Step ${active} of ${total}`">
     <span
       v-for="dot in dots"
       :key="dot"

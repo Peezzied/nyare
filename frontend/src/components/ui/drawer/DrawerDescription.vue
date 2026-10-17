@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import type { DrawerDescriptionProps } from "reka-ui"
-import type { HTMLAttributes } from "vue"
-import { reactiveOmit } from "@vueuse/core"
-import { cn } from "@/lib/utils"
-import { DrawerDescription } from "reka-ui"
+import type { DrawerDescriptionProps } from 'reka-ui'
+import type { HTMLAttributes } from 'vue'
+import { reactiveOmit } from '@vueuse/core'
+import { cn } from '@/lib/utils'
+import { DrawerDescription } from 'reka-ui'
 
-const props = defineProps<DrawerDescriptionProps & { class?: HTMLAttributes["class"] }>()
+const props = defineProps<DrawerDescriptionProps & { class?: HTMLAttributes['class'] }>()
 
-const delegatedProps = reactiveOmit(props, "class")
+const delegatedProps = reactiveOmit(props, 'class')
 </script>
 
 <template>

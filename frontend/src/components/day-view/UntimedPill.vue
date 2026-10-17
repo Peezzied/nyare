@@ -13,9 +13,8 @@ const emit = defineEmits<{
 // Same 4-theme derivation as CourseCard so a course keeps one color everywhere.
 const theme = computed(
   () =>
-    (['green', 'blue', 'purple', 'orange'] as const)[
-      Math.abs(props.item.courseId - 1) % 4
-    ] ?? 'blue',
+    (['green', 'blue', 'purple', 'orange'] as const)[Math.abs(props.item.courseId - 1) % 4] ??
+    'blue',
 )
 
 const colorClasses = computed(() => {
@@ -50,9 +49,7 @@ const colorClasses = computed(() => {
     >
       {{ props.item.completed ? '✓' : '' }}
     </span>
-    <span v-else class="shrink-0 text-base leading-none text-white" aria-hidden="true">
-      ⚑
-    </span>
+    <span v-else class="shrink-0 text-base leading-none text-white" aria-hidden="true"> ⚑ </span>
     <span class="min-w-0 flex-1 truncate font-bold text-white">{{ props.item.title }}</span>
   </button>
 </template>

@@ -47,7 +47,7 @@ const RAINBOW_COURSE_IDS = [
 
 const rainbowGradient = computed(() => {
   const colors = RAINBOW_COURSE_IDS.map(
-    id => COURSE_PALETTE_24.find(c => c.id === id)?.solid ?? '#00A4C8',
+    (id) => COURSE_PALETTE_24.find((c) => c.id === id)?.solid ?? '#00A4C8',
   )
   return `conic-gradient(from 0deg, ${colors.join(', ')})`
 })

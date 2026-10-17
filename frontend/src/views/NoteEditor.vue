@@ -539,7 +539,9 @@ onBeforeUnmount(() => {
     :style="viewportHeight ? { height: `${viewportHeight}px` } : undefined"
   >
     <!-- Header Navigation & Save Action -->
-    <header class="shrink-0 flex items-center justify-between border-b border-[#00A4C8]/30 px-4 py-3">
+    <header
+      class="shrink-0 flex items-center justify-between border-b border-[#00A4C8]/30 px-4 py-3"
+    >
       <button
         type="button"
         data-testid="back-button"
@@ -599,7 +601,10 @@ onBeforeUnmount(() => {
       <div class="flex flex-wrap items-center gap-y-2 gap-x-7 text-xs">
         <!-- Course Pill -->
         <div class="inline-flex items-center gap-1.5" data-testid="course-pill">
-          <label for="course-picker-trigger" class="font-bold uppercase tracking-wider text-slate-500">
+          <label
+            for="course-picker-trigger"
+            class="font-bold uppercase tracking-wider text-slate-500"
+          >
             Course:
           </label>
           <div class="relative inline-flex items-center">
@@ -636,7 +641,10 @@ onBeforeUnmount(() => {
 
         <!-- Date Pill -->
         <div class="inline-flex items-center gap-1.5" data-testid="date-pill">
-          <label for="date-picker-trigger" class="font-bold uppercase tracking-wider text-slate-500">
+          <label
+            for="date-picker-trigger"
+            class="font-bold uppercase tracking-wider text-slate-500"
+          >
             Date:
           </label>
           <Popover v-model:open="isCalendarOpen">

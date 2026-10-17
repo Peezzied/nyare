@@ -15,7 +15,9 @@ initMockAdapter()
     </Variant>
 
     <Variant title="Mobile Viewport (390px)">
-      <div class="mx-auto h-[844px] w-[390px] overflow-hidden rounded-2xl border border-slate-300 bg-[#F6F7EE] shadow-lg">
+      <div
+        class="mx-auto h-[844px] w-[390px] overflow-hidden rounded-2xl border border-slate-300 bg-[#F6F7EE] shadow-lg"
+      >
         <AccountSelectView />
       </div>
     </Variant>

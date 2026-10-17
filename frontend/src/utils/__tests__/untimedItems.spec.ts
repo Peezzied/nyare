@@ -19,24 +19,31 @@ function makeTask(overrides: Partial<TaskResponse> & { id: string }): TaskRespon
     status: 'TODO',
     createdAt: '2026-10-13T08:00:00',
     updatedAt: '2026-10-13T08:00:00',
-    ...overrides
+    ...overrides,
   }
 }
 
-function makeEvent(overrides: Partial<AcademicEventResponse> & { id: string }): AcademicEventResponse {
+function makeEvent(
+  overrides: Partial<AcademicEventResponse> & { id: string },
+): AcademicEventResponse {
   return {
     courseId: 4,
     title: 'Sample event',
     deadline: '2026-10-14',
     createdAt: '2026-10-13T08:00:00',
-    ...overrides
+    ...overrides,
   }
 }
 
 describe('deriveUntimedItems', () => {
   it('includes a task scheduled on the active date with task category and date', () => {
     const tasks = [
-      makeTask({ id: 't-1', courseId: 1, title: 'Review OOP lab notes', scheduledDate: '2026-10-14' })
+      makeTask({
+        id: 't-1',
+        courseId: 1,
+        title: 'Review OOP lab notes',
+        scheduledDate: '2026-10-14',
+      }),
     ]
     const result: UntimedDayItem[] = deriveUntimedItems(tasks, [], '2026-10-14')
     expect(result).toHaveLength(1)
@@ -46,7 +53,12 @@ describe('deriveUntimedItems', () => {
 
   it('excludes a task with a different scheduledDate', () => {
     const tasks = [
-      makeTask({ id: 't-3', courseId: 3, title: 'Read COA chapter 4', scheduledDate: '2026-10-15' })
+      makeTask({
+        id: 't-3',
+        courseId: 3,
+        title: 'Read COA chapter 4',
+        scheduledDate: '2026-10-15',
+      }),
     ]
     const result: UntimedDayItem[] = deriveUntimedItems(tasks, [], '2026-10-14')
     expect(result).toHaveLength(0)
@@ -55,7 +67,7 @@ describe('deriveUntimedItems', () => {
   it('excludes tasks with null or undefined scheduledDate', () => {
     const tasks = [
       makeTask({ id: 't-null', scheduledDate: null }),
-      makeTask({ id: 't-undef', scheduledDate: undefined })
+      makeTask({ id: 't-undef', scheduledDate: undefined }),
     ]
     const result: UntimedDayItem[] = deriveUntimedItems(tasks, [], '2026-10-14')
     expect(result).toHaveLength(0)
@@ -63,7 +75,7 @@ describe('deriveUntimedItems', () => {
 
   it('includes an event on deadline date with event category and completed false', () => {
     const events = [
-      makeEvent({ id: 'e-1', courseId: 4, title: 'RPH paper deadline', deadline: '2026-10-14' })
+      makeEvent({ id: 'e-1', courseId: 4, title: 'RPH paper deadline', deadline: '2026-10-14' }),
     ]
     const result: UntimedDayItem[] = deriveUntimedItems([], events, '2026-10-14')
     expect(result).toHaveLength(1)
@@ -81,7 +93,7 @@ describe('deriveUntimedItems', () => {
     const tasks = [
       makeTask({ id: 't-done', scheduledDate: '2026-10-14', status: 'COMPLETED' }),
       makeTask({ id: 't-todo', scheduledDate: '2026-10-14', status: 'TODO' }),
-      makeTask({ id: 't-prog', scheduledDate: '2026-10-14', status: 'IN_PROGRESS' })
+      makeTask({ id: 't-prog', scheduledDate: '2026-10-14', status: 'IN_PROGRESS' }),
     ]
     const result: UntimedDayItem[] = deriveUntimedItems(tasks, [], '2026-10-14')
     expect(result.find((item) => item.id === 't-done')?.completed).toBe(true)
@@ -95,20 +107,20 @@ describe('deriveUntimedItems', () => {
         id: 't-2',
         courseId: 2,
         title: 'Very long calculus problem set title that exceeds the compact pill bounds',
-        scheduledDate: '2026-10-14'
-      })
+        scheduledDate: '2026-10-14',
+      }),
     ]
     const events = [
-      makeEvent({ id: 'e-2', courseId: 2, title: 'CALC quiz', deadline: '2026-10-14' })
+      makeEvent({ id: 'e-2', courseId: 2, title: 'CALC quiz', deadline: '2026-10-14' }),
     ]
     const result: UntimedDayItem[] = deriveUntimedItems(tasks, events, '2026-10-14')
     expect(result.find((item) => item.id === 't-2')).toMatchObject({
       courseId: 2,
-      title: 'Very long calculus problem set title that exceeds the compact pill bounds'
+      title: 'Very long calculus problem set title that exceeds the compact pill bounds',
     })
     expect(result.find((item) => item.id === 'e-2')).toMatchObject({
       courseId: 2,
-      title: 'CALC quiz'
+      title: 'CALC quiz',
     })
   })
 })
@@ -121,7 +133,7 @@ describe('toSxFullDayEvent', () => {
       category: 'task',
       courseId: 1,
       completed: false,
-      date: '2026-10-14'
+      date: '2026-10-14',
     })
     expect(event.start).toBeInstanceOf(Temporal.PlainDate)
     expect(event.end).toBeInstanceOf(Temporal.PlainDate)
@@ -136,7 +148,7 @@ describe('toSxFullDayEvent', () => {
       category: 'event' as const,
       courseId: 4,
       completed: false,
-      date: '2026-10-14'
+      date: '2026-10-14',
     }
     const event = toSxFullDayEvent(item)
     expect(event.id).toBe('e-1')

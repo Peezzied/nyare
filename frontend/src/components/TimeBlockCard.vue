@@ -27,6 +27,7 @@ export interface TimeBlockCardProps {
   canRemove?: boolean
   startTime?: string
   endTime?: string
+  unavailableDays?: DayOfWeek[]
 }
 
 export function createScheduleDraft(day: DayOfWeek): ScheduleDraft {
@@ -111,6 +112,7 @@ const props = withDefaults(defineProps<TimeBlockCardProps>(), {
   canRemove: undefined,
   startTime: undefined,
   endTime: undefined,
+  unavailableDays: () => [],
 })
 
 const emit = defineEmits<{
@@ -127,6 +129,13 @@ const isCardDisabled = computed(() => props.saving || isSaved.value)
 const canDelete = computed(() => props.canRemove ?? props.index > 0)
 const currentStartTime = computed(() => props.startTime ?? props.block.startTime)
 const currentEndTime = computed(() => props.endTime ?? props.block.endTime)
+
+function handleToggleDay(day: DayOfWeek) {
+  if (isCardDisabled.value || props.unavailableDays.includes(day)) {
+    return
+  }
+  emit('toggleDay', day)
+}
 </script>
 
 <template>
@@ -214,14 +223,14 @@ const currentEndTime = computed(() => props.endTime ?? props.block.endTime)
             size="circle"
             :aria-pressed="block.selectedDays.includes(weekday.value)"
             :aria-label="weekday.value"
-            :disabled="isCardDisabled"
-            class="mx-auto flex aspect-square h-9 w-9 min-w-0 items-center justify-center rounded-full border p-0 text-xs font-bold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 sm:h-10 sm:w-10"
+            :disabled="isCardDisabled || props.unavailableDays.includes(weekday.value)"
+            class="mx-auto flex aspect-square h-9 w-9 min-w-0 items-center justify-center rounded-full border p-0 text-xs font-bold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 sm:h-10 sm:w-10"
             :class="
               block.selectedDays.includes(weekday.value)
                 ? '!border-[#006077] !bg-[#007B99] !text-white shadow-[0_2px_0_#00556B] hover:!bg-[#006B85]'
                 : '!border-[#C2E8F1] !bg-[#FDFEF7] !text-[#1E293B] shadow-[0_2px_0_#D5EBF1] hover:!border-[#00A4C8] hover:!bg-[#E1F5FE]'
             "
-            @click="emit('toggleDay', weekday.value)"
+            @click="handleToggleDay(weekday.value)"
           >
             {{ weekday.label }}
           </ToggleGroupItem>

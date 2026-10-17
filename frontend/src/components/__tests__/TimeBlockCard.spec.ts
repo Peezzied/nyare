@@ -118,4 +118,26 @@ describe('TimeBlockCard', () => {
       expect(input.attributes('disabled')).toBeDefined()
     }
   })
+
+  it('disables unavailable weekdays and does not emit toggleDay when clicked', async () => {
+    const block = makeBlock()
+    const wrapper = mount(TimeBlockCard, {
+      props: {
+        block,
+        index: 0,
+        unavailableDays: ['MONDAY', 'FRIDAY'],
+      },
+    })
+
+    const mondayItem = wrapper.find('[aria-label="MONDAY"]')
+    expect(mondayItem.attributes('disabled')).toBeDefined()
+
+    await mondayItem.trigger('click')
+    expect(wrapper.emitted('toggleDay')).toBeUndefined()
+
+    const tuesdayItem = wrapper.find('[aria-label="TUESDAY"]')
+    expect(tuesdayItem.attributes('disabled')).toBeUndefined()
+    await tuesdayItem.trigger('click')
+    expect(wrapper.emitted('toggleDay')).toEqual([['TUESDAY']])
+  })
 })

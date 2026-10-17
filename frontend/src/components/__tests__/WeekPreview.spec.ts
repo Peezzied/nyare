@@ -70,7 +70,7 @@ describe('WeekPreview.vue', () => {
     expect(wrapper.emitted('selectBlock')![0]).toEqual(['block-1'])
   })
 
-  it('renders styled pendingSlot card with top and bottom resize handles and time badge', () => {
+  it('renders styled pendingSlot card with time badge and without resize handles', () => {
     const pendingSlot: PendingSlot = {
       day: 'TUESDAY',
       startTime: '10:15',
@@ -89,10 +89,7 @@ describe('WeekPreview.vue', () => {
     expect(pendingBlock.exists()).toBe(true)
     expect(pendingBlock.text()).toContain('10:15 AM – 11:45 AM')
 
-    const topHandle = wrapper.find('[data-testid="top-handle"]')
-    expect(topHandle.exists()).toBe(true)
-
-    const bottomHandle = wrapper.find('[data-testid="bottom-handle"]')
-    expect(bottomHandle.exists()).toBe(true)
+    expect(wrapper.find('[data-testid="top-handle"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="bottom-handle"]').exists()).toBe(false)
   })
 })
