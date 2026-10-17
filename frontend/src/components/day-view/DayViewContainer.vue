@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { academicEventsApi } from '../../api/academicEvents'
 import { tasksApi } from '../../api/tasks'
-import { mockCourses, mockEvents, mockSchedules, mockTasks } from '../../mocks/calendarData'
+import { useCatalog } from '@/composables/useCatalog'
 import type { AcademicEventResponse, TaskResponse } from '../../types/api'
 import { toDateKey } from '../../utils/dayKey'
 import { expandSchedulesForDate, formatDateHeader } from '../../utils/scheduleExpander'
@@ -21,6 +21,7 @@ import WeekPeek from './WeekPeek.vue'
 const selectedDate = ref(new Date())
 const viewMode = ref<'day' | 'week'>('day')
 const isMenuOpen = ref(false)
+const catalog = useCatalog()
 
 // Tasks + events load once per intent; swiping only refilters locally.
 const tasks = ref<TaskResponse[]>([])
@@ -28,6 +29,7 @@ const events = ref<AcademicEventResponse[]>([])
 
 onMounted(async () => {
   try {
+    await catalog.loadCatalog()
     const [loadedTasks, loadedEvents] = await Promise.all([
       tasksApi.list(),
       academicEventsApi.list(),
@@ -35,10 +37,7 @@ onMounted(async () => {
     tasks.value = loadedTasks
     events.value = loadedEvents
   } catch (error) {
-    // ponytail: backend optional in dev; fall back to fixtures so the day view stays usable.
-    console.warn('[DayView] API unavailable, using mock tasks/events', error)
-    tasks.value = mockTasks
-    events.value = mockEvents
+    console.warn('[DayView] API error loading tasks/events', error)
   }
 })
 
@@ -50,7 +49,7 @@ const headerTitle = computed(() =>
 
 // Per-date data: used for the current view and for the swipe preview
 function eventsFor(date: Date) {
-  return expandSchedulesForDate(date, mockSchedules, mockCourses)
+  return expandSchedulesForDate(date, catalog.schedules.value, catalog.courses.value)
 }
 
 function untimedFor(date: Date) {

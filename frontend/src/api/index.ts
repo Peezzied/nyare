@@ -2,7 +2,7 @@
 export { apiClient, ApiError, setMockHandler } from './client'
 export type { MockHandler } from './client'
 
-export { authApi } from './auth'
+export { authApi, getDevUser } from './auth'
 export { coursesApi } from './courses'
 export { schedulesApi } from './schedules'
 export type { ScheduleListParams } from './schedules'

@@ -4,19 +4,12 @@ import { useRouter } from 'vue-router'
 import NoteCard from '@/components/NoteCard.vue'
 import PictureNoteCard from '@/components/PictureNoteCard.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
-import { getCourseColor, type CoursePaletteColor } from '@/constants/palette'
 import type { NoteSummaryResponse } from '@/types/api'
 import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
-import { devPreviewCourseNames, devPreviewNotes } from '@/api/mocks/notesDevPreview'
-import {
-  pictureNotePreview,
-  prototypeBadgeFor,
-  prototypePreviewEnabled,
-} from '@/api/mocks/notesPrototypePreview'
 
 const catalog = useCatalog()
-const { notes, loading, error, loadNotes } = useNotes()
+const { notes, pictureNote, loading, error, loadNotes, getCourseName, getBadgeColor } = useNotes()
 const router = useRouter()
 
 const isAccountMenuOpen = ref(false)
@@ -30,18 +23,6 @@ function goToSelectAccount(): void {
   router.push('/select-account')
 }
 
-// ponytail: prototype preview wiring stays in mock mode only.
-const showPrototypePreview = prototypePreviewEnabled()
-
-// ponytail: dev-only fallback shows sample cards when the API returns none.
-const showDevPreview = computed(
-  () => import.meta.env.DEV && !loading.value && !error.value && notes.value.length === 0,
-)
-
-const displayNotes = computed(() => (showDevPreview.value ? devPreviewNotes() : notes.value))
-
-const showPictureCard = computed(() => showPrototypePreview || showDevPreview.value)
-
 const courseNames = computed(() => {
   const names = new Map<number, string>()
   for (const course of catalog.courses.value) {
@@ -51,17 +32,11 @@ const courseNames = computed(() => {
 })
 
 function courseNameFor(note: NoteSummaryResponse): string | undefined {
-  if (showDevPreview.value) {
-    return devPreviewCourseNames().get(note.courseId)
-  }
-  return courseNames.value.get(note.courseId)
+  return getCourseName(note.courseId, courseNames.value)
 }
 
-function badgeColorFor(note: NoteSummaryResponse): CoursePaletteColor {
-  if (showPictureCard.value) {
-    return prototypeBadgeFor(note.courseId) ?? getCourseColor(note.courseId)
-  }
-  return getCourseColor(note.courseId)
+function badgeColorFor(note: NoteSummaryResponse) {
+  return getBadgeColor(note.courseId)
 }
 
 onMounted(async () => {
@@ -166,7 +141,7 @@ onMounted(async () => {
     </div>
 
     <p
-      v-else-if="displayNotes.length === 0"
+      v-else-if="notes.length === 0"
       class="mt-6 text-center text-sm text-text-muted"
       data-testid="notes-empty"
     >
@@ -174,22 +149,22 @@ onMounted(async () => {
     </p>
 
     <div v-else class="mt-6 columns-2 gap-4" data-testid="notes-grid">
-      <div v-for="note in displayNotes" :key="note.id" class="break-inside-avoid pb-4">
+      <div v-for="note in notes" :key="note.id" class="break-inside-avoid pb-4">
         <NoteCard
           :note="note"
           :course-name="courseNameFor(note)"
           :badge-color="badgeColorFor(note)"
         />
       </div>
-      <div v-if="showPictureCard" class="break-inside-avoid pb-4">
+      <div v-if="pictureNote" class="break-inside-avoid pb-4">
         <PictureNoteCard
-          :photo-url="pictureNotePreview.photoUrl"
-          :course-id="pictureNotePreview.note.courseId"
-          :course-name="courseNameFor(pictureNotePreview.note)"
-          :badge-color="badgeColorFor(pictureNotePreview.note)"
-          :title="pictureNotePreview.note.title"
-          :text="pictureNotePreview.note.preview"
-          :entry-date="pictureNotePreview.note.entryDate"
+          :photo-url="pictureNote.photoUrl"
+          :course-id="pictureNote.note.courseId"
+          :course-name="courseNameFor(pictureNote.note)"
+          :badge-color="badgeColorFor(pictureNote.note)"
+          :title="pictureNote.note.title"
+          :text="pictureNote.note.preview"
+          :entry-date="pictureNote.note.entryDate"
         />
       </div>
     </div>

@@ -4,12 +4,6 @@ import { useRouter } from 'vue-router'
 import { ChevronDown, ChevronRight } from '@lucide/vue'
 import { tasksApi } from '@/api/tasks'
 import { useCatalog } from '@/composables/useCatalog'
-import {
-  TASK_DISPLAY_TIMES,
-  TASK_DUE_DATES,
-  TODO_FIXTURE_TASKS_V2,
-  TODO_FIXTURE_COURSES,
-} from '@/api/mocks/fixtures'
 import { getPlanCategory } from '@/utils/planCategory'
 import TodoHeader from '@/components/TodoHeader.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
@@ -41,9 +35,7 @@ const expandedSections = ref<Record<PlanCategory, boolean>>({
 
 function getCourseName(courseId: number): string {
   const found = catalog.courses.value.find((c) => c.id === courseId)
-  if (found) return found.name
-  const fixtureCourse = TODO_FIXTURE_COURSES.find((c) => c.id === courseId)
-  return fixtureCourse?.name ?? `Course ${courseId}`
+  return found?.name ?? `Course ${courseId}`
 }
 
 function getCategory(task: TaskResponse): PlanCategory {
@@ -51,7 +43,7 @@ function getCategory(task: TaskResponse): PlanCategory {
 }
 
 function getDueDate(task: TaskResponse): string | null {
-  return TASK_DUE_DATES[task.id] ?? task.scheduledDate ?? null
+  return task.scheduledDate ?? null
 }
 
 const scheduledTasks = computed(() =>
@@ -93,10 +85,7 @@ async function loadData() {
   loading.value = true
   try {
     await catalog.loadCatalog()
-    const fetched = await tasksApi.list()
-    const fetchedIds = new Set(fetched.map((t) => t.id))
-    const extras = TODO_FIXTURE_TASKS_V2.filter((t) => !fetchedIds.has(t.id))
-    tasks.value = [...fetched, ...extras]
+    tasks.value = await tasksApi.list()
   } finally {
     loading.value = false
   }
@@ -110,10 +99,7 @@ async function toggleTask(task: TaskResponse) {
     const updated = await tasksApi.updateStatus(task.id, nextStatus)
     tasks.value = tasks.value.map((t) => (t.id === task.id ? updated : t))
   } catch {
-    const isFixtureTask = TODO_FIXTURE_TASKS_V2.some((t) => t.id === task.id)
-    if (!isFixtureTask) {
-      tasks.value = tasks.value.map((t) => (t.id === task.id ? { ...t, status: previous } : t))
-    }
+    tasks.value = tasks.value.map((t) => (t.id === task.id ? { ...t, status: previous } : t))
   }
 }
 
@@ -171,7 +157,7 @@ onMounted(loadData)
             :task="task"
             :course-name="getCourseName(task.courseId)"
             :due-date="getDueDate(task)"
-            :time="TASK_DISPLAY_TIMES[task.id] ?? ''"
+            :time="''"
             @open="navigateToTask(task)"
             @toggle="toggleTask(task)"
           />
@@ -206,7 +192,7 @@ onMounted(loadData)
                 :task="task"
                 :course-name="getCourseName(task.courseId)"
                 :due-date="getDueDate(task)"
-                :time="TASK_DISPLAY_TIMES[task.id] ?? ''"
+                :time="''"
                 @open="navigateToTask(task)"
                 @toggle="toggleTask(task)"
               />

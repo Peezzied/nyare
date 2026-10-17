@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { initMockAdapter, resetMockFixtures } from '../adapter'
 import {
   apiClient,
@@ -15,10 +15,17 @@ import {
 import type { ProcessSummaryResponse } from '@/types/api'
 
 describe('Mock Adapter', () => {
+  const originalDevUser = import.meta.env.VITE_DEV_USER
+
   beforeEach(() => {
+    import.meta.env.VITE_DEV_USER = ''
     initMockAdapter()
     // The mock store is module state, so each test starts from fresh fixtures.
     resetMockFixtures()
+  })
+
+  afterEach(() => {
+    import.meta.env.VITE_DEV_USER = originalDevUser
   })
 
   describe('courses', () => {
