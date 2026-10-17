@@ -184,7 +184,8 @@
 /* Schedule-X Calendar Global Styling (Google Calendar Mobile) */
 :root,
 .sx__calendar,
-.sx-vue-calendar-wrapper {
+.sx-vue-calendar-wrapper,
+.sx__view-container {
   --calendar-hour-height: 48px;
   --sx-week-grid-hour-height: var(--calendar-hour-height);
   --sx-calendar-week-grid-padding-left: 55px;
@@ -192,6 +193,14 @@
   --sx-time-axis-label-width: calc(
     var(--sx-calendar-week-grid-padding-left) - var(--sx-time-axis-line-length)
   );
+  --sx-color-background: #f5f6ee;
+  --sx-color-surface: #f5f6ee;
+  --sx-color-outline-variant: #9ccfe0;
+}
+
+.sx__calendar,
+.sx__view-container {
+  background-color: #f5f6ee !important;
 }
 
 .sx__week-grid {
@@ -216,3 +225,18 @@
   color: #78716c !important;
   user-select: none;
 }
+
+/* Disable Schedule-X event entrance and slide animations */
+.sx__time-grid-event.is-event-new,
+.sx__date-grid-event.is-event-new,
+.sx__month-grid-event.is-event-new {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.sx__slide-left,
+.sx__slide-right {
+  animation: none !important;
+}
+

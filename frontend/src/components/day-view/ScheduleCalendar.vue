@@ -74,6 +74,7 @@ const calendarApp = shallowRef(
       views: [createViewDay()],
       defaultView: 'day',
       timezone: TZ,
+      skipAnimations: true,
       selectedDate: toPlainDate(props.selectedDate),
       dayBoundaries: {
         start: `${String(initialB.startHour).padStart(2, '0')}:00`,
@@ -137,7 +138,7 @@ let resizeObserver: ResizeObserver | null = null
 // Where the time line sits, in pixels relative to the Schedule X area
 const overlay = ref({ top: 0, left: 0, width: 0 })
 // Left edge of the day column, so the all-day strip lines up with the grid pills
-const gutterLeft = ref(0)
+const gutterLeft = ref(55)
 
 // Scroll memory: the first build scrolls to "now"; later date changes (swipes)
 // restore the position you were at, like Google Calendar.
@@ -145,7 +146,7 @@ let didInitialScroll = false
 let savedScrollTop = 0
 
 // Update the calendar in-place when date, boundaries, or events change
-watch([() => props.selectedDate, boundaries, () => props.events], ([newDate, newBoundaries, newEvents]) => {
+watch([() => props.selectedDate, boundaries, () => props.events], async ([newDate, newBoundaries, newEvents]) => {
   if (scrollEl.value) savedScrollTop = scrollEl.value.scrollTop
   const b = newBoundaries
   const hours = b.endHour - b.startHour
@@ -168,7 +169,8 @@ watch([() => props.selectedDate, boundaries, () => props.events], ([newDate, new
   measure()
   settle(15)
 
-  // Notify the swiper that the date change is in place
+  // Wait for Vue to mount the Teleport components, then paint
+  await nextTick()
   requestAnimationFrame(() => {
     wrapperRef.value?.dispatchEvent(new CustomEvent('day-ready', { bubbles: true }))
   })
@@ -180,7 +182,8 @@ function updateOverlay() {
   if (!area || !col) return
   const a = area.getBoundingClientRect()
   const c = col.getBoundingClientRect()
-  gutterLeft.value = Math.max(Math.round(c.left - a.left), 0)
+  const diff = c.left - a.left
+  gutterLeft.value = Math.abs(diff - 55) <= 1 ? 55 : Math.max(Math.round(diff), 0)
   if (nowTop.value === null) return
   overlay.value = {
     top: c.top - a.top + nowTop.value,
@@ -409,7 +412,7 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
 </script>
 
 <template>
-  <div ref="wrapperRef" class="relative flex min-h-0 flex-1 flex-col">
+  <div ref="wrapperRef" class="relative flex min-h-0 flex-1 flex-col bg-[#F5F6EE]">
     <!-- Tasks/events without a time: sits on top like Google Calendar's all-day row -->
     <AllDayStrip
       v-if="untimedItems.length > 0"
@@ -524,6 +527,15 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
   box-sizing: border-box !important;
   box-shadow: none !important;
   overflow: visible !important;
+}
+
+/* Disable Schedule-X slide and event grow transition animations */
+.sx-nyare-wrapper :deep(.sx__slide-left),
+.sx-nyare-wrapper :deep(.sx__slide-right),
+.sx-nyare-wrapper :deep(.sx__time-grid-event.is-event-new) {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
 }
 
 /* The element that scrolls: thin scrollbar, contained overscroll */

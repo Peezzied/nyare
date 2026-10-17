@@ -123,8 +123,7 @@ const viewHeight = ref(0)
 let scrollCleanup: (() => void) | null = null
 let resizeObserver: ResizeObserver | null = null
 
-const gutterLeft = ref(0) // width of the time axis
-const colsWidth = ref(0) // width of the 7 day columns
+const gutterLeft = ref(55) // width of the time axis
 const overlay = ref({ top: 0, left: 0, width: 0 }) // the time line, relative to the grid area
 
 // Scroll memory: the first build scrolls to "now"; later date changes (swipes)
@@ -132,7 +131,7 @@ const overlay = ref({ top: 0, left: 0, width: 0 }) // the time line, relative to
 let didInitialScroll = false
 let savedScrollTop = 0
 
-watch([() => props.selectedDate, allEvents], ([newDate, newEvents]) => {
+watch([() => props.selectedDate, allEvents], async ([newDate, newEvents]) => {
   if (scrollEl.value) savedScrollTop = scrollEl.value.scrollTop
   calendarControls.setDate(Temporal.PlainDate.from(toDateKey(newDate)))
   calendarApp.value.events.set(toSxEvents(newEvents))
@@ -141,9 +140,9 @@ watch([() => props.selectedDate, allEvents], ([newDate, newEvents]) => {
     scrollEl.value.scrollTop = savedScrollTop
   }
   measure()
-  settle(15)
 
-  // Notify the swiper that the week change is in place
+  // Wait for Vue to mount the Teleport components, then paint
+  await nextTick()
   requestAnimationFrame(() => {
     wrapperRef.value?.dispatchEvent(new CustomEvent('day-ready', { bubbles: true }))
   })
@@ -158,13 +157,12 @@ function updateOverlay() {
   if (!area) return
   const cols = queryColumns()
   const first = cols[0]
-  const last = cols[cols.length - 1]
-  if (!first || !last) return
+  if (!first) return
 
   const a = area.getBoundingClientRect()
   const f = first.getBoundingClientRect()
-  gutterLeft.value = Math.max(Math.round(f.left - a.left), 0)
-  colsWidth.value = Math.max(Math.round(last.getBoundingClientRect().right - f.left), 0)
+  const diff = f.left - a.left
+  gutterLeft.value = Math.abs(diff - 55) <= 1 ? 55 : Math.max(Math.round(diff), 0)
 
   const todayCol = todayIndex.value >= 0 ? cols[todayIndex.value] : undefined
   if (todayCol && nowTop.value !== null) {
@@ -382,13 +380,13 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
 </script>
 
 <template>
-  <div ref="wrapperRef" class="relative flex min-h-0 flex-1 flex-col">
+  <div ref="wrapperRef" class="relative flex min-h-0 flex-1 flex-col bg-[#F5F6EE]">
     <!-- Day names, dates and untimed items; tap a day to open it -->
     <WeekHeaderRow
       :days="dayInfos"
       :today-key="todayKey"
       :gutter-left="gutterLeft"
-      :cols-width="colsWidth"
+      :cols-width="0"
       @select="emit('selectDay', $event)"
       @select-untimed="onSelectUntimed"
     />
@@ -491,11 +489,24 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
   overflow: visible !important;
 }
 
-/* The element that scrolls: thin scrollbar, contained overscroll */
+/* Disable Schedule-X slide and event grow transition animations */
+.sx-nyare-week :deep(.sx__slide-left),
+.sx-nyare-week :deep(.sx__slide-right),
+.sx-nyare-week :deep(.sx__time-grid-event.is-event-new) {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* The element that scrolls: full width without scrollbar track cutting off Saturday */
 .sx-nyare-week :deep(.sx__view-container) {
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #a8a29e transparent;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   overscroll-behavior: contain;
+}
+
+.sx-nyare-week :deep(.sx__view-container)::-webkit-scrollbar {
+  display: none;
 }
 </style>
