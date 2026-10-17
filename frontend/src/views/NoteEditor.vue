@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Full-screen journal note editor for /notes/new and /notes/:id. An id route param selects edit mode.
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import {
   ArrowLeft,
@@ -157,7 +157,6 @@ const calendarDateValue = computed<DateValue | undefined>({
   set: (val) => {
     if (val) {
       entryDate.value = val.toString()
-      isDirty.value = true
       isCalendarOpen.value = false
     }
   },
@@ -207,7 +206,75 @@ const formattedDisplayDate = computed(() => {
 
 const contentMarkdown = ref(props.initialContent)
 const htmlContent = ref(markdownToHtml(props.initialContent))
-const isDirty = ref(false)
+interface NoteFormState {
+  title: string
+  courseId: number | null
+  entryDate: string
+  content: string
+}
+
+function isTitleEqual(current?: string | null, baseline?: string | null): boolean {
+  const a = current ?? ''
+  const b = baseline ?? ''
+  if (a === b) {
+    return true
+  }
+  return a.trim() === b.trim()
+}
+
+function isCourseIdEqual(current?: number | null, baseline?: number | null): boolean {
+  return (current ?? null) === (baseline ?? null)
+}
+
+function isEntryDateEqual(current?: string | null, baseline?: string | null): boolean {
+  return (current ?? '').trim() === (baseline ?? '').trim()
+}
+
+function isContentEqual(current?: string | null, baseline?: string | null): boolean {
+  const a = current ?? ''
+  const b = baseline ?? ''
+  if (a === b) {
+    return true
+  }
+  if (a.trim() === b.trim()) {
+    return true
+  }
+  return htmlToMarkdown(markdownToHtml(a)) === htmlToMarkdown(markdownToHtml(b))
+}
+
+function isEqualState(a: NoteFormState, b: NoteFormState): boolean {
+  return (
+    isTitleEqual(a.title, b.title) &&
+    isCourseIdEqual(a.courseId, b.courseId) &&
+    isEntryDateEqual(a.entryDate, b.entryDate) &&
+    isContentEqual(a.content, b.content)
+  )
+}
+
+function getCurrentState(): NoteFormState {
+  return {
+    title: title.value ?? '',
+    courseId: selectedCourseId.value ?? null,
+    entryDate: entryDate.value ?? '',
+    content: contentMarkdown.value ?? '',
+  }
+}
+
+const initialState = ref<NoteFormState>({
+  title: props.initialTitle ?? '',
+  courseId: props.initialCourseId ?? null,
+  entryDate: props.initialDate !== undefined ? props.initialDate : todayString,
+  content: props.initialContent ?? '',
+})
+
+const isNavigatingAway = ref(false)
+
+const isDirty = computed(() => {
+  if (isNavigatingAway.value) {
+    return false
+  }
+  return !isEqualState(getCurrentState(), initialState.value)
+})
 const isSaving = ref(false)
 const isLoading = ref(false)
 const errorMessage = ref<string | null>(null)
@@ -248,7 +315,6 @@ const courseBadgeStyle = computed<Record<string, string> | undefined>(() => {
 
 function onCourseSelect(courseId: number) {
   selectedCourseId.value = courseId
-  isDirty.value = true
 }
 
 const isSaveDisabled = computed(() => {
@@ -303,15 +369,8 @@ function onEditorContentChange(newHtml: string) {
   if (isLoading.value) {
     return
   }
-  const newMarkdown = htmlToMarkdown(newHtml)
-  // Editor HTML that converts to the same Markdown leaves the saved content unchanged, so a clean note stays clean.
-  if (newMarkdown.trim() === contentMarkdown.value.trim() && !isDirty.value) {
-    htmlContent.value = newHtml
-    return
-  }
   htmlContent.value = newHtml
-  contentMarkdown.value = newMarkdown
-  isDirty.value = true
+  contentMarkdown.value = htmlToMarkdown(newHtml)
 }
 
 function onImageUploaded(response: ImageUploadResponse) {
@@ -335,8 +394,7 @@ function hasMeaningfulContent(): boolean {
 }
 
 function navigateBack() {
-  // Clear the dirty flag first so the onBeforeRouteLeave guard does not ask again after a save or discard.
-  isDirty.value = false
+  isNavigatingAway.value = true
   if (router) {
     router.back()
   }
@@ -369,7 +427,7 @@ function cancelDiscard() {
 
 try {
   onBeforeRouteLeave(() => {
-    if (isDirty.value && hasMeaningfulContent()) {
+    if (!isNavigatingAway.value && isDirty.value && hasMeaningfulContent()) {
       return window.confirm('You have unsaved changes. Leave anyway?')
     }
     return true
@@ -393,7 +451,8 @@ async function loadNote(id: string) {
     for (const url of extractImageUrls(note.content ?? '')) {
       knownImageUrls.value.add(url)
     }
-    isDirty.value = false
+    await nextTick()
+    initialState.value = getCurrentState()
   } catch (err) {
     errorMessage.value = err instanceof Error ? err.message : 'Failed to load note'
   } finally {
@@ -442,7 +501,12 @@ async function saveNote() {
     }
     lastProcessedAt.value = savedNote.lastProcessedAt ?? null
     updatedAt.value = savedNote.updatedAt ?? null
-    isDirty.value = false
+    initialState.value = {
+      title: savedNote.title ?? '',
+      courseId: savedNote.courseId ?? null,
+      entryDate: savedNote.entryDate ?? todayString,
+      content: savedNote.content ?? '',
+    }
     navigateBack()
   } catch (err) {
     errorMessage.value = err instanceof Error ? err.message : 'Failed to save note'
@@ -461,6 +525,9 @@ watch(
       for (const url of extractImageUrls(newContent)) {
         knownImageUrls.value.add(url)
       }
+      if (!isEditMode.value) {
+        initialState.value.content = newContent
+      }
     }
   },
 )
@@ -470,6 +537,9 @@ watch(
   (newCourseId) => {
     if (newCourseId !== undefined && newCourseId !== null && selectedCourseId.value === null) {
       selectedCourseId.value = newCourseId
+      if (!isEditMode.value) {
+        initialState.value.courseId = newCourseId
+      }
     }
   },
 )
@@ -479,6 +549,9 @@ watch(
   (newTitle) => {
     if (newTitle && !title.value) {
       title.value = newTitle
+      if (!isEditMode.value) {
+        initialState.value.title = newTitle
+      }
     }
   },
 )
@@ -520,6 +593,8 @@ onMounted(async () => {
     } else if (route?.query?.entryDate) {
       entryDate.value = String(route.query.entryDate)
     }
+    await nextTick()
+    initialState.value = getCurrentState()
   }
 })
 
@@ -591,7 +666,6 @@ onBeforeUnmount(() => {
           type="text"
           placeholder="Untitled Note..."
           class="w-full bg-transparent !font-sans text-2xl font-bold text-slate-800 placeholder-slate-400 outline-none"
-          @input="isDirty = true"
         />
       </div>
 

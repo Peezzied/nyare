@@ -556,4 +556,202 @@ describe('NoteEditor.vue', () => {
 
     vi.unstubAllGlobals()
   })
+
+  it('does not show unsaved changes dialog when leaving an unchanged loaded note', async () => {
+    mockRoute.params = { id: 'note-uuid-existing-unchanged' }
+    const existingNote: NoteResponse = {
+      id: 'note-uuid-existing-unchanged',
+      courseId: 2,
+      title: 'Calculus Derivatives',
+      content: '# Derivatives Overview\n\nChain rule notes',
+      entryDate: '2026-10-12',
+      createdAt: '2026-10-12T00:00:00Z',
+      updatedAt: '2026-10-12T00:00:00Z',
+    }
+    vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
+
+    const wrapper = mount(NoteEditor, { attachTo: document.body })
+    await flushPromises()
+
+    const backButton = wrapper.find('[data-testid="back-button"]')
+    await backButton.trigger('click')
+    await flushPromises()
+
+    const unsavedDialog = document.body.querySelector('[data-testid="unsaved-changes-dialog"]')
+    expect(unsavedDialog).toBeNull()
+    expect(mockRouter.back).toHaveBeenCalled()
+
+    expect(beforeRouteLeaveCallback).toBeDefined()
+    const confirmSpy = vi.spyOn(window, 'confirm')
+    expect(beforeRouteLeaveCallback!()).toBe(true)
+    expect(confirmSpy).not.toHaveBeenCalled()
+
+    wrapper.unmount()
+  })
+
+  it('does not trigger unsaved changes dialog when focusing inputs or reselecting identical values', async () => {
+    mockRoute.params = { id: 'note-uuid-existing-focus' }
+    const existingNote: NoteResponse = {
+      id: 'note-uuid-existing-focus',
+      courseId: 2,
+      title: 'Chemistry Lab',
+      content: 'Observation notes',
+      entryDate: '2026-10-12',
+      createdAt: '2026-10-12T00:00:00Z',
+      updatedAt: '2026-10-12T00:00:00Z',
+    }
+    vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
+
+    const wrapper = mount(NoteEditor, { attachTo: document.body })
+    await flushPromises()
+
+    const titleInput = wrapper.find<HTMLInputElement>('[data-testid="title-input"]')
+    await titleInput.trigger('focus')
+    await titleInput.trigger('click')
+
+    const picker = wrapper.findComponent(CoursePickerDialog)
+    await picker.vm.$emit('select', 2)
+    await flushPromises()
+
+    const backButton = wrapper.find('[data-testid="back-button"]')
+    await backButton.trigger('click')
+    await flushPromises()
+
+    const unsavedDialog = document.body.querySelector('[data-testid="unsaved-changes-dialog"]')
+    expect(unsavedDialog).toBeNull()
+    expect(mockRouter.back).toHaveBeenCalled()
+
+    wrapper.unmount()
+  })
+
+  it('shows unsaved changes dialog when modified and avoids dialog when changes are reverted', async () => {
+    mockRoute.params = { id: 'note-uuid-existing-revert' }
+    const existingNote: NoteResponse = {
+      id: 'note-uuid-existing-revert',
+      courseId: 2,
+      title: 'Calculus Derivatives',
+      content: '# Derivatives Overview\n\nChain rule notes',
+      entryDate: '2026-10-12',
+      createdAt: '2026-10-12T00:00:00Z',
+      updatedAt: '2026-10-12T00:00:00Z',
+    }
+    vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
+
+    const wrapper = mount(NoteEditor, { attachTo: document.body })
+    await flushPromises()
+
+    const titleInput = wrapper.find<HTMLInputElement>('[data-testid="title-input"]')
+    await titleInput.setValue('Calculus Derivatives with Integrals')
+    await flushPromises()
+
+    const backButton = wrapper.find('[data-testid="back-button"]')
+    await backButton.trigger('click')
+    await flushPromises()
+
+    let unsavedDialog = document.body.querySelector('[data-testid="unsaved-changes-dialog"]')
+    expect(unsavedDialog).not.toBeNull()
+
+    const cancelButton = document.body.querySelector('[data-testid="cancel-discard-button"]') as HTMLButtonElement
+    cancelButton.click()
+    await flushPromises()
+
+    mockRouter.back.mockClear()
+
+    await titleInput.setValue('Calculus Derivatives')
+    await flushPromises()
+
+    await backButton.trigger('click')
+    await flushPromises()
+
+    unsavedDialog = document.body.querySelector('[data-testid="unsaved-changes-dialog"]')
+    expect(unsavedDialog).toBeNull()
+    expect(mockRouter.back).toHaveBeenCalledTimes(1)
+
+    wrapper.unmount()
+  })
+
+  it('clears unsaved changes when course selection and editor content are reverted', async () => {
+    mockRoute.params = { id: 'note-uuid-existing-content-revert' }
+    const existingNote: NoteResponse = {
+      id: 'note-uuid-existing-content-revert',
+      courseId: 1,
+      title: 'Physics Mechanics',
+      content: 'Original physics body',
+      entryDate: '2026-10-12',
+      createdAt: '2026-10-12T00:00:00Z',
+      updatedAt: '2026-10-12T00:00:00Z',
+    }
+    vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
+
+    const wrapper = mount(NoteEditor, { attachTo: document.body })
+    await flushPromises()
+
+    const tiptap = wrapper.findComponent(TiptapEditor)
+    await tiptap.vm.$emit('update:modelValue', '<p>Modified physics body</p>')
+    await flushPromises()
+
+    const backButton = wrapper.find('[data-testid="back-button"]')
+    await backButton.trigger('click')
+    await flushPromises()
+
+    let unsavedDialog = document.body.querySelector('[data-testid="unsaved-changes-dialog"]')
+    expect(unsavedDialog).not.toBeNull()
+
+    const cancelButton = document.body.querySelector('[data-testid="cancel-discard-button"]') as HTMLButtonElement
+    cancelButton.click()
+    await flushPromises()
+
+    mockRouter.back.mockClear()
+
+    await tiptap.vm.$emit('update:modelValue', '<p>Original physics body</p>')
+    await flushPromises()
+
+    await backButton.trigger('click')
+    await flushPromises()
+
+    unsavedDialog = document.body.querySelector('[data-testid="unsaved-changes-dialog"]')
+    expect(unsavedDialog).toBeNull()
+    expect(mockRouter.back).toHaveBeenCalledTimes(1)
+
+    wrapper.unmount()
+  })
+
+  it('does not show unsaved dialog when user restores new note fields to empty', async () => {
+    const wrapper = mount(NoteEditor, {
+      props: {
+        initialCourseId: 1,
+      },
+      attachTo: document.body,
+    })
+    await flushPromises()
+
+    const titleInput = wrapper.find<HTMLInputElement>('[data-testid="title-input"]')
+    await titleInput.setValue('Transient Title')
+    await flushPromises()
+
+    const backButton = wrapper.find('[data-testid="back-button"]')
+    await backButton.trigger('click')
+    await flushPromises()
+
+    let unsavedDialog = document.body.querySelector('[data-testid="unsaved-changes-dialog"]')
+    expect(unsavedDialog).not.toBeNull()
+
+    const cancelButton = document.body.querySelector('[data-testid="cancel-discard-button"]') as HTMLButtonElement
+    cancelButton.click()
+    await flushPromises()
+
+    mockRouter.back.mockClear()
+
+    await titleInput.setValue('')
+    await flushPromises()
+
+    await backButton.trigger('click')
+    await flushPromises()
+
+    unsavedDialog = document.body.querySelector('[data-testid="unsaved-changes-dialog"]')
+    expect(unsavedDialog).toBeNull()
+    expect(mockRouter.back).toHaveBeenCalledTimes(1)
+
+    wrapper.unmount()
+  })
 })
