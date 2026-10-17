@@ -4,13 +4,61 @@ import { useRouter } from 'vue-router'
 import NoteCard from '@/components/NoteCard.vue'
 import PictureNoteCard from '@/components/PictureNoteCard.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
+import NoteEditorModal from '@/components/notes/NoteEditorModal.vue'
+import { getCourseColor, type CoursePaletteColor } from '@/constants/palette'
 import type { NoteSummaryResponse } from '@/types/api'
+import type { NoteModalTriggerKind, TapOriginRect } from '@/types/notesTransition'
 import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
+import { toTapOriginRect } from '@/composables/useNoteTransition'
+import { devPreviewCourseNames, devPreviewNotes } from '@/api/mocks/notesDevPreview'
+import {
+  pictureNotePreview,
+  prototypeBadgeFor,
+  prototypePreviewEnabled,
+} from '@/api/mocks/notesPrototypePreview'
 
 const catalog = useCatalog()
-const { notes, pictureNote, loading, error, loadNotes, getCourseName, getBadgeColor } = useNotes()
 const router = useRouter()
+
+const modalOpen = ref(false)
+const modalNoteId = ref<string | null>(null)
+const modalOrigin = ref<TapOriginRect | null>(null)
+const modalTrigger = ref<NoteModalTriggerKind | null>(null)
+
+function openModal(options: {
+  originRect: TapOriginRect | null
+  noteId: string | null
+  triggerKind: NoteModalTriggerKind
+}) {
+  // A second tap while the overlay is up is a fast double-tap; ignore it.
+  if (modalOpen.value) {
+    return
+  }
+  modalOrigin.value = options.originRect
+  modalNoteId.value = options.noteId
+  modalTrigger.value = options.triggerKind
+  modalOpen.value = true
+}
+
+function openNote(id: string, event?: Event) {
+  const el = (event?.currentTarget ?? event?.target) as Element | null
+  openModal({
+    originRect: el ? toTapOriginRect(el) : null,
+    noteId: id,
+    triggerKind: 'card',
+  })
+}
+
+function newNote(event?: Event) {
+  const el = event?.currentTarget as Element | null
+  openModal({
+    originRect: el ? toTapOriginRect(el) : null,
+    noteId: null,
+    triggerKind: 'fab',
+  })
+}
+const { notes, loading, error, loadNotes } = useNotes()
 
 const isAccountMenuOpen = ref(false)
 
@@ -41,7 +89,7 @@ function badgeColorFor(note: NoteSummaryResponse) {
 
 onMounted(async () => {
   await catalog.loadCatalog()
-  await loadNotes()
+  await loadNotes(true)
 })
 </script>
 
@@ -119,7 +167,7 @@ onMounted(async () => {
       </div>
     </header>
 
-    <p v-if="loading" class="mt-6 text-center text-sm text-text-muted" data-testid="notes-loading">
+    <p v-if="loading && notes.length === 0" class="mt-6 text-center text-sm text-text-muted" data-testid="notes-loading">
       Notes are loading.
     </p>
 
@@ -154,17 +202,19 @@ onMounted(async () => {
           :note="note"
           :course-name="courseNameFor(note)"
           :badge-color="badgeColorFor(note)"
+          @open="openNote(note.id, $event)"
         />
       </div>
       <div v-if="pictureNote" class="break-inside-avoid pb-4">
         <PictureNoteCard
-          :photo-url="pictureNote.photoUrl"
-          :course-id="pictureNote.note.courseId"
-          :course-name="courseNameFor(pictureNote.note)"
-          :badge-color="badgeColorFor(pictureNote.note)"
-          :title="pictureNote.note.title"
-          :text="pictureNote.note.preview"
-          :entry-date="pictureNote.note.entryDate"
+          :photo-url="pictureNotePreview.photoUrl"
+          :course-id="pictureNotePreview.note.courseId"
+          :course-name="courseNameFor(pictureNotePreview.note)"
+          :badge-color="badgeColorFor(pictureNotePreview.note)"
+          :title="pictureNotePreview.note.title"
+          :text="pictureNotePreview.note.preview"
+          :entry-date="pictureNotePreview.note.entryDate"
+          @open="openNote(pictureNotePreview.note.id, $event)"
         />
       </div>
     </div>
@@ -173,12 +223,21 @@ onMounted(async () => {
       type="button"
       aria-label="Add note"
       data-testid="notes-fab"
+      @click="newNote($event)"
       class="fixed right-6 bottom-20 z-10 flex min-h-14 min-w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-lg"
     >
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
       </svg>
     </button>
+
+    <NoteEditorModal
+      :is-open="modalOpen"
+      :note-id="modalNoteId"
+      :origin-rect="modalOrigin"
+      @close="modalOpen = false"
+      @saved="loadNotes(true)"
+    />
 
     <NavigationBar />
   </main>

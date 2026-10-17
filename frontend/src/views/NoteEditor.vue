@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Full-screen journal note editor for /notes/new and /notes/:id. An id route param selects edit mode.
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import {
   ArrowLeft,
@@ -53,6 +53,14 @@ interface Props {
   initialLastProcessedAt?: string | null
   /** Seeds the processing status badge until a load or save returns server values. */
   initialUpdatedAt?: string | null
+  /** Note UUID when embedded in a modal. Null means new note. Ignored outside embedded mode. */
+  noteId?: string | null
+  /** Renders inside NoteEditorModal: route guards and viewport listeners are disabled. */
+  embedded?: boolean
+  /** Drives the staggered content entrance classes on metadata and body. */
+  showContent?: boolean
+  /** Drives the staggered entrance classes on the header and toolbar. */
+  showControls?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -63,7 +71,18 @@ const props = withDefaults(defineProps<Props>(), {
   validImageUrls: () => [],
   initialLastProcessedAt: null,
   initialUpdatedAt: null,
+  noteId: undefined,
+  embedded: false,
+  showContent: true,
+  showControls: true,
 })
+
+const emit = defineEmits<{
+  /** Requests dismissal of the surrounding context (embedded modal or route). */
+  (e: 'close'): void
+  /** Fires after a successful save. Payload is the saved note UUID. */
+  (e: 'saved', noteId: string): void
+}>()
 
 const route = useRoute()
 const router = useRouter()
@@ -101,6 +120,9 @@ const lastProcessedAt = ref<string | null>(props.initialLastProcessedAt ?? null)
 const updatedAt = ref<string | null>(props.initialUpdatedAt ?? null)
 
 const activeNoteId = computed(() => {
+  if (props.embedded) {
+    return props.noteId ?? null
+  }
   const paramId = route?.params?.id
   return paramId ? String(paramId) : null
 })
@@ -157,7 +179,6 @@ const calendarDateValue = computed<DateValue | undefined>({
   set: (val) => {
     if (val) {
       entryDate.value = val.toString()
-      isDirty.value = true
       isCalendarOpen.value = false
     }
   },
@@ -207,7 +228,75 @@ const formattedDisplayDate = computed(() => {
 
 const contentMarkdown = ref(props.initialContent)
 const htmlContent = ref(markdownToHtml(props.initialContent))
-const isDirty = ref(false)
+interface NoteFormState {
+  title: string
+  courseId: number | null
+  entryDate: string
+  content: string
+}
+
+function isTitleEqual(current?: string | null, baseline?: string | null): boolean {
+  const a = current ?? ''
+  const b = baseline ?? ''
+  if (a === b) {
+    return true
+  }
+  return a.trim() === b.trim()
+}
+
+function isCourseIdEqual(current?: number | null, baseline?: number | null): boolean {
+  return (current ?? null) === (baseline ?? null)
+}
+
+function isEntryDateEqual(current?: string | null, baseline?: string | null): boolean {
+  return (current ?? '').trim() === (baseline ?? '').trim()
+}
+
+function isContentEqual(current?: string | null, baseline?: string | null): boolean {
+  const a = current ?? ''
+  const b = baseline ?? ''
+  if (a === b) {
+    return true
+  }
+  if (a.trim() === b.trim()) {
+    return true
+  }
+  return htmlToMarkdown(markdownToHtml(a)) === htmlToMarkdown(markdownToHtml(b))
+}
+
+function isEqualState(a: NoteFormState, b: NoteFormState): boolean {
+  return (
+    isTitleEqual(a.title, b.title) &&
+    isCourseIdEqual(a.courseId, b.courseId) &&
+    isEntryDateEqual(a.entryDate, b.entryDate) &&
+    isContentEqual(a.content, b.content)
+  )
+}
+
+function getCurrentState(): NoteFormState {
+  return {
+    title: title.value ?? '',
+    courseId: selectedCourseId.value ?? null,
+    entryDate: entryDate.value ?? '',
+    content: contentMarkdown.value ?? '',
+  }
+}
+
+const initialState = ref<NoteFormState>({
+  title: props.initialTitle ?? '',
+  courseId: props.initialCourseId ?? null,
+  entryDate: props.initialDate !== undefined ? props.initialDate : todayString,
+  content: props.initialContent ?? '',
+})
+
+const isNavigatingAway = ref(false)
+
+const isDirty = computed(() => {
+  if (isNavigatingAway.value) {
+    return false
+  }
+  return !isEqualState(getCurrentState(), initialState.value)
+})
 const isSaving = ref(false)
 const isLoading = ref(false)
 const errorMessage = ref<string | null>(null)
@@ -248,7 +337,6 @@ const courseBadgeStyle = computed<Record<string, string> | undefined>(() => {
 
 function onCourseSelect(courseId: number) {
   selectedCourseId.value = courseId
-  isDirty.value = true
 }
 
 const isSaveDisabled = computed(() => {
@@ -303,15 +391,8 @@ function onEditorContentChange(newHtml: string) {
   if (isLoading.value) {
     return
   }
-  const newMarkdown = htmlToMarkdown(newHtml)
-  // Editor HTML that converts to the same Markdown leaves the saved content unchanged, so a clean note stays clean.
-  if (newMarkdown.trim() === contentMarkdown.value.trim() && !isDirty.value) {
-    htmlContent.value = newHtml
-    return
-  }
   htmlContent.value = newHtml
-  contentMarkdown.value = newMarkdown
-  isDirty.value = true
+  contentMarkdown.value = htmlToMarkdown(newHtml)
 }
 
 function onImageUploaded(response: ImageUploadResponse) {
@@ -335,8 +416,11 @@ function hasMeaningfulContent(): boolean {
 }
 
 function navigateBack() {
-  // Clear the dirty flag first so the onBeforeRouteLeave guard does not ask again after a save or discard.
-  isDirty.value = false
+  isNavigatingAway.value = true
+  if (props.embedded) {
+    emit('close')
+    return
+  }
   if (router) {
     router.back()
   }
@@ -367,15 +451,17 @@ function cancelDiscard() {
   pendingNavigation.value = null
 }
 
-try {
-  onBeforeRouteLeave(() => {
-    if (isDirty.value && hasMeaningfulContent()) {
-      return window.confirm('You have unsaved changes. Leave anyway?')
-    }
-    return true
-  })
-} catch {
-  // Ignore when mounted outside Vue Router view context
+if (!props.embedded) {
+  try {
+    onBeforeRouteLeave(() => {
+      if (!isNavigatingAway.value && isDirty.value && hasMeaningfulContent()) {
+        return window.confirm('You have unsaved changes. Leave anyway?')
+      }
+      return true
+    })
+  } catch {
+    // Ignore when mounted outside Vue Router view context
+  }
 }
 
 async function loadNote(id: string) {
@@ -393,7 +479,8 @@ async function loadNote(id: string) {
     for (const url of extractImageUrls(note.content ?? '')) {
       knownImageUrls.value.add(url)
     }
-    isDirty.value = false
+    await nextTick()
+    initialState.value = getCurrentState()
   } catch (err) {
     errorMessage.value = err instanceof Error ? err.message : 'Failed to load note'
   } finally {
@@ -442,7 +529,15 @@ async function saveNote() {
     }
     lastProcessedAt.value = savedNote.lastProcessedAt ?? null
     updatedAt.value = savedNote.updatedAt ?? null
-    isDirty.value = false
+    initialState.value = {
+      title: savedNote.title ?? '',
+      courseId: savedNote.courseId ?? null,
+      entryDate: savedNote.entryDate ?? todayString,
+      content: savedNote.content ?? '',
+    }
+    if (props.embedded) {
+      emit('saved', savedNote.id)
+    }
     navigateBack()
   } catch (err) {
     errorMessage.value = err instanceof Error ? err.message : 'Failed to save note'
@@ -461,6 +556,9 @@ watch(
       for (const url of extractImageUrls(newContent)) {
         knownImageUrls.value.add(url)
       }
+      if (!isEditMode.value) {
+        initialState.value.content = newContent
+      }
     }
   },
 )
@@ -470,6 +568,9 @@ watch(
   (newCourseId) => {
     if (newCourseId !== undefined && newCourseId !== null && selectedCourseId.value === null) {
       selectedCourseId.value = newCourseId
+      if (!isEditMode.value) {
+        initialState.value.courseId = newCourseId
+      }
     }
   },
 )
@@ -479,9 +580,19 @@ watch(
   (newTitle) => {
     if (newTitle && !title.value) {
       title.value = newTitle
+      if (!isEditMode.value) {
+        initialState.value.title = newTitle
+      }
     }
   },
 )
+
+function staggeredClass(shown: boolean): string {
+  return `transition-[opacity,transform] ${shown ? 'opacity-100 translate-y-0 duration-200' : 'opacity-0 translate-y-2 duration-[80ms]'}`
+}
+
+const contentStaggerClass = computed(() => staggeredClass(props.showContent))
+const controlsStaggerClass = computed(() => staggeredClass(props.showControls))
 
 // ponytail: visualViewport height adjusts the container when virtual keyboard opens
 const viewportHeight = ref<number | null>(null)
@@ -497,7 +608,9 @@ function updateViewportHeight() {
 }
 
 onMounted(async () => {
-  if (typeof window !== 'undefined' && window.visualViewport) {
+  // Embedded mode skips viewport listeners: updateViewportHeight scrolls the window,
+  // which would destroy the notes list scroll offset behind the modal.
+  if (!props.embedded && typeof window !== 'undefined' && window.visualViewport) {
     updateViewportHeight()
     window.visualViewport.addEventListener('resize', updateViewportHeight)
     window.visualViewport.addEventListener('scroll', updateViewportHeight)
@@ -520,6 +633,8 @@ onMounted(async () => {
     } else if (route?.query?.entryDate) {
       entryDate.value = String(route.query.entryDate)
     }
+    await nextTick()
+    initialState.value = getCurrentState()
   }
 })
 
@@ -529,17 +644,22 @@ onBeforeUnmount(() => {
     window.visualViewport.removeEventListener('scroll', updateViewportHeight)
   }
 })
+
+defineExpose({ requestBack: handleBack })
 </script>
 
 <template>
   <div
     data-testid="note-editor-container"
     class="flex flex-col bg-[#F6F7EE] font-sans text-slate-800 overflow-hidden"
-    :class="viewportHeight ? '' : 'h-dvh'"
-    :style="viewportHeight ? { height: `${viewportHeight}px` } : undefined"
+    :class="embedded ? 'h-full' : viewportHeight ? '' : 'h-dvh'"
+    :style="!embedded && viewportHeight ? { height: `${viewportHeight}px` } : undefined"
   >
     <!-- Header Navigation & Save Action -->
-    <header class="shrink-0 flex items-center justify-between border-b border-[#00A4C8]/30 px-4 py-3">
+    <header
+      class="shrink-0 flex items-center justify-between border-b border-[#00A4C8]/30 px-4 py-3"
+      :class="controlsStaggerClass"
+    >
       <button
         type="button"
         data-testid="back-button"
@@ -582,7 +702,7 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- Note Metadata Section -->
-    <section class="shrink-0 space-y-4 px-4 pt-3 pb-2">
+    <section class="shrink-0 space-y-4 px-4 pt-3 pb-2" :class="contentStaggerClass">
       <!-- Title Input -->
       <div>
         <input
@@ -591,7 +711,6 @@ onBeforeUnmount(() => {
           type="text"
           placeholder="Untitled Note..."
           class="w-full bg-transparent !font-sans text-2xl font-bold text-slate-800 placeholder-slate-400 outline-none"
-          @input="isDirty = true"
         />
       </div>
 
@@ -666,21 +785,23 @@ onBeforeUnmount(() => {
     </section>
 
     <!-- Teal Horizontal Divider Accent -->
-    <div class="shrink-0 mx-4 my-2 h-[2px] bg-[#00A4C8]" />
+    <div class="shrink-0 mx-4 my-2 h-[2px] bg-[#00A4C8]" :class="contentStaggerClass" />
 
     <!-- Locked Editor Helper Prompt (when courseId is unassigned) -->
     <div
       v-if="!selectedCourseId"
       data-testid="course-gating-prompt"
       class="shrink-0 mx-4 my-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs font-medium text-amber-800"
+      :class="contentStaggerClass"
     >
       Select a course first to start typing... can't type kapag hindi pa naglalagay course wdyt
     </div>
 
     <!-- Editor Body Container -->
-    <main class="flex-1 min-h-0 flex flex-col w-full px-4 pt-2 pb-0">
+    <main class="flex-1 min-h-0 flex flex-col w-full px-4 pt-2 pb-0" :class="contentStaggerClass">
       <TiptapEditor
         class="flex-1 min-h-0 w-full"
+        :toolbar-class="controlsStaggerClass"
         :model-value="htmlContent"
         :editable="!!selectedCourseId"
         :placeholder="

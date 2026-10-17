@@ -53,14 +53,17 @@ describe('NoteCard', () => {
     expect(wrapper.find('[data-testid="note-image"]').exists()).toBe(false)
   })
 
-  it('holds no clickable elements and ignores clicks', async () => {
+  it('emits open with the DOM event on click and Enter', async () => {
     const wrapper = mount(NoteCard, { props: { note: imageNote } })
 
     expect(wrapper.find('a, button').exists()).toBe(false)
-    const before = wrapper.html()
-    await wrapper.trigger('click')
 
-    expect(wrapper.html()).toBe(before)
-    expect(wrapper.get('[data-testid="note-title"]').text()).toBe('Lecture 7')
+    await wrapper.trigger('click')
+    await wrapper.trigger('keydown.enter')
+
+    const emitted = wrapper.emitted('open')
+    expect(emitted).toHaveLength(2)
+    expect(emitted![0]![0]).toBeInstanceOf(Event)
+    expect(emitted![1]![0]).toBeInstanceOf(Event)
   })
 })
