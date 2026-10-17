@@ -5,7 +5,8 @@ import { formatEntryDate } from '@/utils/noteDate'
 import { extractFirstImageUrl, stripImageMarkdown } from '@/utils/noteImage'
 import type { NoteSummaryResponse } from '@/types/api'
 
-// ponytail: prototype card is visual-only and has no click action.
+const emit = defineEmits<{ open: [event: Event] }>()
+
 const props = defineProps<{
   note: NoteSummaryResponse
   courseName?: string | null
@@ -20,8 +21,13 @@ const displayText = computed(() => stripImageMarkdown(props.note.preview))
 
 <template>
   <article
-    class="cursor-default break-inside-avoid overflow-hidden rounded-2xl border border-app-border bg-card p-4"
+    class="cursor-pointer break-inside-avoid overflow-hidden rounded-2xl border border-app-border bg-card p-4 transition-transform active:scale-[0.98]"
+    role="button"
+    tabindex="0"
     data-testid="note-card"
+    @click="emit('open', $event)"
+    @keydown.enter="emit('open', $event)"
+    @keydown.space.prevent="emit('open', $event)"
   >
     <span
       class="inline-block max-w-full truncate rounded-full border px-2 py-1 text-xs font-medium"
