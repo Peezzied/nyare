@@ -181,10 +181,10 @@ onMounted(() => {
   >
     <!-- Main Wireframe Mobile Container -->
     <main
-      class="relative z-10 mx-auto flex min-h-screen max-w-[420px] flex-col justify-between px-5 pt-6 pb-8"
+      class="relative z-10 mx-auto flex h-[100svh] max-w-[420px] flex-col justify-between px-5 pt-6 pb-8"
     >
       <!-- TOP SECTION (Green Doodle in Wireframe) -->
-      <header>
+      <header class="fade-enter fade-delay-1">
         <!-- Brand Header Bar with Back Button and Manage Toggle -->
         <div
           class="-mx-5 flex items-center justify-between border-b-[3px] border-app-border px-5 pb-5"
@@ -226,7 +226,7 @@ onMounted(() => {
         <!-- Mascot Section (Speech Bubble on Left, Duckota on Right) -->
         <div class="flex items-center gap-3.5 my-3 px-1">
           <div
-            class="relative flex-1 rounded-2xl border-2 border-[#CBD5E1] bg-white p-3.5 shadow-[0_3px_0_#CBD5E1]"
+            class="chat-pop relative flex-1 rounded-2xl border-2 border-[#CBD5E1] bg-white p-3.5 shadow-[0_3px_0_#CBD5E1]"
           >
             <h2 class="text-lg font-bold text-[#334155] leading-snug" aria-live="polite">
               <template v-if="isLoading"> Checking records... </template>
@@ -246,14 +246,14 @@ onMounted(() => {
             <img
               :src="duckotaCasual"
               alt="Duckota Mascot"
-              class="h-28 sm:h-32 w-auto object-contain drop-shadow-sm transition-transform duration-200 hover:scale-105"
+              class="duckota-speak h-28 sm:h-32 w-auto object-contain drop-shadow-sm"
             />
           </div>
         </div>
       </header>
 
       <!-- MIDDLE SECTION (Red Boxes in Wireframe: Account Items) -->
-      <section class="my-6 flex-1 flex flex-col">
+      <section class="fade-enter fade-delay-2 my-6 flex min-h-0 flex-1 flex-col overflow-y-auto">
         <!-- Error Banner -->
         <div
           v-if="errorMessage"
@@ -380,7 +380,7 @@ onMounted(() => {
       </section>
 
       <!-- BOTTOM SECTION (Blue Box in Wireframe: Add Account Button) -->
-      <footer class="pt-2">
+      <footer class="fade-enter fade-delay-3 pt-2">
         <button
           type="button"
           class="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#00A4C8] border-b-4 border-[#007B99] text-base font-bold text-white uppercase tracking-wider transition-all duration-75 hover:bg-[#0096B7] active:translate-y-1 active:border-b-0 cursor-pointer shadow-xs"
@@ -549,6 +549,109 @@ onMounted(() => {
 @media (prefers-reduced-motion: reduce) {
   .animate-jiggle {
     animation: none;
+  }
+}
+
+.fade-enter {
+  animation: fade-in 450ms ease-out both;
+}
+
+.fade-delay-1 {
+  animation-delay: 80ms;
+}
+
+.fade-delay-2 {
+  animation-delay: 240ms;
+}
+
+.fade-delay-3 {
+  animation-delay: 480ms;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.duckota-speak {
+  animation: duckota-speak 1s steps(1, end) 500ms 1 both;
+}
+
+@keyframes duckota-speak {
+  0% {
+    transform: translateY(0);
+  }
+
+  12.5% {
+    transform: translateY(-3px) rotate(1deg);
+  }
+
+  25% {
+    transform: translateY(1px) rotate(-0.5deg);
+  }
+
+  37.5% {
+    transform: translateY(-2px) rotate(0.5deg);
+  }
+
+  50% {
+    transform: translateY(1px) rotate(-0.5deg);
+  }
+
+  62.5% {
+    transform: translateY(-3px) rotate(1deg);
+  }
+
+  75% {
+    transform: translateY(2px) rotate(-1deg);
+  }
+
+  87.5% {
+    transform: translateY(-2px) rotate(0.5deg);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-enter,
+  .duckota-speak,
+  .chat-pop {
+    animation: none;
+  }
+}
+
+.chat-pop {
+  animation: chat-pop-in 500ms cubic-bezier(0.16, 1.3, 0.5, 1) 520ms both;
+}
+
+@keyframes chat-pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+
+  65% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+
+  85% {
+    transform: scale(0.96);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 </style>
