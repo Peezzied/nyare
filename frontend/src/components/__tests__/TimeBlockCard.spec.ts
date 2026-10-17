@@ -59,7 +59,7 @@ describe('TimeBlockCard', () => {
     const savedWrapper = mount(TimeBlockCard, {
       props: { block: savedBlock, index: 0 },
     })
-    expect(savedWrapper.text()).toContain('Saved')
+    expect(savedWrapper.text()).not.toContain('Saved')
 
     const savingBlock = makeBlock({
       selectedDays: ['MONDAY'],
@@ -78,7 +78,6 @@ describe('TimeBlockCard', () => {
       props: { block: failedBlock, index: 0 },
     })
     expect(failedWrapper.text()).toContain('Failed')
-    expect(failedWrapper.text()).toContain('MONDAY: Invalid time')
   })
 
   it('emits toggleDay event when weekday toggle is clicked', async () => {
@@ -105,7 +104,7 @@ describe('TimeBlockCard', () => {
     expect(wrapper.emitted('update:endTime')).toEqual([['11:00']])
   })
 
-  it('disables inputs and buttons when saving is true or status is saved', () => {
+  it('disables inputs and buttons when saving is true', () => {
     const savingBlock = makeBlock()
     const savingWrapper = mount(TimeBlockCard, {
       props: { block: savingBlock, index: 1, saving: true },

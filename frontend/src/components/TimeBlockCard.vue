@@ -123,9 +123,7 @@ const emit = defineEmits<{
 }>()
 
 const status = computed(() => blockStatus(props.block))
-const activeError = computed(() => blockError(props.block))
-const isSaved = computed(() => status.value === 'saved')
-const isCardDisabled = computed(() => props.saving || isSaved.value)
+const isCardDisabled = computed(() => props.saving)
 const canDelete = computed(() => props.canRemove ?? props.index > 0)
 const currentStartTime = computed(() => props.startTime ?? props.block.startTime)
 const currentEndTime = computed(() => props.endTime ?? props.block.endTime)
@@ -162,14 +160,7 @@ function handleToggleDay(day: DayOfWeek) {
 
       <div class="flex shrink-0 items-center gap-2">
         <Badge
-          v-if="status === 'saved'"
-          variant="outline"
-          class="border-emerald-200 bg-[#E6F4EA] px-2.5 py-0.5 text-xs font-semibold text-[#0D652D]"
-        >
-          Saved
-        </Badge>
-        <Badge
-          v-else-if="status === 'saving'"
+          v-if="status === 'saving'"
           variant="outline"
           class="border-sky-200 bg-[#E1F5FE] px-2.5 py-0.5 text-xs font-semibold text-[#0277BD]"
         >
@@ -274,23 +265,6 @@ function handleToggleDay(day: DayOfWeek) {
             @update:model-value="emit('update:endTime', String($event))"
           />
         </div>
-      </div>
-
-      <!-- Errors -->
-      <div
-        v-if="activeError"
-        class="space-y-1.5 rounded-xl border border-red-200 bg-red-50/80 p-3 text-xs font-medium text-red-700"
-      >
-        <p
-          v-for="schedule in block.schedules.filter((item) => item.error)"
-          :key="schedule.day"
-          class="break-words"
-        >
-          <span class="font-bold">{{ schedule.day }}:</span> {{ schedule.error }}
-        </p>
-        <p v-if="!block.schedules.some((item) => item.error)" class="break-words">
-          {{ activeError }}
-        </p>
       </div>
     </CardContent>
   </Card>

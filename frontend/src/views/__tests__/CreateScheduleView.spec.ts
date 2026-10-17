@@ -5,6 +5,18 @@ import { createMemoryHistory, createRouter } from 'vue-router'
 import type { DayOfWeek } from '@/types/api'
 import CreateScheduleView from '../CreateScheduleView.vue'
 import { useCourseDrafts } from '@/composables/useCourseDrafts'
+import { toast } from 'vue-sonner'
+
+vi.mock('vue-sonner', () => ({
+  Toaster: {
+    name: 'Toaster',
+    template: '<div data-testid="sonner-toaster" />',
+  },
+  toast: {
+    success: vi.fn<(message: string) => void>(),
+    error: vi.fn<(message: string) => void>(),
+  },
+}))
 
 const mockCourses = ref<any[]>([])
 const mockSchedules = ref<any[]>([])
@@ -152,7 +164,9 @@ describe('CreateScheduleView', () => {
     expect(draftCourses.value[0]?.name).toBe('Math')
     expect(draftSchedules.value).toHaveLength(2)
     expect(draftSchedules.value.map((s) => s.day)).toEqual(['MONDAY', 'WEDNESDAY'])
-    expect(wrapper.find('[role="status"]').text()).toContain('saved successfully')
+    expect(wrapper.find('[data-testid="sonner-toaster"]').exists()).toBe(true)
+    expect(toast.success).toHaveBeenCalledWith('Course and schedule saved successfully.')
+    expect(wrapper.find('[role="status"]').exists()).toBe(false)
   })
 
   it('blocks save and displays duplicate message when course name already exists', async () => {
@@ -168,7 +182,8 @@ describe('CreateScheduleView', () => {
     await wrapper.find('[aria-label="Confirm"]').trigger('click')
     await flushPromises()
 
-    expect(wrapper.find('[role="alert"]').text()).toContain('cs 101')
+    expect(toast.error).toHaveBeenCalledWith('A course named "cs 101" already exists.')
+    expect(wrapper.find('[role="alert"]').exists()).toBe(false)
     expect(useCourseDrafts().draftCourses.value).toHaveLength(0)
   })
 
@@ -189,7 +204,8 @@ describe('CreateScheduleView', () => {
     // Re-saving the same form instance does not flag duplicate against itself
     await wrapper.find('[aria-label="Confirm"]').trigger('click')
     await flushPromises()
-    expect(wrapper.find('[role="status"]').text()).toContain('saved successfully')
+    expect(toast.success).toHaveBeenCalledTimes(2)
+    expect(wrapper.find('[role="status"]').exists()).toBe(false)
 
     // But a new attempt with the same name is blocked
     const wrapper2 = mount(CreateScheduleView, { global: { plugins: [router] } })
@@ -201,7 +217,8 @@ describe('CreateScheduleView', () => {
 
     await wrapper2.find('[aria-label="Confirm"]').trigger('click')
     await flushPromises()
-    expect(wrapper2.find('[role="alert"]').text()).toContain('physics 101')
+    expect(toast.error).toHaveBeenCalledWith('A course named "physics 101" already exists.')
+    expect(wrapper2.find('[role="alert"]').exists()).toBe(false)
   })
 
   it('allows save to proceed when catalog cannot be loaded (FR-016)', async () => {
@@ -239,10 +256,8 @@ describe('CreateScheduleView', () => {
     await wrapper.find('[aria-label="Confirm"]').trigger('click')
     await flushPromises()
 
-    const alert = wrapper.find('[role="alert"]')
-    expect(alert.exists()).toBe(true)
-    expect(alert.text()).toContain('CS 101')
-    expect(alert.text()).toContain('MONDAY')
+    expect(toast.error).toHaveBeenCalledWith('A class time clashes with CS 101 on MONDAY.')
+    expect(wrapper.find('[role="alert"]').exists()).toBe(false)
     expect(useCourseDrafts().draftCourses.value).toHaveLength(0)
   })
 
@@ -266,9 +281,8 @@ describe('CreateScheduleView', () => {
     await wrapper.find('[aria-label="Confirm"]').trigger('click')
     await flushPromises()
 
-    const alert = wrapper.find('[role="alert"]')
-    expect(alert.exists()).toBe(true)
-    expect(alert.text()).toContain('overlap on MONDAY')
+    expect(toast.error).toHaveBeenCalledWith('Two time blocks for this course overlap on MONDAY.')
+    expect(wrapper.find('[role="alert"]').exists()).toBe(false)
   })
 
   it('protects unsaved changes on close with confirm dialog', async () => {
@@ -616,5 +630,113 @@ describe('CreateScheduleView', () => {
 
     expect(wrapper.find('input[type="text"]').attributes('readonly')).toBeDefined()
     expect(wrapper.find('[aria-label="Confirm"]').attributes('style')).toContain('display: none')
+  })
+
+  it('reverts to saved snapshot on discard without clearing course from week view', async () => {
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    // Create and save course
+    await wrapper.find('input[type="text"]').setValue('Physics 101')
+    await wrapper.find('[aria-label="MONDAY"]').trigger('click')
+    await wrapper.findAll('input[type="time"]')[0]!.setValue('09:00')
+    await wrapper.findAll('input[type="time"]')[1]!.setValue('10:00')
+    await wrapper.find('[aria-label="Confirm"]').trigger('click')
+    await flushPromises()
+
+    const weekPreview = wrapper.findComponent({ name: 'WeekPreview' })
+    expect(weekPreview.props('blocks')).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          title: 'Physics 101',
+          day: 'MONDAY',
+          startTime: '09:00',
+          endTime: '10:00',
+        }),
+      ]),
+    )
+
+    // Edit the course name
+    await wrapper.find('input[type="text"]').setValue('Physics 101 Modified')
+    await flushPromises()
+    expect((wrapper.vm as any).hasUnsavedChanges).toBe(true)
+
+    // Click Go back to trigger discard dialog
+    await wrapper.find('[aria-label="Go back"]').trigger('click')
+    await flushPromises()
+
+    const dialog = wrapper.findComponent({ name: 'DiscardDraftConfirmDialog' })
+    expect(dialog.props('open')).toBe(true)
+
+    // Confirm discard
+    await dialog.vm.$emit('discard')
+    await flushPromises()
+
+    // Form reverts to snapshot
+    expect((wrapper.vm as any).courseName).toBe('Physics 101')
+    // Week preview still contains the saved course
+    expect(weekPreview.props('blocks')).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          title: 'Physics 101',
+          day: 'MONDAY',
+          startTime: '09:00',
+          endTime: '10:00',
+        }),
+      ]),
+    )
+  })
+
+  it('does not show discard dialog when opening and dismissing saved course without edits', async () => {
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    // Save a course
+    await wrapper.find('input[type="text"]').setValue('Chemistry 101')
+    await wrapper.find('[aria-label="TUESDAY"]').trigger('click')
+    await wrapper.findAll('input[type="time"]')[0]!.setValue('11:00')
+    await wrapper.findAll('input[type="time"]')[1]!.setValue('12:00')
+    await wrapper.find('[aria-label="Confirm"]').trigger('click')
+    await flushPromises()
+
+    expect((wrapper.vm as any).hasUnsavedChanges).toBe(false)
+
+    // Dismiss drawer without edits
+    await wrapper.find('[aria-label="Go back"]').trigger('click')
+    await flushPromises()
+
+    const dialog = wrapper.findComponent({ name: 'DiscardDraftConfirmDialog' })
+    expect(dialog.props('open')).toBe(false)
+  })
+
+  it('includes other staged courses from useCourseDrafts in week preview blocks', async () => {
+    const { stageCourse } = useCourseDrafts()
+    stageCourse({
+      tempId: 'draft-staged-1',
+      name: 'Biology 101',
+      colorId: 'lavender',
+      schedules: [
+        {
+          day: 'FRIDAY',
+          startTime: '14:00',
+          endTime: '15:30',
+        },
+      ],
+    })
+
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    const weekPreview = wrapper.findComponent({ name: 'WeekPreview' })
+    expect(weekPreview.props('blocks')).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          title: 'Biology 101',
+          day: 'FRIDAY',
+          startTime: '14:00',
+          endTime: '15:30',
+        }),
+      ]),
+    )
   })
 })

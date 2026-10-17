@@ -108,4 +108,53 @@ describe('useCourseDrafts', () => {
       endTime: '14:00',
     })
   })
+
+  it('updates an existing course and replaces its schedules when tempId matches', () => {
+    const { draftCourses, draftSchedules, stageCourse } = useCourseDrafts()
+
+    stageCourse({
+      tempId: 'draft-abc',
+      name: 'Initial Name',
+      colorId: 'coral',
+      schedules: [
+        {
+          day: 'MONDAY',
+          startTime: '08:00',
+          endTime: '09:00',
+        },
+      ],
+    })
+
+    expect(draftCourses.value).toHaveLength(1)
+    expect(draftSchedules.value).toHaveLength(1)
+    expect(draftCourses.value[0]?.name).toBe('Initial Name')
+
+    // Re-stage course with same tempId and updated schedule
+    stageCourse({
+      tempId: 'draft-abc',
+      name: 'Updated Name',
+      colorId: 'lavender',
+      schedules: [
+        {
+          day: 'TUESDAY',
+          startTime: '10:00',
+          endTime: '11:00',
+        },
+        {
+          day: 'THURSDAY',
+          startTime: '10:00',
+          endTime: '11:00',
+        },
+      ],
+    })
+
+    expect(draftCourses.value).toHaveLength(1)
+    expect(draftCourses.value[0]?.name).toBe('Updated Name')
+    expect(draftCourses.value[0]?.colorId).toBe('lavender')
+    expect(draftSchedules.value).toHaveLength(2)
+    expect(draftSchedules.value.every((s) => s.tempId === 'draft-abc')).toBe(true)
+    expect(draftSchedules.value[0]?.day).toBe('TUESDAY')
+    expect(draftSchedules.value[1]?.day).toBe('THURSDAY')
+  })
 })
+

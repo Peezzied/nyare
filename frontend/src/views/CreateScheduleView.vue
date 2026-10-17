@@ -2,7 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCatalog } from '@/composables/useCatalog'
-import { useCourseDrafts, type DraftSchedule } from '@/composables/useCourseDrafts'
+import { useCourseDrafts, type DraftCourse, type DraftSchedule } from '@/composables/useCourseDrafts'
 import {
   buildKnownSet,
   findDuplicateName,
@@ -16,10 +16,11 @@ import type { DayOfWeek } from '@/types/api'
 import { COURSE_PALETTE_24 } from '@/constants/palette'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Drawer, DrawerClose, DrawerContent, DrawerHeader } from '@/components/ui/drawer'
 import DiscardDraftConfirmDialog from '@/components/DiscardDraftConfirmDialog.vue'
-import { Check, Plus, AlertCircle, CheckCircle2, X } from 'lucide-vue-next'
+import { Check, Plus, X } from 'lucide-vue-next'
+import { toast } from 'vue-sonner'
+import { Toaster } from '@/components/ui/sonner'
 import type { DrawerOpenChangeDetails } from 'reka-ui'
 import TimeBlockCard, {
   createBlock,
@@ -28,7 +29,7 @@ import TimeBlockCard, {
   type TimeBlockDraft,
 } from '@/components/TimeBlockCard.vue'
 import WeekPreview from '@/components/WeekPreview.vue'
-import { derivePreviewBlocks, type PendingSlot } from '@/utils/weekPreview'
+import { derivePreviewBlocks, type PendingSlot, type PreviewBlock } from '@/utils/weekPreview'
 
 const props = withDefaults(
   defineProps<{
@@ -227,8 +228,6 @@ const selectedColorId = ref(COURSE_PALETTE_24[0]!.id)
 const colorOpen = ref(false)
 const blocks = ref<TimeBlockDraft[]>([createBlock()])
 const saving = ref(false)
-const formError = ref<string | null>(null)
-const successMessage = ref<string | null>(null)
 
 const pendingSlot = ref<PendingSlot | null>(null)
 const pendingBlockId = ref<string | null>(null)
@@ -238,9 +237,77 @@ const selectedColor = computed(
     COURSE_PALETTE_24.find((color) => color.id === selectedColorId.value) ?? COURSE_PALETTE_24[0]!,
 )
 
-const previewBlocks = computed(() =>
-  derivePreviewBlocks(blocks.value, courseName.value, selectedColor.value),
-)
+const previewBlocks = computed(() => {
+  const activeList = derivePreviewBlocks(blocks.value, courseName.value, selectedColor.value)
+
+  const otherDraftBlocks: PreviewBlock[] = []
+  for (const course of draftCourses.value) {
+    if (currentDraftTempId.value && course.tempId === currentDraftTempId.value) {
+      continue
+    }
+    const color =
+      COURSE_PALETTE_24.find((c) => c.id === course.colorId) ?? COURSE_PALETTE_24[0]!
+    for (const schedule of course.schedules) {
+      const safeTime = schedule.startTime.replace(/[^a-zA-Z0-9_-]/g, '')
+      otherDraftBlocks.push({
+        id: `${course.tempId}-${schedule.day}-${safeTime}`,
+        day: schedule.day,
+        title: course.name,
+        startTime: schedule.startTime,
+        endTime: schedule.endTime,
+        color: color.solid,
+        blockId: course.tempId,
+      })
+    }
+  }
+
+  return [...otherDraftBlocks, ...activeList]
+})
+
+function loadCourseDraft(course: DraftCourse) {
+  courseName.value = course.name
+  selectedColorId.value = course.colorId
+  currentDraftTempId.value = course.tempId
+  isSaved.value = true
+
+  const grouped = new Map<string, DayOfWeek[]>()
+  for (const s of course.schedules) {
+    const key = `${s.startTime}|${s.endTime}`
+    const days = grouped.get(key) ?? []
+    days.push(s.day)
+    grouped.set(key, days)
+  }
+
+  if (grouped.size > 0) {
+    const newBlocks: TimeBlockDraft[] = []
+    for (const [key, days] of grouped.entries()) {
+      const [start = '', end = ''] = key.split('|')
+      const block = createBlock()
+      block.selectedDays = days
+      block.startTime = start
+      block.endTime = end
+      block.state = 'saved'
+      syncScheduleDrafts(block)
+      for (const s of block.schedules) {
+        s.state = 'saved'
+      }
+      newBlocks.push(block)
+    }
+    blocks.value = newBlocks
+  } else {
+    blocks.value = [createBlock()]
+  }
+
+  lastSavedSnapshot.value = JSON.stringify({
+    name: courseName.value.trim(),
+    color: selectedColorId.value,
+    blocks: blocks.value.map((b) => ({
+      days: b.selectedDays,
+      start: b.startTime,
+      end: b.endTime,
+    })),
+  })
+}
 
 function handleSelectSlot(slot: PendingSlot) {
   pendingSlot.value = slot
@@ -288,6 +355,17 @@ function handleSelectSlot(slot: PendingSlot) {
 function handleSelectBlock(blockId: string) {
   isOpen.value = true
   setStage('partial')
+
+  const matchedCourse = draftCourses.value.find((c) => c.tempId === blockId)
+  if (matchedCourse && matchedCourse.tempId !== currentDraftTempId.value) {
+    if (hasUnsavedChanges.value) {
+      showDiscardDialog.value = true
+      return
+    }
+    loadCourseDraft(matchedCourse)
+    return
+  }
+
   const el = document.getElementById(`block-card-${blockId}`)
   el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
 }
@@ -327,14 +405,33 @@ const pendingScheduleCount = computed(
       .filter((schedule) => schedule.state !== 'saved').length,
 )
 
+interface SavedSnapshot {
+  name: string
+  color: string
+  blocks: { days: DayOfWeek[]; start: string; end: string }[]
+}
+
 const lastSavedSnapshot = ref<string>('')
 
 const hasUnsavedChanges = computed(() => {
   if (isSaved.value) {
+    const effectiveBlocks =
+      pendingSlot.value && pendingBlockId.value
+        ? blocks.value.filter((b) => {
+            if (b.id !== pendingBlockId.value) return true
+            const matchesDays =
+              b.selectedDays.length === 1 && b.selectedDays[0] === pendingSlot.value!.day
+            const matchesTimes =
+              b.startTime === pendingSlot.value!.startTime &&
+              b.endTime === pendingSlot.value!.endTime
+            return !(matchesDays && matchesTimes)
+          })
+        : blocks.value
+
     const current = JSON.stringify({
       name: courseName.value.trim(),
       color: selectedColorId.value,
-      blocks: blocks.value.map((b) => ({
+      blocks: effectiveBlocks.map((b) => ({
         days: b.selectedDays,
         start: b.startTime,
         end: b.endTime,
@@ -343,6 +440,7 @@ const hasUnsavedChanges = computed(() => {
     if (current === lastSavedSnapshot.value) {
       return false
     }
+    return true
   }
   if (courseName.value.trim().length > 0) {
     return true
@@ -387,23 +485,11 @@ function unavailableDaysForBlock(block: TimeBlockDraft): DayOfWeek[] {
 
 function onStartTimeChange(block: TimeBlockDraft, value: string) {
   block.startTime = value
-  if (
-    formError.value?.startsWith('A class time clashes') ||
-    formError.value?.startsWith('Two time blocks')
-  ) {
-    formError.value = null
-  }
   syncUnavailableDays(block)
 }
 
 function onEndTimeChange(block: TimeBlockDraft, value: string) {
   block.endTime = value
-  if (
-    formError.value?.startsWith('A class time clashes') ||
-    formError.value?.startsWith('Two time blocks')
-  ) {
-    formError.value = null
-  }
   syncUnavailableDays(block)
 }
 
@@ -423,7 +509,7 @@ function syncUnavailableDays(block: TimeBlockDraft) {
       }
       const clash = findClash(candidate, knownSet.value.schedules)
       if (clash) {
-        formError.value = `A class time clashes with ${clash.courseName || 'another class'} on ${day}.`
+        toast.error(`A class time clashes with ${clash.courseName || 'another class'} on ${day}.`)
         break
       }
       const siblings = blocks.value.filter((b) => b.id !== block.id)
@@ -433,7 +519,7 @@ function syncUnavailableDays(block: TimeBlockDraft) {
           rangesOverlap(block.startTime, block.endTime, sib.startTime, sib.endTime),
       )
       if (siblingOverlap) {
-        formError.value = `Two time blocks for this course overlap on ${day}.`
+        toast.error(`Two time blocks for this course overlap on ${day}.`)
         break
       }
     }
@@ -477,16 +563,58 @@ function closeImmediately() {
   }
 }
 
-function handleDiscard() {
+function resetFormState() {
   courseName.value = ''
   selectedColorId.value = COURSE_PALETTE_24[0]!.id
   blocks.value = [createBlock()]
-  discardPendingSlot()
-  formError.value = null
-  successMessage.value = null
   currentDraftTempId.value = null
   isSaved.value = false
   lastSavedSnapshot.value = ''
+}
+
+function handleDiscard() {
+  discardPendingSlot()
+
+  const staged = currentDraftTempId.value
+    ? draftCourses.value.find((c) => c.tempId === currentDraftTempId.value)
+    : undefined
+
+  if (isSaved.value && lastSavedSnapshot.value) {
+    try {
+      const saved = JSON.parse(lastSavedSnapshot.value) as SavedSnapshot
+      courseName.value = saved.name || ''
+      selectedColorId.value = saved.color || COURSE_PALETTE_24[0]!.id
+      if (Array.isArray(saved.blocks) && saved.blocks.length > 0) {
+        blocks.value = saved.blocks.map((b) => {
+          const newBlock = createBlock()
+          newBlock.selectedDays = b.days || []
+          newBlock.startTime = b.start || ''
+          newBlock.endTime = b.end || ''
+          newBlock.state = 'saved'
+          syncScheduleDrafts(newBlock)
+          for (const s of newBlock.schedules) {
+            s.state = 'saved'
+          }
+          return newBlock
+        })
+      } else if (staged) {
+        loadCourseDraft(staged)
+      } else {
+        blocks.value = [createBlock()]
+      }
+    } catch {
+      if (staged) {
+        loadCourseDraft(staged)
+      } else {
+        resetFormState()
+      }
+    }
+  } else if (staged) {
+    loadCourseDraft(staged)
+  } else {
+    resetFormState()
+  }
+
   showDiscardDialog.value = false
   closeImmediately()
 }
@@ -510,12 +638,7 @@ function removeBlock(block: TimeBlockDraft) {
 }
 
 function toggleDay(block: TimeBlockDraft, day: DayOfWeek) {
-  const existing = block.schedules.find((schedule) => schedule.day === day)
-
   if (block.selectedDays.includes(day)) {
-    if (existing?.state === 'saved') {
-      return
-    }
     block.selectedDays = block.selectedDays.filter((item) => item !== day)
   } else {
     block.selectedDays = [...block.selectedDays, day]
@@ -535,16 +658,14 @@ function errorMessage(error: unknown): string {
 }
 
 async function submit() {
-  formError.value = null
-  successMessage.value = null
-
   if (courseName.value.trim().length === 0) {
-    formError.value = 'Enter a course name before saving.'
+    toast.error('Enter a course name before saving.')
     return
   }
   if (!allBlocksValid.value) {
-    formError.value =
-      'Each time block needs at least one weekday, and every time must have an end time after its start time.'
+    toast.error(
+      'Each time block needs at least one weekday, and every time must have an end time after its start time.',
+    )
     return
   }
 
@@ -562,7 +683,7 @@ async function submit() {
 
     const duplicate = findDuplicateName(courseName.value, coursesToCheck)
     if (duplicate) {
-      formError.value = `A course named "${courseName.value.trim()}" already exists.`
+      toast.error(`A course named "${courseName.value.trim()}" already exists.`)
       return
     }
 
@@ -580,7 +701,7 @@ async function submit() {
         }
         const clash = findClash(candidate, schedulesToCheck)
         if (clash) {
-          formError.value = `A class time clashes with ${clash.courseName || 'another class'} on ${day}.`
+          toast.error(`A class time clashes with ${clash.courseName || 'another class'} on ${day}.`)
           return
         }
 
@@ -590,7 +711,7 @@ async function submit() {
             b2.selectedDays.includes(day) &&
             rangesOverlap(b1.startTime, b1.endTime, b2.startTime, b2.endTime)
           ) {
-            formError.value = `Two time blocks for this course overlap on ${day}.`
+            toast.error(`Two time blocks for this course overlap on ${day}.`)
             return
           }
         }
@@ -637,12 +758,12 @@ async function submit() {
         end: b.endTime,
       })),
     })
-    successMessage.value = 'Course and schedule saved successfully.'
+    toast.success('Course and schedule saved successfully.')
     pendingSlot.value = null
     pendingBlockId.value = null
     emit('created', tempId as unknown as number)
   } catch (error) {
-    formError.value = errorMessage(error)
+    toast.error(errorMessage(error))
   } finally {
     saving.value = false
   }
@@ -916,29 +1037,6 @@ defineExpose({
               </TransitionGroup>
             </section>
 
-            <Alert
-              v-if="formError"
-              variant="destructive"
-              role="alert"
-              class="rounded-xl border border-red-200 bg-red-50/90 px-3 py-2.5 text-sm text-red-700 shadow-xs"
-            >
-              <AlertCircle class="h-4 w-4 shrink-0 text-red-600" aria-hidden="true" />
-              <AlertDescription class="text-sm font-medium text-red-700">
-                {{ formError }}
-              </AlertDescription>
-            </Alert>
-
-            <Alert
-              v-if="successMessage && stage === 'full'"
-              role="status"
-              class="rounded-xl border border-emerald-200 bg-emerald-50/90 px-3 py-2.5 text-sm text-emerald-800 shadow-xs"
-            >
-              <CheckCircle2 class="h-4 w-4 shrink-0 text-emerald-600" aria-hidden="true" />
-              <AlertDescription class="text-sm font-medium text-emerald-800">
-                {{ successMessage }}
-              </AlertDescription>
-            </Alert>
-
             <p
               v-if="pendingScheduleCount > 0 && currentDraftTempId !== null && stage === 'full'"
               class="text-xs font-medium text-[#7B8B97]"
@@ -970,6 +1068,7 @@ defineExpose({
       @keep-editing="handleKeepEditing"
       @discard="handleDiscard"
     />
+    <Toaster />
   </div>
 </template>
 

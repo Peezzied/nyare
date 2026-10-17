@@ -21,7 +21,13 @@ const draftSchedules = ref<DraftSchedule[]>([])
 
 export function useCourseDrafts() {
   function stageCourse(course: DraftCourse) {
-    draftCourses.value.push(course)
+    const existingIndex = draftCourses.value.findIndex((c) => c.tempId === course.tempId)
+    if (existingIndex >= 0) {
+      draftCourses.value[existingIndex] = course
+      draftSchedules.value = draftSchedules.value.filter((s) => s.tempId !== course.tempId)
+    } else {
+      draftCourses.value.push(course)
+    }
     if (course.schedules && course.schedules.length > 0) {
       for (const s of course.schedules) {
         stageSchedule(course.tempId, s)
