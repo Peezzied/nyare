@@ -75,7 +75,7 @@ describe('AccountSelectView', () => {
 
     expect(authApi.register).toHaveBeenCalledWith({ username: 'Alice' })
     expect(authApi.login).toHaveBeenCalledWith({ username: 'Alice' })
-    expect(mockPush).toHaveBeenCalledWith('/')
+    expect(mockPush).toHaveBeenCalledWith('/welcome')
   })
 
   it('renders user cards with GitHub identicons and selects on click', async () => {

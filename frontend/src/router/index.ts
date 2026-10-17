@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { ensureSession } from '@/composables/useAuth'
 import StartView from '../views/StartView.vue'
 import WelcomeView from '../views/WelcomeView.vue'
 import ScheduleView from '../views/ScheduleView.vue'
@@ -60,7 +61,36 @@ const router = createRouter({
       name: 'select-account',
       component: () => import('../views/AccountSelectView.vue'),
     },
+    {
+      path: '/calendar',
+      name: 'calendar',
+      component: () => import('@/components/day-view/DayViewContainer.vue'),
+    },
   ],
+})
+
+// First-launch detection via `GET /api/users/me`.
+// Public routes: the startup/setup page (`start`) and account selection.
+// Every other route needs a valid linked user session and redirects to `start`.
+// A sessioned visit to `start` goes to the calendar home
+// (docs/system-workflows.md section 8 identifies Calendar View as the home).
+router.beforeEach(async (to) => {
+  const user = await ensureSession()
+  if (user === undefined) {
+    // Backend unreachable: the session state is unknown, not absent.
+    // Dev: proceed so standalone frontend runs keep working with the
+    // per-view fixture fallbacks; the backend still rejects unauthenticated
+    // API calls. Production builds fail closed: `import.meta.env.DEV` is
+    // statically false there, so unknown sessions never render routes.
+    if (!import.meta.env.DEV) {
+      return false
+    }
+    return true
+  }
+  if (!user) {
+    return to.name === 'start' || to.name === 'select-account' ? true : { path: '/' }
+  }
+  return to.name === 'start' ? { name: 'calendar' } : true
 })
 
 export default router

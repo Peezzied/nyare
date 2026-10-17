@@ -1,0 +1,110 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import type { Router } from 'vue-router'
+import type { UserResponse } from '@/types/api'
+
+const sessionUser: UserResponse = {
+  id: 1,
+  username: 'karol',
+  createdAt: '2026-10-01T09:00:00Z',
+  updatedAt: '2026-10-01T09:00:00Z',
+}
+
+const ensureSession = vi.fn<() => Promise<UserResponse | null | undefined>>()
+
+vi.mock('@/composables/useAuth', () => ({
+  ensureSession: () => ensureSession(),
+}))
+
+/** Reimports the router so the guard and its routes start fresh per test. */
+function loadRouter(): Promise<Router> {
+  vi.resetModules()
+  return import('../index').then((mod) => mod.default)
+}
+
+describe('router session guard', () => {
+  beforeEach(() => {
+    vi.resetModules()
+    ensureSession.mockReset()
+    vi.unstubAllEnvs()
+  })
+
+  it('redirects guarded pages to the start page without a session', async () => {
+    ensureSession.mockResolvedValue(null)
+    const router = await loadRouter()
+
+    await router.push('/notes')
+
+    expect(router.currentRoute.value.path).toBe('/')
+    expect(router.currentRoute.value.name).toBe('start')
+  })
+
+  it('keeps the start page public without a session', async () => {
+    ensureSession.mockResolvedValue(null)
+    const router = await loadRouter()
+
+    await router.push('/')
+
+    expect(router.currentRoute.value.name).toBe('start')
+  })
+
+  it('keeps account selection public without a session', async () => {
+    ensureSession.mockResolvedValue(null)
+    const router = await loadRouter()
+
+    await router.push('/select-account')
+
+    expect(router.currentRoute.value.name).toBe('select-account')
+  })
+
+  it('redirects a sessioned start visit to the calendar home', async () => {
+    ensureSession.mockResolvedValue(sessionUser)
+    const router = await loadRouter()
+
+    await router.push('/')
+
+    expect(router.currentRoute.value.path).toBe('/calendar')
+  })
+
+  it('allows guarded pages with a session', async () => {
+    ensureSession.mockResolvedValue(sessionUser)
+    const router = await loadRouter()
+
+    await router.push('/notes')
+
+    expect(router.currentRoute.value.path).toBe('/notes')
+  })
+
+  it('proceeds to guarded routes on an unknown session in development', async () => {
+    vi.stubEnv('DEV', true)
+    ensureSession.mockResolvedValue(undefined)
+    const router = await loadRouter()
+
+    await router.push('/notes')
+
+    expect(router.currentRoute.value.path).toBe('/notes')
+  })
+
+  it('rechecks the session on the next navigation after an unknown result', async () => {
+    vi.stubEnv('DEV', true)
+    ensureSession.mockResolvedValue(undefined)
+    const router = await loadRouter()
+
+    await router.push('/notes')
+    await router.push('/tasks')
+
+    expect(ensureSession).toHaveBeenCalledTimes(2)
+    expect(router.currentRoute.value.path).toBe('/tasks')
+  })
+
+  it('fails closed on an unknown session in production builds', async () => {
+    vi.stubEnv('DEV', false)
+    ensureSession.mockResolvedValue(undefined)
+    const router = await loadRouter()
+
+    await router.push('/notes')
+
+    // Aborted: the route stays at the initial location instead of the start page.
+    expect(router.currentRoute.value.path).toBe('/')
+    expect(router.currentRoute.value.name).toBeUndefined()
+  })
+})
