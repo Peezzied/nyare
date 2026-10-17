@@ -16,11 +16,13 @@ import DayViewHeader from './DayViewHeader.vue'
 import ScheduleCalendar from './ScheduleCalendar.vue'
 import WeekCalendar from './WeekCalendar.vue'
 import WeekPeek from './WeekPeek.vue'
+import CreateScheduleView from '@/views/CreateScheduleView.vue'
 
 // Defaults to today, in the day view
 const selectedDate = ref(new Date())
 const viewMode = ref<'day' | 'week'>('day')
 const isMenuOpen = ref(false)
+const isCreateScheduleOpen = ref(false)
 const catalog = useCatalog()
 
 // Tasks + events load once per intent; swiping only refilters locally.
@@ -78,8 +80,19 @@ function openDay(date: Date) {
 }
 
 function handleMenuAction(action: 'edit' | 'new' | 'delete' | 'archive') {
-  // Placeholder event action - no backend calls
+  if (action === 'new') {
+    isCreateScheduleOpen.value = true
+    return
+  }
   console.log(`[DayView] Menu action executed: ${action}`)
+}
+
+async function handleScheduleCreated() {
+  try {
+    await catalog.loadCatalog()
+  } catch (error) {
+    console.warn('[DayView] Error refreshing catalog after schedule creation', error)
+  }
 }
 </script>
 
@@ -147,6 +160,16 @@ function handleMenuAction(action: 'edit' | 'new' | 'delete' | 'archive') {
       <div class="h-16 shrink-0 transform-gpu">
         <NavigationBar />
       </div>
+
+      <!-- Create Schedule Bottom Sheet (Google Calendar style) -->
+      <CreateScheduleView
+        v-if="isCreateScheduleOpen"
+        :open="isCreateScheduleOpen"
+        :portal="false"
+        @update:open="isCreateScheduleOpen = $event"
+        @close="isCreateScheduleOpen = false"
+        @created="handleScheduleCreated"
+      />
     </div>
   </div>
 </template>

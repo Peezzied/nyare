@@ -1,105 +1,183 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCatalog } from '@/composables/useCatalog'
 import { coursesApi, schedulesApi } from '@/api'
 import { ApiError } from '@/api/client'
 import type { DayOfWeek } from '@/types/api'
 import { COURSE_PALETTE_24 } from '@/constants/palette'
+import { Button } from '@/components/ui/button'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+} from '@/components/ui/drawer'
+import { Check, Plus, AlertCircle, CheckCircle2, X } from 'lucide-vue-next'
+import type { DrawerOpenChangeDetails } from 'reka-ui'
+import TimeBlockCard, {
+  createBlock,
+  blockStatus,
+  syncScheduleDrafts,
+  type TimeBlockDraft,
+} from '@/components/TimeBlockCard.vue'
+import WeekPreview from '@/components/WeekPreview.vue'
+import { derivePreviewBlocks, type PendingSlot } from '@/utils/weekPreview'
 
-interface ScheduleDraft {
-  day: DayOfWeek
-  state: 'draft' | 'saving' | 'saved' | 'failed'
-  savedId: number | null
-  error: string
-  submitted: boolean
-}
+const props = withDefaults(
+  defineProps<{
+    open?: boolean
+    portal?: boolean
+    initialStage?: 'partial' | 'full'
+  }>(),
+  {
+    open: true,
+    portal: false,
+    initialStage: 'partial',
+  },
+)
 
-interface TimeBlockDraft {
-  id: string
-  selectedDays: DayOfWeek[]
-  startTime: string
-  endTime: string
-  room: string
-  state: 'draft' | 'saving' | 'saved' | 'failed'
-  schedules: ScheduleDraft[]
-  error: string
-}
+const emit = defineEmits<{
+  (e: 'update:open', value: boolean): void
+  (e: 'update:stage', value: 'partial' | 'full'): void
+  (e: 'created', courseId: number): void
+  (e: 'close'): void
+}>()
 
 const router = useRouter()
-const {
-  loadCatalog,
-  applyCourseCreated,
-  applyScheduleCreated,
-} = useCatalog()
+const { loadCatalog, applyCourseCreated, applyScheduleCreated } = useCatalog()
 
-const WEEKDAYS = [
-  { label: 'Su', value: 'SUNDAY' as DayOfWeek },
-  { label: 'Mo', value: 'MONDAY' as DayOfWeek },
-  { label: 'Tu', value: 'TUESDAY' as DayOfWeek },
-  { label: 'We', value: 'WEDNESDAY' as DayOfWeek },
-  { label: 'Th', value: 'THURSDAY' as DayOfWeek },
-  { label: 'Fr', value: 'FRIDAY' as DayOfWeek },
-  { label: 'Sa', value: 'SATURDAY' as DayOfWeek },
-]
+const isOpen = ref(props.open)
+
+const SNAP_PARTIAL = '210px'
+const SNAP_FULL = 1
+const snapPoints = [SNAP_PARTIAL, SNAP_FULL]
+
+const activeSnapPoint = ref<string | number>(
+  props.initialStage === 'full' ? SNAP_FULL : SNAP_PARTIAL,
+)
+
+const isFull = computed(
+  () => activeSnapPoint.value === SNAP_FULL || activeSnapPoint.value === 1,
+)
+
+const stage = computed<'partial' | 'full'>({
+  get: () => (isFull.value ? 'full' : 'partial'),
+  set: (val) => {
+    activeSnapPoint.value = val === 'full' ? SNAP_FULL : SNAP_PARTIAL
+  },
+})
+
+watch(
+  () => props.open,
+  (val) => {
+    isOpen.value = val
+    if (val) {
+      stage.value = props.initialStage
+    }
+  },
+)
+
+watch(
+  () => props.initialStage,
+  (val) => {
+    stage.value = val
+  },
+)
+
+watch(activeSnapPoint, (val) => {
+  if (val === SNAP_FULL || val === 1) {
+    emit('update:stage', 'full')
+  } else if (val === SNAP_PARTIAL) {
+    emit('update:stage', 'partial')
+  }
+})
+
+function setStage(nextStage: 'partial' | 'full') {
+  stage.value = nextStage
+  emit('update:stage', nextStage)
+}
+
+function toggleStage() {
+  setStage(isFull.value ? 'partial' : 'full')
+}
+
+function onCourseDetailsClick() {
+  if (stage.value === 'partial') {
+    setStage('full')
+  }
+}
+
+function handleInputFocus() {
+  if (stage.value === 'partial') {
+    setStage('full')
+  }
+}
+
+function handleInput() {
+  if (stage.value === 'partial') {
+    setStage('full')
+  }
+}
+
+function onColorToggleClick() {
+  if (stage.value === 'partial') {
+    setStage('full')
+    colorOpen.value = true
+  }
+}
+
+const scrollContainerRef = ref<HTMLElement | null>(null)
+let touchStartY = 0
+let touchStartX = 0
+
+function handleTouchStart(e: TouchEvent) {
+  const touch = e.touches[0]
+  if (!touch) return
+  touchStartY = touch.clientY
+  touchStartX = touch.clientX
+}
+
+function handleTouchEnd(e: TouchEvent) {
+  const touch = e.changedTouches[0]
+  if (!touch) return
+  const deltaY = touch.clientY - touchStartY
+  const deltaX = touch.clientX - touchStartX
+
+  if (Math.abs(deltaY) > 35 && Math.abs(deltaY) > Math.abs(deltaX)) {
+    if (deltaY < 0 && stage.value === 'partial') {
+      setStage('full')
+    } else if (deltaY > 0 && stage.value === 'full') {
+      const isAtTop = !scrollContainerRef.value || scrollContainerRef.value.scrollTop <= 5
+      if (isAtTop) {
+        setStage('partial')
+      }
+    }
+  }
+}
+
+function onOpenChange(val: boolean, details?: DrawerOpenChangeDetails) {
+  if (!val && details?.reason === 'swipe') {
+    details.cancel()
+    if (stage.value === 'full') {
+      setStage('partial')
+    }
+    return
+  }
+  isOpen.value = val
+  emit('update:open', val)
+  if (!val) {
+    discardPendingSlot()
+    emit('close')
+    if (router.currentRoute.value.path === '/create-schedule') {
+      router.push('/schedule')
+    }
+  }
+}
 
 const colorOptions = COURSE_PALETTE_24
-let nextBlockId = 0
-
-function createScheduleDraft(day: DayOfWeek): ScheduleDraft {
-  return {
-    day,
-    state: 'draft',
-    savedId: null,
-    error: '',
-    submitted: false,
-  }
-}
-
-function createBlock(): TimeBlockDraft {
-  return {
-    id: `block-${nextBlockId++}`,
-    selectedDays: [],
-    startTime: '',
-    endTime: '',
-    room: '',
-    state: 'draft',
-    schedules: [],
-    error: '',
-  }
-}
-
-function syncScheduleDrafts(block: TimeBlockDraft) {
-  const byDay = new Map(block.schedules.map((schedule) => [schedule.day, schedule]))
-
-  const selectedDrafts = block.selectedDays.map((day) => byDay.get(day) ?? createScheduleDraft(day))
-  const savedDrafts = block.schedules.filter(
-    (schedule) => schedule.state === 'saved' && !block.selectedDays.includes(schedule.day),
-  )
-
-  block.schedules = [...selectedDrafts, ...savedDrafts]
-}
-
-function blockStatus(block: TimeBlockDraft): TimeBlockDraft['state'] {
-  if (block.schedules.length === 0) {
-    return block.selectedDays.length > 0 ? 'draft' : 'draft'
-  }
-
-  if (block.schedules.some((schedule) => schedule.state === 'failed')) {
-    return 'failed'
-  }
-  if (block.schedules.some((schedule) => schedule.state === 'saving')) {
-    return 'saving'
-  }
-  if (block.schedules.every((schedule) => schedule.state === 'saved')) {
-    return 'saved'
-  }
-  return 'draft'
-}
-
-function blockError(block: TimeBlockDraft): string {
-  return block.schedules.find((schedule) => schedule.error)?.error ?? block.error
-}
 
 const courseName = ref('')
 const selectedColorId = ref(COURSE_PALETTE_24[0]!.id)
@@ -110,35 +188,110 @@ const formError = ref<string | null>(null)
 const successMessage = ref<string | null>(null)
 const createdCourseId = ref<number | null>(null)
 
+const pendingSlot = ref<PendingSlot | null>(null)
+const pendingBlockId = ref<string | null>(null)
+
 const selectedColor = computed(
-  () => COURSE_PALETTE_24.find((color) => color.id === selectedColorId.value) ?? COURSE_PALETTE_24[0]!,
+  () =>
+    COURSE_PALETTE_24.find((color) => color.id === selectedColorId.value) ?? COURSE_PALETTE_24[0]!,
 )
 
-const allBlocksValid = computed(() =>
-  blocks.value.length > 0 &&
-  blocks.value.every((block) => {
-    const selected = block.selectedDays.length > 0
-    const validTimes =
-      block.startTime !== '' &&
-      block.endTime !== '' &&
-      block.startTime < block.endTime
-    return selected && validTimes
-  }),
+const previewBlocks = computed(() =>
+  derivePreviewBlocks(blocks.value, courseName.value, selectedColor.value),
+)
+
+function handleSelectSlot(slot: PendingSlot) {
+  pendingSlot.value = slot
+  isOpen.value = true
+
+  const existingBlock = pendingBlockId.value
+    ? blocks.value.find((b) => b.id === pendingBlockId.value)
+    : undefined
+
+  if (existingBlock) {
+    existingBlock.selectedDays = [slot.day]
+    existingBlock.startTime = slot.startTime
+    existingBlock.endTime = slot.endTime
+    syncScheduleDrafts(existingBlock)
+    return
+  }
+
+  const isSingleUntouched =
+    blocks.value.length === 1 &&
+    blocks.value[0]!.selectedDays.length === 0 &&
+    !blocks.value[0]!.startTime &&
+    !blocks.value[0]!.endTime
+
+  let targetBlock: TimeBlockDraft
+  if (isSingleUntouched) {
+    targetBlock = blocks.value[0]!
+    targetBlock.selectedDays = [slot.day]
+    targetBlock.startTime = slot.startTime
+    targetBlock.endTime = slot.endTime
+    syncScheduleDrafts(targetBlock)
+  } else {
+    targetBlock = createBlock()
+    targetBlock.selectedDays = [slot.day]
+    targetBlock.startTime = slot.startTime
+    targetBlock.endTime = slot.endTime
+    syncScheduleDrafts(targetBlock)
+    blocks.value = [...blocks.value, targetBlock]
+  }
+
+  pendingBlockId.value = targetBlock.id
+  setStage('partial')
+}
+
+function handleSelectBlock(blockId: string) {
+  isOpen.value = true
+  setStage('partial')
+  const el = document.getElementById(`block-card-${blockId}`)
+  el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+}
+
+function discardPendingSlot() {
+  if (pendingSlot.value) {
+    pendingSlot.value = null
+    if (pendingBlockId.value) {
+      blocks.value = blocks.value.filter((b) => b.id !== pendingBlockId.value)
+      if (blocks.value.length === 0) {
+        blocks.value = [createBlock()]
+      }
+      pendingBlockId.value = null
+    }
+  }
+}
+
+const allBlocksValid = computed(
+  () =>
+    blocks.value.length > 0 &&
+    blocks.value.every((block) => {
+      const selected = block.selectedDays.length > 0
+      const validTimes =
+        block.startTime !== '' && block.endTime !== '' && block.startTime < block.endTime
+      return selected && validTimes
+    }),
 )
 
 const canSubmit = computed(
-  () =>
-    courseName.value.trim().length > 0 &&
-    allBlocksValid.value &&
-    !saving.value,
+  () => courseName.value.trim().length > 0 && allBlocksValid.value && !saving.value,
 )
 
-const pendingScheduleCount = computed(() =>
-  blocks.value.flatMap((block) => block.schedules).filter((schedule) => schedule.state !== 'saved').length,
+const pendingScheduleCount = computed(
+  () =>
+    blocks.value
+      .flatMap((block) => block.schedules)
+      .filter((schedule) => schedule.state !== 'saved').length,
 )
 
 function goBack() {
-  router.push('/schedule')
+  discardPendingSlot()
+  isOpen.value = false
+  emit('update:open', false)
+  emit('close')
+  if (router.currentRoute.value.path === '/create-schedule') {
+    router.push('/schedule')
+  }
 }
 
 function addBlock() {
@@ -266,7 +419,10 @@ async function submit() {
       return
     }
 
-    successMessage.value = 'Course saved. Color selection and room values are kept in this session only.'
+    successMessage.value = 'Course and schedule saved successfully.'
+    pendingSlot.value = null
+    pendingBlockId.value = null
+    emit('created', courseId)
   } catch (error) {
     formError.value = errorMessage(error)
   } finally {
@@ -287,141 +443,169 @@ function retryFailed() {
 
   void submit()
 }
+
+function selectColor(colorId: string) {
+  selectedColorId.value = colorId
+  colorOpen.value = false
+}
 </script>
 
 <template>
-  <div class="relative mx-auto flex h-[100svh] w-full max-w-[420px] flex-col overflow-x-hidden overflow-y-hidden bg-[#F6F7EE] px-6">
-    <div class="relative z-10 flex w-full justify-center pt-4">
-      <div class="h-[18px] w-full" aria-hidden="true"></div>
+  <div class="relative h-[100svh] w-full overflow-hidden bg-[#F6F7EE]">
+    <!-- Background Week Calendar Preview -->
+    <div class="absolute inset-0 z-0">
+      <WeekPreview
+        :blocks="previewBlocks"
+        :pending-slot="pendingSlot"
+        :selected-color="selectedColor.solid"
+        @select-slot="handleSelectSlot"
+        @select-block="handleSelectBlock"
+      />
     </div>
 
-    <!-- Header -->
-    <header class="relative z-10 mt-2 flex w-full items-center justify-between">
-      <button
-        type="button"
-        aria-label="Go back"
-        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#334155] transition-colors hover:bg-[#C2E8F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2"
-        @click="goBack"
+    <Drawer
+      :open="isOpen"
+      :modal="false"
+      v-model:snap-point="activeSnapPoint"
+      :snap-points="snapPoints"
+      :default-snap-point="SNAP_PARTIAL"
+      @update:open="onOpenChange"
+    >
+      <DrawerContent
+        :portal="props.portal"
+        :full-view="stage === 'full'"
+        class="border-t border-[#C2E8F1] bg-[#FDFEF7] outline-none shadow-2xl"
+        @click:handle="toggleStage"
+        @touchstart="handleTouchStart"
+        @touchend="handleTouchEnd"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
+        <!-- Header -->
+        <DrawerHeader
+          class="relative z-10 flex flex-row w-full items-center justify-between px-5 py-0"
         >
-          <path d="M19 12H5m7-7-7 7 7 7" />
-        </svg>
-      </button>
+          <DrawerClose as-child>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label="Go back"
+              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#334155] transition-colors hover:bg-[#C2E8F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8]"
+              @click="goBack"
+            >
+              <X class="h-5 w-5" aria-hidden="true" />
+            </Button>
+          </DrawerClose>
 
-      <h1
-        class="px-2 text-center text-lg font-semibold text-[#334155]"
-        style="font-family: 'Quicksand', sans-serif; font-weight: 700"
-      >
-        Schedule a Course
-      </h1>
-
-      <button
-        type="button"
-        aria-label="Confirm"
-        :aria-busy="saving"
-        :disabled="!canSubmit"
-        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#00A4C8] transition-colors hover:bg-[#C2E8F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 disabled:text-slate-300 disabled:hover:bg-transparent"
-        @click="submit"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-7 w-7"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M5 13l4 4L19 7" />
-        </svg>
-      </button>
-    </header>
-
-    <div class="relative z-10 mt-5 min-h-0 flex-1 overflow-x-hidden overflow-y-auto pb-4">
-      <form class="min-w-0 space-y-6" @submit.prevent="submit">
-        <!-- Course details -->
-        <section class="space-y-3" aria-labelledby="course-details-heading">
-          <h2
-            id="course-details-heading"
-            class="text-center text-sm font-semibold text-[#334155]"
-            style="font-family: 'Quicksand', sans-serif; font-weight: 600"
+          <Button
+            v-show="stage === 'full'"
+            type="button"
+            aria-label="Confirm"
+            :aria-busy="saving"
+            :disabled="!canSubmit"
+            class="flex h-10 shrink-0 items-center gap-1.5 rounded-xl bg-[#007B99] px-4 font-sans text-sm font-bold text-white shadow-[0_3px_0_#00556B] transition-all hover:bg-[#006B85] active:translate-y-0.5 active:shadow-[0_1px_0_#00556B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007B99] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:active:translate-y-0"
+            style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+            @click="submit"
           >
-            Course details
-          </h2>
+            <svg
+              v-if="saving"
+              class="h-4 w-4 animate-spin text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            <Check v-else class="h-4 w-4 stroke-[2.5]" aria-hidden="true" />
+            <span>{{ saving ? 'Saving...' : 'Save' }}</span>
+          </Button>
+        </DrawerHeader>
 
-          <div class="grid min-w-0 grid-cols-[minmax(0,3fr)_minmax(0,2fr)] gap-2">
-            <label class="space-y-1">
-              <span class="text-sm text-[#7B8B97]">Name</span>
+        <div
+          ref="scrollContainerRef"
+          class="relative z-10 min-h-0 flex-1 overflow-x-hidden"
+          :class="stage === 'full' ? 'overflow-y-auto py-2 overscroll-contain' : 'overflow-y-hidden pt-2 pb-6'"
+        >
+          <form class="min-w-0 space-y-6" @submit.prevent="submit">
+            <!-- Course details -->
+            <section
+              data-testid="course-details-section"
+              class="space-y-4 px-12"
+              :class="{ 'cursor-pointer select-none': stage === 'partial' }"
+              @click="onCourseDetailsClick"
+            >
               <input
+                id="course-name-input"
                 v-model.trim="courseName"
                 type="text"
                 required
                 maxlength="128"
+                placeholder="Add Course Title"
+                :readonly="stage === 'partial'"
+                :tabindex="stage === 'partial' ? -1 : 0"
                 :disabled="saving"
-                class="h-11 w-full rounded-xl border-[3px] border-[#C2E8F1] bg-white px-3 py-2.5 text-[#334155] outline-none transition-colors focus-within:border-[#00A4C8] disabled:cursor-not-allowed disabled:bg-slate-100"
+                aria-label="Course name"
+                class="w-full bg-transparent px-0 py-1 font-sans text-lg font-bold text-[#1E293B] placeholder:font-semibold placeholder:text-slate-400 outline-none disabled:cursor-not-allowed disabled:text-slate-400 sm:text-2xl"
+                :class="{ 'cursor-pointer': stage === 'partial' }"
+                @focus="handleInputFocus"
+                @input="handleInput"
               />
-            </label>
-
-            <div class="min-w-0 space-y-1">
-              <span class="text-sm text-[#7B8B97]">Color</span>
-              <div class="relative min-w-0">
-                <button
-                  type="button"
-                  data-testid="color-toggle"
-                  :aria-expanded="colorOpen"
-                  :aria-haspopup="true"
-                  aria-label="Course color"
-                  :disabled="saving"
-                  class="flex h-11 w-full min-w-0 items-center justify-between gap-2 rounded-xl border-[3px] border-[#C2E8F1] bg-white px-3 py-2.5 transition-colors hover:border-[#00A4C8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  @click="colorOpen = !colorOpen"
-                >
-                  <span
-                    class="h-7 w-7 shrink-0 rounded border-2 border-[#C2E8F1]"
-                    :style="{ backgroundColor: selectedColor.solid }"
-                    aria-hidden="true"
-                  ></span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 shrink-0 text-[#7B8B97]"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
+              <Popover v-model:open="colorOpen">
+                <PopoverTrigger as-child>
+                  <button
+                    type="button"
+                    data-testid="color-toggle"
+                    :aria-expanded="colorOpen"
+                    :aria-haspopup="true"
+                    aria-label="Course color"
+                    :disabled="saving"
+                    class="inline-flex min-w-0 items-center gap-2 rounded-lg border border-[#D5EBF1] bg-[#F0F8FA] px-3 py-2 shadow-xs transition-all hover:border-[#00A4C8] hover:bg-[#E5F3F7] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    @click="onColorToggleClick"
                   >
-                    <path d="m6 9 6 6 6-6" />
-                  </svg>
-                </button>
+                    <span
+                      class="h-5 w-5 shrink-0 rounded-full border border-black/10 shadow-xs"
+                      :style="{ backgroundColor: selectedColor.solid }"
+                      aria-hidden="true"
+                    ></span>
+                    <span
+                      class="min-w-0 truncate text-left font-sans text-sm font-semibold text-[#1E293B]"
+                      >{{ selectedColor.name }}</span
+                    >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 shrink-0 text-[#7B8B97]"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                  </button>
+                </PopoverTrigger>
 
-                <button
-                  v-if="colorOpen"
-                  type="button"
-                  aria-label="Close color picker"
-                  class="fixed inset-0 z-10 cursor-default"
-                  @click="colorOpen = false"
-                ></button>
-
-                <div
-                  v-if="colorOpen"
-                  class="absolute left-0 right-0 top-full z-20 mt-2 max-w-full rounded-2xl border-2 border-[#C2E8F1] bg-white p-2 shadow-lg"
+                <PopoverContent
+                  :portal="false"
+                  class="z-50 w-auto max-w-full rounded-2xl border border-[#D5EBF1] bg-[#FDFEF7] p-2 shadow-lg"
                   role="listbox"
                   aria-label="Course color options"
                 >
-                  <div class="grid grid-cols-4 gap-2">
+                  <div class="grid grid-cols-4 gap-1 p-0.5">
                     <button
                       v-for="color in colorOptions"
                       :key="color.id"
@@ -433,198 +617,187 @@ function retryFailed() {
                       :title="color.name"
                       data-testid="color-swatch"
                       :data-color-id="color.id"
-                      class="flex h-7 w-7 items-center justify-center rounded-md border-2 text-[10px] font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2"
-                      :class="selectedColorId === color.id ? 'border-[#334155] ring-2 ring-[#00A4C8]' : 'border-[#C2E8F1]'"
-                      :style="{ backgroundColor: color.solid }"
-                      @click="selectedColorId = color.id; colorOpen = false"
+                      class="flex h-11 w-11 items-center justify-center rounded-xl p-1 transition-all hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2"
+                      @click="selectColor(color.id)"
                     >
-                      <span v-if="selectedColorId === color.id" class="text-white mix-blend-difference" aria-hidden="true">✓</span>
+                      <span
+                        class="flex h-7 w-7 items-center justify-center rounded-lg border text-[10px] font-bold shadow-xs transition-transform"
+                        :class="
+                          selectedColorId === color.id
+                            ? 'border-[#334155] ring-2 ring-[#00A4C8]'
+                            : 'border-black/10'
+                        "
+                        :style="{ backgroundColor: color.solid }"
+                      >
+                        <span
+                          v-if="selectedColorId === color.id"
+                          class="text-white mix-blend-difference"
+                          aria-hidden="true"
+                          >✓</span
+                        >
+                      </span>
                     </button>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+                </PopoverContent>
+              </Popover>
+            </section>
 
-        <!-- Time blocks -->
-        <section class="space-y-4" aria-labelledby="time-blocks-heading">
-          <h2
-            id="time-blocks-heading"
-            class="text-sm font-semibold text-[#334155]"
-            style="font-family: 'Quicksand', sans-serif; font-weight: 600"
-          >
-            Class times
-          </h2>
+            <!-- Divider -->
+            <hr class="-mx-5 sm:-mx-6 border-t border-[#E2E8F0]/80" />
 
-          <div class="flex flex-col gap-5">
-            <article
-              v-for="(block, index) in blocks"
-              :key="block.id"
-              data-testid="time-block-card"
-              class="flex min-w-0 flex-col gap-4 rounded-2xl border-2 bg-white p-4 shadow-sm transition-colors sm:p-5"
-              :class="blockStatus(block) === 'failed' ? 'border-red-300' : 'border-[#E2E8F0]'"
+            <!-- Time blocks -->
+            <section
+              class="space-y-4 px-12"
+              aria-labelledby="time-blocks-heading"
             >
-              <!-- Card header -->
-              <div class="flex min-w-0 items-center justify-between gap-3">
-                <h3
-                  class="min-w-0 flex-1 text-sm font-semibold text-[#334155]"
-                  style="font-family: 'Quicksand', sans-serif; font-weight: 600"
+              <h2
+                id="time-blocks-heading"
+                class="text-xs font-bold tracking-wider text-[#475569] uppercase"
+              >
+                Class times
+              </h2>
+
+              <TransitionGroup tag="div" name="time-block" class="relative flex flex-col gap-5">
+                <TimeBlockCard
+                  v-for="(block, index) in blocks"
+                  :id="`block-card-${block.id}`"
+                  :key="block.id"
+                  :data-block-id="block.id"
+                  :block="block"
+                  :index="index"
+                  :saving="saving"
+                  @remove="removeBlock(block)"
+                  @toggle-day="toggleDay(block, $event)"
+                  @update:start-time="block.startTime = $event"
+                  @update:end-time="block.endTime = $event"
+                />
+
+                <Button
+                  key="add-time"
+                  type="button"
+                  data-testid="add-another-time"
+                  :disabled="saving"
+                  class="flex min-h-12 w-full items-center justify-center rounded-xl border border-[#BCE3ED] bg-[#E8F6FA] px-4 py-3 font-sans text-sm font-bold text-[#007B99] shadow-[0_3px_0_#B0DBE5] transition-all hover:bg-[#DCF1F7] hover:text-[#006880] active:translate-y-0.5 active:shadow-[0_1px_0_#B0DBE5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none disabled:active:translate-y-0"
+                  @click="addBlock"
                 >
-                  Time block {{ index + 1 }}
-                </h3>
+                  <Plus class="mr-2 h-4 w-4 stroke-2" aria-hidden="true" />
+                  Add another time
+                </Button>
+              </TransitionGroup>
+            </section>
 
-                <div class="flex shrink-0 items-center gap-2">
-                  <span
-                    v-if="blockStatus(block) === 'saved'"
-                    class="rounded-md bg-[#E6F4EA] px-2 py-1 text-xs font-medium text-[#0D652D]"
-                  >
-                    Saved
-                  </span>
-                  <span
-                    v-else-if="blockStatus(block) === 'saving'"
-                    class="rounded-md bg-[#E1F5FE] px-2 py-1 text-xs font-medium text-[#0277BD]"
-                  >
-                    Saving
-                  </span>
-                  <span
-                    v-else-if="blockStatus(block) === 'failed'"
-                    class="rounded-md bg-[#FFEBEE] px-2 py-1 text-xs font-medium text-[#B71C1C]"
-                  >
-                    Failed
-                  </span>
-
-                  <button
-                    v-if="index > 0"
-                    type="button"
-                    aria-label="Delete time block"
-                    :disabled="saving"
-                    class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border-2 border-red-200 bg-white text-xs font-medium text-red-600 transition-colors hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    @click="removeBlock(block)"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
-
-              <div class="space-y-4">
-                <!-- Weekday selector -->
-                <div role="group" aria-label="Weekdays" class="min-w-0">
-                  <div class="grid grid-cols-7 gap-1.5">
-                    <button
-                      v-for="weekday in WEEKDAYS"
-                      :key="weekday.value"
-                      type="button"
-                      :aria-pressed="block.selectedDays.includes(weekday.value)"
-                      :aria-label="weekday.value"
-                      :disabled="saving || blockStatus(block) === 'saved'"
-                      class="flex aspect-square h-auto min-w-0 items-center justify-center rounded-xl border-2 px-0 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      :class="
-                        block.selectedDays.includes(weekday.value)
-                          ? 'border-[#00A4C8] bg-[#00A4C8] text-white shadow-sm'
-                          : 'border-[#C2E8F1] bg-[#F8FAFC] text-[#334155] hover:bg-[#E1F5FE]'
-                      "
-                      @click="toggleDay(block, weekday.value)"
-                    >
-                      {{ weekday.label }}
-                    </button>
-                  </div>
-                </div>
-
-
-                <!-- Start and end times -->
-                <div class="grid min-w-0 grid-cols-2 gap-3">
-                  <label class="min-w-0 space-y-2">
-                    <span class="block py-3 text-sm text-[#7B8B97]">Start time</span>
-                    <input
-                      v-model="block.startTime"
-                      type="time"
-                      required
-                      :disabled="saving || blockStatus(block) === 'saved'"
-                      class="h-14 w-full min-w-0 rounded-xl border-[3px] border-[#C2E8F1] bg-white px-3 text-base text-[#334155] outline-none transition-colors focus-within:border-[#00A4C8] disabled:cursor-not-allowed disabled:bg-slate-100"
-                    />
-                  </label>
-
-                  <label class="min-w-0 space-y-2">
-                    <span class="block py-3 text-sm text-[#7B8B97]">End time</span>
-                    <input
-                      v-model="block.endTime"
-                      type="time"
-                      required
-                      :disabled="saving || blockStatus(block) === 'saved'"
-                      class="h-14 w-full min-w-0 rounded-xl border-[3px] border-[#C2E8F1] bg-white px-3 text-base text-[#334155] outline-none transition-colors focus-within:border-[#00A4C8] disabled:cursor-not-allowed disabled:bg-slate-100"
-                    />
-                  </label>
-                </div>
-
-
-                <!-- Errors -->
-                <div v-if="blockError(block)" class="space-y-2">
-                  <p
-                    v-for="schedule in block.schedules.filter((item) => item.error)"
-                    :key="schedule.day"
-                    class="break-words text-sm text-red-600"
-                  >
-                    {{ schedule.day }}: {{ schedule.error }}
-                  </p>
-                  <p
-                    v-if="!block.schedules.some((item) => item.error)"
-                    class="break-words text-sm text-red-600"
-                  >
-                    {{ blockError(block) }}
-                  </p>
-                </div>
-              </div>
-            </article>
-
-            <button
-              type="button"
-              data-testid="add-another-time"
-              :disabled="saving"
-              class="flex min-h-14 w-full items-center justify-center rounded-xl border-2 border-dashed border-[#00A4C8] bg-white px-4 py-4 text-sm font-semibold text-[#00A4C8] transition-colors hover:bg-[#E1F5FE] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-              style="font-family: 'Quicksand', sans-serif; font-weight: 600"
-              @click="addBlock"
+            <Alert
+              v-if="formError && stage === 'full'"
+              variant="destructive"
+              role="alert"
+              class="rounded-xl border border-red-200 bg-red-50/90 px-3 py-2.5 text-sm text-red-700 shadow-xs"
             >
-              + Add another time
-            </button>
-          </div>
-        </section>
+              <AlertCircle class="h-4 w-4 shrink-0 text-red-600" aria-hidden="true" />
+              <AlertDescription class="text-sm font-medium text-red-700">
+                {{ formError }}
+              </AlertDescription>
+            </Alert>
 
-        <p
-          v-if="formError"
-          class="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
-          role="alert"
-        >
-          {{ formError }}
-        </p>
+            <Alert
+              v-if="successMessage && stage === 'full'"
+              role="status"
+              class="rounded-xl border border-emerald-200 bg-emerald-50/90 px-3 py-2.5 text-sm text-emerald-800 shadow-xs"
+            >
+              <CheckCircle2 class="h-4 w-4 shrink-0 text-emerald-600" aria-hidden="true" />
+              <AlertDescription class="text-sm font-medium text-emerald-800">
+                {{ successMessage }}
+              </AlertDescription>
+            </Alert>
 
-        <p
-          v-if="successMessage"
-          class="rounded-xl border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700"
-          role="status"
-        >
-          {{ successMessage }}
-        </p>
+            <p
+              v-if="pendingScheduleCount > 0 && createdCourseId !== null && stage === 'full'"
+              class="text-xs font-medium text-[#7B8B97]"
+            >
+              {{ pendingScheduleCount }} schedule record{{ pendingScheduleCount === 1 ? '' : 's' }}
+              still pending.
+            </p>
 
-        <p
-          v-if="pendingScheduleCount > 0 && createdCourseId !== null"
-          class="text-xs text-[#7B8B97]"
-        >
-          {{ pendingScheduleCount }} schedule record{{ pendingScheduleCount === 1 ? '' : 's' }} still pending.
-        </p>
-
-        <div class="flex gap-2">
-          <button
-            v-if="blocks.some((block) => blockStatus(block) === 'failed')"
-            type="button"
-            class="flex-1 rounded-xl border-2 border-red-200 bg-white px-4 py-3 text-sm font-semibold text-red-700 transition-colors hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
-            :disabled="saving"
-            @click="retryFailed"
-          >
-            Retry failed blocks
-          </button>
+            <div v-show="stage === 'full'" class="flex gap-2">
+              <Button
+                v-if="blocks.some((block) => blockStatus(block) === 'failed')"
+                type="button"
+                variant="outline"
+                class="flex-1 rounded-xl border border-red-200 bg-[#FDFEF7] px-4 py-3 font-sans text-sm font-bold text-red-700 transition-colors hover:bg-red-50 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+                :disabled="saving"
+                @click="retryFailed"
+              >
+                Retry failed blocks
+              </Button>
+            </div>
+          </form>
         </div>
-      </form>
-    </div>
+      </DrawerContent>
+    </Drawer>
   </div>
 </template>
+
+<style scoped>
+.time-block-enter-active {
+  animation: time-block-land 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: top center;
+}
+
+@keyframes time-block-land {
+  0% {
+    opacity: 0;
+    transform: translateY(26px) scale(0.96) rotate(-0.8deg);
+    filter: blur(6px);
+  }
+
+  55% {
+    opacity: 1;
+    filter: blur(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0);
+    filter: blur(0);
+  }
+}
+
+.time-block-move {
+  transition: transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.time-block-leave-active {
+  position: absolute;
+  width: 100%;
+  transition:
+    opacity 200ms ease-in,
+    transform 280ms cubic-bezier(0.4, 0, 1, 1),
+    filter 200ms ease-in;
+}
+
+.time-block-leave-to {
+  opacity: 0;
+  transform: translateY(-12px) scale(0.94);
+  filter: blur(6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .time-block-enter-active {
+    animation: time-block-fade 220ms ease-out both;
+  }
+
+  .time-block-move,
+  .time-block-leave-active {
+    transition: none;
+  }
+}
+
+@keyframes time-block-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+</style>

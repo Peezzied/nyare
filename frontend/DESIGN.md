@@ -42,7 +42,7 @@ Theme Mode: **Light mode only** for the initial MVP. Dark mode is deferred.
 | Token | Hex Value | Usage Description |
 | :--- | :--- | :--- |
 | `--color-bg-app` | `#F6F7EE` | Warm parchment background across all pages |
-| `--color-surface-card` | `#FFFFFF` | Clean white card and sheet background |
+| `--color-surface-card` | `#FDFEF7` | Warm cream parchment card and sheet surface (replaces stark white) |
 | `--color-nav-bg` | `#FDFEF7` | Warm cream parchment background for bottom navigation bar |
 | `--color-primary` | `#00A4C8` | Ocean Cyan primary action color and active indicators |
 | `--color-primary-bevel` | `#007B99` | Darker cyan for 3D tactile button bottom borders |
@@ -51,11 +51,17 @@ Theme Mode: **Light mode only** for the initial MVP. Dark mode is deferred.
 | `--color-border` | `#CBD5E1` | Card dividers, input borders, and sheet separators |
 
 ### 3D Tactile Button Specification
-Buttons use a physical offset border to match the friendly Duolingo aesthetic:
-- Face background: `#00A4C8`
-- Text color: `#FFFFFF` (Font: Quicksand 700)
-- Bottom border: `4px solid #007B99`
-- Active state: removes bottom border and translates `translate-y-1` on tap.
+Buttons use a physical offset border or bevel shadow to match the friendly Duolingo aesthetic:
+- **Primary Action (e.g. Save Course, Submit)**:
+  - Face: `#00A4C8` (Ocean Cyan), Font: Quicksand 700, Text: `#FFFFFF`.
+  - Bevel shadow: `shadow-[0_3px_0_#007B99]`.
+  - Active press: `active:translate-y-0.5 active:shadow-[0_1px_0_#007B99]`.
+- **Secondary / Add Actions (e.g. Add another time)**:
+  - Face: Soft ocean tint (`#E8F6FA`), Border: `#BCE3ED`, Text: `#007B99` (Quicksand 700).
+  - Bevel shadow: `shadow-[0_3px_0_#B0DBE5]`.
+  - Active press: `active:translate-y-0.5 active:shadow-[0_1px_0_#B0DBE5]`.
+- **Destructive Actions**:
+  - Face: Solid red (`#DC2626`), Bevel border/shadow: `#991B1B`.
 
 ---
 
@@ -99,9 +105,16 @@ Courses receive deterministic colors calculated by index (`course.id % 24`):
 - **Buttons & Form Fields**: `12px` (`rounded-xl`)
 - **Tags, Badges & Chips**: `8px` (`rounded-lg`)
 
+### Stroke & Surface Elevation Standards
+- **Single Elevation Principle**: Declare elevation once via border or shadow, never stacking heavy borders with shadows.
+- **1px Standard Stroke**: Form inputs, card boundaries, and selection docks use uniform 1px borders (`border border-[#D5EBF1]` or `#C2E8F1`). Avoid 2px or 3px border weights on form fields.
+- **Physical Stationery Elevation**: Interactive and content cards (e.g. `TimeBlockCard`, Course Details) use a tactile 3D bottom bevel shadow (`shadow-[0_4px_0_#D5EBF1]` in resting state, `shadow-[0_4px_0_#FECACA]` in error state) to give stationery weight and physical character.
+- **Surface Elevation Over Outlines**: Rely on tonal surface tints—soft ocean surface (`#F0F8FA` / `#E8F6FA`) and sandy parchment (`#F6F7EE`)—to define visual structure. Do not nest outline cages inside bordered cards ("box-in-a-box"); child headers and selector docks should sit seamlessly without inner border outlines.
+- **Input Focus Interaction**: Resting inputs sit in recessed ocean tint (`#F0F8FA`) with subtle inset shadow (`shadow-2xs`). On focus, the field shifts to warm cream parchment (`#FDFEF7`) with an ocean cyan ring (`border-[#00A4C8] ring-2 ring-[#00A4C8]/30`).
+
 ### Spacing & Touch Metrics
 - **8px Grid Rhythm**: All margins and paddings follow 8px multiples (`8px`, `16px`, `24px`).
-- **Touch Target Minimum**: Every interactive icon and button must maintain at least `44px` by `44px` tap boundary.
+- **Touch Target Minimum**: Every interactive control (including icon buttons, delete triggers, weekday selectors, and color picker swatches) must maintain at least a `44px` by `44px` tap boundary.
 - **Mobile Viewport Baseline**: Optimized for standard mobile screen width (`390px`).
 
 ---
@@ -174,14 +187,15 @@ Modal dialogs provide structured inputs for schedule creation, editing, and dest
 
 ### 8.1 Dialog Structure & Overlay
 - **Backdrop**: Semi-transparent scrim (`rgba(0, 0, 0, 0.4)`).
-- **Surface**: Pure white (`#FFFFFF`) with a `16px` border radius (`rounded-2xl`).
-- **Header Bar**: Displays an exit action on the left, centered title in Quicksand 700, and a primary Save button on the right.
+- **Surface**: Warm cream parchment (`#FDFEF7`) with a `16px` border radius (`rounded-2xl`).
+- **Header Bar**: Displays an exit action on the left (minimum 44px tap target), centered title in Quicksand 700, and a primary tactile 3D Save button on the right (`#007B99` face with `#00556B` bevel shadow, exceeding WCAG AA contrast, loading spinner during network requests).
 
 ### 8.2 Form Controls & Selection Widgets
-- **Circular Day Toggles**: 7 circular buttons for weekdays (`Su` through `Sa`). Inactive buttons use a white fill with cyan border. Active buttons use solid Ocean Cyan (`#00A4C8`) with white text.
-- **Time Range Pickers**: Pill containers showing start time and end time separated by an arrow (`9:00 AM → 10:30 AM`).
+- **Circular Day Toggles**: 7 circular buttons for weekdays (`Su` through `Sa`) positioned directly on the card surface with generous spacing (`gap-1.5` to `gap-2.5`) under an explicit bold label (`Repeat on`). Features tactile 3D button depth: inactive buttons use a warm cream parchment fill (`#FDFEF7`) with a 1px cyan border and bottom bevel shadow (`shadow-[0_2px_0_#D5EBF1]`); active buttons use solid Ocean Teal (`#007B99`, 4.6:1+ contrast) with white text and sunken bevel shadow (`shadow-[0_2px_0_#00556B]`).
+- **Block Header & Delete Control**: Card headers feature a soft cyan surface (`#E8F6FA`), a `Clock` icon in Ocean Teal (`#007B99`), bold title in Quicksand 700 (`#1E293B`), and status badges. Removable blocks (block index > 0) feature a small, unobtrusive Delete button (`variant="ghost"`, `Trash2` icon with high-contrast `#B91C1C` text) instead of an aggressive prominent "X" icon.
+- **Form Inputs & Time Pickers**: Recessed ocean tint (`#F0F8FA`) with 1px border (`#D5EBF1`), bold text (`#1E293B`), and subtle inner shadow (`shadow-2xs`), shifting to warm cream parchment (`#FDFEF7`) with ocean cyan focus ring (`#00A4C8`) on active focus.
 - **Repeat Switch**: Pill toggle switch for weekly recurring events.
-- **Course Color Picker**: Palette icon (`🎨`) followed by circular color swatches from the 24-color course palette.
+- **Course Color Picker**: Color swatch trigger with a popover containing 24 swatches, each housed within a 44px tap boundary.
 
 ### 8.3 Confirmation & Destructive Dialogs
 - **Mascot Integration**: Duckota illustration peeks over the top-right corner of the confirmation card with an alert expression.
