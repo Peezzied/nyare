@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import type { UserResponse } from '@/types/api'
 
 const mockUser: UserResponse = {
@@ -9,6 +9,7 @@ const mockUser: UserResponse = {
 }
 
 const getCurrentUser = vi.fn<() => Promise<UserResponse>>()
+const login = vi.fn<(params: { username: string }) => Promise<UserResponse>>()
 
 vi.mock('@/api', () => {
   class ApiError extends Error {
@@ -23,15 +24,25 @@ vi.mock('@/api', () => {
     ApiError,
     authApi: {
       getCurrentUser: (...args: unknown[]) => getCurrentUser(...(args as [])),
+      login: (...args: unknown[]) => login(...(args as [{ username: string }])),
+      getDevUser: () => (import.meta.env.DEV ? import.meta.env.VITE_DEV_USER || undefined : undefined),
     },
   }
 })
 
 describe('useAuth', () => {
+  const originalDevUser = import.meta.env.VITE_DEV_USER
+
   beforeEach(async () => {
+    import.meta.env.VITE_DEV_USER = ''
     const { clearSessionUser } = await import('../useAuth')
     clearSessionUser()
     getCurrentUser.mockReset()
+    login.mockReset()
+  })
+
+  afterEach(() => {
+    import.meta.env.VITE_DEV_USER = originalDevUser
   })
 
   it('returns the session user when /me succeeds', async () => {
@@ -44,14 +55,55 @@ describe('useAuth', () => {
     expect(getCurrentUser).toHaveBeenCalledTimes(1)
   })
 
-  it('returns null when /me confirms no session with a 401', async () => {
+  it('returns null when /me confirms no session with a 401 and no dev user configured', async () => {
     const { ApiError } = await import('@/api')
     getCurrentUser.mockRejectedValueOnce(new ApiError(401, 'User not authenticated'))
     const { useAuth } = await import('../useAuth')
-    const { user, ensureSession } = useAuth()
+    const { user, isDevUserMissing, ensureSession } = useAuth()
 
     await expect(ensureSession()).resolves.toBeNull()
     expect(user.value).toBeNull()
+    expect(isDevUserMissing.value).toBe(false)
+  })
+
+  it('returns null when /me confirms user not found with a 404 and no dev user configured', async () => {
+    const { ApiError } = await import('@/api')
+    getCurrentUser.mockRejectedValueOnce(new ApiError(404, 'User not found'))
+    const { useAuth } = await import('../useAuth')
+    const { user, isDevUserMissing, ensureSession } = useAuth()
+
+    await expect(ensureSession()).resolves.toBeNull()
+    expect(user.value).toBeNull()
+    expect(isDevUserMissing.value).toBe(false)
+  })
+
+  it('auto-authenticates VITE_DEV_USER when /me returns 401 in DEV mode', async () => {
+    import.meta.env.VITE_DEV_USER = 'dev_student'
+    const { ApiError } = await import('@/api')
+    getCurrentUser.mockRejectedValueOnce(new ApiError(401, 'User not authenticated'))
+    login.mockResolvedValueOnce(mockUser)
+
+    const { useAuth } = await import('../useAuth')
+    const { user, isDevUserMissing, ensureSession } = useAuth()
+
+    await expect(ensureSession()).resolves.toEqual(mockUser)
+    expect(user.value).toEqual(mockUser)
+    expect(isDevUserMissing.value).toBe(false)
+    expect(login).toHaveBeenCalledWith({ username: 'dev_student' })
+  })
+
+  it('sets isDevUserMissing to true when auto-login returns 404 for VITE_DEV_USER', async () => {
+    import.meta.env.VITE_DEV_USER = 'dev_student'
+    const { ApiError } = await import('@/api')
+    getCurrentUser.mockRejectedValueOnce(new ApiError(401, 'User not authenticated'))
+    login.mockRejectedValueOnce(new ApiError(404, 'User not found'))
+
+    const { useAuth } = await import('../useAuth')
+    const { user, isDevUserMissing, ensureSession } = useAuth()
+
+    await expect(ensureSession()).resolves.toBeNull()
+    expect(user.value).toBeNull()
+    expect(isDevUserMissing.value).toBe(true)
   })
 
   it('returns undefined for network errors: the session state stays unknown', async () => {
@@ -63,7 +115,7 @@ describe('useAuth', () => {
     expect(user.value).toBeNull()
   })
 
-  it('returns undefined for server errors other than 401', async () => {
+  it('returns undefined for server errors other than 401 and 404', async () => {
     const { ApiError } = await import('@/api')
     getCurrentUser.mockRejectedValueOnce(new ApiError(503, 'Service unavailable'))
     const { useAuth } = await import('../useAuth')

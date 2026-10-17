@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import {
   apiClient,
   authApi,
@@ -30,6 +30,22 @@ describe('API Services', () => {
   })
 
   describe('authApi', () => {
+    const originalDevUser = import.meta.env.VITE_DEV_USER
+
+    beforeEach(() => {
+      import.meta.env.VITE_DEV_USER = ''
+    })
+
+    afterEach(() => {
+      import.meta.env.VITE_DEV_USER = originalDevUser
+    })
+
+    it('returns the configured dev username', () => {
+      expect(authApi.getDevUser()).toBeUndefined()
+      import.meta.env.VITE_DEV_USER = 'dev_student'
+      expect(authApi.getDevUser()).toBe('dev_student')
+    })
+
     it('calls login endpoint with credentials', async () => {
       const mockUser: UserResponse = {
         id: 1,
@@ -79,6 +95,13 @@ describe('API Services', () => {
       expect(postSpy).toHaveBeenCalledWith('/api/users', { username: 'bob' })
     })
 
+    it('rejects register when VITE_DEV_USER is active', async () => {
+      import.meta.env.VITE_DEV_USER = 'dev_student'
+      await expect(authApi.register({ username: 'bob' })).rejects.toThrow(
+        'Account creation is disabled while dev_student is active.',
+      )
+    })
+
     it('calls listUsers endpoint', async () => {
       const mockUsers: UserResponse[] = []
       const getSpy = vi.spyOn(apiClient, 'get').mockResolvedValue(mockUsers)
@@ -107,6 +130,21 @@ describe('API Services', () => {
 
       await authApi.deleteUser(5)
       expect(deleteSpy).toHaveBeenCalledWith('/api/users/5')
+    })
+
+    it('rejects deleteUser when deleting protected VITE_DEV_USER account', async () => {
+      import.meta.env.VITE_DEV_USER = 'dev_student'
+      const devStudentUser: UserResponse = {
+        id: 1,
+        username: 'dev_student',
+        createdAt: '2026-10-08T00:00:00Z',
+        updatedAt: '2026-10-08T00:00:00Z',
+      }
+      vi.spyOn(apiClient, 'get').mockResolvedValue(devStudentUser)
+
+      await expect(authApi.deleteUser(1)).rejects.toThrow(
+        'The dev_student account is protected and cannot be deleted.',
+      )
     })
   })
 

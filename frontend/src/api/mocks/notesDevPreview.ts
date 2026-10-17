@@ -99,3 +99,8 @@ export function devPreviewNotes(): NoteSummaryResponse[] {
 export function devPreviewCourseNames(): Map<number, string> {
   return new Map(PREVIEW_COURSE_NAMES)
 }
+
+/** Returns whether local dev fallback preview is enabled. */
+export function devPreviewEnabled(): boolean {
+  return import.meta.env.DEV
+}

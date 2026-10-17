@@ -1,4 +1,4 @@
-import { apiClient } from './client'
+import { ApiError, apiClient } from './client'
 import type { LoginRequest, UserRequest, UserResponse } from '@/types/api'
 
 /** API service for users and the session login state. */
@@ -25,11 +25,23 @@ export const authApi = {
     return apiClient.get<UserResponse>('/api/users/me')
   },
 
+  /** Returns the configured dev username when in development mode. */
+  getDevUser(): string | undefined {
+    return getDevUser()
+  },
+
   /**
    * Creates a user with `POST /api/users`. This call does not start a session.
+   * Prohibited in development mode when VITE_DEV_USER is active.
    * @returns the saved DTO.
    */
   register(request: UserRequest): Promise<UserResponse> {
+    const devUser = getDevUser()
+    if (devUser) {
+      return Promise.reject(
+        new ApiError(400, `Account creation is disabled while ${devUser} is active.`),
+      )
+    }
     return apiClient.post<UserResponse>('/api/users', request)
   },
 
@@ -49,9 +61,28 @@ export const authApi = {
   /**
    * Deletes a user with `DELETE /api/users/{id}`.
    * The backend ends the session when the deleted user is the session user.
+   * Prohibited in development mode for the configured VITE_DEV_USER account.
    * @throws ApiError with status 404 when the user does not exist.
    */
-  deleteUser(id: number): Promise<void> {
+  async deleteUser(id: number): Promise<void> {
+    const devUser = getDevUser()
+    if (devUser) {
+      try {
+        const user = await this.getUser(id)
+        if (user.username === devUser) {
+          throw new ApiError(400, `The ${devUser} account is protected and cannot be deleted.`)
+        }
+      } catch (err) {
+        if (err instanceof ApiError && err.status === 400) {
+          throw err
+        }
+      }
+    }
     return apiClient.delete(`/api/users/${id}`)
   },
+}
+
+/** Returns the configured dev username when in development mode. */
+export function getDevUser(): string | undefined {
+  return import.meta.env.DEV ? import.meta.env.VITE_DEV_USER || undefined : undefined
 }

@@ -14,6 +14,7 @@ The repository contains scaffold code and demo components.
   - `BACKLOG`: task has no `scheduledDate` and no `duration`.
 - Use day-level granularity for task planning.
 - Do not implement time-blocking or priority scores.
+- Keep views and components pure. Never embed development environment rules (`import.meta.env.DEV`, `VITE_DEV_USER`) or dev-specific template branches into views. Enforce dev constraints at service boundaries or composables.
 
 ## Repository Rules
 
@@ -98,6 +99,8 @@ Reduce HTTP roundtrips. Load each list once per intent.
 
 ## Conventions
 
+- Keep views and components pure and untainted by development environment rules.
+- Enforce developer safeguards, auto-logins, and mock restrictions at service boundaries or composables.
 - Use `<script setup lang="ts">` and the Composition API for components.
 - Define routes in `src/router/index.ts`.
 - Import route components dynamically.

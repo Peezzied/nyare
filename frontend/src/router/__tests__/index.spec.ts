@@ -9,10 +9,14 @@ const sessionUser: UserResponse = {
   updatedAt: '2026-10-01T09:00:00Z',
 }
 
+import { ref } from 'vue'
+
+const isDevUserMissing = ref(false)
 const ensureSession = vi.fn<() => Promise<UserResponse | null | undefined>>()
 
 vi.mock('@/composables/useAuth', () => ({
   ensureSession: () => ensureSession(),
+  useAuth: () => ({ isDevUserMissing }),
 }))
 
 /** Reimports the router so the guard and its routes start fresh per test. */
@@ -25,6 +29,7 @@ describe('router session guard', () => {
   beforeEach(() => {
     vi.resetModules()
     ensureSession.mockReset()
+    isDevUserMissing.value = false
     vi.unstubAllEnvs()
   })
 
@@ -106,5 +111,26 @@ describe('router session guard', () => {
     // Aborted: the route stays at the initial location instead of the start page.
     expect(router.currentRoute.value.path).toBe('/')
     expect(router.currentRoute.value.name).toBeUndefined()
+  })
+
+  it('redirects to dev-missing when isDevUserMissing is true', async () => {
+    ensureSession.mockResolvedValue(null)
+    isDevUserMissing.value = true
+    const router = await loadRouter()
+
+    await router.push('/calendar')
+
+    expect(router.currentRoute.value.name).toBe('dev-missing')
+    expect(router.currentRoute.value.path).toBe('/dev-missing')
+  })
+
+  it('redirects away from dev-missing to start when isDevUserMissing is false', async () => {
+    ensureSession.mockResolvedValue(null)
+    isDevUserMissing.value = false
+    const router = await loadRouter()
+
+    await router.push('/dev-missing')
+
+    expect(router.currentRoute.value.name).toBe('start')
   })
 })
