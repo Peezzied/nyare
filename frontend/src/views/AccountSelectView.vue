@@ -184,9 +184,11 @@ onMounted(() => {
       class="relative z-10 mx-auto flex min-h-screen max-w-[420px] flex-col justify-between px-5 pt-6 pb-8"
     >
       <!-- TOP SECTION (Green Doodle in Wireframe) -->
-      <header class="divide-y-2">
+      <header>
         <!-- Brand Header Bar with Back Button and Manage Toggle -->
-        <div class="flex items-center justify-between pb-5">
+        <div
+          class="-mx-5 flex items-center justify-between border-b-[3px] border-app-border px-5 pb-5"
+        >
           <div class="flex items-center gap-3">
             <button
               type="button"

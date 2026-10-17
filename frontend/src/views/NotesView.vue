@@ -74,10 +74,10 @@ onMounted(async () => {
   <!-- ponytail: prototype header and button are visual-only and have no actions. -->
   <main class="mx-auto w-full max-w-3xl px-4 pb-20">
     <header
-      class="sticky top-0 z-10 -mx-4 border-b border-app-border bg-app-bg px-4 py-2"
+      class="sticky top-0 z-10 -mx-4 flex h-14 items-center border-b-[3px] border-app-border bg-app-bg px-4"
       data-testid="notes-topbar"
     >
-      <div class="flex items-center gap-2">
+      <div class="flex w-full items-center">
         <div class="relative">
           <button
             type="button"
@@ -85,7 +85,7 @@ onMounted(async () => {
             aria-haspopup="true"
             :aria-expanded="isAccountMenuOpen"
             data-testid="topbar-menu"
-            class="flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-main"
+            class="flex h-11 w-11 items-center justify-center rounded-lg text-text-main transition-colors hover:bg-black/5 active:bg-black/10"
             @click="toggleAccountMenu"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -120,7 +120,7 @@ onMounted(async () => {
           </div>
         </div>
         <h1
-          class="flex-1 text-center font-sans text-xl font-bold text-text-main"
+          class="flex-1 text-center font-sans text-xl font-bold tracking-tight text-text-main"
           data-testid="notes-title"
         >
           Notes
@@ -129,7 +129,7 @@ onMounted(async () => {
           type="button"
           aria-label="Search"
           data-testid="topbar-search"
-          class="flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-main"
+          class="flex h-11 w-11 items-center justify-center rounded-lg text-text-main transition-colors hover:bg-black/5 active:bg-black/10"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
