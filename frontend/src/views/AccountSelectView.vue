@@ -184,7 +184,7 @@ onMounted(() => {
       class="relative z-10 mx-auto flex h-[100svh] max-w-[420px] flex-col justify-between px-5 pt-6 pb-8"
     >
       <!-- TOP SECTION (Green Doodle in Wireframe) -->
-      <header class="fade-enter fade-delay-1">
+      <header>
         <!-- Brand Header Bar with Back Button and Manage Toggle -->
         <div
           class="-mx-5 flex items-center justify-between border-b-[3px] border-app-border px-5 pb-5"
@@ -310,7 +310,10 @@ onMounted(() => {
         <!-- Populated Account List (Single Grouped Container with Dividers) -->
         <div
           v-else
-          class="rounded-2xl border border-[#D5D9CE] bg-[#ECEFE6]/90 divide-y divide-[#DCE0D5] overflow-hidden shadow-2xs"
+          class="rounded-2xl border border-[#D5D9CE] bg-[#ECEFE6]/90 divide-y divide-[#DCE0D5] shadow-2xs"
+          :class="{
+            'max-h-[364px] overflow-y-auto': users.length > 5,
+          }"
           role="list"
           aria-label="Student accounts"
         >
@@ -556,16 +559,12 @@ onMounted(() => {
   animation: fade-in 450ms ease-out both;
 }
 
-.fade-delay-1 {
-  animation-delay: 80ms;
-}
-
 .fade-delay-2 {
-  animation-delay: 240ms;
+  animation-delay: 1200ms;
 }
 
 .fade-delay-3 {
-  animation-delay: 480ms;
+  animation-delay: 1300ms;
 }
 
 @keyframes fade-in {
@@ -581,7 +580,9 @@ onMounted(() => {
 }
 
 .duckota-speak {
-  animation: duckota-speak 1s steps(1, end) 500ms 1 both;
+  animation:
+    fade-in 400ms ease-out 100ms both,
+    duckota-speak 1s steps(1, end) 700ms 1 both;
 }
 
 @keyframes duckota-speak {
@@ -631,7 +632,7 @@ onMounted(() => {
 }
 
 .chat-pop {
-  animation: chat-pop-in 500ms cubic-bezier(0.16, 1.3, 0.5, 1) 520ms both;
+  animation: chat-pop-in 500ms cubic-bezier(0.16, 1.3, 0.5, 1) 700ms both;
 }
 
 @keyframes chat-pop-in {
