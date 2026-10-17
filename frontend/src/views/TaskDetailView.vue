@@ -3,7 +3,6 @@ import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft } from '@lucide/vue'
 import { tasksApi } from '@/api/tasks'
-import { TODO_FIXTURE_TASKS_V2 } from '@/api/mocks/fixtures'
 
 const route = useRoute()
 const router = useRouter()
@@ -17,10 +16,7 @@ onMounted(async () => {
   try {
     await tasksApi.get(id)
   } catch {
-    const isFixtureTask = TODO_FIXTURE_TASKS_V2.some((t) => t.id === id)
-    if (!isFixtureTask) {
-      router.replace('/')
-    }
+    router.replace('/')
   }
 })
 

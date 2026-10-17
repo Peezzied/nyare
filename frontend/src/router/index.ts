@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { ensureSession } from '@/composables/useAuth'
+import { ensureSession, useAuth } from '@/composables/useAuth'
 import StartView from '../views/StartView.vue'
 import WelcomeView from '../views/WelcomeView.vue'
 import ScheduleView from '../views/ScheduleView.vue'
@@ -65,16 +65,30 @@ const router = createRouter({
       name: 'calendar',
       component: () => import('@/components/day-view/DayViewContainer.vue'),
     },
+    {
+      path: '/dev-missing',
+      name: 'dev-missing',
+      component: () => import('@/views/DevAccountMissingView.vue'),
+    },
   ],
 })
 
 // First-launch detection via `GET /api/users/me`.
-// Public routes: the startup/setup page (`start`) and account selection.
+// Public routes: the startup/setup page (`start`), account selection, and missing dev user notice.
 // Every other route needs a valid linked user session and redirects to `start`.
 // A sessioned visit to `start` goes to the calendar home
 // (docs/system-workflows.md section 8 identifies Calendar View as the home).
 router.beforeEach(async (to) => {
   const user = await ensureSession()
+  const { isDevUserMissing } = useAuth()
+
+  if (isDevUserMissing.value) {
+    return to.name === 'dev-missing' ? true : { name: 'dev-missing' }
+  }
+  if (to.name === 'dev-missing') {
+    return { path: '/' }
+  }
+
   if (user === undefined) {
     // Backend unreachable: the session state is unknown, not absent.
     // Dev: proceed so standalone frontend runs keep working with the

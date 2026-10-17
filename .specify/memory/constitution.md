@@ -1,7 +1,7 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-- Version: 1.0.0 → 1.1.0 (Backend Domain Rule Enforcement in Frontend)
+- Version: 1.1.0 → 1.2.0 (Separation of Development Environment Rules from Presentation Components)
 - Status: Amended
 - Principles Ratified / Modified:
   * I. Virtual Study Plan and Tri-State Planning (Preserved)
@@ -12,11 +12,11 @@ SYNC IMPACT REPORT
   * VI. Canonical Error Strategy (Preserved)
   * VII. Ponytail Minimalism and Native Features (Preserved)
   * VIII. Evidence-First Verification and Surgical Edits (Preserved)
-  * IX. Frontend-Backend Domain Rule Alignment (Added)
+  * IX. Frontend-Backend Domain Rule Alignment (Preserved)
+  * X. Separation of Development Environment Rules from Presentation Components (Added)
 - Sections Modified:
-  * Core Principles: Added Principle IX
-  * Frontend Architecture and State Management: Added domain rule compliance
-  * Frontend Data Flow and Cache Conventions: Added server filtering and roundtrip invariants
+  * Core Principles: Added Principle X
+  * Frontend Architecture and State Management: Added pure untainted view standards
 - Follow-up TODOs:
   * None
 -->
@@ -103,6 +103,13 @@ The frontend displays tasks with day-level granularity only.
 The client preserves missing dates as blank values without default dates.
 Frontend views must link all academic items to a parent course.
 Rationale: Client domain deviations corrupt data contracts and break planner behavior.
+
+### X. Separation of Development Environment Rules from Presentation Components
+Views and components must remain pure, production-grade representations of domain interactions.
+Developers must never embed development-specific branching, environment variables (`import.meta.env.DEV`, `VITE_DEV_USER`), or development-mode conditional markup directly into views or presentation components.
+Development-mode rules, account protections, and mock constraints must reside exclusively at the service boundary, API layer, composables, or dedicated developer tooling.
+Components must rely on standard domain responses, error states, and contracts.
+Rationale: Leaking development flags and mock conditionals into UI components degrades maintainability, breaks UI test fidelity, and pollutes production view code.
 
 ## Architectural Standards and System Boundaries
 

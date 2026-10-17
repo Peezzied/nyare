@@ -71,18 +71,6 @@ function goToSelectAccount(): void {
   router.push('/select-account')
 }
 
-// ponytail: prototype preview wiring stays in mock mode only.
-const showPrototypePreview = prototypePreviewEnabled()
-
-// ponytail: dev-only fallback shows sample cards when the API returns none.
-const showDevPreview = computed(
-  () => import.meta.env.DEV && !loading.value && !error.value && notes.value.length === 0,
-)
-
-const displayNotes = computed(() => (showDevPreview.value ? devPreviewNotes() : notes.value))
-
-const showPictureCard = computed(() => showPrototypePreview || showDevPreview.value)
-
 const courseNames = computed(() => {
   const names = new Map<number, string>()
   for (const course of catalog.courses.value) {
@@ -92,17 +80,11 @@ const courseNames = computed(() => {
 })
 
 function courseNameFor(note: NoteSummaryResponse): string | undefined {
-  if (showDevPreview.value) {
-    return devPreviewCourseNames().get(note.courseId)
-  }
-  return courseNames.value.get(note.courseId)
+  return getCourseName(note.courseId, courseNames.value)
 }
 
-function badgeColorFor(note: NoteSummaryResponse): CoursePaletteColor {
-  if (showPictureCard.value) {
-    return prototypeBadgeFor(note.courseId) ?? getCourseColor(note.courseId)
-  }
-  return getCourseColor(note.courseId)
+function badgeColorFor(note: NoteSummaryResponse) {
+  return getBadgeColor(note.courseId)
 }
 
 onMounted(async () => {
@@ -207,7 +189,7 @@ onMounted(async () => {
     </div>
 
     <p
-      v-else-if="displayNotes.length === 0"
+      v-else-if="notes.length === 0"
       class="mt-6 text-center text-sm text-text-muted"
       data-testid="notes-empty"
     >
@@ -215,7 +197,7 @@ onMounted(async () => {
     </p>
 
     <div v-else class="mt-6 columns-2 gap-4" data-testid="notes-grid">
-      <div v-for="note in displayNotes" :key="note.id" class="break-inside-avoid pb-4">
+      <div v-for="note in notes" :key="note.id" class="break-inside-avoid pb-4">
         <NoteCard
           :note="note"
           :course-name="courseNameFor(note)"
@@ -223,7 +205,7 @@ onMounted(async () => {
           @open="openNote(note.id, $event)"
         />
       </div>
-      <div v-if="showPictureCard" class="break-inside-avoid pb-4">
+      <div v-if="pictureNote" class="break-inside-avoid pb-4">
         <PictureNoteCard
           :photo-url="pictureNotePreview.photoUrl"
           :course-id="pictureNotePreview.note.courseId"
