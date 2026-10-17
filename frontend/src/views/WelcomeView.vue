@@ -28,7 +28,7 @@ function proceed() {
 
 <template>
   <div
-    class="relative mx-auto flex h-[100svh] w-full max-w-[420px] flex-col overflow-hidden bg-[#F6F7EE] px-6 pt-8"
+    class="relative mx-auto flex h-[100svh] w-full max-w-[420px] flex-col overflow-hidden bg-[#F6F7EE] px-6 pt-4"
   >
     <!-- Static background: same as Start -->
     <img

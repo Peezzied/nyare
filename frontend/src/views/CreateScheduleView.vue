@@ -291,12 +291,12 @@ function retryFailed() {
 
 <template>
   <div class="relative mx-auto flex h-[100svh] w-full max-w-[420px] flex-col overflow-x-hidden overflow-y-hidden bg-[#F6F7EE] px-6">
-    <div class="relative z-10 flex w-full justify-center pt-[4.2svh]">
+    <div class="relative z-10 flex w-full justify-center pt-4">
       <div class="h-[18px] w-full" aria-hidden="true"></div>
     </div>
 
     <!-- Header -->
-    <header class="relative z-10 mt-[7svh] flex w-full items-center justify-between">
+    <header class="relative z-10 mt-2 flex w-full items-center justify-between">
       <button
         type="button"
         aria-label="Go back"
@@ -448,7 +448,7 @@ function retryFailed() {
         </section>
 
         <!-- Time blocks -->
-        <section class="-mx-4 space-y-4" aria-labelledby="time-blocks-heading">
+        <section class="space-y-4" aria-labelledby="time-blocks-heading">
           <h2
             id="time-blocks-heading"
             class="text-sm font-semibold text-[#334155]"
