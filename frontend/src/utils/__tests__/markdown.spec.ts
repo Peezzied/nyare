@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import {
-  markdownToHtml,
-  htmlToMarkdown,
-  extractImageUrls,
-} from '../markdown'
+import { markdownToHtml, htmlToMarkdown, extractImageUrls } from '../markdown'
 
 describe('markdown utility', () => {
   describe('markdownToHtml', () => {
@@ -64,16 +60,12 @@ describe('markdown utility', () => {
 
     it('converts ordered lists with numbers', () => {
       const markdown = '1. Step one\n2. Step two'
-      expect(markdownToHtml(markdown)).toBe(
-        '<ol><li>Step one</li><li>Step two</li></ol>',
-      )
+      expect(markdownToHtml(markdown)).toBe('<ol><li>Step one</li><li>Step two</li></ol>')
     })
 
     it('converts standalone image markdown to an img tag', () => {
       const markdown = '![Lecture Slide](/api/images/slide-01)'
-      expect(markdownToHtml(markdown)).toBe(
-        '<img src="/api/images/slide-01" alt="Lecture Slide">',
-      )
+      expect(markdownToHtml(markdown)).toBe('<img src="/api/images/slide-01" alt="Lecture Slide">')
     })
 
     it('converts inline image markdown inside a paragraph', () => {
@@ -85,9 +77,7 @@ describe('markdown utility', () => {
 
     it('converts multiple paragraphs separated by empty lines', () => {
       const markdown = 'First paragraph.\n\nSecond paragraph.'
-      expect(markdownToHtml(markdown)).toBe(
-        '<p>First paragraph.</p><p>Second paragraph.</p>',
-      )
+      expect(markdownToHtml(markdown)).toBe('<p>First paragraph.</p><p>Second paragraph.</p>')
     })
 
     it('converts mixed inline formatting in paragraphs', () => {
@@ -136,9 +126,7 @@ describe('markdown utility', () => {
       expect(htmlToMarkdown('<blockquote><p>Quoted thought</p></blockquote>')).toBe(
         '> Quoted thought',
       )
-      expect(htmlToMarkdown('<blockquote>Simple quote</blockquote>')).toBe(
-        '> Simple quote',
-      )
+      expect(htmlToMarkdown('<blockquote>Simple quote</blockquote>')).toBe('> Simple quote')
     })
 
     it('converts hr tags to horizontal rules', () => {

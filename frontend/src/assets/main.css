@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Quicksand:wght@300..700&display=swap');
 
 @import 'tailwindcss';
@@ -182,3 +181,38 @@
 
 /* Desktop scaffold layout disabled: onboarding screens are mobile-first and full-height. */
 
+/* Schedule-X Calendar Global Styling (Google Calendar Mobile) */
+:root,
+.sx__calendar,
+.sx-vue-calendar-wrapper {
+  --calendar-hour-height: 48px;
+  --sx-week-grid-hour-height: var(--calendar-hour-height);
+  --sx-calendar-week-grid-padding-left: 55px;
+  --sx-time-axis-line-length: 7px;
+  --sx-time-axis-label-width: calc(
+    var(--sx-calendar-week-grid-padding-left) - var(--sx-time-axis-line-length)
+  );
+}
+
+.sx__week-grid {
+  padding-left: var(--sx-calendar-week-grid-padding-left, 55px) !important;
+}
+
+/* Extend the horizontal hour line 7px into the gutter */
+.sx__week-grid__time-axis {
+  width: calc(100% - var(--sx-time-axis-label-width, 48px)) !important;
+}
+
+/* Center time labels in the column to the left of the intersecting line */
+.sx__week-grid__hour-text {
+  left: calc(-1 * var(--sx-time-axis-label-width, 48px)) !important;
+  right: auto !important;
+  top: -0.75em !important;
+  width: var(--sx-time-axis-label-width, 48px) !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  font-size: 0.6875rem !important;
+  font-weight: 500 !important;
+  color: #78716c !important;
+  user-select: none;
+}

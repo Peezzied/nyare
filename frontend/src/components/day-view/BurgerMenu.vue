@@ -17,10 +17,7 @@ function handleSelect(actionName: 'edit' | 'new' | 'delete' | 'archive') {
 <template>
   <div v-if="isOpen" class="absolute inset-0 z-50">
     <!-- Backdrop -->
-    <div
-      class="absolute inset-0 bg-transparent transition-opacity"
-      @click="emit('close')"
-    />
+    <div class="absolute inset-0 bg-transparent transition-opacity" @click="emit('close')" />
 
     <!-- Menu Card -->
     <div

@@ -2,12 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { academicEventsApi } from '../../api/academicEvents'
 import { tasksApi } from '../../api/tasks'
-import {
-  mockCourses,
-  mockEvents,
-  mockSchedules,
-  mockTasks,
-} from '../../mocks/calendarData'
+import { mockCourses, mockEvents, mockSchedules, mockTasks } from '../../mocks/calendarData'
 import type { AcademicEventResponse, TaskResponse } from '../../types/api'
 import { toDateKey } from '../../utils/dayKey'
 import { expandSchedulesForDate, formatDateHeader } from '../../utils/scheduleExpander'
@@ -106,11 +101,7 @@ function handleMenuAction(action: 'edit' | 'new' | 'delete' | 'archive') {
       </div>
 
       <!-- Burger Menu Dropdown -->
-      <BurgerMenu
-        :is-open="isMenuOpen"
-        @close="closeMenu"
-        @action="handleMenuAction"
-      />
+      <BurgerMenu :is-open="isMenuOpen" @close="closeMenu" @action="handleMenuAction" />
 
       <!-- Swipe left/right anywhere on the calendar: a day in day view, a week in week view -->
       <DaySwiper

@@ -26,9 +26,7 @@ function initState() {
     <Variant title="Tactile 3D">
       <div class="flex flex-col items-center gap-4 p-8">
         <DuckotaButton variant="tactile" label="Tactile 3D Button" />
-        <p class="text-xs text-slate-500">
-          Tactile 3D press effect with physical bottom shadow
-        </p>
+        <p class="text-xs text-slate-500">Tactile 3D press effect with physical bottom shadow</p>
       </div>
     </Variant>
 
@@ -147,11 +145,7 @@ function initState() {
       </template>
 
       <template #controls="{ state }">
-        <HstSelect
-          v-model="state.size"
-          title="Size"
-          :options="['sm', 'md', 'lg']"
-        />
+        <HstSelect v-model="state.size" title="Size" :options="['sm', 'md', 'lg']" />
         <HstSelect
           v-model="state.variant"
           title="Variant"

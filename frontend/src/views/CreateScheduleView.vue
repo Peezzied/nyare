@@ -27,11 +27,7 @@ interface TimeBlockDraft {
 }
 
 const router = useRouter()
-const {
-  loadCatalog,
-  applyCourseCreated,
-  applyScheduleCreated,
-} = useCatalog()
+const { loadCatalog, applyCourseCreated, applyScheduleCreated } = useCatalog()
 
 const WEEKDAYS = [
   { label: 'Su', value: 'SUNDAY' as DayOfWeek },
@@ -111,30 +107,30 @@ const successMessage = ref<string | null>(null)
 const createdCourseId = ref<number | null>(null)
 
 const selectedColor = computed(
-  () => COURSE_PALETTE_24.find((color) => color.id === selectedColorId.value) ?? COURSE_PALETTE_24[0]!,
+  () =>
+    COURSE_PALETTE_24.find((color) => color.id === selectedColorId.value) ?? COURSE_PALETTE_24[0]!,
 )
 
-const allBlocksValid = computed(() =>
-  blocks.value.length > 0 &&
-  blocks.value.every((block) => {
-    const selected = block.selectedDays.length > 0
-    const validTimes =
-      block.startTime !== '' &&
-      block.endTime !== '' &&
-      block.startTime < block.endTime
-    return selected && validTimes
-  }),
+const allBlocksValid = computed(
+  () =>
+    blocks.value.length > 0 &&
+    blocks.value.every((block) => {
+      const selected = block.selectedDays.length > 0
+      const validTimes =
+        block.startTime !== '' && block.endTime !== '' && block.startTime < block.endTime
+      return selected && validTimes
+    }),
 )
 
 const canSubmit = computed(
-  () =>
-    courseName.value.trim().length > 0 &&
-    allBlocksValid.value &&
-    !saving.value,
+  () => courseName.value.trim().length > 0 && allBlocksValid.value && !saving.value,
 )
 
-const pendingScheduleCount = computed(() =>
-  blocks.value.flatMap((block) => block.schedules).filter((schedule) => schedule.state !== 'saved').length,
+const pendingScheduleCount = computed(
+  () =>
+    blocks.value
+      .flatMap((block) => block.schedules)
+      .filter((schedule) => schedule.state !== 'saved').length,
 )
 
 function goBack() {
@@ -266,7 +262,8 @@ async function submit() {
       return
     }
 
-    successMessage.value = 'Course saved. Color selection and room values are kept in this session only.'
+    successMessage.value =
+      'Course saved. Color selection and room values are kept in this session only.'
   } catch (error) {
     formError.value = errorMessage(error)
   } finally {
@@ -290,7 +287,9 @@ function retryFailed() {
 </script>
 
 <template>
-  <div class="relative mx-auto flex h-[100svh] w-full max-w-[420px] flex-col overflow-x-hidden overflow-y-hidden bg-[#F6F7EE] px-6">
+  <div
+    class="relative mx-auto flex h-[100svh] w-full max-w-[420px] flex-col overflow-x-hidden overflow-y-hidden bg-[#F6F7EE] px-6"
+  >
     <div class="relative z-10 flex w-full justify-center pt-[4.2svh]">
       <div class="h-[18px] w-full" aria-hidden="true"></div>
     </div>
@@ -434,11 +433,23 @@ function retryFailed() {
                       data-testid="color-swatch"
                       :data-color-id="color.id"
                       class="flex h-7 w-7 items-center justify-center rounded-md border-2 text-[10px] font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2"
-                      :class="selectedColorId === color.id ? 'border-[#334155] ring-2 ring-[#00A4C8]' : 'border-[#C2E8F1]'"
+                      :class="
+                        selectedColorId === color.id
+                          ? 'border-[#334155] ring-2 ring-[#00A4C8]'
+                          : 'border-[#C2E8F1]'
+                      "
                       :style="{ backgroundColor: color.solid }"
-                      @click="selectedColorId = color.id; colorOpen = false"
+                      @click="
+                        selectedColorId = color.id
+                        colorOpen = false
+                      "
                     >
-                      <span v-if="selectedColorId === color.id" class="text-white mix-blend-difference" aria-hidden="true">✓</span>
+                      <span
+                        v-if="selectedColorId === color.id"
+                        class="text-white mix-blend-difference"
+                        aria-hidden="true"
+                        >✓</span
+                      >
                     </button>
                   </div>
                 </div>
@@ -531,7 +542,6 @@ function retryFailed() {
                   </div>
                 </div>
 
-
                 <!-- Start and end times -->
                 <div class="grid min-w-0 grid-cols-2 gap-3">
                   <label class="min-w-0 space-y-2">
@@ -556,7 +566,6 @@ function retryFailed() {
                     />
                   </label>
                 </div>
-
 
                 <!-- Errors -->
                 <div v-if="blockError(block)" class="space-y-2">
@@ -610,7 +619,10 @@ function retryFailed() {
           v-if="pendingScheduleCount > 0 && createdCourseId !== null"
           class="text-xs text-[#7B8B97]"
         >
-          {{ pendingScheduleCount }} schedule record{{ pendingScheduleCount === 1 ? '' : 's' }} still pending.
+          {{ pendingScheduleCount }} schedule record{{
+            pendingScheduleCount === 1 ? '' : 's'
+          }}
+          still pending.
         </p>
 
         <div class="flex gap-2">

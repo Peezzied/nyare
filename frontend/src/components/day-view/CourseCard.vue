@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { DayEvent } from '../../types/calendar'
 import { formatTimeRange } from '../../utils/scheduleExpander'
 
@@ -50,17 +50,32 @@ const colorClasses = computed(() => {
       }
   }
 })
+
+const emit = defineEmits<{
+  (e: 'select', event: DayEvent, originRect: DOMRect): void
+}>()
+
+const cardRef = ref<HTMLElement | null>(null)
+
+function handleClick(e: MouseEvent) {
+  const rect =
+    cardRef.value?.getBoundingClientRect() ??
+    (e.currentTarget as HTMLElement).getBoundingClientRect()
+  emit('select', props.event, rect)
+}
 </script>
 
 <template>
   <div
-    class="rounded-2xl p-4 border-[2.5px] shadow-sm flex flex-col justify-start transition-transform hover:scale-[1.01]"
+    ref="cardRef"
+    class="rounded-2xl p-4 border-[2.5px] shadow-sm flex flex-col justify-start transition-transform hover:scale-[1.01] cursor-pointer"
     :class="[
       colorClasses.bg,
       colorClasses.border,
       props.embedded ? 'relative h-full w-full' : 'absolute left-2 right-2',
     ]"
     :style="props.embedded ? {} : { top: `${top}px`, height: `${height}px` }"
+    @click="handleClick"
   >
     <!-- Course Title -->
     <h3 class="text-xl font-bold text-white tracking-wide leading-tight">

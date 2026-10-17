@@ -52,15 +52,15 @@ const emit = defineEmits<{
             d="M19 4h-1V2h-2v2H8V2H6v2H5C3.89 4 3 4.9 3 6v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"
           />
           <text
-  x="12"
-  y="17.5"
-  font-size="8.5"
-  font-weight="bold"
-  text-anchor="middle"
-  fill="currentColor"
->
-  {{ mode === 'day' ? '7' : '1' }}
-</text>
+            x="12"
+            y="17.5"
+            font-size="8.5"
+            font-weight="bold"
+            text-anchor="middle"
+            fill="currentColor"
+          >
+            {{ mode === 'day' ? '7' : '1' }}
+          </text>
         </svg>
       </button>
     </div>

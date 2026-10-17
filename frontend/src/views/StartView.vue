@@ -46,9 +46,7 @@ function begin() {
     </div>
 
     <!-- Mascot section -->
-    <div
-  class="absolute left-6 right-6 top-[50%] z-10 flex -translate-y-1/2 flex-col items-center"
->
+    <div class="absolute left-6 right-6 top-[50%] z-10 flex -translate-y-1/2 flex-col items-center">
       <div class="relative flex w-full items-end justify-center">
         <!-- Plant -->
         <img
@@ -73,29 +71,24 @@ function begin() {
           class="pointer-events-none absolute bottom-[65%] right-7 z-20 w-13 select-none sm:w-14 starfish-rise"
         />
       </div>
-
     </div>
 
     <!-- CTA: original TactileButton sizing preserved -->
-    <div
-    class="absolute bottom-[20svh] left-0 right-0 z-20 flex flex-col items-stretch px-6"
-    >
-    <TactileButton aria-label="Get started with Nyare" @click="begin">
-      <span
-        style="font-family: 'Quicksand', sans-serif; font-weight: 700 !important"
-      >
-        GET STARTED
-      </span>
-    </TactileButton>
-  </div>
+    <div class="absolute bottom-[20svh] left-0 right-0 z-20 flex flex-col items-stretch px-6">
+      <TactileButton aria-label="Get started with Nyare" @click="begin">
+        <span style="font-family: 'Quicksand', sans-serif; font-weight: 700 !important">
+          GET STARTED
+        </span>
+      </TactileButton>
+    </div>
 
-  <!-- Shell decorative: above the waves -->
-<img
-  src="@/assets/props/shell.png"
-  alt=""
-  aria-hidden="true"
-  class="pointer-events-none absolute bottom-[12%] left-1/3 z-10 w-9 -translate-x-1/2 select-none sm:w-10 shell-rise"
-/>
+    <!-- Shell decorative: above the waves -->
+    <img
+      src="@/assets/props/shell.png"
+      alt=""
+      aria-hidden="true"
+      class="pointer-events-none absolute bottom-[12%] left-1/3 z-10 w-9 -translate-x-1/2 select-none sm:w-10 shell-rise"
+    />
 
     <!-- Bottom wave -->
     <img
@@ -106,7 +99,6 @@ function begin() {
     />
   </div>
 </template>
-
 
 <style scoped>
 /* Grass/plant: materializes, grows in, then settles */
@@ -186,4 +178,3 @@ function begin() {
   }
 }
 </style>
-

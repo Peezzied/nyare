@@ -10,7 +10,9 @@ function goBack() {
 </script>
 
 <template>
-  <div class="relative mx-auto flex h-[100svh] w-full max-w-[420px] flex-col overflow-x-hidden overflow-y-hidden bg-[#F6F7EE] px-6 pt-8">
+  <div
+    class="relative mx-auto flex h-[100svh] w-full max-w-[420px] flex-col overflow-x-hidden overflow-y-hidden bg-[#F6F7EE] px-6 pt-8"
+  >
     <div class="relative z-10 flex w-full justify-center pt-[1svh]">
       <StepProgress :active-step="3" :animate-active="true" />
     </div>

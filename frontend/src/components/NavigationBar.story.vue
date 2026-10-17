@@ -10,12 +10,8 @@ const activeTab = ref('calendar')
     <Variant title="Default">
       <div class="relative h-64 bg-slate-50 flex flex-col justify-between overflow-hidden">
         <div class="p-6">
-          <h3 class="text-sm font-semibold text-slate-800">
-            Interactive Navigation Bar
-          </h3>
-          <p class="text-xs text-slate-500 mt-1">
-            Active tab: {{ activeTab }}
-          </p>
+          <h3 class="text-sm font-semibold text-slate-800">Interactive Navigation Bar</h3>
+          <p class="text-xs text-slate-500 mt-1">Active tab: {{ activeTab }}</p>
         </div>
 
         <NavigationBar v-model="activeTab" />
@@ -91,7 +87,9 @@ const activeTab = ref('calendar')
                 :key="i"
                 class="h-16 bg-white rounded-xl border border-slate-200/80 p-3 flex items-center gap-3"
               >
-                <div class="w-10 h-10 rounded-lg bg-sky-100 flex items-center justify-center text-sky-600 text-xs font-bold">
+                <div
+                  class="w-10 h-10 rounded-lg bg-sky-100 flex items-center justify-center text-sky-600 text-xs font-bold"
+                >
                   0{{ i }}
                 </div>
                 <div class="flex-1">

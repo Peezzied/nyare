@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { HOUR_HEIGHT } from '../../constants/calendar'
 import { addDays } from '../../utils/dayKey'
 import { formatTime12h } from '../../utils/scheduleExpander'
 import { resolveSwipe } from '../../utils/swipeGesture'
@@ -104,8 +103,12 @@ function beginDrag(e: PointerEvent) {
   const column = viewport.querySelector<HTMLElement>('.sx__time-grid-day')
 
   peekScrollTop.value = scroller?.scrollTop ?? 0
-  peekGutter.value = column ? Math.max(Math.round(column.getBoundingClientRect().left - vp.left), 0) : 0
-  axisTop.value = scroller ? Math.max(Math.round(scroller.getBoundingClientRect().top - vp.top), 0) : 0
+  peekGutter.value = column
+    ? Math.max(Math.round(column.getBoundingClientRect().left - vp.left), 0)
+    : 0
+  axisTop.value = scroller
+    ? Math.max(Math.round(scroller.getBoundingClientRect().top - vp.top), 0)
+    : 0
   slideDistance.value = Math.max(vp.width - peekGutter.value, 1)
   dragBase.value = props.selectedDate
   phase.value = 'dragging'
@@ -234,12 +237,7 @@ onUnmounted(() => {
           class="pointer-events-none absolute top-0 z-30 h-full w-full"
           :style="{ left: peekLeft }"
         >
-          <slot
-            name="peek"
-            :date="peekDate"
-            :scrollTop="peekScrollTop"
-            :gutterLeft="peekGutter"
-          />
+          <slot name="peek" :date="peekDate" :scrollTop="peekScrollTop" :gutterLeft="peekGutter" />
         </div>
       </div>
     </div>
@@ -260,14 +258,17 @@ onUnmounted(() => {
           class="absolute left-0 right-0 top-0"
           :style="{ transform: `translateY(${-peekScrollTop}px)` }"
         >
-          <span
+          <div
             v-for="item in hourLabels"
             :key="item.hour"
-            class="absolute left-2 text-xs font-semibold leading-4 text-[#a8a29e]"
-            :style="{ top: `${item.hour * HOUR_HEIGHT - 10}px` }"
+            class="absolute right-0 flex items-center justify-end"
+            :style="{ top: `calc(${item.hour} * var(--calendar-hour-height, 48px))` }"
           >
-            {{ item.label }}
-          </span>
+            <span class="w-[48px] text-center text-[11px] font-medium leading-none text-[#78716c]">
+              {{ item.label }}
+            </span>
+            <span class="h-px w-[7px] bg-[#9ccfe0]" />
+          </div>
         </div>
       </div>
     </div>

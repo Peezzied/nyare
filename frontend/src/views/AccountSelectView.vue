@@ -84,8 +84,7 @@ async function selectAccount(user: UserResponse): Promise<void> {
     await router.push('/')
   } catch (err: unknown) {
     authenticatingId.value = null
-    errorMessage.value =
-      err instanceof Error ? err.message : 'Failed to sign in. Please try again.'
+    errorMessage.value = err instanceof Error ? err.message : 'Failed to sign in. Please try again.'
   }
 }
 
@@ -170,10 +169,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="relative min-h-screen w-full overflow-x-hidden bg-[#F6F7EE] text-[#334155] font-['Quicksand'] select-none">
+  <div
+    class="relative min-h-screen w-full overflow-x-hidden bg-[#F6F7EE] text-[#334155] font-['Quicksand'] select-none"
+  >
     <!-- Main Wireframe Mobile Container -->
-    <main class="relative z-10 mx-auto flex min-h-screen max-w-[420px] flex-col justify-between px-5 pt-6 pb-8">
-
+    <main
+      class="relative z-10 mx-auto flex min-h-screen max-w-[420px] flex-col justify-between px-5 pt-6 pb-8"
+    >
       <!-- TOP SECTION (Green Doodle in Wireframe) -->
       <header class="divide-y-2">
         <!-- Brand Header Bar with Back Button and Manage Toggle -->
@@ -189,7 +191,9 @@ onMounted(() => {
               <ArrowLeft class="h-5 w-5" />
             </button>
 
-            <h1 class="font-['DynaPuff'] text-4xl sm:text-5xl font-bold tracking-tight text-[#00A4C8] leading-none drop-shadow-xs">
+            <h1
+              class="font-['DynaPuff'] text-4xl sm:text-5xl font-bold tracking-tight text-[#00A4C8] leading-none drop-shadow-xs"
+            >
               'Nyare
             </h1>
           </div>
@@ -212,23 +216,21 @@ onMounted(() => {
 
         <!-- Mascot Section (Speech Bubble on Left, Duckota on Right) -->
         <div class="flex items-center gap-3.5 my-3 px-1">
-          <div class="relative flex-1 rounded-2xl border-2 border-[#CBD5E1] bg-white p-3.5 shadow-[0_3px_0_#CBD5E1]">
+          <div
+            class="relative flex-1 rounded-2xl border-2 border-[#CBD5E1] bg-white p-3.5 shadow-[0_3px_0_#CBD5E1]"
+          >
             <h2 class="text-lg font-bold text-[#334155] leading-snug" aria-live="polite">
-              <template v-if="isLoading">
-                Checking records...
-              </template>
+              <template v-if="isLoading"> Checking records... </template>
               <template v-else-if="users.length === 0">
                 Ready to study? Add your profile!
               </template>
-              <template v-else-if="isManageMode">
-                Which account are we editing?
-              </template>
-              <template v-else>
-                Who's studying?
-              </template>
+              <template v-else-if="isManageMode"> Which account are we editing? </template>
+              <template v-else> Who's studying? </template>
             </h2>
             <!-- Tail pointing right towards Duckota -->
-            <div class="absolute -right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 rotate-45 border-r-2 border-t-2 border-[#CBD5E1] bg-white"></div>
+            <div
+              class="absolute -right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 rotate-45 border-r-2 border-t-2 border-[#CBD5E1] bg-white"
+            ></div>
           </div>
 
           <div class="relative shrink-0">
@@ -242,7 +244,7 @@ onMounted(() => {
       </header>
 
       <!-- MIDDLE SECTION (Red Boxes in Wireframe: Account Items) -->
-      <section class="my-6 flex-1 flex flex-col ">
+      <section class="my-6 flex-1 flex flex-col">
         <!-- Error Banner -->
         <div
           v-if="errorMessage"
@@ -265,12 +267,13 @@ onMounted(() => {
         </div>
 
         <!-- Loading Skeletons -->
-        <div v-if="isLoading" class="rounded-2xl border border-[#D5D9CE] bg-[#ECEFE6]/90 divide-y divide-[#DCE0D5] overflow-hidden" aria-busy="true" aria-label="Loading profiles">
-          <div
-            v-for="i in 3"
-            :key="i"
-            class="flex items-center gap-3.5 px-4 py-3.5 animate-pulse"
-          >
+        <div
+          v-if="isLoading"
+          class="rounded-2xl border border-[#D5D9CE] bg-[#ECEFE6]/90 divide-y divide-[#DCE0D5] overflow-hidden"
+          aria-busy="true"
+          aria-label="Loading profiles"
+        >
+          <div v-for="i in 3" :key="i" class="flex items-center gap-3.5 px-4 py-3.5 animate-pulse">
             <div class="h-11 w-11 rounded-xl bg-[#D5D9CE] shrink-0"></div>
             <div class="flex-1 space-y-2">
               <div class="h-4 w-1/3 rounded bg-[#D5D9CE]"></div>
@@ -284,7 +287,9 @@ onMounted(() => {
           v-else-if="users.length === 0"
           class="rounded-2xl border border-dashed border-[#D5D9CE] bg-[#ECEFE6]/50 p-6 text-center"
         >
-          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#DCE0D5]/70 text-[#7B8B97] mb-2">
+          <div
+            class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#DCE0D5]/70 text-[#7B8B97] mb-2"
+          >
             <UserIcon class="h-6 w-6" />
           </div>
           <h2 class="text-base font-bold text-[#334155]">No student accounts yet</h2>
@@ -327,7 +332,9 @@ onMounted(() => {
               </div>
 
               <div class="min-w-0">
-                <h3 class="truncate text-base font-bold text-[#334155] group-hover:text-[#00A4C8] transition-colors">
+                <h3
+                  class="truncate text-base font-bold text-[#334155] group-hover:text-[#00A4C8] transition-colors"
+                >
                   {{ user.username }}
                 </h3>
                 <p class="font-['Inter'] text-xs text-[#64748B]">
@@ -384,7 +391,9 @@ onMounted(() => {
       aria-modal="true"
       aria-labelledby="add-modal-title"
     >
-      <div class="w-full max-w-sm rounded-3xl border-2 border-[#CBD5E1]/80 bg-[#FDFEF7] p-6 shadow-2xl">
+      <div
+        class="w-full max-w-sm rounded-3xl border-2 border-[#CBD5E1]/80 bg-[#FDFEF7] p-6 shadow-2xl"
+      >
         <div class="flex items-center justify-between mb-5">
           <div class="flex items-center gap-2">
             <span class="inline-block h-2 w-2 rounded-full bg-[#00A4C8]" />
@@ -403,8 +412,12 @@ onMounted(() => {
         </div>
 
         <form @submit.prevent="handleCreateAccount" class="space-y-4">
-          <div class="flex items-center gap-3.5 rounded-2xl border border-[#CBD5E1]/70 bg-white p-2.5 shadow-xs">
-            <div class="h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-[#94A3B8]/30 bg-[#F8FAFC] shadow-inner">
+          <div
+            class="flex items-center gap-3.5 rounded-2xl border border-[#CBD5E1]/70 bg-white p-2.5 shadow-xs"
+          >
+            <div
+              class="h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-[#94A3B8]/30 bg-[#F8FAFC] shadow-inner"
+            >
               <img
                 :src="getIdenticonUrl(newUsername || 'new-student')"
                 alt="Identicon preview"
@@ -427,7 +440,11 @@ onMounted(() => {
             </div>
           </div>
 
-          <p v-if="formError" role="alert" class="font-['Inter'] text-xs font-semibold text-[#DC2626]">
+          <p
+            v-if="formError"
+            role="alert"
+            class="font-['Inter'] text-xs font-semibold text-[#DC2626]"
+          >
             {{ formError }}
           </p>
 
@@ -465,13 +482,13 @@ onMounted(() => {
           <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#FEF2F2]">
             <TrashIcon class="h-5 w-5" />
           </div>
-          <h2 id="delete-modal-title" class="text-lg font-bold text-[#991B1B]">
-            Delete Profile
-          </h2>
+          <h2 id="delete-modal-title" class="text-lg font-bold text-[#991B1B]">Delete Profile</h2>
         </div>
 
         <p class="font-['Inter'] text-sm text-[#475569] mb-4">
-          Are you sure you want to delete <strong class="text-[#334155]">{{ userToDelete.username }}</strong>? This action cannot be undone.
+          Are you sure you want to delete
+          <strong class="text-[#334155]">{{ userToDelete.username }}</strong
+          >? This action cannot be undone.
         </p>
 
         <div class="flex items-center gap-2">
@@ -515,7 +532,7 @@ onMounted(() => {
   animation: avatar-jiggle 0.3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-[role="listitem"]:nth-child(even) .animate-jiggle {
+[role='listitem']:nth-child(even) .animate-jiggle {
   animation-duration: 0.32s;
   animation-direction: reverse;
 }

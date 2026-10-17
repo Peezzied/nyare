@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { HOUR_HEIGHT } from '../../constants/calendar'
 import type { DayEvent } from '../../types/calendar'
 import { toDateKey } from '../../utils/dayKey'
 import type { UntimedDayItem } from '../../utils/untimedItems'
@@ -18,7 +17,6 @@ const props = defineProps<{
 }>()
 
 const todayKey = toDateKey(new Date())
-const GRID_HEIGHT = 24 * HOUR_HEIGHT
 const lineHours = Array.from({ length: 24 }, (_, hour) => hour)
 
 const days = computed(() =>
@@ -39,9 +37,11 @@ function toMinutes(dateTime: string): number {
 function layout(event: DayEvent) {
   const startMin = toMinutes(event.start)
   const endMin = toMinutes(event.end)
+  const topHours = (startMin / 60).toFixed(4)
+  const durationHours = ((endMin - startMin) / 60).toFixed(4)
   return {
-    top: `${(startMin / 60) * HOUR_HEIGHT}px`,
-    height: `${((endMin - startMin) / 60) * HOUR_HEIGHT}px`,
+    top: `calc(${topHours} * var(--calendar-hour-height, 48px))`,
+    height: `calc(${durationHours} * var(--calendar-hour-height, 48px))`,
   }
 }
 </script>
@@ -59,21 +59,20 @@ function layout(event: DayEvent) {
         <!-- Moved up by the real grid's scroll position so both weeks show the same hours -->
         <div
           class="absolute left-0 right-0 top-0"
-          :style="{ height: `${GRID_HEIGHT}px`, transform: `translateY(${-scrollTop}px)` }"
+          :style="{
+            height: `calc(24 * var(--calendar-hour-height, 48px))`,
+            transform: `translateY(${-scrollTop}px)`,
+          }"
         >
           <div
             v-for="hour in lineHours"
             :key="hour"
             class="absolute left-0 right-0 border-t border-[#9ccfe0]"
-            :style="{ top: `${hour * HOUR_HEIGHT}px` }"
+            :style="{ top: `calc(${hour} * var(--calendar-hour-height, 48px))` }"
           />
 
           <div class="absolute inset-0 grid grid-cols-7">
-            <div
-              v-for="day in days"
-              :key="day.key"
-              class="relative border-l border-[#9ccfe0]"
-            >
+            <div v-for="day in days" :key="day.key" class="relative border-l border-[#9ccfe0]">
               <div
                 v-for="event in day.events"
                 :key="event.id"

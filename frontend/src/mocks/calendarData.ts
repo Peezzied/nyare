@@ -25,7 +25,7 @@ export const mockSchedules: ScheduleResponse[] = [
   { id: 105, courseId: 3, day: 'WEDNESDAY', startTime: '09:00:00', endTime: '11:00:00' },
   { id: 106, courseId: 2, day: 'WEDNESDAY', startTime: '13:00:00', endTime: '15:00:00' },
   { id: 107, courseId: 4, day: 'WEDNESDAY', startTime: '15:30:00', endTime: '17:30:00' },
-    { id: 112, courseId: 4, day: 'WEDNESDAY', startTime: '07:00:00', endTime: '08:30:00' },
+  { id: 112, courseId: 4, day: 'WEDNESDAY', startTime: '07:00:00', endTime: '08:30:00' },
   { id: 113, courseId: 1, day: 'WEDNESDAY', startTime: '18:30:00', endTime: '20:00:00' },
 
   // Thursday (matches the design screenshot)

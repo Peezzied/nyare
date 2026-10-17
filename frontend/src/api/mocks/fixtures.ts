@@ -311,7 +311,8 @@ export const TODO_FIXTURE_TASKS: TaskResponse[] = [
     courseId: 7,
     noteId: null,
     title: 'Finals Quiz',
-    description: 'Integration by parts, trigonometric substitution, and partial fraction decomposition.',
+    description:
+      'Integration by parts, trigonometric substitution, and partial fraction decomposition.',
     scheduledDate: '2026-10-28',
     duration: 'PT1H30M',
     status: 'TODO',

@@ -8,9 +8,7 @@ import { useOnboarding } from '@/composables/useOnboarding'
 const router = useRouter()
 const { studentName, isNameValid, setStudentName } = useOnboarding()
 
-const canContinue = computed(
-  () => isNameValid.value && studentName.value.trim().length > 0,
-)
+const canContinue = computed(() => isNameValid.value && studentName.value.trim().length > 0)
 
 const entered = ref(false)
 entered.value = true
@@ -58,11 +56,7 @@ function proceed() {
       class="relative z-10 mt-[13svh] translate-y-20 w-full shrink-0"
       :class="{ 'welcome-enter welcome-delay-2': entered }"
     >
-      <h1
-        class="font-logo text-5xl font-semibold leading-tight text-[#00A4C8]"
-      >
-        Welcome,
-      </h1>
+      <h1 class="font-logo text-5xl font-semibold leading-tight text-[#00A4C8]">Welcome,</h1>
 
       <p
         class="mt-1 text-lg tracking-wide text-[#526B73]"
@@ -113,9 +107,7 @@ function proceed() {
     </div>
 
     <!-- Duckota and speech bubble: moved lower -->
-    <div
-      class="relative z-10 mt-14 translate-y-30 flex w-full items-center justify-between gap-3"
-    >
+    <div class="relative z-10 mt-14 translate-y-30 flex w-full items-center justify-between gap-3">
       <img
         src="@/assets/mascot/duckuta_greet.png"
         alt="Duckota the duck greeting"
@@ -153,9 +145,7 @@ function proceed() {
         aria-label="Continue to schedule setup"
         @click="proceed"
       >
-        <span
-          style="font-family: 'Quicksand', sans-serif; font-weight: 700 !important"
-        >
+        <span style="font-family: 'Quicksand', sans-serif; font-weight: 700 !important">
           CONTINUE
         </span>
       </TactileButton>
@@ -241,8 +231,7 @@ function proceed() {
 }
 
 .duckota-bounce {
-  animation: duckota-bounce-in 650ms cubic-bezier(0.34, 1.56, 0.64, 1)
-    400ms both;
+  animation: duckota-bounce-in 650ms cubic-bezier(0.34, 1.56, 0.64, 1) 400ms both;
 }
 
 @keyframes duckota-bounce-in {

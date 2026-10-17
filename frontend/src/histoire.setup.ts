@@ -10,4 +10,3 @@ const router = createRouter({
 export const setupVue3 = defineSetupVue3(({ app }) => {
   app.use(router)
 })
-
