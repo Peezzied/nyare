@@ -754,4 +754,84 @@ describe('NoteEditor.vue', () => {
 
     wrapper.unmount()
   })
+
+  it('loads the note through the noteId prop in embedded mode', async () => {
+    const existingNote: NoteResponse = {
+      id: 'note-embedded-1',
+      courseId: 1,
+      title: 'Embedded Note',
+      content: 'Embedded content',
+      entryDate: '2026-10-12',
+      createdAt: '2026-10-12T00:00:00Z',
+      updatedAt: '2026-10-12T00:00:00Z',
+    }
+    vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
+
+    const wrapper = mount(NoteEditor, {
+      props: { embedded: true, noteId: 'note-embedded-1' },
+    })
+    await flushPromises()
+
+    expect(notesApi.get).toHaveBeenCalledWith('note-embedded-1')
+    expect(wrapper.find<HTMLInputElement>('[data-testid="title-input"]').element.value).toBe(
+      'Embedded Note',
+    )
+    wrapper.unmount()
+  })
+
+  it('emits close instead of router.back on Back in embedded mode', async () => {
+    const wrapper = mount(NoteEditor, {
+      props: { embedded: true, noteId: null },
+    })
+    await flushPromises()
+
+    await wrapper.find('[data-testid="back-button"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.emitted('close')).toHaveLength(1)
+    expect(mockRouter.back).not.toHaveBeenCalled()
+    expect(beforeRouteLeaveCallback).toBeNull()
+    wrapper.unmount()
+  })
+
+  it('emits saved with the note id then close after a successful embedded save', async () => {
+    vi.mocked(notesApi.create).mockResolvedValueOnce({
+      id: 'saved-embedded-1',
+      courseId: 1,
+      title: 'Embedded Save',
+      content: 'Valid embedded content',
+      entryDate: '2026-10-13',
+      createdAt: '2026-10-13T00:00:00Z',
+      updatedAt: '2026-10-13T00:00:00Z',
+    })
+
+    const wrapper = mount(NoteEditor, {
+      props: {
+        embedded: true,
+        noteId: null,
+        initialCourseId: 1,
+        initialTitle: 'Embedded Save',
+        initialContent: 'Valid embedded content',
+      },
+    })
+    await flushPromises()
+
+    await wrapper.find('[data-testid="save-button"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.emitted('saved')).toEqual([['saved-embedded-1']])
+    expect(wrapper.emitted('close')).toHaveLength(1)
+    expect(mockRouter.back).not.toHaveBeenCalled()
+    wrapper.unmount()
+  })
+
+  it('applies opacity-0 to the metadata section when showContent is false', async () => {
+    const wrapper = mount(NoteEditor, {
+      props: { embedded: true, showContent: false },
+    })
+    await flushPromises()
+
+    expect(wrapper.find('section').classes()).toContain('opacity-0')
+    wrapper.unmount()
+  })
 })

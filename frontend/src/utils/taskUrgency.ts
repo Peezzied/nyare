@@ -10,6 +10,7 @@ export const URGENCY_COLORS: Record<TaskUrgency, string> = {
   FUTURE: 'var(--color-urgency-green)',
   NONE: 'var(--color-text-muted)',
 }
+
 /**
  * Computes urgency from a due-date string (yyyy-MM-dd) relative to local today.
  * Returns NONE when dueDate is absent.

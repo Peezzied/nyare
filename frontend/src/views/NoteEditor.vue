@@ -53,6 +53,14 @@ interface Props {
   initialLastProcessedAt?: string | null
   /** Seeds the processing status badge until a load or save returns server values. */
   initialUpdatedAt?: string | null
+  /** Note UUID when embedded in a modal. Null means new note. Ignored outside embedded mode. */
+  noteId?: string | null
+  /** Renders inside NoteEditorModal: route guards and viewport listeners are disabled. */
+  embedded?: boolean
+  /** Drives the staggered content entrance classes on metadata and body. */
+  showContent?: boolean
+  /** Drives the staggered entrance classes on the header and toolbar. */
+  showControls?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -63,7 +71,18 @@ const props = withDefaults(defineProps<Props>(), {
   validImageUrls: () => [],
   initialLastProcessedAt: null,
   initialUpdatedAt: null,
+  noteId: undefined,
+  embedded: false,
+  showContent: true,
+  showControls: true,
 })
+
+const emit = defineEmits<{
+  /** Requests dismissal of the surrounding context (embedded modal or route). */
+  (e: 'close'): void
+  /** Fires after a successful save. Payload is the saved note UUID. */
+  (e: 'saved', noteId: string): void
+}>()
 
 const route = useRoute()
 const router = useRouter()
@@ -101,6 +120,9 @@ const lastProcessedAt = ref<string | null>(props.initialLastProcessedAt ?? null)
 const updatedAt = ref<string | null>(props.initialUpdatedAt ?? null)
 
 const activeNoteId = computed(() => {
+  if (props.embedded) {
+    return props.noteId ?? null
+  }
   const paramId = route?.params?.id
   return paramId ? String(paramId) : null
 })
@@ -395,6 +417,10 @@ function hasMeaningfulContent(): boolean {
 
 function navigateBack() {
   isNavigatingAway.value = true
+  if (props.embedded) {
+    emit('close')
+    return
+  }
   if (router) {
     router.back()
   }
@@ -425,15 +451,17 @@ function cancelDiscard() {
   pendingNavigation.value = null
 }
 
-try {
-  onBeforeRouteLeave(() => {
-    if (!isNavigatingAway.value && isDirty.value && hasMeaningfulContent()) {
-      return window.confirm('You have unsaved changes. Leave anyway?')
-    }
-    return true
-  })
-} catch {
-  // Ignore when mounted outside Vue Router view context
+if (!props.embedded) {
+  try {
+    onBeforeRouteLeave(() => {
+      if (!isNavigatingAway.value && isDirty.value && hasMeaningfulContent()) {
+        return window.confirm('You have unsaved changes. Leave anyway?')
+      }
+      return true
+    })
+  } catch {
+    // Ignore when mounted outside Vue Router view context
+  }
 }
 
 async function loadNote(id: string) {
@@ -507,6 +535,9 @@ async function saveNote() {
       entryDate: savedNote.entryDate ?? todayString,
       content: savedNote.content ?? '',
     }
+    if (props.embedded) {
+      emit('saved', savedNote.id)
+    }
     navigateBack()
   } catch (err) {
     errorMessage.value = err instanceof Error ? err.message : 'Failed to save note'
@@ -556,6 +587,13 @@ watch(
   },
 )
 
+function staggeredClass(shown: boolean): string {
+  return `transition-[opacity,transform] ${shown ? 'opacity-100 translate-y-0 duration-200' : 'opacity-0 translate-y-2 duration-[80ms]'}`
+}
+
+const contentStaggerClass = computed(() => staggeredClass(props.showContent))
+const controlsStaggerClass = computed(() => staggeredClass(props.showControls))
+
 // ponytail: visualViewport height adjusts the container when virtual keyboard opens
 const viewportHeight = ref<number | null>(null)
 
@@ -570,7 +608,9 @@ function updateViewportHeight() {
 }
 
 onMounted(async () => {
-  if (typeof window !== 'undefined' && window.visualViewport) {
+  // Embedded mode skips viewport listeners: updateViewportHeight scrolls the window,
+  // which would destroy the notes list scroll offset behind the modal.
+  if (!props.embedded && typeof window !== 'undefined' && window.visualViewport) {
     updateViewportHeight()
     window.visualViewport.addEventListener('resize', updateViewportHeight)
     window.visualViewport.addEventListener('scroll', updateViewportHeight)
@@ -604,17 +644,22 @@ onBeforeUnmount(() => {
     window.visualViewport.removeEventListener('scroll', updateViewportHeight)
   }
 })
+
+defineExpose({ requestBack: handleBack })
 </script>
 
 <template>
   <div
     data-testid="note-editor-container"
     class="flex flex-col bg-[#F6F7EE] font-sans text-slate-800 overflow-hidden"
-    :class="viewportHeight ? '' : 'h-dvh'"
-    :style="viewportHeight ? { height: `${viewportHeight}px` } : undefined"
+    :class="embedded ? 'h-full' : viewportHeight ? '' : 'h-dvh'"
+    :style="!embedded && viewportHeight ? { height: `${viewportHeight}px` } : undefined"
   >
     <!-- Header Navigation & Save Action -->
-    <header class="shrink-0 flex items-center justify-between border-b border-[#00A4C8]/30 px-4 py-3">
+    <header
+      class="shrink-0 flex items-center justify-between border-b border-[#00A4C8]/30 px-4 py-3"
+      :class="controlsStaggerClass"
+    >
       <button
         type="button"
         data-testid="back-button"
@@ -657,7 +702,7 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- Note Metadata Section -->
-    <section class="shrink-0 space-y-4 px-4 pt-3 pb-2">
+    <section class="shrink-0 space-y-4 px-4 pt-3 pb-2" :class="contentStaggerClass">
       <!-- Title Input -->
       <div>
         <input
@@ -740,21 +785,23 @@ onBeforeUnmount(() => {
     </section>
 
     <!-- Teal Horizontal Divider Accent -->
-    <div class="shrink-0 mx-4 my-2 h-[2px] bg-[#00A4C8]" />
+    <div class="shrink-0 mx-4 my-2 h-[2px] bg-[#00A4C8]" :class="contentStaggerClass" />
 
     <!-- Locked Editor Helper Prompt (when courseId is unassigned) -->
     <div
       v-if="!selectedCourseId"
       data-testid="course-gating-prompt"
       class="shrink-0 mx-4 my-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs font-medium text-amber-800"
+      :class="contentStaggerClass"
     >
       Select a course first to start typing... can't type kapag hindi pa naglalagay course wdyt
     </div>
 
     <!-- Editor Body Container -->
-    <main class="flex-1 min-h-0 flex flex-col w-full px-4 pt-2 pb-0">
+    <main class="flex-1 min-h-0 flex flex-col w-full px-4 pt-2 pb-0" :class="contentStaggerClass">
       <TiptapEditor
         class="flex-1 min-h-0 w-full"
+        :toolbar-class="controlsStaggerClass"
         :model-value="htmlContent"
         :editable="!!selectedCourseId"
         :placeholder="

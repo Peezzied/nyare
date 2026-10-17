@@ -4,8 +4,6 @@ import StartView from '../views/StartView.vue'
 import WelcomeView from '../views/WelcomeView.vue'
 import ScheduleView from '../views/ScheduleView.vue'
 import CreateScheduleView from '../views/CreateScheduleView.vue'
-import { installNoteHero } from './noteHero'
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -44,20 +42,17 @@ const router = createRouter({
       path: '/notes',
       name: 'notes',
       component: () => import('../views/NotesView.vue'),
-      meta: { transition: 'note' },
     },
     // Optional query params `courseId` and `entryDate` prefill the new note.
     {
       path: '/notes/new',
       name: 'note-new',
       component: () => import('../views/NoteEditor.vue'),
-      meta: { transition: 'note' },
     },
     {
       path: '/notes/:id',
       name: 'note-edit',
       component: () => import('../views/NoteEditor.vue'),
-      meta: { transition: 'note' },
     },
     {
       path: '/select-account',
@@ -72,8 +67,6 @@ const router = createRouter({
     },
   ],
 })
-
-installNoteHero(router)
 
 // First-launch detection via `GET /api/users/me`.
 // Public routes: the startup/setup page (`start`) and account selection.

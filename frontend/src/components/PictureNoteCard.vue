@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { getCourseColor, type CoursePaletteColor } from '@/constants/palette'
 import { formatEntryDateLong } from '@/utils/noteDate'
 
-const emit = defineEmits<{ open: [] }>()
+const emit = defineEmits<{ open: [event: Event] }>()
 const props = defineProps<{
   photoUrl: string
   courseId: number
@@ -24,9 +24,9 @@ const entryLabel = computed(() => formatEntryDateLong(props.entryDate))
     role="button"
     tabindex="0"
     data-testid="picture-note-card"
-    @click="emit('open')"
-    @keydown.enter="emit('open')"
-    @keydown.space.prevent="emit('open')"
+    @click="emit('open', $event)"
+    @keydown.enter="emit('open', $event)"
+    @keydown.space.prevent="emit('open', $event)"
   >
     <img
       :src="photoUrl"

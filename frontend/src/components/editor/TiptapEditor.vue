@@ -18,6 +18,8 @@ interface Props {
   editable?: boolean
   /** Error text from the parent. It replaces the internal upload error in the banner. */
   errorMessage?: string | null
+  /** Extra classes on the toolbar root. NoteEditor uses it for the staggered controls entrance. */
+  toolbarClass?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -25,6 +27,7 @@ const props = withDefaults(defineProps<Props>(), {
   placeholder: 'Write note content...',
   editable: true,
   errorMessage: null,
+  toolbarClass: undefined,
 })
 
 const emit = defineEmits<{
@@ -179,6 +182,7 @@ onBeforeUnmount(() => {
       :editor="editor"
       :disabled="!editable || isUploading"
       class="shrink-0 mt-auto w-full"
+      :class="toolbarClass"
       @upload-image="handleUploadImage"
       @upload-error="handleUploadError"
     />

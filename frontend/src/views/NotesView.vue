@@ -4,29 +4,59 @@ import { useRouter } from 'vue-router'
 import NoteCard from '@/components/NoteCard.vue'
 import PictureNoteCard from '@/components/PictureNoteCard.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
+import NoteEditorModal from '@/components/notes/NoteEditorModal.vue'
 import { getCourseColor, type CoursePaletteColor } from '@/constants/palette'
 import type { NoteSummaryResponse } from '@/types/api'
+import type { NoteModalTriggerKind, TapOriginRect } from '@/types/notesTransition'
 import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
+import { toTapOriginRect } from '@/composables/useNoteTransition'
 import { devPreviewCourseNames, devPreviewNotes } from '@/api/mocks/notesDevPreview'
 import {
   pictureNotePreview,
   prototypeBadgeFor,
   prototypePreviewEnabled,
 } from '@/api/mocks/notesPrototypePreview'
-import { rememberHero } from '@/router/noteHero'
 
 const catalog = useCatalog()
 const router = useRouter()
 
-function openNote(id: string) {
-  rememberHero(id)
-  router.push({ name: 'note-edit', params: { id } })
+const modalOpen = ref(false)
+const modalNoteId = ref<string | null>(null)
+const modalOrigin = ref<TapOriginRect | null>(null)
+const modalTrigger = ref<NoteModalTriggerKind | null>(null)
+
+function openModal(options: {
+  originRect: TapOriginRect | null
+  noteId: string | null
+  triggerKind: NoteModalTriggerKind
+}) {
+  // A second tap while the overlay is up is a fast double-tap; ignore it.
+  if (modalOpen.value) {
+    return
+  }
+  modalOrigin.value = options.originRect
+  modalNoteId.value = options.noteId
+  modalTrigger.value = options.triggerKind
+  modalOpen.value = true
 }
 
-function newNote() {
-  rememberHero('fab')
-  router.push({ name: 'note-new' })
+function openNote(id: string, event?: Event) {
+  const el = (event?.currentTarget ?? event?.target) as Element | null
+  openModal({
+    originRect: el ? toTapOriginRect(el) : null,
+    noteId: id,
+    triggerKind: 'card',
+  })
+}
+
+function newNote(event?: Event) {
+  const el = event?.currentTarget as Element | null
+  openModal({
+    originRect: el ? toTapOriginRect(el) : null,
+    noteId: null,
+    triggerKind: 'fab',
+  })
 }
 const { notes, loading, error, loadNotes } = useNotes()
 
@@ -190,8 +220,7 @@ onMounted(async () => {
           :note="note"
           :course-name="courseNameFor(note)"
           :badge-color="badgeColorFor(note)"
-          :data-hero-key="note.id"
-          @open="openNote(note.id)"
+          @open="openNote(note.id, $event)"
         />
       </div>
       <div v-if="showPictureCard" class="break-inside-avoid pb-4">
@@ -203,8 +232,7 @@ onMounted(async () => {
           :title="pictureNotePreview.note.title"
           :text="pictureNotePreview.note.preview"
           :entry-date="pictureNotePreview.note.entryDate"
-          :data-hero-key="pictureNotePreview.note.id"
-          @open="openNote(pictureNotePreview.note.id)"
+          @open="openNote(pictureNotePreview.note.id, $event)"
         />
       </div>
     </div>
@@ -213,14 +241,21 @@ onMounted(async () => {
       type="button"
       aria-label="Add note"
       data-testid="notes-fab"
-      data-hero-key="fab"
-      @click="newNote"
+      @click="newNote($event)"
       class="fixed right-6 bottom-20 z-10 flex min-h-14 min-w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-lg"
     >
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
       </svg>
     </button>
+
+    <NoteEditorModal
+      :is-open="modalOpen"
+      :note-id="modalNoteId"
+      :origin-rect="modalOrigin"
+      @close="modalOpen = false"
+      @saved="loadNotes(true)"
+    />
 
     <NavigationBar />
   </main>

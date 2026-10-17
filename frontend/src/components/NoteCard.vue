@@ -5,7 +5,7 @@ import { formatEntryDate } from '@/utils/noteDate'
 import { extractFirstImageUrl, stripImageMarkdown } from '@/utils/noteImage'
 import type { NoteSummaryResponse } from '@/types/api'
 
-const emit = defineEmits<{ open: [] }>()
+const emit = defineEmits<{ open: [event: Event] }>()
 
 const props = defineProps<{
   note: NoteSummaryResponse
@@ -25,9 +25,9 @@ const displayText = computed(() => stripImageMarkdown(props.note.preview))
     role="button"
     tabindex="0"
     data-testid="note-card"
-    @click="emit('open')"
-    @keydown.enter="emit('open')"
-    @keydown.space.prevent="emit('open')"
+    @click="emit('open', $event)"
+    @keydown.enter="emit('open', $event)"
+    @keydown.space.prevent="emit('open', $event)"
   >
     <span
       class="inline-block max-w-full truncate rounded-full border px-2 py-1 text-xs font-medium"

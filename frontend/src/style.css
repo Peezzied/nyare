@@ -30,19 +30,3 @@ body,
   overscroll-behavior: none;
 }
 
-::view-transition-group(note-hero) {
-  animation-duration: 340ms;
-  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-::view-transition-old(note-hero),
-::view-transition-new(note-hero) {
-  height: 100%;
-  object-fit: cover;
-  object-position: top;
-}
-
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 220ms;
-}
