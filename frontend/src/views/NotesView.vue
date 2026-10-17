@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import NoteCard from '@/components/NoteCard.vue'
 import PictureNoteCard from '@/components/PictureNoteCard.vue'
 import { getCourseColor, type CoursePaletteColor } from '@/constants/palette'
@@ -14,6 +15,15 @@ import {
 } from '@/api/mocks/notesPrototypePreview'
 
 const catalog = useCatalog()
+const router = useRouter()
+
+function openNote(id: string) {
+  router.push({ name: 'note-edit', params: { id } })
+}
+
+function newNote() {
+  router.push({ name: 'note-new' })
+}
 const { notes, loading, error, loadNotes } = useNotes()
 
 // ponytail: prototype preview wiring stays in mock mode only.
@@ -52,7 +62,7 @@ function badgeColorFor(note: NoteSummaryResponse): CoursePaletteColor {
 
 onMounted(async () => {
   await catalog.loadCatalog()
-  await loadNotes()
+  await loadNotes(true)
 })
 </script>
 
@@ -139,6 +149,7 @@ onMounted(async () => {
           :note="note"
           :course-name="courseNameFor(note)"
           :badge-color="badgeColorFor(note)"
+          @open="openNote(note.id)"
         />
       </div>
       <div v-if="showPictureCard" class="break-inside-avoid pb-4">
@@ -150,6 +161,7 @@ onMounted(async () => {
           :title="pictureNotePreview.note.title"
           :text="pictureNotePreview.note.preview"
           :entry-date="pictureNotePreview.note.entryDate"
+          @open="openNote(pictureNotePreview.note.id)"
         />
       </div>
     </div>
@@ -158,6 +170,7 @@ onMounted(async () => {
       type="button"
       aria-label="Add note"
       data-testid="notes-fab"
+      @click="newNote"
       class="fixed right-6 bottom-6 z-10 flex min-h-14 min-w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-lg"
     >
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">

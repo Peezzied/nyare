@@ -42,17 +42,20 @@ const router = createRouter({
       path: '/notes',
       name: 'notes',
       component: () => import('../views/NotesView.vue'),
+      meta: { transition: 'note' },
     },
     // Optional query params `courseId` and `entryDate` prefill the new note.
     {
       path: '/notes/new',
       name: 'note-new',
       component: () => import('../views/NoteEditor.vue'),
+      meta: { transition: 'note' },
     },
     {
       path: '/notes/:id',
       name: 'note-edit',
       component: () => import('../views/NoteEditor.vue'),
+      meta: { transition: 'note' },
     },
     {
       path: '/select-account',

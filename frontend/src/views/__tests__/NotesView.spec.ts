@@ -1,3 +1,4 @@
+
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import NotesView from '../NotesView.vue'
@@ -5,6 +6,12 @@ import { coursesApi, schedulesApi, notesApi } from '@/api'
 import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
 import type { NoteSummaryResponse } from '@/types/api'
+
+const { push } = vi.hoisted(() => ({ push: vi.fn() }))
+
+vi.mock('vue-router', () => ({
+  useRouter: () => ({ push }),
+}))
 
 const summary: NoteSummaryResponse = {
   id: 'note-1',
@@ -31,6 +38,7 @@ describe('NotesView', () => {
     vi.stubEnv('VITE_USE_MOCKS', 'false')
     useCatalog().resetCatalog()
     useNotes().resetNotes()
+    push.mockClear()
   })
 
   it('renders cards in the grid', async () => {
@@ -107,7 +115,9 @@ describe('NotesView', () => {
 
   it('renders error state with retry when load fails', async () => {
     mockCatalog()
-    const list = vi.spyOn(notesApi, 'list').mockRejectedValue(new Error('Network error'))
+    const list = vi.spyOn(notesApi, 'list').mockRejectedValue(
+      new Error('Network error'),
+    )
 
     const wrapper = mount(NotesView)
     await flushPromises()
@@ -129,6 +139,7 @@ describe('NotesView', () => {
     await flushPromises()
 
     const topbar = wrapper.get('[data-testid="notes-topbar"]')
+
     expect(topbar.classes()).toContain('sticky')
     expect(topbar.classes()).toContain('bg-app-bg')
     expect(topbar.classes()).not.toContain('bg-[#0B8043]')
@@ -139,22 +150,21 @@ describe('NotesView', () => {
     expect(wrapper.get('[data-testid="notes-title"]').text()).toBe('Notes')
   })
 
-  it('shows a visual-only floating plus button', async () => {
+  it('opens a new note from the floating plus button', async () => {
     mockCatalog()
-    const list = vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
+    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
 
     const wrapper = mount(NotesView)
     await flushPromises()
 
     const fab = wrapper.get('[data-testid="notes-fab"]')
+
     expect(fab.classes()).toContain('bg-primary')
     expect(fab.classes()).toContain('rounded-2xl')
-    expect(fab.classes()).not.toContain('rounded-full')
-    await fab.trigger('click')
-    await flushPromises()
 
-    expect(list).toHaveBeenCalledTimes(1)
-    expect(wrapper.find('[data-testid="notes-grid"]').exists()).toBe(true)
+    await fab.trigger('click')
+
+    expect(push).toHaveBeenCalledWith({ name: 'note-new' })
   })
 
   it('hides the picture preview card outside mock mode', async () => {
@@ -183,22 +193,7 @@ describe('NotesView', () => {
     }
   })
 
-  it('performs no action on top bar button clicks', async () => {
-    mockCatalog()
-    const list = vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
-
-    const wrapper = mount(NotesView)
-    await flushPromises()
-
-    await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
-    await wrapper.get('[data-testid="topbar-search"]').trigger('click')
-    await flushPromises()
-
-    expect(list).toHaveBeenCalledTimes(1)
-    expect(wrapper.find('[data-testid="notes-grid"]').exists()).toBe(true)
-  })
-
-  it('performs no action on card clicks', async () => {
+  it('opens the editor for the clicked note', async () => {
     mockCatalog()
     vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
 
@@ -206,8 +201,10 @@ describe('NotesView', () => {
     await flushPromises()
 
     await wrapper.get('[data-testid="note-card"]').trigger('click')
-    await flushPromises()
 
-    expect(wrapper.find('[data-testid="notes-grid"]').exists()).toBe(true)
+    expect(push).toHaveBeenCalledWith({
+      name: 'note-edit',
+      params: { id: 'note-1' },
+    })
   })
 })

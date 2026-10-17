@@ -182,3 +182,13 @@
 
 /* Desktop scaffold layout disabled: onboarding screens are mobile-first and full-height. */
 
+.note-page-enter-active,
+.note-page-leave-active {
+  transition: opacity 180ms ease;
+}
+
+.note-page-enter-from,
+.note-page-leave-to {
+  opacity: 0;
+}
+
