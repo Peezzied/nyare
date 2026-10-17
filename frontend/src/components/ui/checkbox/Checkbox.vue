@@ -6,7 +6,7 @@ import {
   type CheckboxRootEmits,
   type CheckboxRootProps,
 } from 'reka-ui'
-import { Check } from 'lucide-vue-next'
+import { Check } from '@lucide/vue'
 
 defineOptions({
   name: 'UiCheckbox',

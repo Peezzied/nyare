@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft } from 'lucide-vue-next'
+import { ArrowLeft } from '@lucide/vue'
 import { tasksApi } from '@/api/tasks'
 import { TODO_FIXTURE_TASKS_V2 } from '@/api/mocks/fixtures'
 
