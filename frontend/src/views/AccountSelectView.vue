@@ -13,10 +13,12 @@ import {
 } from '@lucide/vue'
 import { minidenticon } from 'minidenticons'
 import { authApi } from '@/api'
+import { clearSessionUser, setSessionUser, useAuth } from '@/composables/useAuth'
 import type { UserResponse } from '@/types/api'
 import duckotaCasual from '@/assets/mascot/duckota_casual.png'
 
 const router = useRouter()
+const { user: sessionUser } = useAuth()
 
 function handleBack(): void {
   if (typeof window !== 'undefined' && window.history.length > 1) {
@@ -80,12 +82,12 @@ async function selectAccount(user: UserResponse): Promise<void> {
   authenticatingId.value = user.id
   errorMessage.value = null
   try {
-    await authApi.login({ username: user.username })
+    const sessionUser = await authApi.login({ username: user.username })
+    setSessionUser(sessionUser)
     await router.push('/')
   } catch (err: unknown) {
     authenticatingId.value = null
-    errorMessage.value =
-      err instanceof Error ? err.message : 'Failed to sign in. Please try again.'
+    errorMessage.value = err instanceof Error ? err.message : 'Failed to sign in. Please try again.'
   }
 }
 
@@ -123,8 +125,9 @@ async function handleCreateAccount(): Promise<void> {
   try {
     const created = await authApi.register({ username: trimmed })
     users.value = [...users.value, created]
-    await authApi.login({ username: created.username })
-    await router.push('/')
+    const sessionUser = await authApi.login({ username: created.username })
+    setSessionUser(sessionUser)
+    await router.push('/welcome')
   } catch (err: unknown) {
     isSubmitting.value = false
     formError.value =
@@ -151,6 +154,9 @@ async function executeDeleteUser(): Promise<void> {
 
   try {
     await authApi.deleteUser(target.id)
+    if (sessionUser.value?.id === target.id) {
+      clearSessionUser()
+    }
     users.value = users.value.filter((u) => u.id !== target.id)
     userToDelete.value = null
     if (users.value.length === 0) {
@@ -170,14 +176,19 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="relative min-h-screen w-full overflow-x-hidden bg-[#F6F7EE] text-[#334155] font-['Quicksand'] select-none">
+  <div
+    class="relative min-h-screen w-full overflow-x-hidden bg-[#F6F7EE] text-[#334155] font-['Quicksand'] select-none"
+  >
     <!-- Main Wireframe Mobile Container -->
-    <main class="relative z-10 mx-auto flex min-h-screen max-w-[420px] flex-col justify-between px-5 pt-6 pb-8">
-
+    <main
+      class="relative z-10 mx-auto flex h-[100svh] max-w-[420px] flex-col justify-between px-5 pt-6 pb-8"
+    >
       <!-- TOP SECTION (Green Doodle in Wireframe) -->
-      <header class="divide-y-2">
+      <header>
         <!-- Brand Header Bar with Back Button and Manage Toggle -->
-        <div class="flex items-center justify-between pb-5">
+        <div
+          class="-mx-5 flex items-center justify-between border-b-[3px] border-app-border px-5 pb-5"
+        >
           <div class="flex items-center gap-3">
             <button
               type="button"
@@ -189,7 +200,9 @@ onMounted(() => {
               <ArrowLeft class="h-5 w-5" />
             </button>
 
-            <h1 class="font-['DynaPuff'] text-4xl sm:text-5xl font-bold tracking-tight text-[#00A4C8] leading-none drop-shadow-xs">
+            <h1
+              class="font-['DynaPuff'] text-4xl sm:text-5xl font-bold tracking-tight text-[#00A4C8] leading-none drop-shadow-xs"
+            >
               'Nyare
             </h1>
           </div>
@@ -212,37 +225,35 @@ onMounted(() => {
 
         <!-- Mascot Section (Speech Bubble on Left, Duckota on Right) -->
         <div class="flex items-center gap-3.5 my-3 px-1">
-          <div class="relative flex-1 rounded-2xl border-2 border-[#CBD5E1] bg-white p-3.5 shadow-[0_3px_0_#CBD5E1]">
+          <div
+            class="chat-pop relative flex-1 rounded-2xl border-2 border-[#CBD5E1] bg-white p-3.5 shadow-[0_3px_0_#CBD5E1]"
+          >
             <h2 class="text-lg font-bold text-[#334155] leading-snug" aria-live="polite">
-              <template v-if="isLoading">
-                Checking records...
-              </template>
+              <template v-if="isLoading"> Checking records... </template>
               <template v-else-if="users.length === 0">
                 Ready to study? Add your profile!
               </template>
-              <template v-else-if="isManageMode">
-                Which account are we editing?
-              </template>
-              <template v-else>
-                Who's studying?
-              </template>
+              <template v-else-if="isManageMode"> Which account are we editing? </template>
+              <template v-else> Who's studying? </template>
             </h2>
             <!-- Tail pointing right towards Duckota -->
-            <div class="absolute -right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 rotate-45 border-r-2 border-t-2 border-[#CBD5E1] bg-white"></div>
+            <div
+              class="absolute -right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 rotate-45 border-r-2 border-t-2 border-[#CBD5E1] bg-white"
+            ></div>
           </div>
 
           <div class="relative shrink-0">
             <img
               :src="duckotaCasual"
               alt="Duckota Mascot"
-              class="h-28 sm:h-32 w-auto object-contain drop-shadow-sm transition-transform duration-200 hover:scale-105"
+              class="duckota-speak h-28 sm:h-32 w-auto object-contain drop-shadow-sm"
             />
           </div>
         </div>
       </header>
 
       <!-- MIDDLE SECTION (Red Boxes in Wireframe: Account Items) -->
-      <section class="my-6 flex-1 flex flex-col ">
+      <section class="fade-enter fade-delay-2 my-6 flex min-h-0 flex-1 flex-col overflow-y-auto">
         <!-- Error Banner -->
         <div
           v-if="errorMessage"
@@ -265,12 +276,13 @@ onMounted(() => {
         </div>
 
         <!-- Loading Skeletons -->
-        <div v-if="isLoading" class="rounded-2xl border border-[#D5D9CE] bg-[#ECEFE6]/90 divide-y divide-[#DCE0D5] overflow-hidden" aria-busy="true" aria-label="Loading profiles">
-          <div
-            v-for="i in 3"
-            :key="i"
-            class="flex items-center gap-3.5 px-4 py-3.5 animate-pulse"
-          >
+        <div
+          v-if="isLoading"
+          class="rounded-2xl border border-[#D5D9CE] bg-[#ECEFE6]/90 divide-y divide-[#DCE0D5] overflow-hidden"
+          aria-busy="true"
+          aria-label="Loading profiles"
+        >
+          <div v-for="i in 3" :key="i" class="flex items-center gap-3.5 px-4 py-3.5 animate-pulse">
             <div class="h-11 w-11 rounded-xl bg-[#D5D9CE] shrink-0"></div>
             <div class="flex-1 space-y-2">
               <div class="h-4 w-1/3 rounded bg-[#D5D9CE]"></div>
@@ -284,7 +296,9 @@ onMounted(() => {
           v-else-if="users.length === 0"
           class="rounded-2xl border border-dashed border-[#D5D9CE] bg-[#ECEFE6]/50 p-6 text-center"
         >
-          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#DCE0D5]/70 text-[#7B8B97] mb-2">
+          <div
+            class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#DCE0D5]/70 text-[#7B8B97] mb-2"
+          >
             <UserIcon class="h-6 w-6" />
           </div>
           <h2 class="text-base font-bold text-[#334155]">No student accounts yet</h2>
@@ -296,7 +310,10 @@ onMounted(() => {
         <!-- Populated Account List (Single Grouped Container with Dividers) -->
         <div
           v-else
-          class="rounded-2xl border border-[#D5D9CE] bg-[#ECEFE6]/90 divide-y divide-[#DCE0D5] overflow-hidden shadow-2xs"
+          class="rounded-2xl border border-[#D5D9CE] bg-[#ECEFE6]/90 divide-y divide-[#DCE0D5] shadow-2xs"
+          :class="{
+            'max-h-[364px] overflow-y-auto': users.length > 5,
+          }"
           role="list"
           aria-label="Student accounts"
         >
@@ -327,7 +344,9 @@ onMounted(() => {
               </div>
 
               <div class="min-w-0">
-                <h3 class="truncate text-base font-bold text-[#334155] group-hover:text-[#00A4C8] transition-colors">
+                <h3
+                  class="truncate text-base font-bold text-[#334155] group-hover:text-[#00A4C8] transition-colors"
+                >
                   {{ user.username }}
                 </h3>
                 <p class="font-['Inter'] text-xs text-[#64748B]">
@@ -364,7 +383,7 @@ onMounted(() => {
       </section>
 
       <!-- BOTTOM SECTION (Blue Box in Wireframe: Add Account Button) -->
-      <footer class="pt-2">
+      <footer class="fade-enter fade-delay-3 pt-2">
         <button
           type="button"
           class="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#00A4C8] border-b-4 border-[#007B99] text-base font-bold text-white uppercase tracking-wider transition-all duration-75 hover:bg-[#0096B7] active:translate-y-1 active:border-b-0 cursor-pointer shadow-xs"
@@ -384,7 +403,9 @@ onMounted(() => {
       aria-modal="true"
       aria-labelledby="add-modal-title"
     >
-      <div class="w-full max-w-sm rounded-3xl border-2 border-[#CBD5E1]/80 bg-[#FDFEF7] p-6 shadow-2xl">
+      <div
+        class="w-full max-w-sm rounded-3xl border-2 border-[#CBD5E1]/80 bg-[#FDFEF7] p-6 shadow-2xl"
+      >
         <div class="flex items-center justify-between mb-5">
           <div class="flex items-center gap-2">
             <span class="inline-block h-2 w-2 rounded-full bg-[#00A4C8]" />
@@ -403,8 +424,12 @@ onMounted(() => {
         </div>
 
         <form @submit.prevent="handleCreateAccount" class="space-y-4">
-          <div class="flex items-center gap-3.5 rounded-2xl border border-[#CBD5E1]/70 bg-white p-2.5 shadow-xs">
-            <div class="h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-[#94A3B8]/30 bg-[#F8FAFC] shadow-inner">
+          <div
+            class="flex items-center gap-3.5 rounded-2xl border border-[#CBD5E1]/70 bg-white p-2.5 shadow-xs"
+          >
+            <div
+              class="h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-[#94A3B8]/30 bg-[#F8FAFC] shadow-inner"
+            >
               <img
                 :src="getIdenticonUrl(newUsername || 'new-student')"
                 alt="Identicon preview"
@@ -427,7 +452,11 @@ onMounted(() => {
             </div>
           </div>
 
-          <p v-if="formError" role="alert" class="font-['Inter'] text-xs font-semibold text-[#DC2626]">
+          <p
+            v-if="formError"
+            role="alert"
+            class="font-['Inter'] text-xs font-semibold text-[#DC2626]"
+          >
             {{ formError }}
           </p>
 
@@ -465,13 +494,13 @@ onMounted(() => {
           <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#FEF2F2]">
             <TrashIcon class="h-5 w-5" />
           </div>
-          <h2 id="delete-modal-title" class="text-lg font-bold text-[#991B1B]">
-            Delete Profile
-          </h2>
+          <h2 id="delete-modal-title" class="text-lg font-bold text-[#991B1B]">Delete Profile</h2>
         </div>
 
         <p class="font-['Inter'] text-sm text-[#475569] mb-4">
-          Are you sure you want to delete <strong class="text-[#334155]">{{ userToDelete.username }}</strong>? This action cannot be undone.
+          Are you sure you want to delete
+          <strong class="text-[#334155]">{{ userToDelete.username }}</strong
+          >? This action cannot be undone.
         </p>
 
         <div class="flex items-center gap-2">
@@ -515,7 +544,7 @@ onMounted(() => {
   animation: avatar-jiggle 0.3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-[role="listitem"]:nth-child(even) .animate-jiggle {
+[role='listitem']:nth-child(even) .animate-jiggle {
   animation-duration: 0.32s;
   animation-direction: reverse;
 }
@@ -523,6 +552,107 @@ onMounted(() => {
 @media (prefers-reduced-motion: reduce) {
   .animate-jiggle {
     animation: none;
+  }
+}
+
+.fade-enter {
+  animation: fade-in 450ms ease-out both;
+}
+
+.fade-delay-2 {
+  animation-delay: 1200ms;
+}
+
+.fade-delay-3 {
+  animation-delay: 1300ms;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.duckota-speak {
+  animation:
+    fade-in 400ms ease-out 100ms both,
+    duckota-speak 1s steps(1, end) 700ms 1 both;
+}
+
+@keyframes duckota-speak {
+  0% {
+    transform: translateY(0);
+  }
+
+  12.5% {
+    transform: translateY(-3px) rotate(1deg);
+  }
+
+  25% {
+    transform: translateY(1px) rotate(-0.5deg);
+  }
+
+  37.5% {
+    transform: translateY(-2px) rotate(0.5deg);
+  }
+
+  50% {
+    transform: translateY(1px) rotate(-0.5deg);
+  }
+
+  62.5% {
+    transform: translateY(-3px) rotate(1deg);
+  }
+
+  75% {
+    transform: translateY(2px) rotate(-1deg);
+  }
+
+  87.5% {
+    transform: translateY(-2px) rotate(0.5deg);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-enter,
+  .duckota-speak,
+  .chat-pop {
+    animation: none;
+  }
+}
+
+.chat-pop {
+  animation: chat-pop-in 500ms cubic-bezier(0.16, 1.3, 0.5, 1) 700ms both;
+}
+
+@keyframes chat-pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+
+  65% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+
+  85% {
+    transform: scale(0.96);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 </style>

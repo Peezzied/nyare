@@ -2,8 +2,10 @@ import { fileURLToPath } from 'node:url'
 import { mergeConfig, defineConfig, configDefaults } from 'vitest/config'
 import viteConfig from './vite.config.ts'
 
+// `vite.config.ts` exports a function config. Resolve it before merging;
+// vite's mergeConfig rejects callback configs.
 export default mergeConfig(
-  viteConfig,
+  await viteConfig({ command: 'serve', mode: 'test', isSsrBuild: false, isPreview: false }),
   defineConfig({
     test: {
       environment: 'jsdom',
