@@ -22,13 +22,13 @@ function handleSelect(actionName: 'edit' | 'new' | 'delete' | 'archive') {
       @click="emit('close')"
     />
 
-    <!-- Menu Card -->
+    <!-- Menu Card: same styling as the Notes account menu, anchored under the burger -->
     <div
-      class="absolute top-16 left-6 w-48 bg-white rounded-2xl shadow-xl py-3 px-4 z-10 flex flex-col gap-3.5 border border-stone-100"
+      class="absolute top-[54px] left-5 z-10 w-44 rounded-2xl border border-app-border bg-card px-4 py-3 shadow-lg"
     >
       <button
         type="button"
-        class="text-left text-base font-semibold text-stone-600 hover:text-stone-900 transition-colors"
+        class="w-full text-start text-base font-semibold text-text-main"
         @click="handleSelect('edit')"
       >
         Edit Schedule
@@ -36,7 +36,7 @@ function handleSelect(actionName: 'edit' | 'new' | 'delete' | 'archive') {
 
       <button
         type="button"
-        class="text-left text-base font-semibold text-stone-600 hover:text-stone-900 transition-colors"
+        class="w-full text-start text-base font-semibold text-text-main"
         @click="handleSelect('new')"
       >
         New Schedule
@@ -44,7 +44,7 @@ function handleSelect(actionName: 'edit' | 'new' | 'delete' | 'archive') {
 
       <button
         type="button"
-        class="text-left text-base font-semibold text-rose-400 hover:text-rose-600 transition-colors"
+        class="w-full text-start text-base font-semibold text-rose-400"
         @click="handleSelect('delete')"
       >
         Delete Schedule
@@ -52,7 +52,7 @@ function handleSelect(actionName: 'edit' | 'new' | 'delete' | 'archive') {
 
       <button
         type="button"
-        class="text-left text-base font-semibold text-stone-600 hover:text-stone-900 transition-colors"
+        class="w-full text-start text-base font-semibold text-text-main"
         @click="handleSelect('archive')"
       >
         Archive

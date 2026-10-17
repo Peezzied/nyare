@@ -28,7 +28,7 @@ function proceed() {
 
 <template>
   <div
-    class="relative mx-auto flex h-[100svh] w-full max-w-[420px] flex-col overflow-hidden bg-[#F6F7EE] px-6 pt-8"
+    class="relative mx-auto flex h-[100svh] w-full max-w-[420px] flex-col overflow-hidden bg-[#F6F7EE] px-6 pt-4"
   >
     <!-- Static background: same as Start -->
     <img
@@ -53,9 +53,9 @@ function proceed() {
       <StepProgress :active-step="2" />
     </div>
 
-    <!-- Heading: moved lower -->
+    <!-- Heading -->
     <div
-      class="relative z-10 mt-[13svh] translate-y-20 w-full shrink-0"
+      class="relative z-10 mt-[11svh] w-full shrink-0"
       :class="{ 'welcome-enter welcome-delay-2': entered }"
     >
       <h1
@@ -72,9 +72,9 @@ function proceed() {
       </p>
     </div>
 
-    <!-- Name input: moved lower -->
+    <!-- Name input -->
     <div
-      class="relative top-24 z-10 mt-10 w-full shrink-0"
+      class="relative z-10 mt-6 w-full shrink-0"
       :class="{ 'welcome-enter welcome-delay-3': entered }"
     >
       <label for="student-name" class="sr-only">Your name</label>
@@ -112,9 +112,9 @@ function proceed() {
       </div>
     </div>
 
-    <!-- Duckota and speech bubble: moved lower -->
+    <!-- Duckota and speech bubble -->
     <div
-      class="relative z-10 mt-14 translate-y-30 flex w-full items-center justify-between gap-3"
+      class="relative z-10 mt-10 flex w-full items-center justify-between gap-3"
     >
       <img
         src="@/assets/mascot/duckuta_greet.png"
@@ -125,19 +125,19 @@ function proceed() {
 
       <!-- Chat bubble pops in -->
       <div
-        class="chat-pop relative mr-1 max-w-[180px] flex-1 rounded-2xl border-2 border-[#C2E8F1] bg-white px-3 py-3 shadow-sm"
+        class="chat-pop relative mr-1 max-w-[180px] flex-1 rounded-2xl border-2 border-[#CBD5E1] bg-white p-3.5 shadow-[0_3px_0_#CBD5E1]"
         :class="{ 'chat-pop-delay': entered }"
       >
         <p
-          class="text-center text-base leading-snug text-[#526B73]"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          class="text-lg font-bold leading-snug text-[#334155]"
+          style="font-family: 'Quicksand', sans-serif"
         >
           my name is duckota!
         </p>
 
         <!-- Tail pointing toward Duckota -->
         <div
-          class="absolute -left-[8px] top-5 h-3.5 w-3.5 rotate-45 border-b-2 border-l-2 border-[#C2E8F1] bg-white"
+          class="absolute -left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 rotate-45 border-b-2 border-l-2 border-[#CBD5E1] bg-white"
           aria-hidden="true"
         />
       </div>

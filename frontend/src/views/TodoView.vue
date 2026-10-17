@@ -12,6 +12,7 @@ import {
 } from '@/api/mocks/fixtures'
 import { getPlanCategory } from '@/utils/planCategory'
 import TodoHeader from '@/components/TodoHeader.vue'
+import NavigationBar from '@/components/NavigationBar.vue'
 import TaskRow from '@/components/TaskRow.vue'
 import type { TaskResponse, PlanCategory } from '@/types/api'
 
@@ -214,5 +215,7 @@ onMounted(loadData)
         </section>
       </template>
     </main>
+
+    <NavigationBar />
   </div>
 </template>
