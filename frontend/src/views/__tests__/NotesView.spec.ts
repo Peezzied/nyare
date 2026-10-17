@@ -4,7 +4,23 @@ import NotesView from '../NotesView.vue'
 import { coursesApi, schedulesApi, notesApi } from '@/api'
 import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
+import { routerKey, routeLocationKey } from 'vue-router'
 import type { NoteSummaryResponse } from '@/types/api'
+
+const mockPush = vi.fn<(path: string) => Promise<void>>(() => Promise.resolve())
+
+vi.mock('vue-router', () => {
+  const routerKey = Symbol('routerKey')
+  const routeLocationKey = Symbol('routeLocationKey')
+  const routerStub = {
+    push: (path: string) => mockPush(path),
+  }
+  return {
+    useRouter: () => routerStub,
+    routerKey,
+    routeLocationKey,
+  }
+})
 
 const summary: NoteSummaryResponse = {
   id: 'note-1',
@@ -183,19 +199,85 @@ describe('NotesView', () => {
     }
   })
 
-  it('performs no action on top bar button clicks', async () => {
+  it('performs no action on the top bar search click', async () => {
     mockCatalog()
     const list = vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
 
     const wrapper = mount(NotesView)
     await flushPromises()
 
-    await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
     await wrapper.get('[data-testid="topbar-search"]').trigger('click')
     await flushPromises()
 
     expect(list).toHaveBeenCalledTimes(1)
     expect(wrapper.find('[data-testid="notes-grid"]').exists()).toBe(true)
+  })
+
+  it('opens the account menu from the top bar menu button', async () => {
+    mockCatalog()
+    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
+
+    const wrapper = mount(NotesView)
+    await flushPromises()
+
+    await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
+
+    expect(wrapper.get('[data-testid="account-menu"]').text()).toContain('Select Account')
+  })
+
+  it('navigates to select-account from the account menu', async () => {
+    mockCatalog()
+    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
+
+    const wrapper = mount(NotesView)
+    await flushPromises()
+
+    await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
+    await wrapper.get('[data-testid="select-account-item"]').trigger('click')
+
+    expect(mockPush).toHaveBeenCalledWith('/select-account')
+    expect(wrapper.find('[data-testid="account-menu"]').exists()).toBe(false)
+  })
+
+  it('renders the bottom navigation with the notes tab active', async () => {
+    mockCatalog()
+    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
+
+    const wrapper = mount(NotesView, {
+      global: {
+        provide: {
+          [routerKey]: { push: mockPush },
+          [routeLocationKey]: { path: '/notes' },
+        },
+      },
+    })
+    await flushPromises()
+
+    const tab = wrapper.get('nav[aria-label="Main navigation"]').get('[data-id="notes"]')
+    expect(tab.attributes('data-active')).toBe('true')
+    expect(tab.attributes('aria-current')).toBe('page')
+  })
+
+  it('navigates to the calendar from the bottom navigation', async () => {
+    mockCatalog()
+    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
+
+    const wrapper = mount(NotesView, {
+      global: {
+        provide: {
+          [routerKey]: { push: mockPush },
+          [routeLocationKey]: { path: '/notes' },
+        },
+      },
+    })
+    await flushPromises()
+
+    await wrapper
+      .get('nav[aria-label="Main navigation"]')
+      .get('[data-id="calendar"]')
+      .trigger('click')
+
+    expect(mockPush).toHaveBeenCalledWith('/calendar')
   })
 
   it('performs no action on card clicks', async () => {

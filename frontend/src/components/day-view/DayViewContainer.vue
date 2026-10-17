@@ -2,18 +2,14 @@
 import { computed, onMounted, ref } from 'vue'
 import { academicEventsApi } from '../../api/academicEvents'
 import { tasksApi } from '../../api/tasks'
-import {
-  mockCourses,
-  mockEvents,
-  mockSchedules,
-  mockTasks,
-} from '../../mocks/calendarData'
+import { mockCourses, mockEvents, mockSchedules, mockTasks } from '../../mocks/calendarData'
 import type { AcademicEventResponse, TaskResponse } from '../../types/api'
 import { toDateKey } from '../../utils/dayKey'
 import { expandSchedulesForDate, formatDateHeader } from '../../utils/scheduleExpander'
 import { deriveUntimedItems } from '../../utils/untimedItems'
 import { formatWeekTitle } from '../../utils/weekDays'
 import BurgerMenu from './BurgerMenu.vue'
+import NavigationBar from '../NavigationBar.vue'
 import DayPeek from './DayPeek.vue'
 import DaySwiper from './DaySwiper.vue'
 import DayViewHeader from './DayViewHeader.vue'
@@ -106,11 +102,7 @@ function handleMenuAction(action: 'edit' | 'new' | 'delete' | 'archive') {
       </div>
 
       <!-- Burger Menu Dropdown -->
-      <BurgerMenu
-        :is-open="isMenuOpen"
-        @close="closeMenu"
-        @action="handleMenuAction"
-      />
+      <BurgerMenu :is-open="isMenuOpen" @close="closeMenu" @action="handleMenuAction" />
 
       <!-- Swipe left/right anywhere on the calendar: a day in day view, a week in week view -->
       <DaySwiper
@@ -151,7 +143,11 @@ function handleMenuAction(action: 'edit' | 'new' | 'delete' | 'archive') {
         </template>
       </DaySwiper>
 
-      <!-- Bottom navigation is added separately by a teammate. -->
+      <!-- Bottom navigation: the h-16 reserve keeps the swiper clear of the bar;
+           transform-gpu anchors the bar's fixed positioning inside the frame on all breakpoints -->
+      <div class="h-16 shrink-0 transform-gpu">
+        <NavigationBar />
+      </div>
     </div>
   </div>
 </template>
