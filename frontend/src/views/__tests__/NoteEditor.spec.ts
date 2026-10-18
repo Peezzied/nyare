@@ -4,7 +4,7 @@ import NoteEditor from '../NoteEditor.vue'
 import TiptapEditor from '@/components/editor/TiptapEditor.vue'
 import CoursePickerDialog from '@/components/editor/CoursePickerDialog.vue'
 import { notesApi } from '@/api/notes'
-import { coursesApi, schedulesApi } from '@/api'
+import { coursesApi, schedulesApi, studyPlannerApi } from '@/api'
 import { useCatalog } from '@/composables/useCatalog'
 import type {
   NoteRequest,
@@ -59,6 +59,13 @@ describe('NoteEditor.vue', () => {
       { id: 2, name: 'MATH 201 Calculus II', description: null, userId: 1 },
     ])
     vi.spyOn(schedulesApi, 'list').mockResolvedValue([])
+    vi.spyOn(studyPlannerApi, 'status').mockResolvedValue({
+      hasPendingNotes: false,
+      dirtyNoteCount: 0,
+      dirtyDates: [],
+      courseNames: [],
+      pendingNotes: [],
+    })
   })
 
   it('locks editor and disables save button when course is unassigned (course anchor gating)', async () => {
@@ -393,6 +400,10 @@ describe('NoteEditor.vue', () => {
     })
     await flushPromises()
 
+    const tiptap = wrapper.findComponent(TiptapEditor)
+    await tiptap.vm.$emit('update:modelValue', '<p>Valid text content edited</p>')
+    await flushPromises()
+
     const saveButton = wrapper.find('[data-testid="save-button"]')
     await saveButton.trigger('click')
     await flushPromises()
@@ -509,6 +520,51 @@ describe('NoteEditor.vue', () => {
     await flushPromises()
 
     expect(statusBadge.text()).toBe('Pending update')
+  })
+
+  it('keeps save button disabled on an unchanged note and enables it after an edit', async () => {
+    mockRoute.params = { id: 'note-processed-1' }
+    vi.mocked(notesApi.get).mockResolvedValueOnce({
+      id: 'note-processed-1',
+      courseId: 1,
+      title: 'Processed Note',
+      content: 'Original note content',
+      entryDate: '2026-10-13',
+      createdAt: '2026-10-13T00:00:00Z',
+      updatedAt: '2026-10-13T00:00:00Z',
+      lastProcessedAt: '2026-10-13T00:00:00Z',
+    })
+
+    const wrapper = mount(NoteEditor)
+    await flushPromises()
+
+    const saveButton = wrapper.find('[data-testid="save-button"]')
+    expect(saveButton.attributes('disabled')).toBeDefined()
+
+    const tiptap = wrapper.findComponent(TiptapEditor)
+    await tiptap.vm.$emit('update:modelValue', '<p>Original note content with additions</p>')
+    await flushPromises()
+
+    expect(saveButton.attributes('disabled')).toBeUndefined()
+  })
+
+  it('keeps save button disabled on a seeded new note and enables it after an edit', async () => {
+    const wrapper = mount(NoteEditor, {
+      props: {
+        initialCourseId: 1,
+        initialContent: 'Seeded content',
+      },
+    })
+    await flushPromises()
+
+    const saveButton = wrapper.find('[data-testid="save-button"]')
+    expect(saveButton.attributes('disabled')).toBeDefined()
+
+    const tiptap = wrapper.findComponent(TiptapEditor)
+    await tiptap.vm.$emit('update:modelValue', '<p>Seeded content edited</p>')
+    await flushPromises()
+
+    expect(saveButton.attributes('disabled')).toBeUndefined()
   })
 
   it('defaults to h-dvh class when visualViewport is not present', async () => {
@@ -820,7 +876,7 @@ describe('NoteEditor.vue', () => {
       id: 'saved-embedded-1',
       courseId: 1,
       title: 'Embedded Save',
-      content: 'Valid embedded content',
+      content: 'Valid embedded content edited',
       entryDate: '2026-10-13',
       createdAt: '2026-10-13T00:00:00Z',
       updatedAt: '2026-10-13T00:00:00Z',
@@ -835,6 +891,10 @@ describe('NoteEditor.vue', () => {
         initialContent: 'Valid embedded content',
       },
     })
+    await flushPromises()
+
+    const tiptap = wrapper.findComponent(TiptapEditor)
+    await tiptap.vm.$emit('update:modelValue', '<p>Valid embedded content edited</p>')
     await flushPromises()
 
     await wrapper.find('[data-testid="save-button"]').trigger('click')

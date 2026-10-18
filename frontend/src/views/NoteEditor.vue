@@ -353,6 +353,9 @@ const isSaveDisabled = computed(() => {
   if (isSaving.value) {
     return true
   }
+  if (!isDirty.value) {
+    return true
+  }
   return false
 })
 
