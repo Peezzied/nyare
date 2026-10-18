@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import NoteCard from '@/components/NoteCard.vue'
 import PictureNoteCard from '@/components/PictureNoteCard.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
 import NoteEditorModal from '@/components/notes/NoteEditorModal.vue'
+import HamburgerMenu from '@/components/HamburgerMenu.vue'
 import { getCourseColor, type CoursePaletteColor } from '@/constants/palette'
 import type { NoteSummaryResponse } from '@/types/api'
 import type { NoteModalTriggerKind, TapOriginRect } from '@/types/notesTransition'
@@ -19,7 +19,6 @@ import {
 } from '@/api/mocks/notesPrototypePreview'
 
 const catalog = useCatalog()
-const router = useRouter()
 
 const modalOpen = ref(false)
 const modalNoteId = ref<string | null>(null)
@@ -60,17 +59,6 @@ function newNote(event?: Event) {
 }
 const { notes, loading, error, loadNotes } = useNotes()
 
-const isAccountMenuOpen = ref(false)
-
-function toggleAccountMenu(): void {
-  isAccountMenuOpen.value = !isAccountMenuOpen.value
-}
-
-function goToSelectAccount(): void {
-  isAccountMenuOpen.value = false
-  router.push('/select-account')
-}
-
 const courseNames = computed(() => {
   const names = new Map<number, string>()
   for (const course of catalog.courses.value) {
@@ -101,47 +89,7 @@ onMounted(async () => {
       data-testid="notes-topbar"
     >
       <div class="flex w-full items-center">
-        <div class="relative">
-          <button
-            type="button"
-            aria-label="Menu"
-            aria-haspopup="true"
-            :aria-expanded="isAccountMenuOpen"
-            data-testid="topbar-menu"
-            class="flex h-11 w-11 items-center justify-center rounded-lg text-text-main transition-colors hover:bg-black/5 active:bg-black/10"
-            @click="toggleAccountMenu"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M4 7h16M4 12h16M4 17h16"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
-            </svg>
-          </button>
-
-          <!-- In-place account menu, mirroring the day-view dropdown pattern -->
-          <div
-            v-if="isAccountMenuOpen"
-            class="fixed inset-0 z-20"
-            @click="isAccountMenuOpen = false"
-          />
-          <div
-            v-if="isAccountMenuOpen"
-            data-testid="account-menu"
-            class="absolute top-12 left-1 z-30 w-44 rounded-2xl border border-app-border bg-card px-4 py-3 shadow-lg"
-          >
-            <button
-              type="button"
-              data-testid="select-account-item"
-              class="w-full text-left text-base font-semibold text-text-main"
-              @click="goToSelectAccount"
-            >
-              Select Account
-            </button>
-          </div>
-        </div>
+        <HamburgerMenu />
         <h1
           class="flex-1 text-center font-sans text-xl font-bold tracking-tight text-text-main"
           data-testid="notes-title"
