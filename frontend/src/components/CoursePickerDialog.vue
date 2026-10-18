@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Modal course list that sets the course of a note. NoteEditor opens it from the course pill.
+// Modal course list that sets the course of an academic item. CoursePicker opens it from a pill trigger.
 import { computed } from 'vue'
 import { Check } from '@lucide/vue'
 import {

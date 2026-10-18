@@ -21,6 +21,7 @@ export interface UseTasks {
   error: Ref<string | null>
 
   loadTasks: (params?: TaskListParams, force?: boolean) => Promise<TaskResponse[]>
+  getTask: (id: string) => Promise<TaskResponse>
   createTask: (request: TaskRequest) => Promise<TaskResponse>
   updateTask: (id: string, request: TaskRequest) => Promise<TaskResponse>
   updateTaskStatus: (id: string, status: TaskStatus) => Promise<TaskResponse>
@@ -88,63 +89,46 @@ export function useTasks(): UseTasks {
     return tasks.value
   }
 
-  async function createTask(request: TaskRequest): Promise<TaskResponse> {
-    loading.value = true
-    error.value = null
-    try {
-      const created = await tasksApi.create(request)
-      tasks.value = [...tasks.value, created]
-      return created
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to create task'
-      throw err
-    } finally {
-      loading.value = false
+  /**
+   * Resolves one task from the cache first, falling back to the API. A fetched
+   * task is upserted into the shared list so direct-link views join the cache.
+   */
+  async function getTask(id: string): Promise<TaskResponse> {
+    const cached = tasks.value.find((t) => t.id === id)
+    if (cached) {
+      return cached
     }
+
+    const fetched = await tasksApi.get(id)
+    tasks.value = tasks.value.some((t) => t.id === id)
+      ? tasks.value.map((t) => (t.id === id ? fetched : t))
+      : [...tasks.value, fetched]
+    return fetched
+  }
+
+  // Mutations update the shared list from responses but never touch the shared
+  // loading/error refs; callers keep their own pending and error state.
+  async function createTask(request: TaskRequest): Promise<TaskResponse> {
+    const created = await tasksApi.create(request)
+    tasks.value = [...tasks.value, created]
+    return created
   }
 
   async function updateTask(id: string, request: TaskRequest): Promise<TaskResponse> {
-    loading.value = true
-    error.value = null
-    try {
-      const updated = await tasksApi.update(id, request)
-      tasks.value = tasks.value.map((t) => (t.id === id ? updated : t))
-      return updated
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update task'
-      throw err
-    } finally {
-      loading.value = false
-    }
+    const updated = await tasksApi.update(id, request)
+    tasks.value = tasks.value.map((t) => (t.id === id ? updated : t))
+    return updated
   }
 
   async function updateTaskStatus(id: string, status: TaskStatus): Promise<TaskResponse> {
-    loading.value = true
-    error.value = null
-    try {
-      const updated = await tasksApi.updateStatus(id, status)
-      tasks.value = tasks.value.map((t) => (t.id === id ? updated : t))
-      return updated
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update task status'
-      throw err
-    } finally {
-      loading.value = false
-    }
+    const updated = await tasksApi.updateStatus(id, status)
+    tasks.value = tasks.value.map((t) => (t.id === id ? updated : t))
+    return updated
   }
 
   async function deleteTask(id: string): Promise<void> {
-    loading.value = true
-    error.value = null
-    try {
-      await tasksApi.delete(id)
-      tasks.value = tasks.value.filter((t) => t.id !== id)
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to delete task'
-      throw err
-    } finally {
-      loading.value = false
-    }
+    await tasksApi.delete(id)
+    tasks.value = tasks.value.filter((t) => t.id !== id)
   }
 
   async function refetchForCourses(courseIds: number[]): Promise<void> {
@@ -188,6 +172,7 @@ export function useTasks(): UseTasks {
     loading,
     error,
     loadTasks,
+    getTask,
     createTask,
     updateTask,
     updateTaskStatus,
