@@ -28,8 +28,8 @@ Frontend-only feature. Paths are relative to `frontend/`.
 
 **Purpose**: Land the detail-view presentation prerequisite and confirm existing reuse points.
 
-- [ ] T001 Confirm the calendar detail modal host exists in `frontend/src/components/day-view/EventDetailModal.vue`. If it is absent on this branch, bring it and its click wiring from `feat/calendar-improvements` (commit `76a6313`), without the two per-type content components.
-- [ ] T002 Confirm the reuse points that this feature depends on: `frontend/src/utils/courseColors.ts` (`getCourseDotStyle`), `frontend/src/utils/taskUrgency.ts` (`formatDuration`), `frontend/src/utils/scheduleFormat.ts` (`formatTimeRange`), `frontend/src/utils/planCategory.ts` (`getPlanCategory`), and `frontend/src/api/tasks.ts` (`tasksApi.updateStatus`). Record any missing helper before you start Phase 2.
+- [ ] T001 Confirm the calendar detail modal host and its click wiring are present in `frontend/src/components/day-view/EventDetailModal.vue` (ported in commit `d4867df`). Install `@schedule-x/calendar-controls` at `^4.9.1` to match `@schedule-x/calendar`, because `ScheduleCalendar.vue` and `WeekCalendar.vue` import it, and add it to `frontend/package.json`. Change the `lucide-vue-next` import in `EventDetailModal.vue` to `@lucide/vue`. The imports of `CourseBlockDetail.vue` and `UntimedBlockDetail.vue` inside `EventDetailModal.vue` stay unresolved until T006 replaces them.
+- [ ] T002 Confirm the reuse points that this feature depends on: `frontend/src/utils/courseColors.ts` (`getCourseDotStyle`), `frontend/src/utils/taskUrgency.ts` (`formatDuration`), `frontend/src/utils/scheduleExpander.ts` (`formatTimeRange`), `frontend/src/utils/planCategory.ts` (`getPlanCategory`), and `frontend/src/api/tasks.ts` (`tasksApi.updateStatus`). Record any missing helper before you start Phase 2.
 
 ---
 
@@ -80,7 +80,7 @@ Frontend-only feature. Paths are relative to `frontend/`.
 
 ### Implementation for User Story 2
 
-- [ ] T012 [US2] Wire the task tap to open the detail view. In `frontend/src/components/day-view/DayViewContainer.vue` (and `ScheduleCalendar.vue` if the untimed pill is the tap source), build the task view model with `buildCalendarItemDetail` and open the modal (FR-006, FR-008, FR-012, FR-013).
+- [ ] T012 [US2] Wire the task tap to open the detail view. In `frontend/src/components/day-view/DayViewContainer.vue`, build the task view model with `buildCalendarItemDetail` and open the modal. The tap sources `frontend/src/components/day-view/ScheduleCalendar.vue` and `frontend/src/components/day-view/WeekCalendar.vue` forward the tapped untimed item upward (FR-006, FR-008, FR-012, FR-013).
 - [ ] T013 [US2] Handle the `open-note` event in `frontend/src/components/day-view/DayViewContainer.vue`. Navigate with `router.push({ name: 'note-edit', params: { id: note.id } })` (FR-009).
 - [ ] T014 [US2] Handle the `complete-task` event in `frontend/src/components/day-view/DayViewContainer.vue`. Call `tasksApi.updateStatus(taskId, 'COMPLETED')`, then update the cached task ref from the saved DTO. Do not call `list()` again. On failure, keep the prior state and surface the API error (FR-010, FR-011).
 
@@ -96,7 +96,7 @@ Frontend-only feature. Paths are relative to `frontend/`.
 
 ### Implementation for User Story 3
 
-- [ ] T015 [US3] Wire the event tap to open the detail view. In `frontend/src/components/day-view/DayViewContainer.vue` and `ScheduleCalendar.vue`, build the event view model with `buildCalendarItemDetail` and open the modal (FR-007, FR-014, FR-016). Confirm no duration field renders (FR-017).
+- [ ] T015 [US3] Wire the event tap to open the detail view. In `frontend/src/components/day-view/DayViewContainer.vue`, build the event view model with `buildCalendarItemDetail` and open the modal. The tap sources `frontend/src/components/day-view/ScheduleCalendar.vue` and `frontend/src/components/day-view/WeekCalendar.vue` forward the tapped untimed item upward (FR-007, FR-014, FR-016). Confirm no duration field renders (FR-017).
 
 **Checkpoint**: Events show the note link and the time window with no duration. User Stories 1, 2, and 3 work independently.
 
@@ -123,7 +123,7 @@ Frontend-only feature. Paths are relative to `frontend/`.
 
 **Purpose**: Final verification across all stories.
 
-- [ ] T020 [P] Run `npm run lint:oxlint`, `npm run format`, and `npm run type-check` in `frontend/`. Fix all errors.
+- [ ] T020 [P] Run `npx prettier --check` on only the files this feature creates or changes, `npx oxlint src` (without `--fix`), and `npm run type-check` in `frontend/`. Fix all errors.
 - [ ] T021 Run `npm run story` and walk every scenario in `specs/008-calendar-item-details/quickstart.md`. Confirm the hide states, the failure state, and the a11y labels.
 - [ ] T022 [P] Verify SC-004 and SC-005: every detailed view shows a time window, every known task duration shows, no event shows a duration, and no fabricated duration or deadline appears.
 
