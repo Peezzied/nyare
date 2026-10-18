@@ -11,6 +11,7 @@ import { getHourHeight } from '../../utils/calendarStyle'
 import type { DayEvent } from '../../types/calendar'
 import type { UntimedDayItem } from '../../utils/untimedItems'
 import { calculateGridBoundaries } from '../../utils/scheduleExpander'
+import { toDateKey } from '../../utils/dayKey'
 import AllDayStrip from './AllDayStrip.vue'
 import CourseCard from './CourseCard.vue'
 import TimeIndicator from './TimeIndicator.vue'
@@ -156,11 +157,15 @@ watch([() => props.selectedDate, boundaries, () => props.events], ([newDate, new
   calendarControls.setDate(toPlainDate(newDate))
   calendarApp.value.events.set(toSxEvents(newEvents))
 
-  if (scrollEl.value) {
-    scrollEl.value.scrollTop = savedScrollTop
-  }
-  measure()
-  settle(15)
+  // Schedule X replaces the day column when the date changes. Rebind the new
+  // column before restoring the scroll or measuring, so the old node is never
+  // measured after it leaves the document.
+  dayColEl.value = null
+  scrollEl.value = null
+  findDayCol(40, toDateKey(newDate), () => {
+    attachScrollListener()
+    settle(15)
+  })
 
   // Notify the swiper that the date change is in place
   requestAnimationFrame(() => {
@@ -215,16 +220,19 @@ function settle(frames = 90) {
   settleFrame = requestAnimationFrame(tick)
 }
 
-function findDayCol(tries = 40) {
+function findDayCol(tries = 40, dateKey?: string, onFound?: () => void) {
   const el = areaRef.value?.querySelector<HTMLElement>('.sx__time-grid-day') ?? null
-  if (el) {
+  // Schedule X can still show the previous date for a frame or two after setDate
+  const isCurrentDate = !dateKey || el?.dataset.timeGridDate === dateKey
+  if (el && isCurrentDate) {
     dayColEl.value = el
     observeLayout()
     updateOverlay()
+    onFound?.()
     return
   }
   if (tries > 0) {
-    requestAnimationFrame(() => findDayCol(tries - 1))
+    requestAnimationFrame(() => findDayCol(tries - 1, dateKey, onFound))
   } else {
     console.warn('[DayView] .sx__time-grid-day not found')
   }
