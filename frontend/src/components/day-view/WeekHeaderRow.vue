@@ -10,7 +10,13 @@ defineProps<{
 
 const emit = defineEmits<{
   (e: 'select', date: Date): void
+  (e: 'selectUntimed', item: UntimedDayItem, originRect: DOMRect): void
 }>()
+
+function onUntimedClick(e: MouseEvent, item: UntimedDayItem) {
+  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+  emit('selectUntimed', item, rect)
+}
 
 const MAX_PILLS = 2
 const COLORS = ['bg-[#7CE19D]', 'bg-[#80C2F8]', 'bg-[#C084FC]', 'bg-[#FB923C]'] as const
@@ -20,7 +26,7 @@ function pillColor(courseId: number) {
 }
 
 function dayName(date: Date) {
-  return date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()
+  return date.toLocaleDateString('en-US', { weekday: 'narrow' }).toUpperCase()
 }
 </script>
 
@@ -39,11 +45,12 @@ function dayName(date: Date) {
         :aria-label="`Open ${day.date.toDateString()}`"
         @click="emit('select', day.date)"
       >
-        <span class="text-[10px] font-bold tracking-wide text-stone-500">
+        <span class="text-xs font-bold tracking-wide"
+          :class="day.key === todayKey ? 'text-[#0E7490]' : 'text-stone-500'">
           {{ dayName(day.date) }}
         </span>
         <span
-          class="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full text-base font-bold"
+          class="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full text-xl font-bold"
           :class="day.key === todayKey ? 'bg-[#0E7490] text-white' : 'text-stone-700'"
         >
           {{ day.date.getDate() }}
@@ -54,8 +61,9 @@ function dayName(date: Date) {
           <span
             v-for="item in day.untimed.slice(0, MAX_PILLS)"
             :key="item.id"
-            class="block h-4 shrink-0 truncate rounded border border-[#1E293B]/50 px-0.5 text-left text-[9px] font-bold leading-[14px] text-white"
+            class="block h-4 shrink-0 truncate rounded border border-[#1E293B]/50 px-0.5 text-left text-[9px] font-bold leading-[14px] text-white hover:brightness-105 active:scale-95 transition-transform cursor-pointer"
             :class="pillColor(item.courseId)"
+            @click.stop="onUntimedClick($event, item)"
           >
             {{ item.title }}
           </span>
