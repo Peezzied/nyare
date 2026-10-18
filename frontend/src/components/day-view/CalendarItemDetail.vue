@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { CSSProperties } from 'vue'
 import { Check, SquarePen } from '@lucide/vue'
 import TactileButton from '../TactileButton.vue'
 import { getCourseDotStyle } from '@/utils/courseColors'
@@ -14,7 +15,9 @@ const emit = defineEmits<{
   (e: 'complete-task', taskId: string): void
 }>()
 
-const dotStyle = computed(() => getCourseDotStyle(props.item.courseId))
+const dotStyle = computed<CSSProperties>(() => ({
+  backgroundColor: getCourseDotStyle(props.item.courseId).backgroundColor,
+}))
 const noteTitle = computed(() => props.item.note?.title ?? 'Linked note')
 const completeLabel = computed(() =>
   props.item.task?.completed ? 'Task completed' : 'Mark task complete',

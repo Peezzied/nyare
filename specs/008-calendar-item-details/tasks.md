@@ -80,9 +80,9 @@ Frontend-only feature. Paths are relative to `frontend/`.
 
 ### Implementation for User Story 2
 
-- [ ] T012 [US2] Wire the task tap to open the detail view. In `frontend/src/components/day-view/DayViewContainer.vue`, build the task view model with `buildCalendarItemDetail` and open the modal. The tap sources `frontend/src/components/day-view/ScheduleCalendar.vue` and `frontend/src/components/day-view/WeekCalendar.vue` forward the tapped untimed item upward (FR-006, FR-008, FR-012, FR-013).
-- [ ] T013 [US2] Handle the `open-note` event in `frontend/src/components/day-view/DayViewContainer.vue`. Navigate with `router.push({ name: 'note-edit', params: { id: note.id } })` (FR-009).
-- [ ] T014 [US2] Handle the `complete-task` event in `frontend/src/components/day-view/DayViewContainer.vue`. Call `tasksApi.updateStatus(taskId, 'COMPLETED')`, then update the cached task ref from the saved DTO. Do not call `list()` again. On failure, keep the prior state and surface the API error (FR-010, FR-011).
+- [x] T012 [US2] Wire the task tap to open the detail view. In `frontend/src/components/day-view/DayViewContainer.vue`, build the task view model with `buildCalendarItemDetail` and open the modal. The tap sources `frontend/src/components/day-view/ScheduleCalendar.vue` and `frontend/src/components/day-view/WeekCalendar.vue` forward the tapped untimed item upward (FR-006, FR-008, FR-012, FR-013).
+- [x] T013 [US2] Handle the `open-note` event in `frontend/src/components/day-view/DayViewContainer.vue`. Navigate with `router.push({ name: 'note-edit', params: { id: note.id } })` (FR-009).
+- [x] T014 [US2] Handle the `complete-task` event in `frontend/src/components/day-view/DayViewContainer.vue`. Call `tasksApi.updateStatus(taskId, 'COMPLETED')`, then update the cached task ref from the saved DTO. Do not call `list()` again. On failure, keep the prior state and surface the API error (FR-010, FR-011).
 
 **Checkpoint**: A student completes a task and reaches its note from the calendar. User Story 2 is independently testable.
 

@@ -10,16 +10,9 @@ import { useNow } from '../../composables/useNow'
 import { getHourHeight } from '../../utils/calendarStyle'
 import type { DayEvent } from '../../types/calendar'
 import type { UntimedDayItem } from '../../utils/untimedItems'
-import { calculateGridBoundaries, formatTimeRange } from '../../utils/scheduleExpander'
-import { useRouter } from 'vue-router'
-import type {
-  ActiveModalState,
-  CourseBlockDetailState,
-  NonCourseBlockDetailState,
-} from '../../types/detailModal'
+import { calculateGridBoundaries } from '../../utils/scheduleExpander'
 import AllDayStrip from './AllDayStrip.vue'
 import CourseCard from './CourseCard.vue'
-import EventDetailModal from './EventDetailModal.vue'
 import TimeIndicator from './TimeIndicator.vue'
 
 const props = defineProps<{
@@ -29,7 +22,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'selectUntimed', item: UntimedDayItem): void
+  (e: 'selectUntimed', item: UntimedDayItem, originRect: DOMRect | null): void
+  (e: 'selectCourse', event: DayEvent, originRect: DOMRect): void
 }>()
 
 const PILL_INSET_LEFT = 0 // must match the left padding on .sx__time-grid-event
@@ -290,97 +284,13 @@ onUnmounted(() => {
 
 watch(nowTop, () => nextTick(updateOverlay))
 
-// ---- Modal State & Detail Expansion ----
-const router = useRouter()
-
-const modalState = ref<ActiveModalState>({
-  isOpen: false,
-  originRect: null,
-  kind: null,
-  animationPhase: 'idle',
-  payload: null,
-})
-
-function getThemeColorClass(theme: 'green' | 'blue' | 'purple' | 'orange') {
-  switch (theme) {
-    case 'green':
-      return 'bg-[#7CE19D]'
-    case 'blue':
-      return 'bg-[#80C2F8]'
-    case 'purple':
-      return 'bg-[#C084FC]'
-    case 'orange':
-      return 'bg-[#FB923C]'
-    default:
-      return 'bg-[#80C2F8]'
-  }
-}
-
+// ---- Detail taps: the day view container owns the modal ----
 function onSelectCourse(event: DayEvent, rect: DOMRect) {
-  const startTime = event.start.split(' ')[1] ?? ''
-  const endTime = event.end.split(' ')[1] ?? ''
-  const timeWindow = formatTimeRange(startTime, endTime)
-
-  const payload: CourseBlockDetailState = {
-    courseId: event.courseId,
-    courseName: event.title,
-    colorDot: getThemeColorClass(event.colorTheme),
-    timeWindow,
-    tasksTarget: '/tasks',
-    notesTarget: '/notes',
-  }
-
-  modalState.value = {
-    isOpen: true,
-    originRect: {
-      top: rect.top,
-      left: rect.left,
-      width: rect.width,
-      height: rect.height,
-    },
-    kind: 'course',
-    animationPhase: 'expanding',
-    payload,
-  }
+  emit('selectCourse', event, rect)
 }
 
-// ---- Untimed items ----
 function onSelectUntimed(item: UntimedDayItem, rect?: DOMRect) {
-  console.log('[DayView] Untimed item tapped:', item.title)
-  emit('selectUntimed', item)
-
-  const payload: NonCourseBlockDetailState = {
-    id: item.id,
-    title: item.title,
-    itemType: item.category === 'event' ? 'academic-event' : 'task',
-    linkedNote: null,
-  }
-
-  modalState.value = {
-    isOpen: true,
-    originRect: rect
-      ? {
-          top: rect.top,
-          left: rect.left,
-          width: rect.width,
-          height: rect.height,
-        }
-      : null,
-    kind: 'other',
-    animationPhase: 'expanding',
-    payload,
-  }
-}
-
-function onCloseModal() {
-  modalState.value.isOpen = false
-}
-
-function onModalNavigate(routePath: string) {
-  modalState.value.isOpen = false
-  if (router) {
-    router.push(routePath)
-  }
+  emit('selectUntimed', item, rect ?? null)
 }
 
 // ---- Jump button ----
@@ -462,16 +372,6 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
         {{ nowDirection === 'up' ? '↑' : '↓' }} Now
       </button>
     </div>
-
-    <!-- Expanding Event Detail Modal Overlay -->
-    <EventDetailModal
-      :is-open="modalState.isOpen"
-      :origin-rect="modalState.originRect"
-      :kind="modalState.kind ?? 'course'"
-      :data="modalState.payload"
-      @close="onCloseModal"
-      @navigate="onModalNavigate"
-    />
   </div>
 </template>
 
