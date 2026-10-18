@@ -5,18 +5,11 @@ import PictureNoteCard from '@/components/PictureNoteCard.vue'
 import NavigationBar from '@/components/NavigationBar.vue'
 import NoteEditorModal from '@/components/notes/NoteEditorModal.vue'
 import HamburgerMenu from '@/components/HamburgerMenu.vue'
-import { getCourseColor, type CoursePaletteColor } from '@/constants/palette'
 import type { NoteSummaryResponse } from '@/types/api'
 import type { NoteModalTriggerKind, TapOriginRect } from '@/types/notesTransition'
 import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
 import { toTapOriginRect } from '@/composables/useNoteTransition'
-import { devPreviewCourseNames, devPreviewNotes } from '@/api/mocks/notesDevPreview'
-import {
-  pictureNotePreview,
-  prototypeBadgeFor,
-  prototypePreviewEnabled,
-} from '@/api/mocks/notesPrototypePreview'
 
 const catalog = useCatalog()
 
@@ -34,6 +27,7 @@ function openModal(options: {
   if (modalOpen.value) {
     return
   }
+
   modalOrigin.value = options.originRect
   modalNoteId.value = options.noteId
   modalTrigger.value = options.triggerKind
@@ -42,6 +36,7 @@ function openModal(options: {
 
 function openNote(id: string, event?: Event) {
   const el = (event?.currentTarget ?? event?.target) as Element | null
+
   openModal({
     originRect: el ? toTapOriginRect(el) : null,
     noteId: id,
@@ -51,19 +46,31 @@ function openNote(id: string, event?: Event) {
 
 function newNote(event?: Event) {
   const el = event?.currentTarget as Element | null
+
   openModal({
     originRect: el ? toTapOriginRect(el) : null,
     noteId: null,
     triggerKind: 'fab',
   })
 }
-const { notes, loading, error, loadNotes } = useNotes()
+
+const {
+  notes,
+  pictureNote,
+  loading,
+  error,
+  loadNotes,
+  getCourseName,
+  getBadgeColor,
+} = useNotes()
 
 const courseNames = computed(() => {
   const names = new Map<number, string>()
+
   for (const course of catalog.courses.value) {
     names.set(course.id, course.name)
   }
+
   return names
 })
 
@@ -90,20 +97,34 @@ onMounted(async () => {
     >
       <div class="flex w-full items-center">
         <HamburgerMenu />
+
         <h1
           class="flex-1 text-center font-sans text-xl font-bold tracking-tight text-text-main"
           data-testid="notes-title"
         >
           Notes
         </h1>
+
         <button
           type="button"
           aria-label="Search"
           data-testid="topbar-search"
           class="flex h-11 w-11 items-center justify-center rounded-lg text-text-main transition-colors hover:bg-black/5 active:bg-black/10"
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
+            <circle
+              cx="11"
+              cy="11"
+              r="7"
+              stroke="currentColor"
+              stroke-width="2"
+            />
             <path
               d="m16.5 16.5 4 4"
               stroke="currentColor"
@@ -115,7 +136,11 @@ onMounted(async () => {
       </div>
     </header>
 
-    <p v-if="loading && notes.length === 0" class="mt-6 text-center text-sm text-text-muted" data-testid="notes-loading">
+    <p
+      v-if="loading && notes.length === 0"
+      class="mt-6 text-center text-sm text-text-muted"
+      data-testid="notes-loading"
+    >
       Notes are loading.
     </p>
 
@@ -125,8 +150,12 @@ onMounted(async () => {
       data-testid="notes-error"
       role="alert"
     >
-      <p class="font-sans text-base font-semibold text-text-main">Notes failed to load.</p>
+      <p class="font-sans text-base font-semibold text-text-main">
+        Notes failed to load.
+      </p>
+
       <p class="mt-1 text-sm text-text-muted">{{ error }}</p>
+
       <button
         class="btn-tactile mt-4 rounded-xl px-4 py-2 font-sans text-sm font-bold text-white"
         type="button"
@@ -145,7 +174,11 @@ onMounted(async () => {
     </p>
 
     <div v-else class="mt-6 columns-2 gap-4" data-testid="notes-grid">
-      <div v-for="note in notes" :key="note.id" class="break-inside-avoid pb-4">
+      <div
+        v-for="note in notes"
+        :key="note.id"
+        class="break-inside-avoid pb-4"
+      >
         <NoteCard
           :note="note"
           :course-name="courseNameFor(note)"
@@ -153,16 +186,20 @@ onMounted(async () => {
           @open="openNote(note.id, $event)"
         />
       </div>
-      <div v-if="pictureNote" class="break-inside-avoid pb-4">
+
+      <div
+        v-if="pictureNote"
+        class="break-inside-avoid pb-4"
+      >
         <PictureNoteCard
-          :photo-url="pictureNotePreview.photoUrl"
-          :course-id="pictureNotePreview.note.courseId"
-          :course-name="courseNameFor(pictureNotePreview.note)"
-          :badge-color="badgeColorFor(pictureNotePreview.note)"
-          :title="pictureNotePreview.note.title"
-          :text="pictureNotePreview.note.preview"
-          :entry-date="pictureNotePreview.note.entryDate"
-          @open="openNote(pictureNotePreview.note.id, $event)"
+          :photo-url="pictureNote.photoUrl"
+          :course-id="pictureNote.note.courseId"
+          :course-name="courseNameFor(pictureNote.note)"
+          :badge-color="badgeColorFor(pictureNote.note)"
+          :title="pictureNote.note.title"
+          :text="pictureNote.note.preview"
+          :entry-date="pictureNote.note.entryDate"
+          @open="openNote(pictureNote.note.id, $event)"
         />
       </div>
     </div>
@@ -174,8 +211,19 @@ onMounted(async () => {
       @click="newNote($event)"
       class="fixed right-6 bottom-20 z-10 flex min-h-14 min-w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-lg"
     >
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M12 5v14M5 12h14"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
       </svg>
     </button>
 
