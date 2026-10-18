@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { DayEvent } from '../../types/calendar'
+import CategoryMarker from './CategoryMarker.vue'
 
 // Compact class pill for the 7-column week grid
 const props = defineProps<{
@@ -43,7 +44,10 @@ const colorClasses = computed(() => {
     :class="colorClasses"
     @click="handleClick"
   >
-    <p class="truncate text-[10px] font-bold leading-3">{{ event.title }}</p>
+    <div class="flex items-center gap-0.5">
+      <CategoryMarker category="class" />
+      <p class="min-w-0 truncate text-[10px] font-bold leading-3">{{ event.title }}</p>
+    </div>
     <p v-if="event.detail" class="truncate text-[9px] font-medium leading-3 text-white/90">
       {{ event.detail }}
     </p>

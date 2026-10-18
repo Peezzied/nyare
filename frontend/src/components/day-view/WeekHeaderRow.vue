@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { UntimedDayItem } from '../../utils/untimedItems'
+import type { UntimedDayItem } from "../../utils/untimedItems";
+import CategoryMarker from "./CategoryMarker.vue";
 
 defineProps<{
   days: { date: Date; key: string; untimed: UntimedDayItem[] }[]
@@ -61,11 +62,12 @@ function dayName(date: Date) {
           <span
             v-for="item in day.untimed.slice(0, MAX_PILLS)"
             :key="item.id"
-            class="block h-4 shrink-0 truncate rounded border border-[#1E293B]/50 px-0.5 text-left text-[9px] font-bold leading-[14px] text-white hover:brightness-105 active:scale-95 transition-transform cursor-pointer"
+            class="flex h-4 shrink-0 items-center gap-0.5 truncate rounded border border-[#1E293B]/50 px-0.5 text-left text-[9px] font-bold leading-[14px] text-white hover:brightness-105 active:scale-95 transition-transform cursor-pointer"
             :class="pillColor(item.courseId)"
             @click.stop="onUntimedClick($event, item)"
           >
-            {{ item.title }}
+            <CategoryMarker :category="item.category" :completed="item.completed" />
+            <span class="min-w-0 truncate">{{ item.title }}</span>
           </span>
           <span
             v-if="day.untimed.length > MAX_PILLS"

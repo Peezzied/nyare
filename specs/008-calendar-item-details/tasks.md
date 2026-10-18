@@ -56,13 +56,13 @@ Frontend-only feature. Paths are relative to `frontend/`.
 
 ### Tests for User Story 1
 
-- [ ] T007 [P] [US1] Add a marker mapping test in `frontend/src/components/day-view/__tests__/CategoryMarker.spec.ts`. Assert `class` renders no indicator, `event` renders the flag indicator, an open `task` renders the empty completion box, and a completed `task` renders the checked box (FR-001 through FR-005).
+- [x] T007 [P] [US1] Add a marker mapping test in `frontend/src/components/day-view/__tests__/CategoryMarker.spec.ts`. Assert `class` renders no indicator, `event` renders the flag indicator, an open `task` renders the empty completion box, and a completed `task` renders the checked box (FR-001 through FR-005).
 
 ### Implementation for User Story 1
 
-- [ ] T008 [P] [US1] Create `frontend/src/components/day-view/CategoryMarker.vue`. Accept `category: CalendarItemCategory` and optional `completed: boolean`. Render the tri-block form: no indicator for a class, a flag or alarm icon for an event, a completion box for a task (checked when completed). Set `aria-hidden="true"` on the icon and expose the category name for the parent item label (FR-002, FR-003, FR-004, FR-005).
-- [ ] T009 [US1] Add the class marker and the detail-open tap to `frontend/src/components/day-view/WeekPill.vue`. Use `CategoryMarker` with `category="class"`. Emit the class `DayEvent` and its `DOMRect` on tap (FR-002, FR-006).
-- [ ] T010 [US1] Add the task and event markers to `frontend/src/components/day-view/WeekHeaderRow.vue` chips. Use `CategoryMarker` with the item `category` and the `completed` flag. Extend the chip accessible name to include the category. Emit the item and its `DOMRect` on tap (FR-003, FR-004, FR-005).
+- [x] T008 [P] [US1] Create `frontend/src/components/day-view/CategoryMarker.vue`. Accept `category: CalendarItemCategory` and optional `completed: boolean`. Render the tri-block form: no indicator for a class, a flag or alarm icon for an event, a completion box for a task (checked when completed). Set `aria-hidden="true"` on the icon and expose the category name for the parent item label (FR-002, FR-003, FR-004, FR-005).
+- [x] T009 [US1] Add the class marker and the detail-open tap to `frontend/src/components/day-view/WeekPill.vue`. Use `CategoryMarker` with `category="class"`. Emit the class `DayEvent` and its `DOMRect` on tap (FR-002, FR-006).
+- [x] T010 [US1] Add the task and event markers to `frontend/src/components/day-view/WeekHeaderRow.vue` chips. Use `CategoryMarker` with the item `category` and the `completed` flag. Extend the chip accessible name to include the category. Emit the item and its `DOMRect` on tap (FR-003, FR-004, FR-005).
 
 **Checkpoint**: All week-view items show the correct marker. User Story 1 is independently testable.
 
