@@ -743,17 +743,48 @@ export function initMockAdapter(): void {
 
         if (pathname === '/api/study-planner/process' && method === 'POST') {
           // Emit the backend event order: init, one progress per dirty date, then done.
-          const init = plannerStatus()
+          const plannerInit = plannerStatus()
+          const isTestEnv = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test'
           const frames = [
-            `event: init\ndata: ${JSON.stringify(init)}\n\n`,
-            ...init.dirtyDates.map(
+            `event: init\ndata: ${JSON.stringify(plannerInit)}\n\n`,
+            ...plannerInit.dirtyDates.map(
               (date, i) =>
-                `event: progress\ndata: ${JSON.stringify({ date, index: i + 1, total: init.dirtyDates.length })}\n\n`,
+                `event: progress\ndata: ${JSON.stringify({ date, index: i + 1, total: plannerInit.dirtyDates.length })}\n\n`,
             ),
-            `event: done\ndata: ${JSON.stringify(state.processSummary)}\n\n`,
           ]
-          markNotesProcessed()
-          return new Response(frames.join(''), {
+          // Trickle frames so the mock shows the processing state like the backend does.
+          // An abort errors the stream and leaves the notes dirty, like a rolled-back run.
+          const stream = new ReadableStream<Uint8Array>({
+            async start(ctrl) {
+              const encoder = new TextEncoder()
+              const fail = () => ctrl.error(new DOMException('Aborted', 'AbortError'))
+              init?.signal?.addEventListener('abort', fail)
+              try {
+                for (const frame of frames) {
+                  if (init?.signal?.aborted) {
+                    return fail()
+                  }
+                  ctrl.enqueue(encoder.encode(frame))
+                  if (!isTestEnv) {
+                    await new Promise((r) => setTimeout(r, 5000 / frames.length))
+                  }
+                }
+                if (init?.signal?.aborted) {
+                  return fail()
+                }
+                markNotesProcessed()
+                ctrl.enqueue(
+                  encoder.encode(
+                    `event: done\ndata: ${JSON.stringify(state.processSummary)}\n\n`,
+                  ),
+                )
+                ctrl.close()
+              } finally {
+                init?.signal?.removeEventListener('abort', fail)
+              }
+            },
+          })
+          return new Response(stream, {
             status: 200,
             headers: {
               'Content-Type': 'text/event-stream',
