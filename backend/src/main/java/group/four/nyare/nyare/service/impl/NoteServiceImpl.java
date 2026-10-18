@@ -6,8 +6,10 @@ import group.four.nyare.nyare.dto.NoteSummaryResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
+import group.four.nyare.nyare.model.Image;
 import group.four.nyare.nyare.model.Note;
 import group.four.nyare.nyare.repository.CourseRepository;
+import group.four.nyare.nyare.repository.ImageRepository;
 import group.four.nyare.nyare.repository.NoteRepository;
 import group.four.nyare.nyare.service.NoteService;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,8 +17,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Service implementation for journal note management.
@@ -36,10 +41,13 @@ public class NoteServiceImpl implements NoteService {
 
     private final NoteRepository noteRepository;
     private final CourseRepository courseRepository;
+    private final ImageRepository imageRepository;
 
-    public NoteServiceImpl(NoteRepository noteRepository, CourseRepository courseRepository) {
+    public NoteServiceImpl(NoteRepository noteRepository, CourseRepository courseRepository,
+            ImageRepository imageRepository) {
         this.noteRepository = noteRepository;
         this.courseRepository = courseRepository;
+        this.imageRepository = imageRepository;
     }
 
     @Override
@@ -49,6 +57,8 @@ public class NoteServiceImpl implements NoteService {
 
         Course course = courseRepository.findByIdAndUserId(request.getCourseId(), userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + request.getCourseId()));
+
+        validateImageReferences(request.getContent());
 
         String title;
         if (request.getTitle() != null && !request.getTitle().isBlank()) {
@@ -97,6 +107,8 @@ public class NoteServiceImpl implements NoteService {
         Course course = courseRepository.findByIdAndUserId(request.getCourseId(), userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + request.getCourseId()));
 
+        validateImageReferences(request.getContent());
+
         note.setCourse(course);
         note.setContent(request.getContent());
 
@@ -133,6 +145,21 @@ public class NoteServiceImpl implements NoteService {
         LocalDate oldestAllowed = today.minusDays(maxBackdateDays);
         if (entryDate.isBefore(oldestAllowed)) {
             throw new BadRequestException("Entry date cannot be older than " + maxBackdateDays + " days");
+        }
+    }
+
+    private void validateImageReferences(String content) {
+        Set<UUID> referenced = ImageReferenceExtractor.extractIds(content);
+        if (referenced.isEmpty()) {
+            return;
+        }
+        Set<UUID> existing = imageRepository.findAllById(referenced).stream()
+                .map(Image::getId)
+                .collect(Collectors.toSet());
+        Set<UUID> missing = new LinkedHashSet<>(referenced);
+        missing.removeAll(existing);
+        if (!missing.isEmpty()) {
+            throw new BadRequestException("Note references unknown image(s): " + missing);
         }
     }
 

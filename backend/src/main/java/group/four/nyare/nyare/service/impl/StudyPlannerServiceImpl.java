@@ -31,8 +31,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CancellationException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -41,9 +39,6 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class StudyPlannerServiceImpl implements StudyPlannerService {
-
-    private static final Pattern IMAGE_URL_PATTERN =
-            Pattern.compile("/api/images/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})");
 
     /**
      * Hard cap on persisted AI image descriptions. The image system prompt already
@@ -301,17 +296,9 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         Set<UUID> allImageIds = new HashSet<>();
 
         for (Note note : dirtyNotes) {
-            if (note.getId() == null || note.getContent() == null) continue;
-            Matcher matcher = IMAGE_URL_PATTERN.matcher(note.getContent());
-            Set<UUID> imageIds = new LinkedHashSet<>();
-            while (matcher.find()) {
-                try {
-                    UUID imageId = UUID.fromString(matcher.group(1));
-                    imageIds.add(imageId);
-                    allImageIds.add(imageId);
-                } catch (IllegalArgumentException ignored) {
-                }
-            }
+            if (note.getId() == null) continue;
+            Set<UUID> imageIds = ImageReferenceExtractor.extractIds(note.getContent());
+            allImageIds.addAll(imageIds);
             if (!imageIds.isEmpty()) {
                 noteToImageIds.put(note.getId(), imageIds);
             }
