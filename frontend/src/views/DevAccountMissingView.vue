@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { AlertCircle, RefreshCw, UserCheck } from 'lucide-vue-next'
+import { AlertCircle, RefreshCw, UserCheck } from '@lucide/vue'
 import { clearSessionUser, ensureSession, useAuth } from '@/composables/useAuth'
 import duckotaCasual from '@/assets/mascot/duckota_casual.png'
 

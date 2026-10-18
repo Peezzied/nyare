@@ -5,7 +5,6 @@ import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import {
   ArrowLeft,
   AlertCircle,
-  ChevronDown,
   CalendarIcon,
   FileText,
   Clock,
@@ -27,8 +26,7 @@ import { Button } from '@/components/ui/button'
 import TiptapEditor from '@/components/editor/TiptapEditor.vue'
 import { useNotes } from '@/composables/useNotes'
 import { useCatalog } from '@/composables/useCatalog'
-import { getCourseBadgeStyle } from '@/utils/courseColors'
-import CoursePickerDialog from '@/components/editor/CoursePickerDialog.vue'
+import CoursePicker from '@/components/CoursePicker.vue'
 import { markdownToHtml, htmlToMarkdown, extractImageUrls } from '@/utils/markdown'
 import {
   getNoteProcessingStatus,
@@ -114,7 +112,6 @@ const minDateString = getMinDateString(14)
 
 const title = ref(props.initialTitle)
 const selectedCourseId = ref<number | null>(props.initialCourseId)
-const isCoursePickerOpen = ref(false)
 const entryDate = ref(props.initialDate !== undefined ? props.initialDate : todayString)
 const isCalendarOpen = ref(false)
 const lastProcessedAt = ref<string | null>(props.initialLastProcessedAt ?? null)
@@ -315,29 +312,6 @@ if (props.initialContent) {
   for (const url of extractImageUrls(props.initialContent)) {
     knownImageUrls.value.add(url)
   }
-}
-
-const selectedCourse = computed(() => {
-  if (selectedCourseId.value === null) {
-    return null
-  }
-  return courses.value.find((c) => c.id === selectedCourseId.value) ?? null
-})
-
-const courseBadgeStyle = computed<Record<string, string> | undefined>(() => {
-  if (!selectedCourseId.value) {
-    return undefined
-  }
-  const badge = getCourseBadgeStyle(selectedCourseId.value)
-  return {
-    backgroundColor: badge.backgroundColor,
-    color: badge.color,
-    borderColor: badge.borderColor,
-  }
-})
-
-function onCourseSelect(courseId: number) {
-  selectedCourseId.value = courseId
 }
 
 const isSaveDisabled = computed(() => {
@@ -728,37 +702,15 @@ defineExpose({ requestBack: handleBack })
           >
             Course:
           </label>
-          <div class="relative inline-flex items-center">
-            <button
-              id="course-picker-trigger"
-              type="button"
-              data-testid="course-picker-trigger"
-              aria-label="Course"
-              class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 pr-2.5 text-xs font-semibold cursor-pointer border transition-colors outline-none max-w-[200px]"
-              :style="courseBadgeStyle"
-              :class="
-                selectedCourseId
-                  ? ''
-                  : 'border-dashed border-red-400 bg-red-50 text-red-600 hover:bg-red-100/70'
-              "
-              @click="isCoursePickerOpen = true"
-            >
-              <span class="truncate">
-                {{ selectedCourse ? selectedCourse.name : 'Required' }}
-              </span>
-              <ChevronDown class="size-3.5 opacity-60 shrink-0" />
-            </button>
-          </div>
+          <CoursePicker
+            id="course-picker-trigger"
+            data-testid="course-picker-trigger"
+            aria-label="Course"
+            v-model="selectedCourseId"
+            :courses="courses"
+            :schedules="schedules"
+          />
         </div>
-
-        <!-- Course Picker Modal -->
-        <CoursePickerDialog
-          v-model:open="isCoursePickerOpen"
-          :selected-course-id="selectedCourseId"
-          :courses="courses"
-          :schedules="schedules"
-          @select="onCourseSelect"
-        />
 
         <!-- Date Pill -->
         <div class="inline-flex items-center gap-1.5" data-testid="date-pill">
