@@ -96,7 +96,7 @@ Frontend-only feature. Paths are relative to `frontend/`.
 
 ### Implementation for User Story 3
 
-- [ ] T015 [US3] Wire the event tap to open the detail view. In `frontend/src/components/day-view/DayViewContainer.vue`, build the event view model with `buildCalendarItemDetail` and open the modal. The tap sources `frontend/src/components/day-view/ScheduleCalendar.vue` and `frontend/src/components/day-view/WeekCalendar.vue` forward the tapped untimed item upward (FR-007, FR-014, FR-016). Confirm no duration field renders (FR-017).
+- [x] T015 [US3] Wire the event tap to open the detail view. In `frontend/src/components/day-view/DayViewContainer.vue`, build the event view model with `buildCalendarItemDetail` and open the modal. The tap sources `frontend/src/components/day-view/ScheduleCalendar.vue` and `frontend/src/components/day-view/WeekCalendar.vue` forward the tapped untimed item upward (FR-007, FR-014, FR-016). Confirm no duration field renders (FR-017).
 
 **Checkpoint**: Events show the note link and the time window with no duration. User Stories 1, 2, and 3 work independently.
 
