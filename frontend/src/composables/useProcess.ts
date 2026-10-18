@@ -1,6 +1,7 @@
-import { getCurrentScope, onScopeDispose, ref } from 'vue'
+import { ref } from 'vue'
 import type { Ref } from 'vue'
 import { studyPlannerApi } from '@/api'
+import { createCache } from './createCache'
 import type { PlannerStatusResponse, ProcessProgressEvent, ProcessSummaryResponse } from '@/api'
 
 /** Callbacks that `useProcess` runs when a Process run ends. */
@@ -32,6 +33,37 @@ function toMessage(err: unknown): string {
   return 'Process failed'
 }
 
+// Module-level run state, so a run survives navigation between views.
+const running = ref(false)
+const status = ref<PlannerStatusResponse | null>(null)
+const progress = ref<ProcessProgressEvent | null>(null)
+const summary = ref<ProcessSummaryResponse | null>(null)
+const error = ref<string | null>(null)
+const cancelled = ref(false)
+const savedAfterCancel = ref(false)
+
+let controller: AbortController | null = null
+// start() increments runId. verifyCancel() compares ids to drop stale results.
+let runId = 0
+
+const cache = createCache(() => {
+  runId += 1
+  controller?.abort()
+  controller = null
+  running.value = false
+  status.value = null
+  progress.value = null
+  summary.value = null
+  error.value = null
+  cancelled.value = false
+  savedAfterCancel.value = false
+})
+
+/** Aborts the active run and clears the run state. `resetAllCaches()` calls this. */
+export function resetProcess(): void {
+  cache.reset()
+}
+
 /** State and controls that `useProcess` returns. */
 export interface UseProcess {
   /** True while the stream is open and while `options.onDone` runs. */
@@ -57,8 +89,8 @@ export interface UseProcess {
 /**
  * Runs one study-planner Process call and exposes its live status, per-date
  * progress, summary, error, and cancel state. Call `cancel()` to abort; the
- * backend stops at the next checkpoint and rolls back. The run also cancels
- * when the calling component or effect scope disposes. In `options.onDone`,
+ * backend stops at the next checkpoint and rolls back. Navigation does not
+ * cancel a run: only `cancel()` or a session reset does. In `options.onDone`,
  * refresh tasks and academic events for `summary.affectedCourseIds` — do not
  * refetch courses, schedules, or notes (see Backend Roundtrip Conventions in
  * frontend/AGENTS.md). After a cancel, the planner status is rechecked in the
@@ -67,19 +99,6 @@ export interface UseProcess {
  * events in full there, since there is no summary to give affected course ids.
  */
 export function useProcess(options: UseProcessOptions = {}): UseProcess {
-  const running = ref(false)
-  const status = ref<PlannerStatusResponse | null>(null)
-  const progress = ref<ProcessProgressEvent | null>(null)
-  const summary = ref<ProcessSummaryResponse | null>(null)
-  const error = ref<string | null>(null)
-  const cancelled = ref(false)
-  const savedAfterCancel = ref(false)
-
-  let controller: AbortController | null = null
-  // start() increments runId. verifyCancel() compares ids to drop stale results.
-  let runId = 0
-  let disposed = false
-
   async function start(): Promise<ProcessSummaryResponse | null> {
     if (running.value) {
       return null
@@ -115,15 +134,17 @@ export function useProcess(options: UseProcessOptions = {}): UseProcess {
         await options.onDone?.(summary.value)
       }
       // streamProcess resolves silently on abort. The server may still have committed, so
-      // recheck in the background. Skip it after dispose because no view shows the result.
-      if (cancelled.value && !summary.value && !disposed) {
+      // recheck in the background. A session reset bumps the run generation and skips it.
+      if (cancelled.value && !summary.value && id === runId) {
         void verifyCancel(id, status.value)
       }
     } catch (err) {
       error.value = toMessage(err)
     } finally {
-      running.value = false
-      controller = null
+      if (id === runId) {
+        running.value = false
+        controller = null
+      }
     }
 
     return summary.value
@@ -137,8 +158,8 @@ export function useProcess(options: UseProcessOptions = {}): UseProcess {
     } catch {
       return
     }
-    // A newer run or a dispose makes this result stale.
-    if (id !== runId || disposed) {
+    // A newer run or a session reset makes this result stale.
+    if (id !== runId) {
       return
     }
     // With init notes, the run committed when none of them stay pending. Without them,
@@ -168,14 +189,6 @@ export function useProcess(options: UseProcessOptions = {}): UseProcess {
     }
     cancelled.value = true
     controller.abort()
-  }
-
-  // onScopeDispose warns outside a scope, so register the cleanup only inside one.
-  if (getCurrentScope()) {
-    onScopeDispose(() => {
-      disposed = true
-      cancel()
-    })
   }
 
   return { running, status, progress, summary, error, cancelled, savedAfterCancel, start, cancel }

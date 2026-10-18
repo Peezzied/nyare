@@ -1,12 +1,17 @@
 import { ref } from 'vue'
 import { coursesApi, schedulesApi } from '@/api'
+import { createCache } from './createCache'
 import type { CourseResponse, ScheduleResponse } from '@/types/api'
 
 // Module-level state, so every useCatalog() caller shares one cache.
 const courses = ref<CourseResponse[]>([])
 const schedules = ref<ScheduleResponse[]>([])
 const loaded = ref(false)
-let pending: Promise<void> | null = null
+const cache = createCache(() => {
+  courses.value = []
+  schedules.value = []
+  loaded.value = false
+})
 
 /**
  * Shared cache for rarely changing catalog data. Each view loads courses
@@ -23,19 +28,30 @@ export function useCatalog() {
       return
     }
     // Views that mount at the same time wait for one request instead of sending duplicates.
-    if (pending) {
-      await pending
+    if (cache.pending) {
+      await cache.pending
       return
     }
-    pending = (async () => {
-      courses.value = await coursesApi.list()
-      schedules.value = await schedulesApi.list()
-      loaded.value = true
+    const g = cache.begin()
+    const seq = cache.beginLoad()
+    const fetchPromise = (async () => {
+      const [courseList, scheduleList] = await Promise.all([
+        coursesApi.list(),
+        schedulesApi.list(),
+      ])
+      if (cache.isLatest(seq, g)) {
+        courses.value = courseList
+        schedules.value = scheduleList
+        loaded.value = true
+      }
     })()
+    cache.pending = fetchPromise
     try {
-      await pending
+      await fetchPromise
     } finally {
-      pending = null
+      if (cache.pending === fetchPromise) {
+        cache.pending = null
+      }
     }
   }
 
@@ -65,9 +81,7 @@ export function useCatalog() {
 
   /** Clears the cache so the next `loadCatalog()` call fetches again. */
   function resetCatalog(): void {
-    courses.value = []
-    schedules.value = []
-    loaded.value = false
+    cache.reset()
   }
 
   return {

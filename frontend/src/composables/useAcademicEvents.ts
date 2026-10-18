@@ -2,21 +2,25 @@ import { ref } from 'vue'
 import type { Ref } from 'vue'
 import { academicEventsApi } from '@/api'
 import type { AcademicEventListParams } from '@/api'
+import { createCache } from './createCache'
 import type { AcademicEventRequest, AcademicEventResponse } from '@/types/api'
 
 // Module-level shared state for academic events cache across callers.
 const events = ref<AcademicEventResponse[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
-let loaded = false
-let pending: Promise<void> | null = null
+const cache = createCache(() => {
+  events.value = []
+  loading.value = false
+  error.value = null
+})
 
 export interface UseAcademicEvents {
   events: Ref<AcademicEventResponse[]>
   loading: Ref<boolean>
   error: Ref<string | null>
 
-  loadEvents: (params?: AcademicEventListParams, force?: boolean) => Promise<void>
+  loadEvents: (params?: AcademicEventListParams, force?: boolean) => Promise<AcademicEventResponse[]>
   createEvent: (request: AcademicEventRequest) => Promise<AcademicEventResponse>
   updateEvent: (id: string, request: AcademicEventRequest) => Promise<AcademicEventResponse>
   deleteEvent: (id: string) => Promise<void>
@@ -25,45 +29,65 @@ export interface UseAcademicEvents {
 }
 
 export function useAcademicEvents(): UseAcademicEvents {
-  async function loadEvents(params?: AcademicEventListParams, force = false): Promise<void> {
-    if (loaded && !force && !params) {
-      return
+  /**
+   * Loads the event list. A `params` call filters on the server, returns the
+   * fetched list, and never writes the shared refs. A call without `params`
+   * fills the cache once per intent and resolves with the cached list.
+   */
+  async function loadEvents(
+    params?: AcademicEventListParams,
+    force = false,
+  ): Promise<AcademicEventResponse[]> {
+    if (params) {
+      return academicEventsApi.list(params)
     }
 
-    if (pending && !params && !force) {
-      await pending
-      return
+    if (cache.loaded && !force) {
+      return events.value
     }
 
+    if (cache.pending && !force) {
+      await cache.pending
+      return events.value
+    }
+
+    const g = cache.begin()
+    const seq = cache.beginLoad()
     loading.value = true
     error.value = null
 
     const fetchPromise = (async () => {
       try {
-        const result = await academicEventsApi.list(params)
-        events.value = result
-        if (!params) {
-          loaded = true
+        const result = await academicEventsApi.list()
+        if (cache.isLatest(seq, g)) {
+          events.value = result
+          cache.loaded = true
         }
       } catch (err) {
-        error.value = err instanceof Error ? err.message : 'Events failed to load'
+        if (cache.isLatest(seq, g)) {
+          error.value = err instanceof Error ? err.message : 'Events failed to load'
+        }
         throw err
       } finally {
-        loading.value = false
+        if (cache.isLatest(seq, g)) {
+          loading.value = false
+        }
       }
     })()
 
-    if (!params && !force) {
-      pending = fetchPromise
+    if (!force) {
+      cache.pending = fetchPromise
     }
 
     try {
       await fetchPromise
     } finally {
-      if (pending === fetchPromise) {
-        pending = null
+      if (cache.pending === fetchPromise) {
+        cache.pending = null
       }
     }
+
+    return events.value
   }
 
   async function createEvent(request: AcademicEventRequest): Promise<AcademicEventResponse> {
@@ -119,30 +143,34 @@ export function useAcademicEvents(): UseAcademicEvents {
       return
     }
 
+    const g = cache.begin()
+    const seq = cache.beginLoad()
     loading.value = true
     error.value = null
     try {
       const courseResults = await Promise.all(
         courseIds.map((courseId) => academicEventsApi.list({ courseId })),
       )
-      const courseIdSet = new Set(courseIds)
-      const keptEvents = events.value.filter((e) => !courseIdSet.has(e.courseId))
-      const fetchedEvents = courseResults.flat()
-      events.value = [...keptEvents, ...fetchedEvents]
+      if (cache.isLatest(seq, g)) {
+        const courseIdSet = new Set(courseIds)
+        const keptEvents = events.value.filter((e) => !courseIdSet.has(e.courseId))
+        const fetchedEvents = courseResults.flat()
+        events.value = [...keptEvents, ...fetchedEvents]
+      }
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to refetch events for courses'
+      if (cache.isLatest(seq, g)) {
+        error.value = err instanceof Error ? err.message : 'Failed to refetch events for courses'
+      }
       throw err
     } finally {
-      loading.value = false
+      if (cache.isLatest(seq, g)) {
+        loading.value = false
+      }
     }
   }
 
   function resetEvents(): void {
-    events.value = []
-    loading.value = false
-    error.value = null
-    loaded = false
-    pending = null
+    cache.reset()
   }
 
   return {

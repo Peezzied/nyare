@@ -49,6 +49,17 @@ export function setUnauthorizedHandler(handler: (() => void) | null): void {
   unauthorizedHandler = handler
 }
 
+/**
+ * Runs the registered unauthorized handler for a protected path.
+ * It skips the session probe `/api/users/me` and the login call `/api/users/login`.
+ * Callers invoke it only when the response status is 401.
+ */
+export function notifyUnauthorized(path: string): void {
+  if (path !== '/api/users/me' && path !== '/api/users/login') {
+    unauthorizedHandler?.()
+  }
+}
+
 /** Query parameters for a GET request. The client skips `undefined` and `null` values. */
 export type QueryParams = Record<string, unknown> | object
 
@@ -119,13 +130,8 @@ async function request<T>(
   try {
     return await sendRequest<T>(method, path, options)
   } catch (err) {
-    if (
-      err instanceof ApiError &&
-      err.status === 401 &&
-      path !== '/api/users/me' &&
-      path !== '/api/users/login'
-    ) {
-      unauthorizedHandler?.()
+    if (err instanceof ApiError && err.status === 401) {
+      notifyUnauthorized(path)
     }
     throw err
   }

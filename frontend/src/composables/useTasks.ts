@@ -2,21 +2,25 @@ import { ref } from 'vue'
 import type { Ref } from 'vue'
 import { tasksApi } from '@/api'
 import type { TaskListParams } from '@/api'
+import { createCache } from './createCache'
 import type { TaskRequest, TaskResponse, TaskStatus } from '@/types/api'
 
 // Module-level shared state for tasks cache across callers.
 const tasks = ref<TaskResponse[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
-let loaded = false
-let pending: Promise<void> | null = null
+const cache = createCache(() => {
+  tasks.value = []
+  loading.value = false
+  error.value = null
+})
 
 export interface UseTasks {
   tasks: Ref<TaskResponse[]>
   loading: Ref<boolean>
   error: Ref<string | null>
 
-  loadTasks: (params?: TaskListParams, force?: boolean) => Promise<void>
+  loadTasks: (params?: TaskListParams, force?: boolean) => Promise<TaskResponse[]>
   createTask: (request: TaskRequest) => Promise<TaskResponse>
   updateTask: (id: string, request: TaskRequest) => Promise<TaskResponse>
   updateTaskStatus: (id: string, status: TaskStatus) => Promise<TaskResponse>
@@ -26,45 +30,62 @@ export interface UseTasks {
 }
 
 export function useTasks(): UseTasks {
-  async function loadTasks(params?: TaskListParams, force = false): Promise<void> {
-    if (loaded && !force && !params) {
-      return
+  /**
+   * Loads the task list. A `params` call filters on the server, returns the
+   * fetched list, and never writes the shared refs. A call without `params`
+   * fills the cache once per intent and resolves with the cached list.
+   */
+  async function loadTasks(params?: TaskListParams, force = false): Promise<TaskResponse[]> {
+    if (params) {
+      return tasksApi.list(params)
     }
 
-    if (pending && !params && !force) {
-      await pending
-      return
+    if (cache.loaded && !force) {
+      return tasks.value
     }
 
+    if (cache.pending && !force) {
+      await cache.pending
+      return tasks.value
+    }
+
+    const g = cache.begin()
+    const seq = cache.beginLoad()
     loading.value = true
     error.value = null
 
     const fetchPromise = (async () => {
       try {
-        const result = await tasksApi.list(params)
-        tasks.value = result
-        if (!params) {
-          loaded = true
+        const result = await tasksApi.list()
+        if (cache.isLatest(seq, g)) {
+          tasks.value = result
+          cache.loaded = true
         }
       } catch (err) {
-        error.value = err instanceof Error ? err.message : 'Tasks failed to load'
+        if (cache.isLatest(seq, g)) {
+          error.value = err instanceof Error ? err.message : 'Tasks failed to load'
+        }
         throw err
       } finally {
-        loading.value = false
+        if (cache.isLatest(seq, g)) {
+          loading.value = false
+        }
       }
     })()
 
-    if (!params && !force) {
-      pending = fetchPromise
+    if (!force) {
+      cache.pending = fetchPromise
     }
 
     try {
       await fetchPromise
     } finally {
-      if (pending === fetchPromise) {
-        pending = null
+      if (cache.pending === fetchPromise) {
+        cache.pending = null
       }
     }
+
+    return tasks.value
   }
 
   async function createTask(request: TaskRequest): Promise<TaskResponse> {
@@ -132,30 +153,34 @@ export function useTasks(): UseTasks {
       return
     }
 
+    const g = cache.begin()
+    const seq = cache.beginLoad()
     loading.value = true
     error.value = null
     try {
       const courseResults = await Promise.all(
         courseIds.map((courseId) => tasksApi.list({ courseId })),
       )
-      const courseIdSet = new Set(courseIds)
-      const keptTasks = tasks.value.filter((t) => !courseIdSet.has(t.courseId))
-      const fetchedTasks = courseResults.flat()
-      tasks.value = [...keptTasks, ...fetchedTasks]
+      if (cache.isLatest(seq, g)) {
+        const courseIdSet = new Set(courseIds)
+        const keptTasks = tasks.value.filter((t) => !courseIdSet.has(t.courseId))
+        const fetchedTasks = courseResults.flat()
+        tasks.value = [...keptTasks, ...fetchedTasks]
+      }
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to refetch tasks for courses'
+      if (cache.isLatest(seq, g)) {
+        error.value = err instanceof Error ? err.message : 'Failed to refetch tasks for courses'
+      }
       throw err
     } finally {
-      loading.value = false
+      if (cache.isLatest(seq, g)) {
+        loading.value = false
+      }
     }
   }
 
   function resetTasks(): void {
-    tasks.value = []
-    loading.value = false
-    error.value = null
-    loaded = false
-    pending = null
+    cache.reset()
   }
 
   return {

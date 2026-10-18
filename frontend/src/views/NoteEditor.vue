@@ -26,6 +26,7 @@ import {
 import { Button } from '@/components/ui/button'
 import TiptapEditor from '@/components/editor/TiptapEditor.vue'
 import { notesApi } from '@/api/notes'
+import { useNotes } from '@/composables/useNotes'
 import { useCatalog } from '@/composables/useCatalog'
 import { getCourseBadgeStyle } from '@/utils/courseColors'
 import CoursePickerDialog from '@/components/editor/CoursePickerDialog.vue'
@@ -87,6 +88,7 @@ const emit = defineEmits<{
 const route = useRoute()
 const router = useRouter()
 const { courses, schedules, loadCatalog } = useCatalog()
+const { saveNote: persistNote } = useNotes()
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -523,9 +525,9 @@ async function saveNote() {
     errorMessage.value = null
     let savedNote: NoteResponse
     if (isEditMode.value && activeNoteId.value) {
-      savedNote = await notesApi.update(activeNoteId.value, payload)
+      savedNote = await persistNote(payload, activeNoteId.value)
     } else {
-      savedNote = await notesApi.create(payload)
+      savedNote = await persistNote(payload)
     }
     lastProcessedAt.value = savedNote.lastProcessedAt ?? null
     updatedAt.value = savedNote.updatedAt ?? null
