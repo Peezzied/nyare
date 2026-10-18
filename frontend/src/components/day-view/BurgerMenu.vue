@@ -21,7 +21,7 @@ function handleSelect(actionName: 'edit' | 'new' | 'delete' | 'archive') {
 
     <!-- Menu Card: same styling as the Notes account menu, anchored under the burger -->
     <div
-      class="absolute top-[54px] left-5 z-10 w-44 rounded-2xl border border-app-border bg-card px-4 py-3 shadow-lg"
+      class="absolute top-1 left-5 z-10 w-44 rounded-2xl border border-app-border bg-card px-4 py-3 shadow-lg"
     >
       <button
         type="button"

@@ -29,20 +29,9 @@ const router = createRouter({
       component: CreateScheduleView,
     },
     {
-      path: '/tasks',
-      alias: ['/todo'],
-      name: 'tasks',
-      component: () => import('@/views/TodoView.vue'),
-    },
-    {
       path: '/tasks/:id',
       name: 'task-detail',
       component: () => import('@/views/TaskDetailView.vue'),
-    },
-    {
-      path: '/notes',
-      name: 'notes',
-      component: () => import('../views/NotesView.vue'),
     },
     // Optional query params `courseId` and `entryDate` prefill the new note.
     {
@@ -61,10 +50,28 @@ const router = createRouter({
       name: 'select-account',
       component: () => import('../views/AccountSelectView.vue'),
     },
+    // Logged-in tab routes render inside the shared AppShell chrome.
     {
-      path: '/calendar',
-      name: 'calendar',
-      component: () => import('@/components/day-view/DayViewContainer.vue'),
+      path: '/',
+      component: () => import('@/components/AppShell.vue'),
+      children: [
+        {
+          path: '/tasks',
+          alias: ['/todo'],
+          name: 'tasks',
+          component: () => import('@/views/TodoView.vue'),
+        },
+        {
+          path: '/calendar',
+          name: 'calendar',
+          component: () => import('@/components/day-view/DayViewContainer.vue'),
+        },
+        {
+          path: '/notes',
+          name: 'notes',
+          component: () => import('../views/NotesView.vue'),
+        },
+      ],
     },
     {
       path: '/dev-missing',

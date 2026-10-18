@@ -1,19 +1,20 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { academicEventsApi } from '../../api/academicEvents'
-import { tasksApi } from '../../api/tasks'
+import { computed, h, onMounted, ref } from 'vue'
+import { Menu } from '@lucide/vue'
+import { useAcademicEvents } from '@/composables/useAcademicEvents'
 import { useCatalog } from '@/composables/useCatalog'
-import type { AcademicEventResponse, TaskResponse } from '../../types/api'
+import { useShellHeader } from '@/composables/useShellHeader'
+import { useTasks } from '@/composables/useTasks'
 import { toDateKey } from '../../utils/dayKey'
 import { expandSchedulesForDate, formatDateHeader } from '../../utils/scheduleExpander'
 import { deriveUntimedItems } from '../../utils/untimedItems'
 import { formatWeekTitle } from '../../utils/weekDays'
 import BurgerMenu from './BurgerMenu.vue'
-import NavigationBar from '../NavigationBar.vue'
+import HeaderIconButton from '../HeaderIconButton.vue'
 import DayPeek from './DayPeek.vue'
 import DaySwiper from './DaySwiper.vue'
-import DayViewHeader from './DayViewHeader.vue'
 import ScheduleCalendar from './ScheduleCalendar.vue'
+import ViewModeToggle from './ViewModeToggle.vue'
 import WeekCalendar from './WeekCalendar.vue'
 import WeekPeek from './WeekPeek.vue'
 
@@ -24,18 +25,13 @@ const isMenuOpen = ref(false)
 const catalog = useCatalog()
 
 // Tasks + events load once per intent; swiping only refilters locally.
-const tasks = ref<TaskResponse[]>([])
-const events = ref<AcademicEventResponse[]>([])
+const { tasks, loadTasks } = useTasks()
+const { events, loadEvents } = useAcademicEvents()
 
 onMounted(async () => {
   try {
     await catalog.loadCatalog()
-    const [loadedTasks, loadedEvents] = await Promise.all([
-      tasksApi.list(),
-      academicEventsApi.list(),
-    ])
-    tasks.value = loadedTasks
-    events.value = loadedEvents
+    await Promise.all([loadTasks(), loadEvents()])
   } catch (error) {
     console.warn('[DayView] API error loading tasks/events', error)
   }
@@ -81,72 +77,62 @@ function handleMenuAction(action: 'edit' | 'new' | 'delete' | 'archive') {
   // Placeholder event action - no backend calls
   console.log(`[DayView] Menu action executed: ${action}`)
 }
+
+// The shell header shows the date title, the schedule menu, and the
+// day/week mode switch.
+useShellHeader({
+  title: headerTitle,
+  left: () =>
+    h(HeaderIconButton, { 'aria-label': 'Open menu', onClick: toggleMenu }, () =>
+      h(Menu, { class: 'h-6 w-6' }),
+    ),
+  right: () => h(ViewModeToggle, { mode: viewMode.value, onToggle: toggleView }),
+})
 </script>
 
 <template>
-  <!-- fixed inset-0 = always exactly the visible screen -->
-  <div class="fixed inset-0 overflow-hidden bg-[#E5E7EB] flex justify-center sm:items-center">
-    <!-- Mobile Frame Viewport -->
-    <div
-      class="w-full max-w-[430px] h-full sm:h-[880px] sm:max-h-[95%] bg-[#F5F6EE] flex flex-col relative sm:rounded-[36px] sm:shadow-2xl overflow-hidden"
+  <!-- Fills the AppShell scroll area; the swiper manages its own height. -->
+  <div class="flex h-full flex-col">
+    <!-- Burger Menu Dropdown -->
+    <BurgerMenu :is-open="isMenuOpen" @close="closeMenu" @action="handleMenuAction" />
+
+    <!-- Swipe left/right anywhere on the calendar: a day in day view, a week in week view -->
+    <DaySwiper
+      :selected-date="selectedDate"
+      :step-days="viewMode === 'day' ? 1 : 7"
+      @change-date="selectedDate = $event"
     >
-      <!-- Top Header -->
-      <div class="shrink-0">
-        <DayViewHeader
-          :date-title="headerTitle"
-          :mode="viewMode"
-          @toggle-menu="toggleMenu"
-          @toggle-view="toggleView"
-        />
-      </div>
-
-      <!-- Burger Menu Dropdown -->
-      <BurgerMenu :is-open="isMenuOpen" @close="closeMenu" @action="handleMenuAction" />
-
-      <!-- Swipe left/right anywhere on the calendar: a day in day view, a week in week view -->
-      <DaySwiper
+      <ScheduleCalendar
+        v-if="viewMode === 'day'"
+        :events="dayEvents"
+        :untimed-items="untimedItems"
         :selected-date="selectedDate"
-        :step-days="viewMode === 'day' ? 1 : 7"
-        @change-date="selectedDate = $event"
-      >
-        <ScheduleCalendar
+      />
+      <WeekCalendar
+        v-else
+        :selected-date="selectedDate"
+        :events-for="eventsFor"
+        :untimed-for="untimedFor"
+        @select-day="openDay"
+      />
+
+      <template #peek="{ date, scrollTop, gutterLeft }">
+        <DayPeek
           v-if="viewMode === 'day'"
-          :events="dayEvents"
-          :untimed-items="untimedItems"
-          :selected-date="selectedDate"
+          :events="eventsFor(date)"
+          :untimed-items="untimedFor(date)"
+          :scroll-top="scrollTop"
+          :gutter-left="gutterLeft"
         />
-        <WeekCalendar
+        <WeekPeek
           v-else
-          :selected-date="selectedDate"
+          :date="date"
           :events-for="eventsFor"
           :untimed-for="untimedFor"
-          @select-day="openDay"
+          :scroll-top="scrollTop"
+          :gutter-left="gutterLeft"
         />
-
-        <template #peek="{ date, scrollTop, gutterLeft }">
-          <DayPeek
-            v-if="viewMode === 'day'"
-            :events="eventsFor(date)"
-            :untimed-items="untimedFor(date)"
-            :scroll-top="scrollTop"
-            :gutter-left="gutterLeft"
-          />
-          <WeekPeek
-            v-else
-            :date="date"
-            :events-for="eventsFor"
-            :untimed-for="untimedFor"
-            :scroll-top="scrollTop"
-            :gutter-left="gutterLeft"
-          />
-        </template>
-      </DaySwiper>
-
-      <!-- Bottom navigation: the h-16 reserve keeps the swiper clear of the bar;
-           transform-gpu anchors the bar's fixed positioning inside the frame on all breakpoints -->
-      <div class="h-16 shrink-0 transform-gpu">
-        <NavigationBar />
-      </div>
-    </div>
+      </template>
+    </DaySwiper>
   </div>
 </template>

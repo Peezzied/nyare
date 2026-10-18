@@ -6,7 +6,6 @@ import NoteEditorModal from '@/components/notes/NoteEditorModal.vue'
 import { coursesApi, schedulesApi, notesApi } from '@/api'
 import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
-import { routerKey, routeLocationKey } from 'vue-router'
 import type { NoteSummaryResponse } from '@/types/api'
 
 const mockPush = vi.fn<(path: string | { name: string; params?: { id: string } }) => Promise<void>>(
@@ -156,25 +155,6 @@ describe('NotesView', () => {
     expect(wrapper.find('[data-testid="notes-grid"]').exists()).toBe(true)
   })
 
-  it('keeps a compact cream header without a plus button', async () => {
-    mockCatalog()
-    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
-
-    const wrapper = mountView()
-    await flushPromises()
-
-    const topbar = wrapper.get('[data-testid="notes-topbar"]')
-
-    expect(topbar.classes()).toContain('sticky')
-    expect(topbar.classes()).toContain('bg-app-bg')
-    expect(topbar.classes()).not.toContain('bg-[#0B8043]')
-    expect(wrapper.find('[data-testid="topbar-menu"]').exists()).toBe(true)
-    expect(wrapper.find('[data-testid="topbar-search"]').exists()).toBe(true)
-    expect(wrapper.find('[data-testid="topbar-add"]').exists()).toBe(false)
-    expect(wrapper.get('[data-testid="notes-title"]').classes()).toContain('text-center')
-    expect(wrapper.get('[data-testid="notes-title"]').text()).toBe('Notes')
-  })
-
   it('opens a new note from the floating plus button', async () => {
     mockCatalog()
     vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
@@ -300,84 +280,4 @@ describe('NotesView', () => {
     expect(list).toHaveBeenCalledTimes(2)
   })
 
-  it('performs no action on the top bar search click', async () => {
-    mockCatalog()
-    const list = vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
-
-    const wrapper = mountView()
-    await flushPromises()
-
-    await wrapper.get('[data-testid="topbar-search"]').trigger('click')
-    await flushPromises()
-
-    expect(list).toHaveBeenCalledTimes(1)
-    expect(wrapper.find('[data-testid="notes-grid"]').exists()).toBe(true)
-  })
-
-  it('opens the account menu from the top bar menu button', async () => {
-    mockCatalog()
-    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
-
-    const wrapper = mountView()
-    await flushPromises()
-
-    await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
-
-    expect(wrapper.get('[data-testid="account-menu"]').text()).toContain('Select Account')
-  })
-
-  it('navigates to select-account from the account menu', async () => {
-    mockCatalog()
-    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
-
-    const wrapper = mountView()
-    await flushPromises()
-
-    await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
-    await wrapper.get('[data-testid="select-account-item"]').trigger('click')
-
-    expect(mockPush).toHaveBeenCalledWith('/select-account')
-    expect(wrapper.find('[data-testid="account-menu"]').exists()).toBe(false)
-  })
-
-  it('renders the bottom navigation with the notes tab active', async () => {
-    mockCatalog()
-    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
-
-    const wrapper = mount(NotesView, {
-      global: {
-        provide: {
-          [routerKey]: { push: mockPush },
-          [routeLocationKey]: { path: '/notes' },
-        },
-      },
-    })
-    await flushPromises()
-
-    const tab = wrapper.get('nav[aria-label="Main navigation"]').get('[data-id="notes"]')
-    expect(tab.attributes('data-active')).toBe('true')
-    expect(tab.attributes('aria-current')).toBe('page')
-  })
-
-  it('navigates to the calendar from the bottom navigation', async () => {
-    mockCatalog()
-    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
-
-    const wrapper = mount(NotesView, {
-      global: {
-        provide: {
-          [routerKey]: { push: mockPush },
-          [routeLocationKey]: { path: '/notes' },
-        },
-      },
-    })
-    await flushPromises()
-
-    await wrapper
-      .get('nav[aria-label="Main navigation"]')
-      .get('[data-id="calendar"]')
-      .trigger('click')
-
-    expect(mockPush).toHaveBeenCalledWith('/calendar')
-  })
 })

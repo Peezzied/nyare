@@ -166,6 +166,27 @@ Calendar items share course colors but differentiate block types through fill, b
 - The formatting bar (Bold, Italic, Bullet List, Headings) docks directly above the virtual phone keyboard for thumb reach.
 - Text content area styled with `Inter` for legibility and italic support.
 
+### 7.5 App Shell (`AppShell.vue`)
+The logged-in tab routes (`/tasks`, `/calendar`, `/notes`) render inside one shared scaffold:
+
+```text
+┌──────────────────────────────┐
+│ AppHeader (top bar, h-14)    │
+├──────────────────────────────┤
+│ Routed view (scrolls)        │
+│                              │
+├──────────────────────────────┤
+│ NavigationBar (bottom, h-16) │
+└──────────────────────────────┘
+        + DuckotaFab (teleported to shell root, absolute left-4 bottom-20, above nav)
+```
+
+- The shell fills the viewport on every screen size; no desktop phone frame.
+- Views set the header title and side actions with `useShellHeader()`. The call no-ops outside the shell.
+- `AppHeader` chrome: `h-14`, `bg-app-bg`, 3px bottom border, centered title (Quicksand 700, `text-xl`).
+- Default left action: `AccountMenuButton` (burger → Select Account). Default right action: a 44px spacer.
+- `HeaderIconButton` is the shared 44px icon-button chrome for both side regions.
+
 ---
 
 ## 8. Modal Dialogs & Form Sheets
