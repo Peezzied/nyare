@@ -2,10 +2,10 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { academicEventsApi } from '../../api/academicEvents'
-import { notesApi } from '../../api/notes'
 import { tasksApi } from '../../api/tasks'
 import { useCatalog } from '@/composables/useCatalog'
-import type { AcademicEventResponse, NoteSummaryResponse, TaskResponse } from '../../types/api'
+import { useNotes } from '@/composables/useNotes'
+import type { AcademicEventResponse, TaskResponse } from '../../types/api'
 import type { DayEvent } from '../../types/calendar'
 import type { CalendarItemDetailView, LinkedNoteRef } from '../../types/calendarItemDetail'
 import type { TapOriginRect } from '../../types/detailModal'
@@ -34,22 +34,22 @@ const catalog = useCatalog()
 // Tasks + events load once per intent; swiping only refilters locally.
 const tasks = ref<TaskResponse[]>([])
 const events = ref<AcademicEventResponse[]>([])
-const notes = ref<NoteSummaryResponse[]>([])
+// The shared notes cache never rejects, so a notes failure cannot hide the calendar.
+const { notes, loadNotes } = useNotes()
 
 onMounted(async () => {
   try {
     await catalog.loadCatalog()
-    const [loadedTasks, loadedEvents, loadedNotes] = await Promise.all([
+    const [loadedTasks, loadedEvents] = await Promise.all([
       tasksApi.list(),
       academicEventsApi.list(),
-      notesApi.list(),
     ])
     tasks.value = loadedTasks
     events.value = loadedEvents
-    notes.value = loadedNotes
   } catch (error) {
     console.warn('[DayView] API error loading tasks/events', error)
   }
+  await loadNotes()
 })
 
 const headerTitle = computed(() =>
@@ -156,8 +156,12 @@ async function completeTask(taskId: string) {
     const saved = await tasksApi.updateStatus(taskId, 'COMPLETED')
     tasks.value = tasks.value.map((candidate) => (candidate.id === saved.id ? saved : candidate))
     if (detailItem.value?.task?.id === saved.id) {
-      detailItem.value = { ...detailItem.value, task: { id: saved.id, completed: true } }
+      detailItem.value = {
+        ...detailItem.value,
+        task: { id: saved.id, completed: saved.status === 'COMPLETED' },
+      }
     }
+    detailError.value = null
   } catch (error) {
     // Keep the prior state and tell the student the write failed.
     detailError.value = `Could not complete "${cached.title}". Try again.`

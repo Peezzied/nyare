@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { UntimedDayItem } from "../../utils/untimedItems";
+import { buildMarkerState } from "../../utils/calendarItemDetail";
 import CategoryMarker from "./CategoryMarker.vue";
 
 defineProps<{
@@ -29,6 +30,19 @@ function pillColor(courseId: number) {
 function dayName(date: Date) {
   return date.toLocaleDateString('en-US', { weekday: 'narrow' }).toUpperCase()
 }
+
+/**
+ * Names the day and every item it holds. The chips are painted inside this one
+ * tap target, so each item's category has to reach the reader here (FR-005).
+ */
+function dayAriaLabel(day: { date: Date; untimed: UntimedDayItem[] }) {
+  const label = `Open ${day.date.toDateString()}`
+  if (day.untimed.length === 0) return label
+  const items = day.untimed
+    .map((item) => `${buildMarkerState(item.category, item.completed).label}: ${item.title}`)
+    .join(', ')
+  return `${label}. ${items}`
+}
 </script>
 
 <template>
@@ -43,7 +57,7 @@ function dayName(date: Date) {
         :key="day.key"
         type="button"
         class="flex min-w-0 flex-col items-center px-px pb-1 pt-1.5 active:bg-stone-200/60"
-        :aria-label="`Open ${day.date.toDateString()}`"
+        :aria-label="dayAriaLabel(day)"
         @click="emit('select', day.date)"
       >
         <span class="text-xs font-bold tracking-wide"

@@ -77,6 +77,19 @@ describe('deriveUntimedItems', () => {
     expect(result).toHaveLength(0)
   })
 
+  it('matches an event deadline that carries a clock time', () => {
+    const events = [makeEvent({ id: 'e-10', deadline: '2026-10-14T09:00:00' })]
+    const result: UntimedDayItem[] = deriveUntimedItems([], events, '2026-10-14')
+    expect(result).toHaveLength(1)
+    expect(result[0]?.id).toBe('e-10')
+    expect(result[0]?.category).toBe('event')
+  })
+
+  it('excludes a timed deadline that falls on another day', () => {
+    const events = [makeEvent({ id: 'e-11', deadline: '2026-10-15T23:59:00' })]
+    expect(deriveUntimedItems([], events, '2026-10-14')).toHaveLength(0)
+  })
+
   it('maps COMPLETED tasks to completed true and TODO or IN_PROGRESS to false', () => {
     const tasks = [
       makeTask({ id: 't-done', scheduledDate: '2026-10-14', status: 'COMPLETED' }),
