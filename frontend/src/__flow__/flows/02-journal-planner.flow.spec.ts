@@ -18,6 +18,7 @@ import { useTasks } from '@/composables/useTasks'
 import { useAcademicEvents } from '@/composables/useAcademicEvents'
 import { useStudyPlan } from '@/composables/useStudyPlan'
 import { getPlanCategory } from '@/utils/planCategory'
+import { toDateKey } from '@/utils/dayKey'
 import { plannerScenario } from '../fixtures/plannerScenario'
 
 describe('User Story 2: Journal to Planner', () => {
@@ -58,7 +59,7 @@ describe('User Story 2: Journal to Planner', () => {
     noticeImage = await imagesApi.upload(noticeFile)
     slideImage = await imagesApi.upload(slideFile)
 
-    const today = new Date().toISOString().split('T')[0]
+    const today = toDateKey(new Date())
 
     for (const n of plannerScenario.notes) {
       let text = n.textTemplate
@@ -79,7 +80,7 @@ describe('User Story 2: Journal to Planner', () => {
     if (taskCourse) {
       const dueDate = new Date()
       dueDate.setDate(dueDate.getDate() + plannerScenario.existingTask.dayOffset)
-      const scheduledDate = dueDate.toISOString().split('T')[0]
+      const scheduledDate = toDateKey(dueDate)
 
       await tasksApi.create({
         courseId: taskCourse.id,
@@ -93,7 +94,8 @@ describe('User Story 2: Journal to Planner', () => {
     if (eventCourse) {
       const eventDate = new Date()
       eventDate.setDate(eventDate.getDate() + plannerScenario.existingEvent.dayOffset)
-      const deadline = eventDate.toISOString().slice(0, 19)
+      const pad = (n: number) => String(n).padStart(2, '0')
+      const deadline = `${toDateKey(eventDate)}T${pad(eventDate.getHours())}:${pad(eventDate.getMinutes())}:${pad(eventDate.getSeconds())}`
 
       await academicEventsApi.create({
         courseId: eventCourse.id,

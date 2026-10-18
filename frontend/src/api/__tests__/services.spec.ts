@@ -10,6 +10,7 @@ import {
   studyPlannerApi,
   imagesApi,
 } from '../index'
+import { setUnauthorizedHandler } from '../client'
 import type {
   UserResponse,
   CourseResponse,
@@ -590,6 +591,29 @@ describe('API Services', () => {
 
       expect(onDone).not.toHaveBeenCalled()
       expect(onError).toHaveBeenCalled()
+    })
+
+    it('streamProcess calls the unauthorized handler once on a 401 and still reports onError', async () => {
+      const handler = vi.fn<() => void>()
+      setUnauthorizedHandler(handler)
+      globalThis.fetch = vi.fn<typeof fetch>().mockResolvedValue({
+        ok: false,
+        status: 401,
+        headers: new Headers({ 'content-type': 'application/problem+json' }),
+        text: async () => JSON.stringify({ title: 'Unauthorized', status: 401 }),
+        body: null,
+      } as unknown as Response)
+
+      const onDone = vi.fn<(summary: ProcessSummaryResponse) => void>()
+      const onError = vi.fn<(error: unknown) => void>()
+
+      await studyPlannerApi.streamProcess({ onDone, onError })
+
+      expect(handler).toHaveBeenCalledTimes(1)
+      expect(onError).toHaveBeenCalledTimes(1)
+      expect(onDone).not.toHaveBeenCalled()
+
+      setUnauthorizedHandler(null)
     })
 
     it('process wrapper resolves summary from done event', async () => {
