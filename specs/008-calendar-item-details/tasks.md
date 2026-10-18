@@ -28,8 +28,8 @@ Frontend-only feature. Paths are relative to `frontend/`.
 
 **Purpose**: Land the detail-view presentation prerequisite and confirm existing reuse points.
 
-- [ ] T001 Confirm the calendar detail modal host and its click wiring are present in `frontend/src/components/day-view/EventDetailModal.vue` (ported in commit `d4867df`). Install `@schedule-x/calendar-controls` at `^4.9.1` to match `@schedule-x/calendar`, because `ScheduleCalendar.vue` and `WeekCalendar.vue` import it, and add it to `frontend/package.json`. Change the `lucide-vue-next` import in `EventDetailModal.vue` to `@lucide/vue`. The imports of `CourseBlockDetail.vue` and `UntimedBlockDetail.vue` inside `EventDetailModal.vue` stay unresolved until T006 replaces them.
-- [ ] T002 Confirm the reuse points that this feature depends on: `frontend/src/utils/courseColors.ts` (`getCourseDotStyle`), `frontend/src/utils/taskUrgency.ts` (`formatDuration`), `frontend/src/utils/scheduleExpander.ts` (`formatTimeRange`), `frontend/src/utils/planCategory.ts` (`getPlanCategory`), and `frontend/src/api/tasks.ts` (`tasksApi.updateStatus`). Record any missing helper before you start Phase 2.
+- [x] T001 Confirm the calendar detail modal host and its click wiring are present in `frontend/src/components/day-view/EventDetailModal.vue` (ported in commit `d4867df`). Install `@schedule-x/calendar-controls` at `^4.9.1` to match `@schedule-x/calendar`, because `ScheduleCalendar.vue` and `WeekCalendar.vue` import it, and add it to `frontend/package.json`. Change the `lucide-vue-next` import in `EventDetailModal.vue` to `@lucide/vue`. The imports of `CourseBlockDetail.vue` and `UntimedBlockDetail.vue` inside `EventDetailModal.vue` stay unresolved until T006 replaces them.
+- [x] T002 Confirm the reuse points that this feature depends on: `frontend/src/utils/courseColors.ts` (`getCourseDotStyle`), `frontend/src/utils/taskUrgency.ts` (`formatDuration`), `frontend/src/utils/scheduleExpander.ts` (`formatTimeRange`), `frontend/src/utils/planCategory.ts` (`getPlanCategory`), and `frontend/src/api/tasks.ts` (`tasksApi.updateStatus`). Record any missing helper before you start Phase 2.
 
 ---
 
