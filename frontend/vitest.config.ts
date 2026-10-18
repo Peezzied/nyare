@@ -11,7 +11,7 @@ export default mergeConfig(
       environment: 'jsdom',
       fileParallelism: false,
       maxWorkers: 1,
-      exclude: [...configDefaults.exclude, 'e2e/**'],
+      exclude: [...configDefaults.exclude, 'e2e/**', 'src/__flow__/**'],
       root: fileURLToPath(new URL('./', import.meta.url)),
     },
   }),
