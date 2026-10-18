@@ -110,10 +110,10 @@ Frontend-only feature. Paths are relative to `frontend/`.
 
 ### Implementation for User Story 4
 
-- [ ] T016 [P] [US4] Create `frontend/src/api/mocks/calendarItemDetailFixtures.ts`. Export `CALENDAR_ITEM_DETAIL_FIXTURES`. Cover every state in FR-023: a class, a task with a note, a task without a note, a task with a duration, a task without a duration, a scheduled task, a task with no scheduled date, an open task, a completed task, an event with a note, and an event without a note. Also cover the FR-024 marker states: a class item, an event item, an open task item, a completed task item, and a day with more items than the visible limit.
-- [ ] T017 [P] [US4] Create `frontend/src/components/day-view/CalendarItemDetail.story.vue` with one variant per fixture. Do not include test code in the story.
-- [ ] T018 [US4] Extend `frontend/src/api/mocks/fixtures.ts` so at least one task and one event carry a `noteId` that resolves to a mock note, and add the over-limit day for FR-024.
-- [ ] T019 [US4] Remove the per-type detail components. Delete `frontend/src/components/day-view/CourseBlockDetail.vue` and `frontend/src/components/day-view/UntimedBlockDetail.vue` if they are present on this branch after `CalendarItemDetail.vue` replaces them (FR-021).
+- [x] T016 [P] [US4] Create `frontend/src/api/mocks/calendarItemDetailFixtures.ts`. Export `CALENDAR_ITEM_DETAIL_FIXTURES`. Cover every state in FR-023: a class, a task with a note, a task without a note, a task with a duration, a task without a duration, a scheduled task, a task with no scheduled date, an open task, a completed task, an event with a note, and an event without a note. Also cover the FR-024 marker states: a class item, an event item, an open task item, a completed task item, and a day with more items than the visible limit.
+- [x] T017 [P] [US4] Create `frontend/src/components/day-view/CalendarItemDetail.story.vue` with one variant per fixture. Do not include test code in the story.
+- [x] T018 [US4] Extend `frontend/src/api/mocks/fixtures.ts` so at least one task and one event carry a `noteId` that resolves to a mock note, and add the over-limit day for FR-024.
+- [x] T019 [US4] Remove the per-type detail components. Delete `frontend/src/components/day-view/CourseBlockDetail.vue` and `frontend/src/components/day-view/UntimedBlockDetail.vue` if they are present on this branch after `CalendarItemDetail.vue` replaces them (FR-021).
 
 **Checkpoint**: All four user stories are functional. One component and complete mock data exist.
 
