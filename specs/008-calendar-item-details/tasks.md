@@ -123,9 +123,9 @@ Frontend-only feature. Paths are relative to `frontend/`.
 
 **Purpose**: Final verification across all stories.
 
-- [ ] T020 [P] Run `npx prettier --check` on only the files this feature creates or changes, `npx oxlint src` (without `--fix`), and `npm run type-check` in `frontend/`. Fix all errors.
-- [ ] T021 Run `npm run story` and walk every scenario in `specs/008-calendar-item-details/quickstart.md`. Confirm the hide states, the failure state, and the a11y labels.
-- [ ] T022 [P] Verify SC-004 and SC-005: every detailed view shows a time window, every known task duration shows, no event shows a duration, and no fabricated duration or deadline appears.
+- [x] T020 [P] Run `npx prettier --check` on only the files this feature creates or changes, `npx oxlint src` (without `--fix`), and `npm run type-check` in `frontend/`. Fix all errors.
+- [x] T021 Run `npm run story` and walk every scenario in `specs/008-calendar-item-details/quickstart.md`. Confirm the hide states, the failure state, and the a11y labels.
+- [x] T022 [P] Verify SC-004 and SC-005: every detailed view shows a time window, every known task duration shows, no event shows a duration, and no fabricated duration or deadline appears.
 
 ---
 
