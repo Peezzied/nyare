@@ -2,20 +2,20 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ChevronDown, ChevronRight } from '@lucide/vue'
-import { tasksApi } from '@/api/tasks'
 import { useCatalog } from '@/composables/useCatalog'
+import { useTasks } from '@/composables/useTasks'
 import { getPlanCategory } from '@/utils/planCategory'
-import TodoHeader from '@/components/TodoHeader.vue'
-import NavigationBar from '@/components/NavigationBar.vue'
+import { useShellHeader } from '@/composables/useShellHeader'
 import TaskRow from '@/components/TaskRow.vue'
 import type { TaskResponse, PlanCategory } from '@/types/api'
 
 type ActiveFilter = 'ALL' | PlanCategory
 
+useShellHeader({ title: 'To-do' })
+
 const router = useRouter()
 const catalog = useCatalog()
-
-const tasks = ref<TaskResponse[]>([])
+const { tasks, loadTasks, updateTaskStatus } = useTasks()
 const loading = ref(true)
 const activeFilter = ref<ActiveFilter>('ALL')
 
@@ -85,7 +85,7 @@ async function loadData() {
   loading.value = true
   try {
     await catalog.loadCatalog()
-    tasks.value = await tasksApi.list()
+    await loadTasks()
   } finally {
     loading.value = false
   }
@@ -96,8 +96,7 @@ async function toggleTask(task: TaskResponse) {
   const nextStatus = previous === 'COMPLETED' ? 'TODO' : 'COMPLETED'
   tasks.value = tasks.value.map((t) => (t.id === task.id ? { ...t, status: nextStatus } : t))
   try {
-    const updated = await tasksApi.updateStatus(task.id, nextStatus)
-    tasks.value = tasks.value.map((t) => (t.id === task.id ? updated : t))
+    await updateTaskStatus(task.id, nextStatus)
   } catch {
     tasks.value = tasks.value.map((t) => (t.id === task.id ? { ...t, status: previous } : t))
   }
@@ -115,10 +114,8 @@ onMounted(loadData)
 </script>
 
 <template>
-  <div class="flex min-h-screen flex-col bg-(--color-app-bg) text-(--color-text-main)">
-    <TodoHeader />
-
-    <main class="flex-1 pb-20">
+  <div class="flex min-h-full flex-col bg-(--color-app-bg) text-(--color-text-main)">
+    <div class="flex-1 pb-6">
       <div class="px-4 pt-3 pb-2">
         <div
           class="inline-flex rounded-full border border-(--color-app-border) bg-(--color-card) p-1"
@@ -200,8 +197,6 @@ onMounted(loadData)
           </template>
         </section>
       </template>
-    </main>
-
-    <NavigationBar />
+    </div>
   </div>
 </template>
