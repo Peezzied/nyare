@@ -121,7 +121,7 @@ describe('AppShell', () => {
     expect(wrapper.find('[data-testid="topbar-menu"]').exists()).toBe(false)
   })
 
-  it('shows the pending note count as a badge and starts Process on click', async () => {
+  it('shows the pending note count as a badge and starts Process on confirm', async () => {
     // given
     vi.spyOn(studyPlannerApi, 'status').mockResolvedValue(statusWith(2))
     const stream = vi.spyOn(studyPlannerApi, 'streamProcess').mockResolvedValue(undefined)
@@ -134,6 +134,13 @@ describe('AppShell', () => {
 
     // when
     await fab.trigger('click')
+    await flushPromises()
+
+    // The click opens the confirmation dialog; it does not start the run.
+    expect(stream).not.toHaveBeenCalled()
+
+    await wrapper.get('[data-testid="process-confirm"]').trigger('click')
+    await flushPromises()
 
     // then
     expect(stream).toHaveBeenCalledTimes(1)
@@ -176,6 +183,8 @@ describe('AppShell', () => {
 
     // when
     await wrapper.get('[data-testid="duckota-fab"]').trigger('click')
+    await flushPromises()
+    await wrapper.get('[data-testid="process-confirm"]').trigger('click')
     await flushPromises()
 
     // then

@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import type { Ref } from 'vue'
 import { studyPlannerApi } from '@/api'
 import { createCache } from './createCache'
+import { useNotifications } from './useNotifications'
 import type { PlannerStatusResponse, ProcessProgressEvent, ProcessSummaryResponse } from '@/api'
 
 /** Callbacks that `useProcess` runs when a Process run ends. */
@@ -35,6 +36,7 @@ function toMessage(err: unknown): string {
 
 // Module-level run state, so a run survives navigation between views.
 const running = ref(false)
+const recordId = ref<string | null>(null)
 const status = ref<PlannerStatusResponse | null>(null)
 const progress = ref<ProcessProgressEvent | null>(null)
 const summary = ref<ProcessSummaryResponse | null>(null)
@@ -51,6 +53,7 @@ const cache = createCache(() => {
   controller?.abort()
   controller = null
   running.value = false
+  recordId.value = null
   status.value = null
   progress.value = null
   summary.value = null
@@ -68,6 +71,8 @@ export function resetProcess(): void {
 export interface UseProcess {
   /** True while the stream is open and while `options.onDone` runs. */
   running: Ref<boolean>
+  /** Id of the notification record that tracks the latest run. Null after reset. */
+  recordId: Ref<string | null>
   /** Planner status from the `init` event. Null until the stream sends it. */
   status: Ref<PlannerStatusResponse | null>
   /** Latest per-date `progress` event. */
@@ -99,12 +104,16 @@ export interface UseProcess {
  * events in full there, since there is no summary to give affected course ids.
  */
 export function useProcess(options: UseProcessOptions = {}): UseProcess {
+  const notifications = useNotifications()
+
   async function start(): Promise<ProcessSummaryResponse | null> {
     if (running.value) {
       return null
     }
 
     const id = ++runId
+    const recId = notifications.openRecord()
+    recordId.value = recId
     controller = new AbortController()
     status.value = null
     progress.value = null
@@ -119,15 +128,20 @@ export function useProcess(options: UseProcessOptions = {}): UseProcess {
         signal: controller.signal,
         onInit: (s) => {
           status.value = s
+          notifications.applyInit(recId, s)
         },
         onProgress: (p) => {
           progress.value = p
+          notifications.patchRecord(recId, { progress: p })
         },
         onDone: (s) => {
           summary.value = s
+          notifications.patchRecord(recId, { summary: s })
         },
         onError: (err) => {
-          error.value = toMessage(err)
+          const message = toMessage(err)
+          error.value = message
+          notifications.patchRecord(recId, { error: message })
         },
       })
       if (summary.value) {
@@ -136,11 +150,17 @@ export function useProcess(options: UseProcessOptions = {}): UseProcess {
       // streamProcess resolves silently on abort. The server may still have committed, so
       // recheck in the background. A session reset bumps the run generation and skips it.
       if (cancelled.value && !summary.value && id === runId) {
-        void verifyCancel(id, status.value)
+        void verifyCancel(id, status.value, recId)
       }
     } catch (err) {
-      error.value = toMessage(err)
+      const message = toMessage(err)
+      error.value = message
+      notifications.patchRecord(recId, { error: message })
     } finally {
+      notifications.finishRecord(
+        recId,
+        summary.value ? 'done' : cancelled.value ? 'cancelled' : 'error',
+      )
       if (id === runId) {
         running.value = false
         controller = null
@@ -151,7 +171,11 @@ export function useProcess(options: UseProcessOptions = {}): UseProcess {
   }
 
   /** Rechecks planner status after a cancel and flags a run that committed anyway. */
-  async function verifyCancel(id: number, before: PlannerStatusResponse | null): Promise<void> {
+  async function verifyCancel(
+    id: number,
+    before: PlannerStatusResponse | null,
+    recordId: string,
+  ): Promise<void> {
     let after: PlannerStatusResponse
     try {
       after = await studyPlannerApi.status()
@@ -173,6 +197,7 @@ export function useProcess(options: UseProcessOptions = {}): UseProcess {
     }
     cancelled.value = false
     savedAfterCancel.value = true
+    notifications.patchRecord(recordId, { status: 'saved-after-cancel' })
     try {
       await options.onSavedAfterCancel?.()
     } catch (err) {
@@ -191,5 +216,16 @@ export function useProcess(options: UseProcessOptions = {}): UseProcess {
     controller.abort()
   }
 
-  return { running, status, progress, summary, error, cancelled, savedAfterCancel, start, cancel }
+  return {
+    running,
+    recordId,
+    status,
+    progress,
+    summary,
+    error,
+    cancelled,
+    savedAfterCancel,
+    start,
+    cancel,
+  }
 }
