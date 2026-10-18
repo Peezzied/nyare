@@ -319,11 +319,29 @@ describe('Mock Adapter', () => {
       })
     })
 
-    it('returns no pending notes on study planner status', async () => {
-      const result = await studyPlannerApi.status()
-      expect(result.hasPendingNotes).toBe(false)
-      expect(result.dirtyNoteCount).toBe(0)
-      expect(result.pendingNotes).toEqual([])
+    it('reports dirty notes on status and clears them on process', async () => {
+      // Fixture note-math204-eigen has lastProcessedAt: null, so it counts as dirty.
+      const before = await studyPlannerApi.status()
+      expect(before.hasPendingNotes).toBe(true)
+      expect(before.dirtyNoteCount).toBe(1)
+      expect(before.dirtyDates).toEqual(['2026-10-06'])
+      expect(before.courseNames).toEqual(['MATH 204 - Linear Algebra'])
+      expect(before.pendingNotes[0]?.id).toBe('note-math204-eigen')
+
+      await studyPlannerApi.process()
+
+      const after = await studyPlannerApi.status()
+      expect(after.hasPendingNotes).toBe(false)
+      expect(after.dirtyNoteCount).toBe(0)
+      expect(after.pendingNotes).toEqual([])
+    })
+
+    it('marks a newly created note as dirty', async () => {
+      await notesApi.create({ courseId: 1, content: 'New lecture notes' })
+
+      const status = await studyPlannerApi.status()
+      expect(status.dirtyNoteCount).toBe(2)
+      expect(status.courseNames).toContain('CS 201 - Data Structures & Algorithms')
     })
 
     it('supports image upload and deletion', async () => {

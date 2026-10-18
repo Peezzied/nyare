@@ -20,6 +20,7 @@ import type {
   AcademicEventResponse,
   AcademicEventRequest,
   ImageUploadResponse,
+  PlannerStatusResponse,
 } from '@/types/api'
 
 interface MockImage {
@@ -82,6 +83,50 @@ const PROTECTED_PREFIXES = [
 export function resetMockFixtures(): void {
   state = createInitialFixtures()
   images = []
+}
+
+/**
+ * Session user's notes that wait for Process: `lastProcessedAt` is null or
+ * `updatedAt` is newer. Mirrors `NoteRepository.findDirtyNotes` on the backend.
+ */
+function dirtyNotes(): NoteResponse[] {
+  const courseIds = new Set(
+    state.courses.filter((c) => c.userId === state.currentUser?.id).map((c) => c.id),
+  )
+  return state.notes
+    .filter(
+      (n) => courseIds.has(n.courseId) && (!n.lastProcessedAt || n.updatedAt > n.lastProcessedAt),
+    )
+    .sort((a, b) => a.entryDate.localeCompare(b.entryDate))
+}
+
+/** Builds the planner status payload from the session user's dirty notes. */
+function plannerStatus(): PlannerStatusResponse {
+  const dirty = dirtyNotes()
+  const nameById = new Map(state.courses.map((c) => [c.id, c.name]))
+  return {
+    hasPendingNotes: dirty.length > 0,
+    dirtyNoteCount: dirty.length,
+    dirtyDates: [...new Set(dirty.map((n) => n.entryDate))].sort(),
+    courseNames: [
+      ...new Set(
+        dirty.map((n) => nameById.get(n.courseId)).filter((name): name is string => name !== undefined),
+      ),
+    ].sort(),
+    pendingNotes: dirty.map((n) => ({
+      id: n.id,
+      title: n.title,
+      courseName: nameById.get(n.courseId) ?? null,
+      entryDate: n.entryDate,
+    })),
+  }
+}
+
+/** Stamps the session user's dirty notes as processed, like the backend Process run does. */
+function markNotesProcessed(): void {
+  const dirtyIds = new Set(dirtyNotes().map((n) => n.id))
+  const now = new Date().toISOString()
+  state.notes = state.notes.map((n) => (dirtyIds.has(n.id) ? { ...n, lastProcessedAt: now } : n))
 }
 
 /**
@@ -585,22 +630,13 @@ export function mockRouter(
   }
 
   // Study planner endpoints
-  // The mock does not track dirty notes, so the status always reports no pending notes.
   if (method === 'GET' && pathname === '/api/study-planner/status') {
-    return {
-      status: 200,
-      data: {
-        hasPendingNotes: false,
-        dirtyNoteCount: 0,
-        dirtyDates: [],
-        courseNames: [],
-        pendingNotes: [],
-      },
-    }
+    return { status: 200, data: plannerStatus() }
   }
 
   // This route serves only apiClient.post(). streamProcess() uses the patched `fetch` below.
   if (method === 'POST' && pathname === '/api/study-planner/process') {
+    markNotesProcessed()
     return { status: 200, data: state.processSummary }
   }
 
@@ -706,8 +742,18 @@ export function initMockAdapter(): void {
         }
 
         if (pathname === '/api/study-planner/process' && method === 'POST') {
-          const sseText = `event: done\ndata: ${JSON.stringify(state.processSummary)}\n\n`
-          return new Response(sseText, {
+          // Emit the backend event order: init, one progress per dirty date, then done.
+          const init = plannerStatus()
+          const frames = [
+            `event: init\ndata: ${JSON.stringify(init)}\n\n`,
+            ...init.dirtyDates.map(
+              (date, i) =>
+                `event: progress\ndata: ${JSON.stringify({ date, index: i + 1, total: init.dirtyDates.length })}\n\n`,
+            ),
+            `event: done\ndata: ${JSON.stringify(state.processSummary)}\n\n`,
+          ]
+          markNotesProcessed()
+          return new Response(frames.join(''), {
             status: 200,
             headers: {
               'Content-Type': 'text/event-stream',
