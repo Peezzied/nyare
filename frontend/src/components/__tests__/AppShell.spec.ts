@@ -3,6 +3,9 @@ import { defineComponent, h, ref } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import AppShell from '../AppShell.vue'
 import type { ShellHeaderConfig } from '@/composables/useShellHeader'
+import { academicEventsApi, studyPlannerApi, tasksApi } from '@/api'
+import { resetAllCaches } from '@/composables/createCache'
+import type { PlannerStatusResponse, ProcessSummaryResponse } from '@/types/api'
 import { routerKey, routeLocationKey } from 'vue-router'
 
 const mockPush = vi.fn<(path: string) => Promise<void>>(() => Promise.resolve())
@@ -33,13 +36,19 @@ vi.mock('vue-router', async () => {
   }
 })
 
+function statusWith(dirtyNoteCount: number): PlannerStatusResponse {
+  return {
+    hasPendingNotes: dirtyNoteCount > 0,
+    dirtyNoteCount,
+    dirtyDates: [],
+    courseNames: [],
+    pendingNotes: [],
+  }
+}
+
 function mountShell() {
   return mount(AppShell, {
     global: {
-      // DuckotaFab talks to the planner API on mount; stub it out here.
-      stubs: {
-        DuckotaFab: { template: '<div data-testid="duckota-fab" />' },
-      },
       provide: {
         [routerKey]: { push: mockPush },
         [routeLocationKey]: { path: '/tasks' },
@@ -50,8 +59,12 @@ function mountShell() {
 
 describe('AppShell', () => {
   beforeEach(() => {
+    vi.restoreAllMocks()
+    resetAllCaches()
     mockPush.mockClear()
     stubHeaderConfig.value = { title: 'Tasks' }
+    // The shell's Process button refreshes the planner status on mount.
+    vi.spyOn(studyPlannerApi, 'status').mockResolvedValue(statusWith(0))
   })
 
   it('renders the shared chrome around the routed view', async () => {
@@ -106,5 +119,67 @@ describe('AppShell', () => {
     expect(wrapper.find('[data-testid="custom-left"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="custom-right"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="topbar-menu"]').exists()).toBe(false)
+  })
+
+  it('shows the pending note count as a badge and starts Process on click', async () => {
+    // given
+    vi.spyOn(studyPlannerApi, 'status').mockResolvedValue(statusWith(2))
+    const stream = vi.spyOn(studyPlannerApi, 'streamProcess').mockResolvedValue(undefined)
+
+    const wrapper = mountShell()
+    await flushPromises()
+
+    const fab = wrapper.get('[data-testid="duckota-fab"]')
+    expect(fab.text()).toContain('2')
+
+    // when
+    await fab.trigger('click')
+
+    // then
+    expect(stream).toHaveBeenCalledTimes(1)
+  })
+
+  it('stays disabled when no notes are pending', async () => {
+    // given
+    const stream = vi.spyOn(studyPlannerApi, 'streamProcess').mockResolvedValue(undefined)
+
+    const wrapper = mountShell()
+    await flushPromises()
+
+    const fab = wrapper.get('[data-testid="duckota-fab"]')
+    expect(fab.attributes('disabled')).toBeDefined()
+
+    // when
+    await fab.trigger('click')
+
+    // then
+    expect(stream).not.toHaveBeenCalled()
+  })
+
+  it('refetches tasks and events for affected courses when the run finishes', async () => {
+    // given
+    vi.spyOn(studyPlannerApi, 'status').mockResolvedValue(statusWith(1))
+    const taskList = vi.spyOn(tasksApi, 'list').mockResolvedValue([])
+    const eventList = vi.spyOn(academicEventsApi, 'list').mockResolvedValue([])
+    const summary: ProcessSummaryResponse = {
+      tasksCreated: 2,
+      eventsCreated: 1,
+      contextsCreated: 1,
+      affectedCourseIds: [7],
+    }
+    vi.spyOn(studyPlannerApi, 'streamProcess').mockImplementation(async (callbacks) => {
+      callbacks.onDone(summary)
+    })
+
+    const wrapper = mountShell()
+    await flushPromises()
+
+    // when
+    await wrapper.get('[data-testid="duckota-fab"]').trigger('click')
+    await flushPromises()
+
+    // then
+    expect(taskList).toHaveBeenCalledWith({ courseId: 7 })
+    expect(eventList).toHaveBeenCalledWith({ courseId: 7 })
   })
 })

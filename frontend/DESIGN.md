@@ -178,7 +178,7 @@ The logged-in tab routes (`/tasks`, `/calendar`, `/notes`) render inside one sha
 ├──────────────────────────────┤
 │ NavigationBar (bottom, h-16) │
 └──────────────────────────────┘
-        + DuckotaFab (teleported to shell root, absolute left-4 bottom-20, above nav)
+        + DuckotaButton (floating Process trigger, absolute left-5 bottom-4, above nav)
 ```
 
 - The shell fills the viewport on every screen size; no desktop phone frame.
