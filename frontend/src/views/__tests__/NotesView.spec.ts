@@ -318,7 +318,7 @@ describe('NotesView', () => {
     expect(wrapper.find('[data-testid="notes-grid"]').exists()).toBe(true)
   })
 
-  it('opens the account menu from the top bar menu button', async () => {
+  it('opens the shared hamburger drawer from the top bar menu button', async () => {
     mockCatalog()
     vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
 
@@ -327,10 +327,16 @@ describe('NotesView', () => {
 
     await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
 
-    expect(wrapper.get('[data-testid="account-menu"]').text()).toContain('Select Account')
+    const menu = document.querySelector<HTMLElement>('[data-testid="account-menu"]')
+    expect(menu).not.toBeNull()
+    expect(menu?.textContent).toContain('Select Account')
+    expect(menu?.querySelector('[data-testid="nyare-wordmark"]')).not.toBeNull()
+    expect(menu?.querySelector('[data-testid="menu-profile-avatar"]')).not.toBeNull()
+
+    wrapper.unmount()
   })
 
-  it('navigates to select-account from the account menu', async () => {
+  it('navigates to select-account from the shared hamburger drawer', async () => {
     mockCatalog()
     vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
 
@@ -338,10 +344,15 @@ describe('NotesView', () => {
     await flushPromises()
 
     await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
-    await wrapper.get('[data-testid="select-account-item"]').trigger('click')
+    const item = document.querySelector<HTMLElement>('[data-testid="select-account-item"]')
+    expect(item).not.toBeNull()
+    item?.click()
+    await flushPromises()
 
     expect(mockPush).toHaveBeenCalledWith('/select-account')
-    expect(wrapper.find('[data-testid="account-menu"]').exists()).toBe(false)
+    expect(document.querySelector('[data-testid="account-menu"]')).toBeNull()
+
+    wrapper.unmount()
   })
 
   it('renders the bottom navigation with the notes tab active', async () => {
