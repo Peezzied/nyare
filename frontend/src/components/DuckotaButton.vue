@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Round mascot button with an optional badge and an AI processing ring.
-// DuckotaFab renders it in the calendar, notes, and tasks views.
+// AppShell renders it as the floating Process trigger.
 import { computed } from 'vue'
 import duckotaImg from '@/assets/mascot/duckota_in_button.png'
 import { COURSE_PALETTE_24 } from '@/constants/palette'
