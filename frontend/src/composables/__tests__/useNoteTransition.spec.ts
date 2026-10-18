@@ -7,8 +7,9 @@ import {
 } from '../useNoteTransition'
 
 function mockMatchMedia(matches: boolean): void {
-  window.matchMedia = vi.fn<(query: string) => MediaQueryList>().mockImplementation(
-    (query: string) => ({
+  window.matchMedia = vi
+    .fn<(query: string) => MediaQueryList>()
+    .mockImplementation((query: string) => ({
       matches,
       media: query,
       onchange: null,
@@ -17,8 +18,7 @@ function mockMatchMedia(matches: boolean): void {
       addEventListener: vi.fn<() => void>(),
       removeEventListener: vi.fn<() => void>(),
       dispatchEvent: vi.fn<() => boolean>(),
-    }),
-  )
+    }))
 }
 
 describe('useNoteTransition', () => {

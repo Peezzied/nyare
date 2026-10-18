@@ -21,7 +21,7 @@ import { getPlanCategory } from '@/utils/planCategory'
 import { plannerScenario } from '../fixtures/plannerScenario'
 
 describe('User Story 2: Journal to Planner', () => {
-  let createdCourses: Awaited<ReturnType<typeof coursesApi.create>>[] = []
+  const createdCourses: Awaited<ReturnType<typeof coursesApi.create>>[] = []
   let noticeImage: Awaited<ReturnType<typeof imagesApi.upload>>
   let slideImage: Awaited<ReturnType<typeof imagesApi.upload>>
 
@@ -145,9 +145,9 @@ describe('User Story 2: Journal to Planner', () => {
         expect(['SCHEDULED', 'LATER', 'BACKLOG']).toContain(category)
       }
 
-      expect(
-        plan.scheduledCount.value + plan.laterCount.value + plan.backlogCount.value,
-      ).toBe(useTasks().tasks.value.length)
+      expect(plan.scheduledCount.value + plan.laterCount.value + plan.backlogCount.value).toBe(
+        useTasks().tasks.value.length,
+      )
 
       const originalTask = useTasks().tasks.value.find(
         (t) => t.title === 'Review MIPS instruction encoding',

@@ -6,7 +6,12 @@ import CoursePickerDialog from '@/components/editor/CoursePickerDialog.vue'
 import { notesApi } from '@/api/notes'
 import { coursesApi, schedulesApi } from '@/api'
 import { useCatalog } from '@/composables/useCatalog'
-import type { NoteRequest, NoteResponse, NoteSummaryResponse, ImageUploadResponse } from '@/types/api'
+import type {
+  NoteRequest,
+  NoteResponse,
+  NoteSummaryResponse,
+  ImageUploadResponse,
+} from '@/types/api'
 
 const mockRoute = {
   params: {} as Record<string, string>,
@@ -19,7 +24,8 @@ const mockRouter = {
 }
 
 // The vue-router mock stores the onBeforeRouteLeave callback here, so tests can call the guard directly.
-let beforeRouteLeaveCallback: ((to?: unknown, from?: unknown, next?: unknown) => boolean | void) | null = null
+let beforeRouteLeaveCallback:
+  ((to?: unknown, from?: unknown, next?: unknown) => boolean | void) | null = null
 
 vi.mock('vue-router', () => ({
   useRoute: () => mockRoute,
@@ -241,7 +247,9 @@ describe('NoteEditor.vue', () => {
     expect(mockRouter.back).not.toHaveBeenCalled()
 
     // Clicking cancel keeps editing
-    const cancelButton = document.body.querySelector('[data-testid="cancel-discard-button"]') as HTMLButtonElement
+    const cancelButton = document.body.querySelector(
+      '[data-testid="cancel-discard-button"]',
+    ) as HTMLButtonElement
     expect(cancelButton).not.toBeNull()
     cancelButton.click()
     await flushPromises()
@@ -260,7 +268,9 @@ describe('NoteEditor.vue', () => {
     await backButton.trigger('click')
     await flushPromises()
 
-    const confirmButton = document.body.querySelector('[data-testid="confirm-discard-button"]') as HTMLButtonElement
+    const confirmButton = document.body.querySelector(
+      '[data-testid="confirm-discard-button"]',
+    ) as HTMLButtonElement
     expect(confirmButton).not.toBeNull()
     confirmButton.click()
     await flushPromises()
@@ -280,7 +290,10 @@ describe('NoteEditor.vue', () => {
 
     const tiptap = wrapper.findComponent(TiptapEditor)
     // Emit HTML with an invalid image url (not a UUID)
-    await tiptap.vm.$emit('update:modelValue', '<p>Image test <img src="/api/images/invalid-uuid" alt="bad"></p>')
+    await tiptap.vm.$emit(
+      'update:modelValue',
+      '<p>Image test <img src="/api/images/invalid-uuid" alt="bad"></p>',
+    )
     await flushPromises()
 
     const saveButton = wrapper.find('[data-testid="save-button"]')
@@ -367,7 +380,9 @@ describe('NoteEditor.vue', () => {
   })
 
   it('displays API error notice when save operation fails on backend', async () => {
-    vi.mocked(notesApi.create).mockRejectedValueOnce(new Error('Internal server error on note save'))
+    vi.mocked(notesApi.create).mockRejectedValueOnce(
+      new Error('Internal server error on note save'),
+    )
 
     const wrapper = mount(NoteEditor, {
       props: {
@@ -651,7 +666,9 @@ describe('NoteEditor.vue', () => {
     let unsavedDialog = document.body.querySelector('[data-testid="unsaved-changes-dialog"]')
     expect(unsavedDialog).not.toBeNull()
 
-    const cancelButton = document.body.querySelector('[data-testid="cancel-discard-button"]') as HTMLButtonElement
+    const cancelButton = document.body.querySelector(
+      '[data-testid="cancel-discard-button"]',
+    ) as HTMLButtonElement
     cancelButton.click()
     await flushPromises()
 
@@ -697,7 +714,9 @@ describe('NoteEditor.vue', () => {
     let unsavedDialog = document.body.querySelector('[data-testid="unsaved-changes-dialog"]')
     expect(unsavedDialog).not.toBeNull()
 
-    const cancelButton = document.body.querySelector('[data-testid="cancel-discard-button"]') as HTMLButtonElement
+    const cancelButton = document.body.querySelector(
+      '[data-testid="cancel-discard-button"]',
+    ) as HTMLButtonElement
     cancelButton.click()
     await flushPromises()
 
@@ -736,7 +755,9 @@ describe('NoteEditor.vue', () => {
     let unsavedDialog = document.body.querySelector('[data-testid="unsaved-changes-dialog"]')
     expect(unsavedDialog).not.toBeNull()
 
-    const cancelButton = document.body.querySelector('[data-testid="cancel-discard-button"]') as HTMLButtonElement
+    const cancelButton = document.body.querySelector(
+      '[data-testid="cancel-discard-button"]',
+    ) as HTMLButtonElement
     cancelButton.click()
     await flushPromises()
 

@@ -37,7 +37,7 @@ public class AcademicEventController {
 
     @PostMapping
     public ResponseEntity<AcademicEventResponse> createEvent(@Valid @RequestBody AcademicEventRequest request) {
-        AcademicEventResponse created = academicEventService.createEvent(request);
+        AcademicEventResponse created = academicEventService.createEvent(request, sessionContext.requireUserId());
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(created.getId())
@@ -51,14 +51,14 @@ public class AcademicEventController {
             @RequestParam(required = false) Long courseId,
             @RequestParam(required = false) Boolean upcoming
     ) {
-        Long userId = sessionContext.getUserId().orElse(null);
+        Long userId = sessionContext.requireUserId();
         return ResponseEntity.ok(academicEventService.listEvents(userId, courseId, upcoming));
     }
 
 
     @GetMapping("/{id}")
     public ResponseEntity<AcademicEventResponse> getEvent(@PathVariable UUID id) {
-        return ResponseEntity.ok(academicEventService.getEvent(id));
+        return ResponseEntity.ok(academicEventService.getEvent(id, sessionContext.requireUserId()));
     }
 
 
@@ -67,13 +67,13 @@ public class AcademicEventController {
             @PathVariable UUID id,
             @Valid @RequestBody AcademicEventRequest request
     ) {
-        return ResponseEntity.ok(academicEventService.updateEvent(id, request));
+        return ResponseEntity.ok(academicEventService.updateEvent(id, request, sessionContext.requireUserId()));
     }
 
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable UUID id) {
-        academicEventService.deleteEvent(id);
+        academicEventService.deleteEvent(id, sessionContext.requireUserId());
         return ResponseEntity.noContent().build();
     }
 }

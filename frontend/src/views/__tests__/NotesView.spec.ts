@@ -1,4 +1,3 @@
-
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { defineComponent, h } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
@@ -18,8 +17,7 @@ vi.mock('vue-router', () => {
   const routerKey = Symbol('routerKey')
   const routeLocationKey = Symbol('routeLocationKey')
   const routerStub = {
-    push: (path: string | { name: string; params?: { id: string } }) =>
-      mockPush(path),
+    push: (path: string | { name: string; params?: { id: string } }) => mockPush(path),
   }
   return {
     useRouter: () => routerStub,
@@ -144,9 +142,7 @@ describe('NotesView', () => {
 
   it('renders error state with retry when load fails', async () => {
     mockCatalog()
-    const list = vi.spyOn(notesApi, 'list').mockRejectedValue(
-      new Error('Network error'),
-    )
+    const list = vi.spyOn(notesApi, 'list').mockRejectedValue(new Error('Network error'))
 
     const wrapper = mountView()
     await flushPromises()

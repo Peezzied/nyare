@@ -35,9 +35,7 @@ export function useStudyPlan(): VirtualStudyPlan {
     return grouped
   })
 
-  const laterTasks = computed(() =>
-    tasks.value.filter((task) => getPlanCategory(task) === 'LATER'),
-  )
+  const laterTasks = computed(() => tasks.value.filter((task) => getPlanCategory(task) === 'LATER'))
 
   const backlogTasks = computed(() =>
     tasks.value.filter((task) => getPlanCategory(task) === 'BACKLOG'),

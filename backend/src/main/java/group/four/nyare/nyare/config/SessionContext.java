@@ -3,8 +3,10 @@ package group.four.nyare.nyare.config;
 import group.four.nyare.nyare.controller.UserController;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -36,5 +38,15 @@ public class SessionContext {
             return Optional.of(userId);
         }
         return Optional.empty();
+    }
+
+    /**
+     * Resolves the current user identifier or rejects the request with 401.
+     *
+     * @return the authenticated user identifier
+     * @throws ResponseStatusException when no authenticated session exists
+     */
+    public Long requireUserId() {
+        return getUserId().orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required"));
     }
 }

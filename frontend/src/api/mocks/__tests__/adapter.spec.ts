@@ -17,11 +17,13 @@ import type { ProcessSummaryResponse } from '@/types/api'
 describe('Mock Adapter', () => {
   const originalDevUser = import.meta.env.VITE_DEV_USER
 
-  beforeEach(() => {
+  beforeEach(async () => {
     import.meta.env.VITE_DEV_USER = ''
     initMockAdapter()
     // The mock store is module state, so each test starts from fresh fixtures.
     resetMockFixtures()
+    // Protected routes need a session, so start each test logged in.
+    await authApi.login({ username: 'karol' })
   })
 
   afterEach(() => {
@@ -336,6 +338,38 @@ describe('Mock Adapter', () => {
 
       await imagesApi.delete(uploaded.id)
       await expect(apiClient.get(`/api/images/${uploaded.id}`)).rejects.toThrow(ApiError)
+    })
+  })
+
+  describe('session enforcement', () => {
+    it('rejects protected list calls with 401 when there is no session', async () => {
+      await authApi.logout()
+
+      const expectUnauthorized = async (call: Promise<unknown>) => {
+        await expect(call).rejects.toSatisfy((err: unknown) => {
+          expect(err).toBeInstanceOf(ApiError)
+          const apiErr = err as ApiError
+          expect(apiErr.status).toBe(401)
+          expect(apiErr.problem).toEqual({
+            title: 'Unauthorized',
+            status: 401,
+            detail: 'Authentication required',
+          })
+          return true
+        })
+      }
+
+      await expectUnauthorized(coursesApi.list())
+      await expectUnauthorized(tasksApi.list())
+      await expectUnauthorized(notesApi.list())
+    })
+
+    it('allows protected list calls after login', async () => {
+      await authApi.logout()
+      await authApi.login({ username: 'karol' })
+
+      const courses = await coursesApi.list()
+      expect(courses.length).toBe(3)
     })
   })
 

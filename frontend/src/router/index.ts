@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { ensureSession, useAuth } from '@/composables/useAuth'
+import { clearSessionUser, ensureSession, useAuth } from '@/composables/useAuth'
+import { setUnauthorizedHandler } from '@/api/client'
 import StartView from '../views/StartView.vue'
 import WelcomeView from '../views/WelcomeView.vue'
 import ScheduleView from '../views/ScheduleView.vue'
@@ -71,6 +72,14 @@ const router = createRouter({
       component: () => import('@/views/DevAccountMissingView.vue'),
     },
   ],
+})
+
+// A protected 401 during use clears the session and returns to the start screen.
+setUnauthorizedHandler(() => {
+  clearSessionUser()
+  if (router.currentRoute.value.name !== 'start') {
+    void router.push({ name: 'start' })
+  }
 })
 
 // First-launch detection via `GET /api/users/me`.

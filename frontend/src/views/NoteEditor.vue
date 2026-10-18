@@ -718,7 +718,10 @@ defineExpose({ requestBack: handleBack })
       <div class="flex flex-wrap items-center gap-y-2 gap-x-7 text-xs">
         <!-- Course Pill -->
         <div class="inline-flex items-center gap-1.5" data-testid="course-pill">
-          <label for="course-picker-trigger" class="font-bold uppercase tracking-wider text-slate-500">
+          <label
+            for="course-picker-trigger"
+            class="font-bold uppercase tracking-wider text-slate-500"
+          >
             Course:
           </label>
           <div class="relative inline-flex items-center">
@@ -755,7 +758,10 @@ defineExpose({ requestBack: handleBack })
 
         <!-- Date Pill -->
         <div class="inline-flex items-center gap-1.5" data-testid="date-pill">
-          <label for="date-picker-trigger" class="font-bold uppercase tracking-wider text-slate-500">
+          <label
+            for="date-picker-trigger"
+            class="font-bold uppercase tracking-wider text-slate-500"
+          >
             Date:
           </label>
           <Popover v-model:open="isCalendarOpen">

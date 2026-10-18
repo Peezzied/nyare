@@ -81,7 +81,10 @@ export function useAcademicEvents(): UseAcademicEvents {
     }
   }
 
-  async function updateEvent(id: string, request: AcademicEventRequest): Promise<AcademicEventResponse> {
+  async function updateEvent(
+    id: string,
+    request: AcademicEventRequest,
+  ): Promise<AcademicEventResponse> {
     loading.value = true
     error.value = null
     try {

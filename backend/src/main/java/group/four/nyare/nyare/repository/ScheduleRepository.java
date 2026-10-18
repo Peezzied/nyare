@@ -6,11 +6,21 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Spring Data JPA repository for schedule entities with mandatory user scoping.
  */
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
+
+    /**
+     * Finds a schedule by identifier only when its course belongs to the given user.
+     *
+     * @param id     the schedule identifier
+     * @param userId the owner user identifier
+     * @return the schedule when owned by the user, otherwise empty
+     */
+    Optional<Schedule> findByIdAndCourseUserId(Long id, Long userId);
 
     /**
      * Retrieves schedules matching mandatory user ID and optional course ID.

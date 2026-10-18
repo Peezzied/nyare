@@ -9,12 +9,22 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
  * Spring Data JPA repository for task entities with mandatory user scoping.
  */
 public interface TaskRepository extends JpaRepository<Task, UUID> {
+
+    /**
+     * Finds a task by identifier only when its course belongs to the given user.
+     *
+     * @param id     the task identifier
+     * @param userId the owner user identifier
+     * @return the task when owned by the user, otherwise empty
+     */
+    Optional<Task> findByIdAndCourseUserId(UUID id, Long userId);
 
     /**
      * Retrieves all tasks matching user ID and optional course, status, and scheduled filters.

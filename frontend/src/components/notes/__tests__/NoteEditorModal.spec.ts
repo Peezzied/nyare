@@ -16,7 +16,11 @@ const NoteEditorStub = defineComponent({
 
 const origin: TapOriginRect = { top: 100, left: 20, width: 160, height: 90, borderRadius: '16px' }
 
-function mountModal(props: { isOpen: boolean; noteId?: string | null; originRect?: TapOriginRect | null }) {
+function mountModal(props: {
+  isOpen: boolean
+  noteId?: string | null
+  originRect?: TapOriginRect | null
+}) {
   return mount(NoteEditorModal, {
     props: { noteId: null, originRect: origin, ...props },
     global: { stubs: { NoteEditor: NoteEditorStub } },
@@ -24,8 +28,9 @@ function mountModal(props: { isOpen: boolean; noteId?: string | null; originRect
 }
 
 function mockReducedMotion(matches: boolean): void {
-  window.matchMedia = vi.fn<(query: string) => MediaQueryList>().mockImplementation(
-    (query: string) => ({
+  window.matchMedia = vi
+    .fn<(query: string) => MediaQueryList>()
+    .mockImplementation((query: string) => ({
       matches,
       media: query,
       onchange: null,
@@ -34,8 +39,7 @@ function mockReducedMotion(matches: boolean): void {
       addEventListener: vi.fn<() => void>(),
       removeEventListener: vi.fn<() => void>(),
       dispatchEvent: vi.fn<() => boolean>(),
-    }),
-  )
+    }))
 }
 
 describe('NoteEditorModal', () => {

@@ -91,7 +91,8 @@ describe('noteStatus utility', () => {
     })
 
     it('strips markdown formatting and images when counting', () => {
-      const markdown = '# Heading 1\n\n**Bold text** with *italics* and `inline code`.\n![alt](https://example.com/img.png)'
+      const markdown =
+        '# Heading 1\n\n**Bold text** with *italics* and `inline code`.\n![alt](https://example.com/img.png)'
       expect(countWords(markdown)).toBe(9)
     })
 

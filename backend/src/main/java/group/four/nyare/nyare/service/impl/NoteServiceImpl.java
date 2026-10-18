@@ -44,10 +44,10 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     @Transactional
-    public NoteResponse createNote(NoteRequest request) {
+    public NoteResponse createNote(NoteRequest request, Long userId) {
         validateEntryDate(request.getEntryDate());
 
-        Course course = courseRepository.findById(request.getCourseId())
+        Course course = courseRepository.findByIdAndUserId(request.getCourseId(), userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + request.getCourseId()));
 
         String title;
@@ -78,23 +78,23 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public NoteResponse getNote(UUID id) {
-        Note note = noteRepository.findById(id)
+    public NoteResponse getNote(UUID id, Long userId) {
+        Note note = noteRepository.findByIdAndCourseUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Note not found with ID: " + id));
         return toResponse(note);
     }
 
     @Override
     @Transactional
-    public NoteResponse updateNote(UUID id, NoteRequest request) {
+    public NoteResponse updateNote(UUID id, NoteRequest request, Long userId) {
         if (request.getEntryDate() != null) {
             validateEntryDate(request.getEntryDate());
         }
 
-        Note note = noteRepository.findById(id)
+        Note note = noteRepository.findByIdAndCourseUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Note not found with ID: " + id));
 
-        Course course = courseRepository.findById(request.getCourseId())
+        Course course = courseRepository.findByIdAndUserId(request.getCourseId(), userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + request.getCourseId()));
 
         note.setCourse(course);
@@ -116,8 +116,8 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     @Transactional
-    public void deleteNote(UUID id) {
-        Note note = noteRepository.findById(id)
+    public void deleteNote(UUID id, Long userId) {
+        Note note = noteRepository.findByIdAndCourseUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Note not found with ID: " + id));
         noteRepository.delete(note);
     }

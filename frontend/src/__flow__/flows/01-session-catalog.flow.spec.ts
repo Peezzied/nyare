@@ -1,17 +1,23 @@
 import '../harness/clientSetup'
 import { describe, beforeAll, it, expect } from 'vitest'
-import { authApi, coursesApi, schedulesApi } from '@/api'
+import { authApi, coursesApi, schedulesApi, tasksApi, notesApi } from '@/api'
 import { useCatalog } from '@/composables/useCatalog'
 import { plannerScenario } from '../fixtures/plannerScenario'
 
 describe('User Story 1: Session and Catalog', () => {
-  let createdCourses: Awaited<ReturnType<typeof coursesApi.create>>[] = []
+  const createdCourses: Awaited<ReturnType<typeof coursesApi.create>>[] = []
 
   beforeAll(async () => {
     await import('../harness/clientSetup').then((m) => m.assertBackendReachable())
   })
 
   describe('Authentication', () => {
+    it('rejects protected calls before login', async () => {
+      await expect(coursesApi.list()).rejects.toMatchObject({ status: 401 })
+      await expect(tasksApi.list()).rejects.toMatchObject({ status: 401 })
+      await expect(notesApi.list()).rejects.toMatchObject({ status: 401 })
+    })
+
     it('registers, logs in, and verifies current user', async () => {
       const username = `flow_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
 

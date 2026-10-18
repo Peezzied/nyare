@@ -93,10 +93,7 @@ export function countWords(content?: string | null): number {
     return 0
   }
   // Count only tokens with a letter or digit, so leftover punctuation does not count as a word.
-  return clean
-    .split(/\s+/)
-    .filter((token) => /[\p{L}\p{N}]/u.test(token))
-    .length
+  return clean.split(/\s+/).filter((token) => /[\p{L}\p{N}]/u.test(token)).length
 }
 
 /**
