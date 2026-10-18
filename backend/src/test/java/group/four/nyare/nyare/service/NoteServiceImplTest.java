@@ -6,8 +6,10 @@ import group.four.nyare.nyare.dto.NoteSummaryResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
+import group.four.nyare.nyare.model.Image;
 import group.four.nyare.nyare.model.Note;
 import group.four.nyare.nyare.repository.CourseRepository;
+import group.four.nyare.nyare.repository.ImageRepository;
 import group.four.nyare.nyare.repository.NoteRepository;
 import group.four.nyare.nyare.service.impl.NoteServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +22,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -36,6 +47,9 @@ class NoteServiceImplTest {
 
     @Mock
     private CourseRepository courseRepository;
+
+    @Mock
+    private ImageRepository imageRepository;
 
     @InjectMocks
     private NoteServiceImpl noteService;
@@ -375,5 +389,69 @@ class NoteServiceImplTest {
         assertThat(responses.get(0).getPreview()).hasSize(200);
         assertThat(responses.get(0).isTruncated()).isTrue();
         assertThat(responses.get(0).getContentLength()).isEqualTo(250);
+    }
+
+    @Test
+    void createNote_withUnknownImageReference_throwsBadRequestException() {
+        // given
+        UUID unknownImageId = UUID.randomUUID();
+        NoteRequest request = new NoteRequest(1L, "Note with ![x](/api/images/" + unknownImageId + ")");
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
+
+        // when & then
+        assertThatThrownBy(() -> noteService.createNote(request, 1L))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("unknown image")
+                .hasMessageContaining(unknownImageId.toString());
+        verify(noteRepository, never()).save(any());
+    }
+
+    @Test
+    void createNote_withKnownImageReference_succeeds() {
+        // given
+        Image image = new Image(new byte[]{1, 2, 3}, "image/png", "slide.png", 3L);
+        org.springframework.test.util.ReflectionTestUtils.setField(image, "id", UUID.randomUUID());
+        UUID imageId = image.getId();
+        NoteRequest request = new NoteRequest(1L, "Note with ![x](/api/images/" + imageId + ")");
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
+        when(imageRepository.findAllById(anySet())).thenReturn(List.of(image));
+        when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        NoteResponse response = noteService.createNote(request, 1L);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getContent()).contains(imageId.toString());
+    }
+
+    @Test
+    void updateNote_withUnknownImageReference_throwsBadRequestException() {
+        // given
+        UUID unknownImageId = UUID.randomUUID();
+        NoteRequest request = new NoteRequest(1L, "Updated ![x](/api/images/" + unknownImageId + ")");
+        when(noteRepository.findByIdAndCourseUserId(noteId, 1L)).thenReturn(Optional.of(note));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
+
+        // when & then
+        assertThatThrownBy(() -> noteService.updateNote(noteId, request, 1L))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("unknown image")
+                .hasMessageContaining(unknownImageId.toString());
+        verify(noteRepository, never()).save(any());
+    }
+
+    @Test
+    void createNote_withoutImageReferences_doesNotQueryImageRepository() {
+        // given
+        NoteRequest request = new NoteRequest(1L, "Plain text note");
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
+        when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        noteService.createNote(request, 1L);
+
+        // then
+        verify(imageRepository, never()).findAllById(anySet());
     }
 }

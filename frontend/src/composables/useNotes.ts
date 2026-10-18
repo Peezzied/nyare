@@ -79,6 +79,11 @@ export function useNotes() {
     }
   }
 
+  /** Fetches one note with its full content. Leaves the cached list untouched. */
+  async function getNote(id: string): Promise<NoteResponse> {
+    return notesApi.get(id)
+  }
+
   /**
    * Creates a note, or updates it when `id` is given. Applies the saved DTO to
    * the local list, refreshes the planner status, and rethrows API errors.
@@ -140,6 +145,7 @@ export function useNotes() {
     loading,
     error,
     loadNotes,
+    getNote,
     saveNote,
     deleteNote,
     resetNotes,

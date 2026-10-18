@@ -25,7 +25,6 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import TiptapEditor from '@/components/editor/TiptapEditor.vue'
-import { notesApi } from '@/api/notes'
 import { useNotes } from '@/composables/useNotes'
 import { useCatalog } from '@/composables/useCatalog'
 import { getCourseBadgeStyle } from '@/utils/courseColors'
@@ -88,7 +87,7 @@ const emit = defineEmits<{
 const route = useRoute()
 const router = useRouter()
 const { courses, schedules, loadCatalog } = useCatalog()
-const { saveNote: persistNote } = useNotes()
+const { saveNote: persistNote, getNote } = useNotes()
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -470,7 +469,7 @@ async function loadNote(id: string) {
   try {
     isLoading.value = true
     errorMessage.value = null
-    const note = await notesApi.get(id)
+    const note = await getNote(id)
     title.value = note.title ?? ''
     selectedCourseId.value = note.courseId ?? null
     entryDate.value = note.entryDate ?? todayString
