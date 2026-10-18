@@ -1,54 +1,53 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { ArrowLeft } from '@lucide/vue'
-import type {
-  AnimationPhase,
-  CourseBlockDetailState,
-  DetailModalKind,
-  NonCourseBlockDetailState,
-  TapOriginRect,
-} from '@/types/detailModal'
-import CourseBlockDetail from './CourseBlockDetail.vue'
-import UntimedBlockDetail from './UntimedBlockDetail.vue'
+import type { AnimationPhase, TapOriginRect } from '@/types/detailModal'
+import type { CalendarItemDetailView, LinkedNoteRef } from '@/types/calendarItemDetail'
+import CalendarItemDetail from './CalendarItemDetail.vue'
 
 const props = withDefaults(
   defineProps<{
     isOpen: boolean
     originRect: TapOriginRect | null
-    kind: DetailModalKind
-    data: CourseBlockDetailState | NonCourseBlockDetailState | null
+    item: CalendarItemDetailView | null
   }>(),
   {
     originRect: null,
-    data: null,
+    item: null,
   },
 )
 
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'navigate', routePath: string): void
+  (e: 'open-note', note: LinkedNoteRef): void
+  (e: 'complete-task', taskId: string): void
 }>()
+
+/** Skips the container transform when the user asks for reduced motion. */
+function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
+}
 
 const containerRef = ref<HTMLElement | null>(null)
 const phase = ref<AnimationPhase>('idle')
 const isTransitioning = ref(false)
 const isExpanded = ref(false)
 const showContent = ref(false)
-const showButtons = ref(false)
 const cardStyle = ref<Record<string, string>>({})
 
 let phaseTimer: ReturnType<typeof setTimeout> | null = null
 let contentTimer: ReturnType<typeof setTimeout> | null = null
-let buttonTimer: ReturnType<typeof setTimeout> | null = null
 let pushedHistory = false
 
 function clearAllTimers() {
   if (phaseTimer) clearTimeout(phaseTimer)
   if (contentTimer) clearTimeout(contentTimer)
-  if (buttonTimer) clearTimeout(buttonTimer)
   phaseTimer = null
   contentTimer = null
-  buttonTimer = null
 }
 
 function calculateTargetStyle(): Record<string, string> {
@@ -65,10 +64,10 @@ function calculateTargetStyle(): Record<string, string> {
 
 function runExpansion() {
   clearAllTimers()
+  const reducedMotion = prefersReducedMotion()
   phase.value = 'expanding'
   isTransitioning.value = false
   showContent.value = false
-  showButtons.value = false
   isExpanded.value = false
 
   const origin = props.originRect
@@ -102,24 +101,25 @@ function runExpansion() {
 
     requestAnimationFrame(() => {
       // Enable CSS transitions and animate to full-screen target
-      isTransitioning.value = true
+      isTransitioning.value = !reducedMotion
       isExpanded.value = true
       cardStyle.value = calculateTargetStyle()
 
       // Staggered entrance: inner text/details at 100ms
-      contentTimer = setTimeout(() => {
-        showContent.value = true
-      }, 100)
-
-      // 3D tactile buttons at 180ms
-      buttonTimer = setTimeout(() => {
-        showButtons.value = true
-      }, 180)
+      contentTimer = setTimeout(
+        () => {
+          showContent.value = true
+        },
+        reducedMotion ? 0 : 100,
+      )
 
       // Fully settled at 320ms
-      phaseTimer = setTimeout(() => {
-        phase.value = 'settled'
-      }, 320)
+      phaseTimer = setTimeout(
+        () => {
+          phase.value = 'settled'
+        },
+        reducedMotion ? 0 : 320,
+      )
     })
   })
 }
@@ -130,9 +130,9 @@ function requestClose(triggerHistoryBack = true) {
   }
 
   clearAllTimers()
+  const reducedMotion = prefersReducedMotion()
   phase.value = 'collapsing'
-  isTransitioning.value = true
-  showButtons.value = false
+  isTransitioning.value = !reducedMotion
 
   // Fast content exit in first 80ms
   showContent.value = false
@@ -161,11 +161,14 @@ function requestClose(triggerHistoryBack = true) {
   }
 
   // 240ms collapse animation finishes
-  phaseTimer = setTimeout(() => {
-    phase.value = 'idle'
-    isTransitioning.value = false
-    emit('close')
-  }, 240)
+  phaseTimer = setTimeout(
+    () => {
+      phase.value = 'idle'
+      isTransitioning.value = false
+      emit('close')
+    },
+    reducedMotion ? 0 : 240,
+  )
 }
 
 function onPopState() {
@@ -197,7 +200,6 @@ watch(
       phase.value = 'idle'
       isExpanded.value = false
       showContent.value = false
-      showButtons.value = false
       pushedHistory = false
     }
   },
@@ -222,13 +224,18 @@ onUnmounted(() => {
   clearAllTimers()
 })
 
-const courseData = computed(() =>
-  props.kind === 'course' ? (props.data as CourseBlockDetailState | null) : null,
-)
-
-const untimedData = computed(() =>
-  props.kind === 'other' ? (props.data as NonCourseBlockDetailState | null) : null,
-)
+const detailTitle = computed(() => {
+  switch (props.item?.kind) {
+    case 'class':
+      return 'Class Details'
+    case 'task':
+      return 'Task Details'
+    case 'event':
+      return 'Event Details'
+    default:
+      return 'Item Details'
+  }
+})
 </script>
 
 <template>
@@ -274,7 +281,7 @@ const untimedData = computed(() =>
         </button>
 
         <span class="text-sm font-semibold font-quicksand text-[#64748B]">
-          {{ kind === 'course' ? 'Class Details' : 'Item Details' }}
+          {{ detailTitle }}
         </span>
 
         <div class="w-11" />
@@ -285,14 +292,12 @@ const untimedData = computed(() =>
         class="p-6 pt-5 overflow-y-auto flex-1 transition-all duration-200 max-w-lg mx-auto w-full"
         :class="[showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2']"
       >
-        <CourseBlockDetail
-          v-if="kind === 'course' && courseData"
-          :data="courseData"
-          :show-buttons="showButtons"
-          @navigate="emit('navigate', $event)"
+        <CalendarItemDetail
+          v-if="item"
+          :item="item"
+          @open-note="emit('open-note', $event)"
+          @complete-task="emit('complete-task', $event)"
         />
-
-        <UntimedBlockDetail v-else-if="kind === 'other' && untimedData" :data="untimedData" />
       </div>
     </div>
   </div>
