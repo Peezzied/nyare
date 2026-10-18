@@ -58,7 +58,7 @@ function newNote(event?: Event) {
     triggerKind: 'fab',
   })
 }
-const { notes, loading, error, loadNotes } = useNotes()
+const { notes, pictureNote, loading, error, loadNotes, getCourseName, getBadgeColor } = useNotes()
 
 const isAccountMenuOpen = ref(false)
 
