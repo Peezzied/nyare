@@ -43,12 +43,7 @@ function onSelectCourse(id: number) {
 
     <Variant title="Empty Catalog State">
       <div class="p-6 bg-[#F6F7EE] min-h-[400px] flex flex-col items-center justify-center">
-        <CoursePickerDialog
-          :open="true"
-          :selected-course-id="null"
-          :courses="[]"
-          :schedules="[]"
-        />
+        <CoursePickerDialog :open="true" :selected-course-id="null" :courses="[]" :schedules="[]" />
       </div>
     </Variant>
   </Story>

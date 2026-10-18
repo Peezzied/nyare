@@ -56,6 +56,28 @@ function badRequest(detail: string): { status: number; data: ProblemDetail } {
   }
 }
 
+function unauthorized(): { status: number; data: ProblemDetail } {
+  return {
+    status: 401,
+    data: {
+      title: 'Unauthorized',
+      status: 401,
+      detail: 'Authentication required',
+    },
+  }
+}
+
+/** Path prefixes that need a session. User routes stay open. */
+const PROTECTED_PREFIXES = [
+  '/api/courses',
+  '/api/schedules',
+  '/api/tasks',
+  '/api/notes',
+  '/api/academic-events',
+  '/api/study-planner',
+  '/api/images',
+]
+
 /** Restores the mock data to the initial fixtures and removes all uploaded images. */
 export function resetMockFixtures(): void {
   state = createInitialFixtures()
@@ -83,6 +105,14 @@ export function mockRouter(
     const [pathPart, queryPart] = url.split('?')
     pathname = pathPart ?? ''
     searchParams = new URLSearchParams(queryPart ?? '')
+  }
+
+  // Session gate. Protected routes answer 401 until a user logs in.
+  if (
+    !state.currentUser &&
+    PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`))
+  ) {
+    return unauthorized()
   }
 
   // Auth endpoints

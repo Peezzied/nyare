@@ -12,11 +12,24 @@ const sessionUser: UserResponse = {
 import { ref } from 'vue'
 
 const isDevUserMissing = ref(false)
+const user = ref<UserResponse | null>(null)
 const ensureSession = vi.fn<() => Promise<UserResponse | null | undefined>>()
+const clearSessionUser = vi.fn<() => void>(() => {
+  user.value = null
+})
 
 vi.mock('@/composables/useAuth', () => ({
   ensureSession: () => ensureSession(),
-  useAuth: () => ({ isDevUserMissing }),
+  useAuth: () => ({ isDevUserMissing, user }),
+  clearSessionUser: () => clearSessionUser(),
+}))
+
+let unauthorizedHandler: (() => void) | null = null
+
+vi.mock('@/api/client', () => ({
+  setUnauthorizedHandler: (next: (() => void) | null) => {
+    unauthorizedHandler = next
+  },
 }))
 
 /** Reimports the router so the guard and its routes start fresh per test. */
@@ -29,7 +42,10 @@ describe('router session guard', () => {
   beforeEach(() => {
     vi.resetModules()
     ensureSession.mockReset()
+    clearSessionUser.mockClear()
     isDevUserMissing.value = false
+    user.value = null
+    unauthorizedHandler = null
     vi.unstubAllEnvs()
   })
 
@@ -131,6 +147,35 @@ describe('router session guard', () => {
 
     await router.push('/dev-missing')
 
+    expect(router.currentRoute.value.name).toBe('start')
+  })
+
+  it('clears the session and returns to start when the unauthorized handler fires', async () => {
+    ensureSession.mockResolvedValueOnce(sessionUser).mockResolvedValue(null)
+    user.value = sessionUser
+    const router = await loadRouter()
+    await router.push('/calendar')
+    expect(router.currentRoute.value.name).toBe('calendar')
+
+    const pushSpy = vi.spyOn(router, 'push')
+    unauthorizedHandler?.()
+    await Promise.all(pushSpy.mock.results.map((result) => result.value))
+
+    expect(clearSessionUser).toHaveBeenCalledTimes(1)
+    expect(user.value).toBeNull()
+    expect(router.currentRoute.value.name).toBe('start')
+  })
+
+  it('does not navigate when the unauthorized handler fires on start', async () => {
+    ensureSession.mockResolvedValue(null)
+    const router = await loadRouter()
+    await router.push('/')
+    expect(router.currentRoute.value.name).toBe('start')
+
+    const pushSpy = vi.spyOn(router, 'push')
+    unauthorizedHandler?.()
+
+    expect(pushSpy).not.toHaveBeenCalled()
     expect(router.currentRoute.value.name).toBe('start')
   })
 })

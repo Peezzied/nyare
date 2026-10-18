@@ -9,12 +9,22 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
  * Spring Data JPA repository for note entities with mandatory user scoping.
  */
 public interface NoteRepository extends JpaRepository<Note, UUID> {
+
+    /**
+     * Finds a note by identifier only when its course belongs to the given user.
+     *
+     * @param id     the note identifier
+     * @param userId the owner user identifier
+     * @return the note when owned by the user, otherwise empty
+     */
+    Optional<Note> findByIdAndCourseUserId(UUID id, Long userId);
 
     /**
      * Returns notes matching mandatory user ID and optional course ID.

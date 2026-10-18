@@ -67,7 +67,9 @@ export function markdownToHtml(markdown: string): string {
 
   const flushList = () => {
     if (listType && listItems.length > 0) {
-      blocks.push(`<${listType}>${listItems.map((item) => `<li>${item}</li>`).join('')}</${listType}>`)
+      blocks.push(
+        `<${listType}>${listItems.map((item) => `<li>${item}</li>`).join('')}</${listType}>`,
+      )
     }
     listType = null
     listItems = []

@@ -31,8 +31,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
-    public TaskResponse createTask(TaskRequest request) {
-        Course course = findCourseOrThrow(request.getCourseId());
+    public TaskResponse createTask(TaskRequest request, Long userId) {
+        Course course = findCourseOrThrow(request.getCourseId(), userId);
 
         Task task = new Task(course, request.getTitle());
         task.setDescription(request.getDescription());
@@ -57,16 +57,16 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskResponse getTask(UUID id) {
-        Task task = findTaskOrThrow(id);
+    public TaskResponse getTask(UUID id, Long userId) {
+        Task task = findTaskOrThrow(id, userId);
         return toResponse(task);
     }
 
     @Override
     @Transactional
-    public TaskResponse updateTask(UUID id, TaskRequest request) {
-        Task task = findTaskOrThrow(id);
-        Course course = findCourseOrThrow(request.getCourseId());
+    public TaskResponse updateTask(UUID id, TaskRequest request, Long userId) {
+        Task task = findTaskOrThrow(id, userId);
+        Course course = findCourseOrThrow(request.getCourseId(), userId);
 
         task.setCourse(course);
         task.setTitle(request.getTitle());
@@ -82,8 +82,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
-    public TaskResponse updateTaskStatus(UUID id, TaskStatusRequest request) {
-        Task task = findTaskOrThrow(id);
+    public TaskResponse updateTaskStatus(UUID id, TaskStatusRequest request, Long userId) {
+        Task task = findTaskOrThrow(id, userId);
         task.setStatus(request.getStatus());
 
         return toResponse(task);
@@ -91,18 +91,18 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
-    public void deleteTask(UUID id) {
-        Task task = findTaskOrThrow(id);
+    public void deleteTask(UUID id, Long userId) {
+        Task task = findTaskOrThrow(id, userId);
         taskRepository.delete(task);
     }
 
-    private Task findTaskOrThrow(UUID id) {
-        return taskRepository.findById(id)
+    private Task findTaskOrThrow(UUID id, Long userId) {
+        return taskRepository.findByIdAndCourseUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found with ID: " + id));
     }
 
-    private Course findCourseOrThrow(Long courseId) {
-        return courseRepository.findById(courseId)
+    private Course findCourseOrThrow(Long courseId, Long userId) {
+        return courseRepository.findByIdAndUserId(courseId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + courseId));
     }
 

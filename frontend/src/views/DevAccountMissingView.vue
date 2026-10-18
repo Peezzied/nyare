@@ -76,18 +76,21 @@ function handleChooseAccount(): void {
             <AlertCircle class="h-6 w-6" />
           </div>
 
-          <h2 class="text-lg font-bold text-[#334155]">
-            Dev Account Missing
-          </h2>
+          <h2 class="text-lg font-bold text-[#334155]">Dev Account Missing</h2>
 
           <p class="mt-2 font-['Inter'] text-xs text-[#64748B] leading-relaxed">
-            The configured student account <span class="font-mono font-bold text-[#334155]">{{ devUser }}</span> does not exist in the backend database.
+            The configured student account
+            <span class="font-mono font-bold text-[#334155]">{{ devUser }}</span> does not exist in
+            the backend database.
           </p>
 
           <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50/70 p-3 text-left">
             <p class="font-bold text-xs text-amber-900">How to restore:</p>
             <ol class="mt-1 list-decimal pl-4 font-['Inter'] text-[11px] text-amber-800 space-y-1">
-              <li>Re-run <code class="font-mono font-semibold">backend/src/main/resources/data.sql</code></li>
+              <li>
+                Re-run
+                <code class="font-mono font-semibold">backend/src/main/resources/data.sql</code>
+              </li>
               <li>Or restart the Spring Boot backend server</li>
             </ol>
           </div>

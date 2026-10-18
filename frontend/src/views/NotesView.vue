@@ -167,7 +167,11 @@ onMounted(async () => {
       </div>
     </header>
 
-    <p v-if="loading && notes.length === 0" class="mt-6 text-center text-sm text-text-muted" data-testid="notes-loading">
+    <p
+      v-if="loading && notes.length === 0"
+      class="mt-6 text-center text-sm text-text-muted"
+      data-testid="notes-loading"
+    >
       Notes are loading.
     </p>
 

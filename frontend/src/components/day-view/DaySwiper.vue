@@ -104,8 +104,12 @@ function beginDrag(e: PointerEvent) {
   const column = viewport.querySelector<HTMLElement>('.sx__time-grid-day')
 
   peekScrollTop.value = scroller?.scrollTop ?? 0
-  peekGutter.value = column ? Math.max(Math.round(column.getBoundingClientRect().left - vp.left), 0) : 0
-  axisTop.value = scroller ? Math.max(Math.round(scroller.getBoundingClientRect().top - vp.top), 0) : 0
+  peekGutter.value = column
+    ? Math.max(Math.round(column.getBoundingClientRect().left - vp.left), 0)
+    : 0
+  axisTop.value = scroller
+    ? Math.max(Math.round(scroller.getBoundingClientRect().top - vp.top), 0)
+    : 0
   slideDistance.value = Math.max(vp.width - peekGutter.value, 1)
   dragBase.value = props.selectedDate
   phase.value = 'dragging'
@@ -234,12 +238,7 @@ onUnmounted(() => {
           class="pointer-events-none absolute top-0 z-30 h-full w-full"
           :style="{ left: peekLeft }"
         >
-          <slot
-            name="peek"
-            :date="peekDate"
-            :scrollTop="peekScrollTop"
-            :gutterLeft="peekGutter"
-          />
+          <slot name="peek" :date="peekDate" :scrollTop="peekScrollTop" :gutterLeft="peekGutter" />
         </div>
       </div>
     </div>

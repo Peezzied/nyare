@@ -39,9 +39,7 @@ describe('User Story 3: Failures and Cancellation', () => {
       await authApi.register({ username })
       await authApi.login({ username })
 
-      await expect(
-        tasksApi.get('00000000-0000-0000-0000-000000000000'),
-      ).rejects.toMatchObject({
+      await expect(tasksApi.get('00000000-0000-0000-0000-000000000000')).rejects.toMatchObject({
         status: 404,
       })
     })

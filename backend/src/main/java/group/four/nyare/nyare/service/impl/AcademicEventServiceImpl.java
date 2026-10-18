@@ -37,8 +37,8 @@ public class AcademicEventServiceImpl implements AcademicEventService {
 
     @Override
     @Transactional
-    public AcademicEventResponse createEvent(AcademicEventRequest request) {
-        Course course = courseRepository.findById(request.getCourseId())
+    public AcademicEventResponse createEvent(AcademicEventRequest request, Long userId) {
+        Course course = courseRepository.findByIdAndUserId(request.getCourseId(), userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + request.getCourseId()));
 
         Note note = null;
@@ -65,19 +65,19 @@ public class AcademicEventServiceImpl implements AcademicEventService {
     }
 
     @Override
-    public AcademicEventResponse getEvent(UUID id) {
-        AcademicEvent event = academicEventRepository.findById(id)
+    public AcademicEventResponse getEvent(UUID id, Long userId) {
+        AcademicEvent event = academicEventRepository.findByIdAndCourseUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Academic event not found with ID: " + id));
         return toResponse(event);
     }
 
     @Override
     @Transactional
-    public AcademicEventResponse updateEvent(UUID id, AcademicEventRequest request) {
-        AcademicEvent event = academicEventRepository.findById(id)
+    public AcademicEventResponse updateEvent(UUID id, AcademicEventRequest request, Long userId) {
+        AcademicEvent event = academicEventRepository.findByIdAndCourseUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Academic event not found with ID: " + id));
 
-        Course course = courseRepository.findById(request.getCourseId())
+        Course course = courseRepository.findByIdAndUserId(request.getCourseId(), userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + request.getCourseId()));
 
         Note note = null;
@@ -100,8 +100,8 @@ public class AcademicEventServiceImpl implements AcademicEventService {
 
     @Override
     @Transactional
-    public void deleteEvent(UUID id) {
-        AcademicEvent event = academicEventRepository.findById(id)
+    public void deleteEvent(UUID id, Long userId) {
+        AcademicEvent event = academicEventRepository.findByIdAndCourseUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Academic event not found with ID: " + id));
         academicEventRepository.delete(event);
     }

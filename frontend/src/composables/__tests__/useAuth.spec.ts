@@ -25,7 +25,8 @@ vi.mock('@/api', () => {
     authApi: {
       getCurrentUser: (...args: unknown[]) => getCurrentUser(...(args as [])),
       login: (...args: unknown[]) => login(...(args as [{ username: string }])),
-      getDevUser: () => (import.meta.env.DEV ? import.meta.env.VITE_DEV_USER || undefined : undefined),
+      getDevUser: () =>
+        import.meta.env.DEV ? import.meta.env.VITE_DEV_USER || undefined : undefined,
     },
   }
 })

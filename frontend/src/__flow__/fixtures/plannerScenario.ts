@@ -39,7 +39,10 @@ export const plannerScenario: ScenarioFixtureData = {
     { name: 'Readings in Philippine History', description: 'General Education Course' },
     { name: 'Mobile Computing', description: 'CS Elective Course' },
     { name: 'Object-Oriented Programming', description: 'CS Core Course' },
-    { name: 'Physical Activities Toward Health & Fitness 3 (PATHFit 3)', description: 'Physical Education' }
+    {
+      name: 'Physical Activities Toward Health & Fitness 3 (PATHFit 3)',
+      description: 'Physical Education',
+    },
   ],
   schedules: [
     { courseIndex: 0, dayOfWeek: 'MONDAY', startTime: '07:30', endTime: '08:30' },
@@ -58,38 +61,41 @@ export const plannerScenario: ScenarioFixtureData = {
     { courseIndex: 1, dayOfWeek: 'FRIDAY', startTime: '09:00', endTime: '10:30' },
     { courseIndex: 2, dayOfWeek: 'FRIDAY', startTime: '10:30', endTime: '12:00' },
     { courseIndex: 7, dayOfWeek: 'FRIDAY', startTime: '13:30', endTime: '15:30' },
-    { courseIndex: 4, dayOfWeek: 'FRIDAY', startTime: '15:30', endTime: '16:30' }
+    { courseIndex: 4, dayOfWeek: 'FRIDAY', startTime: '15:30', endTime: '16:30' },
   ],
   existingTask: {
     courseIndex: 0,
     title: 'Review MIPS instruction encoding',
     dayOffset: 1,
-    status: 'TODO'
+    status: 'TODO',
   },
   existingEvent: {
     courseIndex: 5,
     title: 'Mobile Computing Quiz',
     description: 'Activity lifecycle callbacks',
-    dayOffset: 3
+    dayOffset: 3,
   },
   notes: [
     {
       courseIndex: 6,
-      textTemplate: 'grabe sabaw ako sa lab 3 kanina puro inheritance at polymorphism... may pa-lab report si sir due next tue ng 1:30pm bago mag-start lab. kailangan ko tapusin yung uml class diagram asap.\n\n![Lab Notice]({{noticeUrl}})',
+      textTemplate:
+        'grabe sabaw ako sa lab 3 kanina puro inheritance at polymorphism... may pa-lab report si sir due next tue ng 1:30pm bago mag-start lab. kailangan ko tapusin yung uml class diagram asap.\n\n![Lab Notice]({{noticeUrl}})',
       imageText: 'Important: Submit Lab Report 3 before Friday midnight.',
-      imageFileName: 'notice.png'
+      imageFileName: 'notice.png',
     },
     {
       courseIndex: 5,
-      textTemplate: 'intro pa lang sa android studio setup and activity lifecycle pero shookt kami biglang announced quiz sa thursday 10:30am coverage yung lifecycle callbacks. need ko mag-install ng android studio tsaka sdk sa laptop bago mag-next lab session.',
+      textTemplate:
+        'intro pa lang sa android studio setup and activity lifecycle pero shookt kami biglang announced quiz sa thursday 10:30am coverage yung lifecycle callbacks. need ko mag-install ng android studio tsaka sdk sa laptop bago mag-next lab session.',
       imageText: '',
-      imageFileName: ''
+      imageFileName: '',
     },
     {
       courseIndex: 3,
-      textTemplate: 'calculus discussion abt inverse trigo functions. kasama raw yata sa midterm exam which will prolly be on oct 7.\n\n![Lecture Slide]({{slideUrl}})',
+      textTemplate:
+        'calculus discussion abt inverse trigo functions. kasama raw yata sa midterm exam which will prolly be on oct 7.\n\n![Lecture Slide]({{slideUrl}})',
       imageText: 'CS201 Algorithm: Binary Tree Traversal. Time Complexity: O(n).',
-      imageFileName: 'slide.png'
-    }
-  ]
+      imageFileName: 'slide.png',
+    },
+  ],
 }

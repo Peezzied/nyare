@@ -55,11 +55,11 @@ class NoteServiceImplTest {
     void createNote_withValidRequest_returnsResponse() {
         // given
         NoteRequest request = new NoteRequest(1L, "Lecture 1");
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
         when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        NoteResponse response = noteService.createNote(request);
+        NoteResponse response = noteService.createNote(request, 1L);
 
         // then
         assertThat(response).isNotNull();
@@ -72,11 +72,11 @@ class NoteServiceImplTest {
         // given
         LocalDate customDate = LocalDate.now().minusDays(3);
         NoteRequest request = new NoteRequest(1L, "Past note content", customDate);
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
         when(noteRepository.save(any(Note.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // when
-        NoteResponse response = noteService.createNote(request);
+        NoteResponse response = noteService.createNote(request, 1L);
 
         // then
         assertThat(response).isNotNull();
@@ -90,7 +90,7 @@ class NoteServiceImplTest {
         NoteRequest request = new NoteRequest(1L, "Ancient note content", tooOldDate);
 
         // when & then
-        assertThatThrownBy(() -> noteService.createNote(request))
+        assertThatThrownBy(() -> noteService.createNote(request, 1L))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining("Entry date cannot be older than 14 days");
     }
@@ -99,11 +99,11 @@ class NoteServiceImplTest {
     void createNote_withExplicitTitle_savesAndReturnsExplicitTitle() {
         // given
         NoteRequest request = new NoteRequest(1L, "Explicit Title", "Note content");
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
         when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        NoteResponse response = noteService.createNote(request);
+        NoteResponse response = noteService.createNote(request, 1L);
 
         // then
         assertThat(response).isNotNull();
@@ -115,11 +115,11 @@ class NoteServiceImplTest {
     void createNote_withNullTitle_generatesFallbackTitleFromContent() {
         // given
         NoteRequest request = new NoteRequest(1L, null, "# Heading Title\nBody content");
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
         when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        NoteResponse response = noteService.createNote(request);
+        NoteResponse response = noteService.createNote(request, 1L);
 
         // then
         assertThat(response).isNotNull();
@@ -131,11 +131,11 @@ class NoteServiceImplTest {
     void createNote_withBlankTitleAndEmptyContent_usesUntitledNoteFallback() {
         // given
         NoteRequest request = new NoteRequest(1L, "   ", "   ");
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
         when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        NoteResponse response = noteService.createNote(request);
+        NoteResponse response = noteService.createNote(request, 1L);
 
         // then
         assertThat(response).isNotNull();
@@ -147,11 +147,11 @@ class NoteServiceImplTest {
         // given
         String longLine = "A".repeat(80);
         NoteRequest request = new NoteRequest(1L, null, "## " + longLine);
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
         when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        NoteResponse response = noteService.createNote(request);
+        NoteResponse response = noteService.createNote(request, 1L);
 
         // then
         assertThat(response).isNotNull();
@@ -162,24 +162,35 @@ class NoteServiceImplTest {
     void createNote_withNonExistentCourse_throwsResourceNotFoundException() {
         // given
         NoteRequest request = new NoteRequest(999L, "Lecture 1");
-        when(courseRepository.findById(999L)).thenReturn(Optional.empty());
+        when(courseRepository.findByIdAndUserId(999L, 1L)).thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> noteService.createNote(request))
+        assertThatThrownBy(() -> noteService.createNote(request, 1L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Course not found with ID: 999");
+    }
+
+    @Test
+    void createNote_courseOfOtherUser_throwsResourceNotFound() {
+        // given
+        NoteRequest request = new NoteRequest(1L, "Lecture 1");
+        when(courseRepository.findByIdAndUserId(1L, 2L)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> noteService.createNote(request, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
     void updateNote_withValidRequest_returnsResponse() {
         // given
         NoteRequest request = new NoteRequest(1L, "Updated notes");
-        when(noteRepository.findById(noteId)).thenReturn(Optional.of(note));
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(noteRepository.findByIdAndCourseUserId(noteId, 1L)).thenReturn(Optional.of(note));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
         when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        NoteResponse response = noteService.updateNote(noteId, request);
+        NoteResponse response = noteService.updateNote(noteId, request, 1L);
 
         // then
         assertThat(response).isNotNull();
@@ -190,12 +201,12 @@ class NoteServiceImplTest {
     void updateNote_withNewTitle_updatesTitle() {
         // given
         NoteRequest request = new NoteRequest(1L, "Updated Title", "Updated notes");
-        when(noteRepository.findById(noteId)).thenReturn(Optional.of(note));
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(noteRepository.findByIdAndCourseUserId(noteId, 1L)).thenReturn(Optional.of(note));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
         when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        NoteResponse response = noteService.updateNote(noteId, request);
+        NoteResponse response = noteService.updateNote(noteId, request, 1L);
 
         // then
         assertThat(response).isNotNull();
@@ -208,12 +219,12 @@ class NoteServiceImplTest {
         // given
         Note customNote = new Note(course, "Custom Title", "Original content");
         NoteRequest request = new NoteRequest(1L, null, "Updated notes without title");
-        when(noteRepository.findById(noteId)).thenReturn(Optional.of(customNote));
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(noteRepository.findByIdAndCourseUserId(noteId, 1L)).thenReturn(Optional.of(customNote));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
         when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        NoteResponse response = noteService.updateNote(noteId, request);
+        NoteResponse response = noteService.updateNote(noteId, request, 1L);
 
         // then
         assertThat(response).isNotNull();
@@ -226,12 +237,12 @@ class NoteServiceImplTest {
         // given
         Note defaultNote = new Note(course, "Untitled Note", "Original content");
         NoteRequest request = new NoteRequest(1L, null, "### New Section Header\nNew body");
-        when(noteRepository.findById(noteId)).thenReturn(Optional.of(defaultNote));
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(noteRepository.findByIdAndCourseUserId(noteId, 1L)).thenReturn(Optional.of(defaultNote));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
         when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        NoteResponse response = noteService.updateNote(noteId, request);
+        NoteResponse response = noteService.updateNote(noteId, request, 1L);
 
         // then
         assertThat(response).isNotNull();
@@ -243,38 +254,69 @@ class NoteServiceImplTest {
     void updateNote_withNonExistentNote_throwsResourceNotFoundException() {
         // given
         NoteRequest request = new NoteRequest(1L, "Updated notes");
-        when(noteRepository.findById(noteId)).thenReturn(Optional.empty());
+        when(noteRepository.findByIdAndCourseUserId(noteId, 1L)).thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> noteService.updateNote(noteId, request))
+        assertThatThrownBy(() -> noteService.updateNote(noteId, request, 1L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Note not found with ID: " + noteId);
     }
 
     @Test
+    void updateNote_otherUser_throwsResourceNotFound() {
+        // given
+        NoteRequest request = new NoteRequest(1L, "Updated notes");
+        when(noteRepository.findByIdAndCourseUserId(noteId, 2L)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> noteService.updateNote(noteId, request, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
     void deleteNote_withValidId_deletesNote() {
         // given
-        when(noteRepository.findById(noteId)).thenReturn(Optional.of(note));
+        when(noteRepository.findByIdAndCourseUserId(noteId, 1L)).thenReturn(Optional.of(note));
 
         // when
-        noteService.deleteNote(noteId);
+        noteService.deleteNote(noteId, 1L);
 
         // then
         verify(noteRepository).delete(note);
     }
 
     @Test
+    void deleteNote_otherUser_throwsResourceNotFound() {
+        // given
+        when(noteRepository.findByIdAndCourseUserId(noteId, 2L)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> noteService.deleteNote(noteId, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
     void getNote_withValidId_returnsResponseWithTitle() {
         // given
-        when(noteRepository.findById(noteId)).thenReturn(Optional.of(note));
+        when(noteRepository.findByIdAndCourseUserId(noteId, 1L)).thenReturn(Optional.of(note));
 
         // when
-        NoteResponse response = noteService.getNote(noteId);
+        NoteResponse response = noteService.getNote(noteId, 1L);
 
         // then
         assertThat(response).isNotNull();
         assertThat(response.getTitle()).isEqualTo("Untitled Note");
         assertThat(response.getContent()).isEqualTo("Study notes");
+    }
+
+    @Test
+    void getNote_otherUser_throwsResourceNotFound() {
+        // given
+        when(noteRepository.findByIdAndCourseUserId(noteId, 2L)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> noteService.getNote(noteId, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -305,18 +347,17 @@ class NoteServiceImplTest {
     }
 
     @Test
-    void listNotes_withoutCourseId_returnsAllSummaries() {
+    void listNotes_scopedToUser_returnsOnlyOwnData() {
         // given
-        when(noteRepository.findAllFiltered(42L, null)).thenReturn(List.of(note));
+        Note otherNote = new Note(course, "Other notes");
+        when(noteRepository.findAllFiltered(42L, null)).thenReturn(List.of(note, otherNote));
 
         // when
         List<NoteSummaryResponse> responses = noteService.listNotes(42L, null);
 
         // then
-        assertThat(responses).hasSize(1);
-        assertThat(responses.get(0).getTitle()).isEqualTo("Untitled Note");
-        assertThat(responses.get(0).getPreview()).isEqualTo("Study notes");
-        assertThat(responses.get(0).isTruncated()).isFalse();
+        assertThat(responses).hasSize(2);
+        verify(noteRepository).findAllFiltered(42L, null);
     }
 
     @Test

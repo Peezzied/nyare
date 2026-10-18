@@ -14,12 +14,13 @@ import java.util.UUID;
 public interface TaskService {
 
     /**
-     * Creates and persists a new academic task associated with a valid course offering.
+     * Creates and persists a new academic task owned by the session user.
      *
      * @param request the validated task creation payload
+     * @param userId  the owner user identifier from the active session
      * @return the persisted task response representation
      */
-    TaskResponse createTask(TaskRequest request);
+    TaskResponse createTask(TaskRequest request, Long userId);
 
     /**
      * Retrieves all tasks matching optional course, status, and scheduling filter criteria.
@@ -33,35 +34,39 @@ public interface TaskService {
     List<TaskResponse> listTasks(Long userId, Long courseId, TaskStatus status, Boolean scheduled);
 
     /**
-     * Retrieves a single task by its unique identifier.
+     * Retrieves a single task owned by the session user.
      *
-     * @param id the unique UUID of the task
+     * @param id     the unique UUID of the task
+     * @param userId the owner user identifier from the active session
      * @return the task response representation
      */
-    TaskResponse getTask(UUID id);
+    TaskResponse getTask(UUID id, Long userId);
 
     /**
-     * Fully updates an existing task with replacement data, including potential course re-association.
+     * Fully updates an existing task owned by the session user.
      *
      * @param id      the unique UUID of the task to update
      * @param request the replacement task payload
+     * @param userId  the owner user identifier from the active session
      * @return the updated task response representation
      */
-    TaskResponse updateTask(UUID id, TaskRequest request);
+    TaskResponse updateTask(UUID id, TaskRequest request, Long userId);
 
     /**
-     * Updates only the lifecycle status of an existing task.
+     * Updates only the lifecycle status of an existing task owned by the session user.
      *
      * @param id      the unique UUID of the task
      * @param request the status update payload
+     * @param userId  the owner user identifier from the active session
      * @return the updated task response representation
      */
-    TaskResponse updateTaskStatus(UUID id, TaskStatusRequest request);
+    TaskResponse updateTaskStatus(UUID id, TaskStatusRequest request, Long userId);
 
     /**
-     * Deletes an existing task by its unique identifier.
+     * Deletes an existing task owned by the session user.
      *
-     * @param id the unique UUID of the task to delete
+     * @param id     the unique UUID of the task to delete
+     * @param userId the owner user identifier from the active session
      */
-    void deleteTask(UUID id);
+    void deleteTask(UUID id, Long userId);
 }
