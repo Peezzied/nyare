@@ -101,6 +101,8 @@ const detailItem = ref<CalendarItemDetailView | null>(null)
 const detailOriginRect = ref<TapOriginRect | null>(null)
 const isDetailOpen = ref(false)
 const detailError = ref<string | null>(null)
+// The app frame the detail modal fills, so it never outgrows the centred column.
+const frameRef = ref<HTMLElement | null>(null)
 
 function openDetail(item: CalendarItemDetailView, originRect: DOMRect | null) {
   detailError.value = null
@@ -175,6 +177,7 @@ async function completeTask(taskId: string) {
   <div class="fixed inset-0 overflow-hidden bg-[#E5E7EB] flex justify-center sm:items-center">
     <!-- Mobile Frame Viewport -->
     <div
+      ref="frameRef"
       class="w-full max-w-[430px] h-full sm:h-[880px] sm:max-h-[95%] bg-[#F5F6EE] flex flex-col relative sm:rounded-[36px] sm:shadow-2xl overflow-hidden"
     >
       <!-- Top Header -->
@@ -237,6 +240,7 @@ async function completeTask(taskId: string) {
       <EventDetailModal
         :is-open="isDetailOpen"
         :origin-rect="detailOriginRect"
+        :frame-el="frameRef"
         :item="detailItem"
         @close="closeDetail"
         @open-note="openLinkedNote"

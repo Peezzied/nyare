@@ -10,10 +10,13 @@ const props = withDefaults(
     isOpen: boolean
     originRect: TapOriginRect | null
     item: CalendarItemDetailView | null
+    /** The app frame to fill: the centred column the day view renders inside. */
+    frameEl: HTMLElement | null
   }>(),
   {
     originRect: null,
     item: null,
+    frameEl: null,
   },
 )
 
@@ -50,7 +53,26 @@ function clearAllTimers() {
   contentTimer = null
 }
 
+/**
+ * Target geometry for the expanded container: the app frame when it is available, so the
+ * detail view never outgrows the centred column the day view renders inside.
+ * Falls back to the viewport when the frame is missing or not laid out yet.
+ */
 function calculateTargetStyle(): Record<string, string> {
+  const frame = props.frameEl
+  if (frame) {
+    const rect = frame.getBoundingClientRect()
+    if (rect.width > 0 && rect.height > 0) {
+      return {
+        top: `${rect.top}px`,
+        left: `${rect.left}px`,
+        width: `${rect.width}px`,
+        height: `${rect.height}px`,
+        borderRadius: getComputedStyle(frame).borderRadius || '0px',
+      }
+    }
+  }
+
   const w = typeof window !== 'undefined' && window.innerWidth > 0 ? window.innerWidth : 390
   const h = typeof window !== 'undefined' && window.innerHeight > 0 ? window.innerHeight : 844
   return {
@@ -59,6 +81,13 @@ function calculateTargetStyle(): Record<string, string> {
     width: `${w}px`,
     height: `${h}px`,
     borderRadius: '0px',
+  }
+}
+
+/** Re-fits the expanded panel when the viewport changes while it is open. */
+function onViewportResize() {
+  if (isExpanded.value && phase.value !== 'collapsing') {
+    cardStyle.value = calculateTargetStyle()
   }
 }
 
@@ -210,6 +239,8 @@ onMounted(() => {
   if (typeof window !== 'undefined') {
     window.addEventListener('popstate', onPopState)
     window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('resize', onViewportResize)
+    window.visualViewport?.addEventListener('resize', onViewportResize)
   }
 })
 
@@ -220,6 +251,8 @@ onUnmounted(() => {
   if (typeof window !== 'undefined') {
     window.removeEventListener('popstate', onPopState)
     window.removeEventListener('keydown', onKeyDown)
+    window.removeEventListener('resize', onViewportResize)
+    window.visualViewport?.removeEventListener('resize', onViewportResize)
   }
   clearAllTimers()
 })
@@ -257,6 +290,7 @@ const detailTitle = computed(() => {
     <!-- Full-screen expanding container -->
     <div
       ref="containerRef"
+      data-testid="detail-modal-container"
       class="fixed bg-[#F5F6EE] overflow-hidden flex flex-col z-10 will-change-[top,left,width,height,border-radius]"
       :class="[
         isTransitioning && phase === 'expanding'
