@@ -350,7 +350,10 @@ describe('NotesView', () => {
     await flushPromises()
 
     expect(mockPush).toHaveBeenCalledWith('/select-account')
-    expect(document.querySelector('[data-testid="account-menu"]')).toBeNull()
+    expect(wrapper.get('[data-testid="topbar-menu"]').attributes('aria-expanded')).toBe('false')
+    await vi.waitFor(() => {
+      expect(document.querySelector('[data-testid="account-menu"]')).toBeNull()
+    })
 
     wrapper.unmount()
   })
