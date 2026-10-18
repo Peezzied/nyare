@@ -69,6 +69,7 @@ const calendarApp = shallowRef(
       views: [createViewDay()],
       defaultView: 'day',
       timezone: TZ,
+      skipAnimations: true,
       selectedDate: toPlainDate(props.selectedDate),
       dayBoundaries: {
         start: `${String(initialB.startHour).padStart(2, '0')}:00`,
