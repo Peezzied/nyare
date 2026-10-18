@@ -75,7 +75,7 @@ function goToSelectAccount(): void {
               <span
                 aria-label="Nyare logo"
                 data-testid="nyare-wordmark"
-                class="font-logo text-3xl font-bold leading-none tracking-tight text-primary"
+                class="font-logo text-3xl font-bold leading-none tracking-tight text-[#00A4C8]"
               >
                 'Nyare
               </span>
