@@ -61,7 +61,9 @@ describe('HamburgerMenu', () => {
     await flushPromises()
 
     expect(mockPush).toHaveBeenCalledWith('/select-account')
-    expect(document.querySelector('[data-testid="account-menu"]')).toBeNull()
+    await vi.waitFor(() => {
+      expect(document.querySelector('[data-testid="account-menu"]')).toBeNull()
+    })
     wrapper.unmount()
   })
 })
