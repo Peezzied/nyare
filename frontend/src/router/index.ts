@@ -1,10 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { clearSessionUser, ensureSession, useAuth } from '@/composables/useAuth'
+import { useCatalog } from '@/composables/useCatalog'
+import { useOnboarding } from '@/composables/useOnboarding'
 import { setUnauthorizedHandler } from '@/api/client'
 import StartView from '../views/StartView.vue'
 import WelcomeView from '../views/WelcomeView.vue'
-import ScheduleView from '../views/ScheduleView.vue'
 import CreateScheduleView from '../views/CreateScheduleView.vue'
+import AccountSelectView from '../views/AccountSelectView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -18,10 +20,10 @@ const router = createRouter({
       name: 'welcome',
       component: WelcomeView,
     },
+    // Stale `/schedule` bookmarks resolve through the guard via the start route.
     {
       path: '/schedule',
-      name: 'schedule',
-      component: ScheduleView,
+      redirect: '/',
     },
     {
       path: '/create-schedule',
@@ -48,7 +50,7 @@ const router = createRouter({
       path: '/select-account',
       alias: '/accounts',
       name: 'select-account',
-      component: () => import('../views/AccountSelectView.vue'),
+      component: AccountSelectView,
     },
     // Logged-in tab routes render inside the shared AppShell chrome.
     {
@@ -81,6 +83,16 @@ const router = createRouter({
   ],
 })
 
+// Routes that need a completed setup before a sessioned user may open them.
+const GATED_WHEN_NOT_ONBOARDED = [
+  'calendar',
+  'tasks',
+  'notes',
+  'note-new',
+  'note-edit',
+  'task-detail',
+]
+
 // A protected 401 during use clears the session and returns to the start screen.
 setUnauthorizedHandler(() => {
   clearSessionUser()
@@ -92,8 +104,8 @@ setUnauthorizedHandler(() => {
 // First-launch detection via `GET /api/users/me`.
 // Public routes: the startup/setup page (`start`), account selection, and missing dev user notice.
 // Every other route needs a valid linked user session and redirects to `start`.
-// A sessioned visit to `start` goes to the calendar home
-// (docs/system-workflows.md section 8 identifies Calendar View as the home).
+// A sessioned visit to `start` continues onboarding or goes to the calendar
+// home (docs/system-workflows.md section 8 identifies Calendar View as the home).
 router.beforeEach(async (to) => {
   const user = await ensureSession()
   const { isDevUserMissing } = useAuth()
@@ -117,9 +129,45 @@ router.beforeEach(async (to) => {
     return true
   }
   if (!user) {
-    return to.name === 'start' || to.name === 'select-account' ? true : { path: '/' }
+    // Public sessionless routes: the startup/setup page, account selection, the
+    // welcome name form, and the schedule step once a name exists (the account
+    // is only registered on Submit at the end of onboarding).
+    if (to.name === 'start' || to.name === 'select-account' || to.name === 'welcome') {
+      return true
+    }
+    if (to.name === 'create-schedule') {
+      return useOnboarding().isNameValid.value ? true : { name: 'welcome' }
+    }
+    return { path: '/' }
   }
-  return to.name === 'start' ? { name: 'calendar' } : true
+
+  // Onboarding completion is derived from owned courses: an account with at
+  // least one course finished setup. The gate only matters on setup and app
+  // routes, so other destinations (e.g. select-account) skip the catalog wait.
+  const needsCourseGate =
+    GATED_WHEN_NOT_ONBOARDED.includes(to.name as string) ||
+    to.name === 'welcome' ||
+    to.name === 'create-schedule' ||
+    to.name === 'start'
+  if (needsCourseGate) {
+    let hasCourses = true
+    try {
+      await useCatalog().loadCatalog()
+      hasCourses = useCatalog().courses.value.length > 0
+    } catch {
+      // A failed catalog load leaves the state unknown; let the view handle it.
+    }
+    if (!hasCourses && GATED_WHEN_NOT_ONBOARDED.includes(to.name as string)) {
+      return { name: 'welcome' }
+    }
+    if (hasCourses && (to.name === 'welcome' || to.name === 'create-schedule')) {
+      return { name: 'calendar' }
+    }
+    if (to.name === 'start') {
+      return { name: hasCourses ? 'calendar' : 'welcome' }
+    }
+  }
+  return true
 })
 
 export default router

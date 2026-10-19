@@ -90,6 +90,19 @@ export function clearSessionUser(): void {
   resetAllCaches()
 }
 
+/**
+ * Ends the session deliberately. Unlike `clearSessionUser`, the check stays
+ * concluded so the next navigation does not re-probe `/me` and trigger the
+ * dev auto-login, which would undo the sign-out.
+ */
+export function endSession(): void {
+  user.value = null
+  sessionChecked = true
+  isDevUserMissing.value = false
+  sessionPromise = null
+  resetAllCaches()
+}
+
 /** Exposes the shared session state for components. */
 export function useAuth(): {
   user: Ref<UserResponse | null>
@@ -98,6 +111,7 @@ export function useAuth(): {
   ensureSession: () => Promise<UserResponse | null | undefined>
   setSessionUser: (next: UserResponse) => void
   clearSessionUser: () => void
+  endSession: () => void
 } {
   return {
     user,
@@ -106,5 +120,6 @@ export function useAuth(): {
     ensureSession,
     setSessionUser,
     clearSessionUser,
+    endSession,
   }
 }

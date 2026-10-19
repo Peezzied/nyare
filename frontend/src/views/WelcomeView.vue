@@ -1,12 +1,36 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { ArrowLeft } from '@lucide/vue'
 import TactileButton from '@/components/TactileButton.vue'
 import StepProgress from '@/components/StepProgress.vue'
 import { useOnboarding } from '@/composables/useOnboarding'
 
 const router = useRouter()
+const route = useRoute()
 const { studentName, isNameValid, setStudentName } = useOnboarding()
+
+const ONBOARDING_STEP_ROUTES = ['/', '/welcome', '/create-schedule'] as const
+const ONBOARDING_STEP_LABELS = ['Start', 'Your name', 'Class schedule']
+
+function onStepSelect(step: number) {
+  const target = ONBOARDING_STEP_ROUTES[step - 1]
+  if (target && target !== route.path) {
+    void router.push(target)
+  }
+}
+
+// The back button only appears when the account picker sent the user here
+// through Add Account (`?from=accounts`).
+const showBack = computed(() => route.query.from === 'accounts')
+
+function goBack() {
+  if (typeof window !== 'undefined' && window.history.length > 1) {
+    router.back()
+  } else {
+    router.push('/select-account')
+  }
+}
 
 const canContinue = computed(() => isNameValid.value && studentName.value.trim().length > 0)
 
@@ -17,10 +41,13 @@ function onInput(event: Event) {
   setStudentName((event.target as HTMLInputElement).value)
 }
 
-function proceed() {
-  if (canContinue.value) {
-    router.push('/schedule')
+// The name stays in onboarding state; the account is only created on Submit
+// at the end of the schedule step.
+async function proceed() {
+  if (!canContinue.value) {
+    return
   }
+  await router.replace('/create-schedule')
 }
 </script>
 
@@ -28,6 +55,18 @@ function proceed() {
   <div
     class="relative mx-auto flex h-[100svh] w-full max-w-[420px] flex-col overflow-hidden bg-[#F6F7EE] px-6 pt-4"
   >
+    <!-- Back to the account picker, only after Add Account -->
+    <button
+      v-if="showBack"
+      type="button"
+      data-testid="welcome-back"
+      aria-label="Go back"
+      class="absolute left-6 top-6 z-20 flex h-10 w-10 items-center justify-center rounded-xl border-2 text-[#94A3B8] transition-colors duration-150 cursor-pointer hover:border-0 hover:bg-[#00A4C8]/10 hover:text-[#00A4C8] focus-visible:outline-2 focus-visible:outline-[#00A4C8]/45 focus-visible:outline-offset-2"
+      @click="goBack"
+    >
+      <ArrowLeft class="h-5 w-5" />
+    </button>
+
     <!-- Static background: same as Start -->
     <img
       src="@/assets/props/sun.svg"
@@ -48,12 +87,17 @@ function proceed() {
       class="relative z-10 flex justify-center pt-[1svh]"
       :class="{ 'welcome-enter welcome-delay-1': entered }"
     >
-      <StepProgress :active-step="2" />
+      <StepProgress
+        :active-step="2"
+        :step-labels="ONBOARDING_STEP_LABELS"
+        interactive
+        @select="onStepSelect"
+      />
     </div>
 
     <!-- Heading -->
     <div
-      class="relative z-10 mt-[11svh] w-full shrink-0"
+      class="relative z-10 mt-[14svh] w-full shrink-0"
       :class="{ 'welcome-enter welcome-delay-2': entered }"
     >
       <h1 class="font-logo text-5xl font-semibold leading-tight text-[#00A4C8]">Welcome,</h1>
@@ -98,7 +142,7 @@ function proceed() {
           placeholder="What is your name?"
           aria-label="Enter your name"
           autocomplete="given-name"
-          class="min-w-0 flex-1 bg-transparent text-lg text-[#334155] outline-none placeholder:text-[#7B8B97]"
+          class="min-w-0 flex-1 bg-transparent text-lg font-medium text-[#334155] outline-none placeholder:text-[#7B8B97]"
           style="font-family: 'Quicksand', sans-serif"
           @input="onInput"
           @keydown.enter="proceed"

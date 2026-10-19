@@ -125,15 +125,20 @@ describe('NotesView', () => {
   it('shows isolated preview cards when dev API returns empty', async () => {
     mockCatalog()
     vi.spyOn(notesApi, 'list').mockResolvedValue([])
+    vi.stubEnv('VITE_USE_MOCKS', 'true')
 
-    const wrapper = mountView()
-    await flushPromises()
+    try {
+      const wrapper = mountView()
+      await flushPromises()
 
-    expect(wrapper.findAll('[data-testid="note-card"]').length).toBe(6)
-    expect(wrapper.text()).toContain('Limits recap')
-    expect(wrapper.text()).toContain('Pipeline stages')
-    expect(wrapper.find('[data-testid="picture-note-card"]').exists()).toBe(true)
-    expect(wrapper.find('[data-testid="notes-empty"]').exists()).toBe(false)
+      expect(wrapper.findAll('[data-testid="note-card"]').length).toBe(6)
+      expect(wrapper.text()).toContain('Limits recap')
+      expect(wrapper.text()).toContain('Pipeline stages')
+      expect(wrapper.find('[data-testid="picture-note-card"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="notes-empty"]').exists()).toBe(false)
+    } finally {
+      vi.unstubAllEnvs()
+    }
   })
 
   it('prefers real API notes over preview data', async () => {

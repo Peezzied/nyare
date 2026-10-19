@@ -13,7 +13,9 @@ import {
 } from '@lucide/vue'
 import { minidenticon } from 'minidenticons'
 import { authApi } from '@/api'
-import { clearSessionUser, setSessionUser, useAuth } from '@/composables/useAuth'
+import DialogShell from '@/components/ui/DialogShell.vue'
+import { Button } from '@/components/ui/button'
+import { endSession, setSessionUser, useAuth } from '@/composables/useAuth'
 import type { UserResponse } from '@/types/api'
 import duckotaCasual from '@/assets/mascot/duckota_casual.png'
 
@@ -30,7 +32,6 @@ function handleBack(): void {
 
 const users = ref<UserResponse[]>([])
 const isLoading = ref(true)
-const isSubmitting = ref(false)
 const authenticatingId = ref<number | null>(null)
 const errorMessage = ref<string | null>(null)
 
@@ -39,10 +40,8 @@ const isManageMode = ref(false)
 const userToDelete = ref<UserResponse | null>(null)
 const isDeleting = ref(false)
 
-// Add account modal state
-const showAddModal = ref(false)
-const newUsername = ref('')
-const formError = ref<string | null>(null)
+const showAddAccountConfirm = ref(false)
+const isStartingOnboarding = ref(false)
 
 function getIdenticonUrl(username: string): string {
   const clean = username.trim() || 'student'
@@ -76,7 +75,7 @@ async function loadUsers(): Promise<void> {
 }
 
 async function selectAccount(user: UserResponse): Promise<void> {
-  if (isManageMode.value || authenticatingId.value !== null || isSubmitting.value) {
+  if (isManageMode.value || authenticatingId.value !== null) {
     return
   }
   authenticatingId.value = user.id
@@ -91,48 +90,31 @@ async function selectAccount(user: UserResponse): Promise<void> {
   }
 }
 
-function openAddModal(): void {
-  newUsername.value = ''
-  formError.value = null
-  showAddModal.value = true
+function promptAddAccount(): void {
+  // A signed-in user must confirm: adding an account signs them out.
+  if (sessionUser.value) {
+    showAddAccountConfirm.value = true
+    return
+  }
+  void goToOnboarding()
 }
 
-function closeAddModal(): void {
-  showAddModal.value = false
-  formError.value = null
-  newUsername.value = ''
-}
-
-async function handleCreateAccount(): Promise<void> {
-  const trimmed = newUsername.value.trim()
-  if (!trimmed) {
-    formError.value = 'Please enter your username.'
-    return
+async function goToOnboarding(): Promise<void> {
+  // Adding an account starts a fresh onboarding: end the current session so
+  // the router gate admits `/welcome` and the name form registers a new user.
+  if (sessionUser.value) {
+    isStartingOnboarding.value = true
+    try {
+      await authApi.logout()
+    } catch {
+      // A failed logout is safe to ignore: the login inside onboarding
+      // replaces the server session, and local state is cleared below.
+    }
+    endSession()
+    isStartingOnboarding.value = false
+    showAddAccountConfirm.value = false
   }
-  if (trimmed.length < 2) {
-    formError.value = 'Username must be at least 2 characters.'
-    return
-  }
-  if (trimmed.length > 50) {
-    formError.value = 'Username must not exceed 50 characters.'
-    return
-  }
-
-  formError.value = null
-  isSubmitting.value = true
-  errorMessage.value = null
-
-  try {
-    const created = await authApi.register({ username: trimmed })
-    users.value = [...users.value, created]
-    const sessionUser = await authApi.login({ username: created.username })
-    setSessionUser(sessionUser)
-    await router.push('/welcome')
-  } catch (err: unknown) {
-    isSubmitting.value = false
-    formError.value =
-      err instanceof Error ? err.message : 'Could not create account. Please try again.'
-  }
+  void router.push({ path: '/welcome', query: { from: 'accounts' } })
 }
 
 function promptDeleteUser(user: UserResponse): void {
@@ -155,7 +137,7 @@ async function executeDeleteUser(): Promise<void> {
   try {
     await authApi.deleteUser(target.id)
     if (sessionUser.value?.id === target.id) {
-      clearSessionUser()
+      endSession()
     }
     users.value = users.value.filter((u) => u.id !== target.id)
     userToDelete.value = null
@@ -387,7 +369,7 @@ onMounted(() => {
         <button
           type="button"
           class="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#00A4C8] border-b-4 border-[#007B99] text-base font-bold text-white uppercase tracking-wider transition-all duration-75 hover:bg-[#0096B7] active:translate-y-1 active:border-b-0 cursor-pointer shadow-xs"
-          @click="openAddModal"
+          @click="promptAddAccount"
         >
           <PlusIcon class="h-5 w-5" />
           <span>Add Account</span>
@@ -395,91 +377,48 @@ onMounted(() => {
       </footer>
     </main>
 
-    <!-- Create Account Modal Dialog -->
-    <div
-      v-if="showAddModal"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="add-modal-title"
+    <!-- Add Account Sign-out Confirmation -->
+    <DialogShell
+      v-model:open="showAddAccountConfirm"
+      title="Add a new account?"
+      :busy="isStartingOnboarding"
     >
-      <div
-        class="w-full max-w-sm rounded-3xl border-2 border-[#CBD5E1]/80 bg-[#FDFEF7] p-6 shadow-2xl"
+      <p
+        class="mt-2 text-sm text-[#7B8B97]"
+        style="font-family: 'Inter', sans-serif; font-weight: 400"
       >
-        <div class="flex items-center justify-between mb-5">
-          <div class="flex items-center gap-2">
-            <span class="inline-block h-2 w-2 rounded-full bg-[#00A4C8]" />
-            <h2 id="add-modal-title" class="text-lg font-bold tracking-tight text-[#1E293B]">
-              Add Student Profile
-            </h2>
-          </div>
-          <button
-            type="button"
-            class="rounded-full p-1.5 text-[#94A3B8] hover:bg-slate-200/60 hover:text-[#1E293B] transition-colors cursor-pointer"
-            aria-label="Close dialog"
-            @click="closeAddModal"
-          >
-            <CloseIcon class="h-4 w-4" />
-          </button>
-        </div>
+        You will be signed out of
+        <strong class="text-[#334155]">{{ sessionUser?.username }}</strong> first. The account
+        stays on this list and you can sign back in anytime.
+      </p>
 
-        <form @submit.prevent="handleCreateAccount" class="space-y-4">
-          <div
-            class="flex items-center gap-3.5 rounded-2xl border border-[#CBD5E1]/70 bg-white p-2.5 shadow-xs"
-          >
-            <div
-              class="h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-[#94A3B8]/30 bg-[#F8FAFC] shadow-inner"
-            >
-              <img
-                :src="getIdenticonUrl(newUsername || 'new-student')"
-                alt="Identicon preview"
-                class="h-full w-full object-cover transition-transform duration-150"
-              />
-            </div>
+      <template #actions="{ disabled, dismiss }">
+        <Button
+          type="button"
+          variant="secondary"
+          size="touch"
+          data-testid="add-account-cancel"
+          :disabled="disabled"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
+          @click="dismiss"
+        >
+          Cancel
+        </Button>
 
-            <div class="relative flex-1 pr-1">
-              <label for="modal-username-input-v1" class="sr-only">Username</label>
-              <input
-                id="modal-username-input-v1"
-                v-model="newUsername"
-                type="text"
-                maxlength="50"
-                autofocus
-                placeholder="Enter your username..."
-                class="h-10 w-full bg-transparent px-1 text-sm font-semibold text-[#1E293B] placeholder:text-[#94A3B8] focus:outline-hidden"
-                :disabled="isSubmitting"
-              />
-            </div>
-          </div>
-
-          <p
-            v-if="formError"
-            role="alert"
-            class="font-['Inter'] text-xs font-semibold text-[#DC2626]"
-          >
-            {{ formError }}
-          </p>
-
-          <div class="flex items-center gap-2.5 pt-2">
-            <button
-              type="submit"
-              class="flex h-12 flex-1 items-center justify-center rounded-2xl bg-[#00A4C8] border-b-[5px] border-[#007B99] text-xs font-black text-white uppercase tracking-wider transition-all duration-75 hover:bg-[#0096B7] active:translate-y-1 active:border-b-0 disabled:opacity-60 cursor-pointer shadow-md"
-              :disabled="isSubmitting"
-            >
-              <Loader2 v-if="isSubmitting" class="h-4 w-4 animate-spin mr-2" />
-              <span>{{ isSubmitting ? 'Creating...' : 'Create & Enter' }}</span>
-            </button>
-            <button
-              type="button"
-              class="flex h-12 items-center justify-center rounded-2xl border-2 border-[#CBD5E1] bg-white px-4 text-xs font-bold text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#334155] active:scale-95 transition-all cursor-pointer"
-              @click="closeAddModal"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <Button
+          type="button"
+          variant="tactile"
+          size="touch"
+          data-testid="add-account-confirm"
+          :disabled="disabled"
+          :aria-busy="isStartingOnboarding"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          @click="goToOnboarding"
+        >
+          Add account
+        </Button>
+      </template>
+    </DialogShell>
 
     <!-- Delete Confirmation Modal Dialog -->
     <div

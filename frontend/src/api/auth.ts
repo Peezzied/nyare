@@ -32,16 +32,9 @@ export const authApi = {
 
   /**
    * Creates a user with `POST /api/users`. This call does not start a session.
-   * Prohibited in development mode when VITE_DEV_USER is active.
    * @returns the saved DTO.
    */
   register(request: UserRequest): Promise<UserResponse> {
-    const devUser = getDevUser()
-    if (devUser) {
-      return Promise.reject(
-        new ApiError(400, `Account creation is disabled while ${devUser} is active.`),
-      )
-    }
     return apiClient.post<UserResponse>('/api/users', request)
   },
 
