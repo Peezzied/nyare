@@ -37,6 +37,29 @@ export function setMockHandler(handler: MockHandler | null): void {
   mockHandler = handler
 }
 
+/** Handler that runs once when a protected request answers 401. */
+let unauthorizedHandler: (() => void) | null = null
+
+/**
+ * Registers the handler that runs when a protected request answers 401.
+ * The client skips the handler for `/api/users/me` and `/api/users/login`.
+ * Pass `null` to remove it.
+ */
+export function setUnauthorizedHandler(handler: (() => void) | null): void {
+  unauthorizedHandler = handler
+}
+
+/**
+ * Runs the registered unauthorized handler for a protected path.
+ * It skips the session probe `/api/users/me` and the login call `/api/users/login`.
+ * Callers invoke it only when the response status is 401.
+ */
+export function notifyUnauthorized(path: string): void {
+  if (path !== '/api/users/me' && path !== '/api/users/login') {
+    unauthorizedHandler?.()
+  }
+}
+
 /** Query parameters for a GET request. The client skips `undefined` and `null` values. */
 export type QueryParams = Record<string, unknown> | object
 
@@ -95,7 +118,26 @@ async function handleResponse<T>(response: Response): Promise<T> {
   return (await response.text()) as unknown as T
 }
 
+/**
+ * Runs a request and reports a protected 401 to the registered unauthorized handler.
+ * The handler does not run for the session probe and the login call.
+ */
 async function request<T>(
+  method: string,
+  path: string,
+  options?: { body?: unknown; params?: QueryParams; headers?: Record<string, string> },
+): Promise<T> {
+  try {
+    return await sendRequest<T>(method, path, options)
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      notifyUnauthorized(path)
+    }
+    throw err
+  }
+}
+
+async function sendRequest<T>(
   method: string,
   path: string,
   options?: { body?: unknown; params?: QueryParams; headers?: Record<string, string> },

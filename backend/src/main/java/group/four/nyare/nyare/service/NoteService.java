@@ -14,13 +14,14 @@ import java.util.UUID;
 public interface NoteService {
 
     /**
-     * Creates and persists a new journal note linked to a valid course.
+     * Creates and persists a new journal note owned by the session user.
      *
      * @param request the validated note creation payload
+     * @param userId  the owner user identifier from the active session
      * @return the persisted note response
-     * @throws ResourceNotFoundException if the specified course does not exist
+     * @throws ResourceNotFoundException if the specified course does not exist or belongs to another user
      */
-    NoteResponse createNote(NoteRequest request);
+    NoteResponse createNote(NoteRequest request, Long userId);
 
     /**
      * Retrieves note summaries ordered by creation timestamp descending.
@@ -35,30 +36,33 @@ public interface NoteService {
     List<NoteSummaryResponse> listNotes(Long userId, Long courseId);
 
     /**
-     * Retrieves a single note by its unique identifier.
+     * Retrieves a single note owned by the session user.
      *
-     * @param id the unique UUID of the note
+     * @param id     the unique UUID of the note
+     * @param userId the owner user identifier from the active session
      * @return the note response
-     * @throws ResourceNotFoundException if no note exists with the given identifier
+     * @throws ResourceNotFoundException if the note does not exist or belongs to another user
      */
-    NoteResponse getNote(UUID id);
+    NoteResponse getNote(UUID id, Long userId);
 
     /**
-     * Fully updates the content of an existing note.
+     * Fully updates the content of an existing note owned by the session user.
      *
      * @param id      the unique UUID of the note to update
      * @param request the replacement note payload
+     * @param userId  the owner user identifier from the active session
      * @return the updated note response
-     * @throws ResourceNotFoundException if the note or course does not exist
+     * @throws ResourceNotFoundException if the note or course does not exist or belongs to another user
      */
-    NoteResponse updateNote(UUID id, NoteRequest request);
+    NoteResponse updateNote(UUID id, NoteRequest request, Long userId);
 
     /**
-     * Deletes a note by its unique identifier. Associated AI-extracted records
+     * Deletes a note owned by the session user. Associated AI-extracted records
      * are not cascade-deleted.
      *
-     * @param id the unique UUID of the note to delete
-     * @throws ResourceNotFoundException if no note exists with the given identifier
+     * @param id     the unique UUID of the note to delete
+     * @param userId the owner user identifier from the active session
+     * @throws ResourceNotFoundException if the note does not exist or belongs to another user
      */
-    void deleteNote(UUID id);
+    void deleteNote(UUID id, Long userId);
 }

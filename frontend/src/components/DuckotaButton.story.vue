@@ -4,7 +4,6 @@ import mockupImg from '@/assets/mascot/duckota_button.png'
 
 function initState() {
   return {
-    size: 'md' as 'sm' | 'md' | 'lg',
     variant: 'tactile' as 'tactile' | 'floating' | 'plain',
     label: 'Duckota',
     badge: '3',
@@ -27,23 +26,6 @@ function initState() {
       <div class="flex flex-col items-center gap-4 p-8">
         <DuckotaButton variant="tactile" label="Tactile 3D Button" />
         <p class="text-xs text-slate-500">Tactile 3D press effect with physical bottom shadow</p>
-      </div>
-    </Variant>
-
-    <Variant title="Sizes">
-      <div class="flex items-end justify-center gap-6 p-8">
-        <div class="flex flex-col items-center gap-2">
-          <DuckotaButton size="sm" />
-          <span class="text-xs text-slate-500">sm (44px)</span>
-        </div>
-        <div class="flex flex-col items-center gap-2">
-          <DuckotaButton size="md" />
-          <span class="text-xs text-slate-500">md (56px)</span>
-        </div>
-        <div class="flex flex-col items-center gap-2">
-          <DuckotaButton size="lg" />
-          <span class="text-xs text-slate-500">lg (80px)</span>
-        </div>
       </div>
     </Variant>
 
@@ -83,20 +65,7 @@ function initState() {
 
     <Variant title="AI Processing (Dancing Gradient)">
       <div class="flex flex-col items-center gap-6 p-8">
-        <div class="flex items-end justify-center gap-8">
-          <div class="flex flex-col items-center gap-2">
-            <DuckotaButton size="sm" processing />
-            <span class="text-xs text-slate-500">sm (44px)</span>
-          </div>
-          <div class="flex flex-col items-center gap-2">
-            <DuckotaButton size="md" processing />
-            <span class="text-xs text-slate-500">md (56px)</span>
-          </div>
-          <div class="flex flex-col items-center gap-2">
-            <DuckotaButton size="lg" processing />
-            <span class="text-xs text-slate-500">lg (80px)</span>
-          </div>
-        </div>
+        <DuckotaButton processing />
         <p class="text-xs text-slate-500">
           Dancing rainbow stroke gradient fetched from palette.ts with ambient glow
         </p>
@@ -107,7 +76,7 @@ function initState() {
       <div class="flex flex-col items-center gap-6 p-8">
         <div class="flex items-center justify-center gap-10">
           <div class="flex flex-col items-center gap-2">
-            <DuckotaButton size="lg" />
+            <DuckotaButton />
             <span class="text-xs font-semibold text-slate-600">Materialized Element</span>
             <span class="text-[11px] text-slate-400">Interactive CSS button</span>
           </div>
@@ -133,7 +102,6 @@ function initState() {
       <template #default="{ state }">
         <div class="flex items-center justify-center p-8">
           <DuckotaButton
-            :size="state.size"
             :variant="state.variant"
             :label="state.label"
             :badge="state.badge"
@@ -145,7 +113,6 @@ function initState() {
       </template>
 
       <template #controls="{ state }">
-        <HstSelect v-model="state.size" title="Size" :options="['sm', 'md', 'lg']" />
         <HstSelect
           v-model="state.variant"
           title="Variant"

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Rich text body of NoteEditor. It uploads images that TiptapToolbar picks and inserts them.
 import { ref, computed, watch, onBeforeUnmount } from 'vue'
+import { createDocument } from '@tiptap/core'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
@@ -18,6 +19,8 @@ interface Props {
   editable?: boolean
   /** Error text from the parent. It replaces the internal upload error in the banner. */
   errorMessage?: string | null
+  /** Extra classes on the toolbar root. NoteEditor uses it for the staggered controls entrance. */
+  toolbarClass?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -25,6 +28,7 @@ const props = withDefaults(defineProps<Props>(), {
   placeholder: 'Write note content...',
   editable: true,
   errorMessage: null,
+  toolbarClass: undefined,
 })
 
 const emit = defineEmits<{
@@ -76,7 +80,8 @@ const editor = useEditor({
 })
 
 // The parent echoes each emitted HTML back through modelValue. Skip equal values so
-// setContent does not reset the cursor. emitUpdate false prevents an update loop.
+// setContent does not reset the cursor. The replace transaction skips history and the
+// update event, so loading a note never counts as a user edit (keeps undo disabled).
 watch(
   () => props.modelValue,
   (newValue) => {
@@ -85,7 +90,13 @@ watch(
     }
     const currentHtml = editor.value.getHTML()
     if (newValue !== currentHtml) {
-      editor.value.commands.setContent(newValue, { emitUpdate: false })
+      const document = createDocument(newValue, editor.value.schema)
+      editor.value.view.dispatch(
+        editor.value.state.tr
+          .replaceWith(0, editor.value.state.doc.content.size, document.content)
+          .setMeta('preventUpdate', true)
+          .setMeta('addToHistory', false),
+      )
     }
   },
 )
@@ -179,6 +190,7 @@ onBeforeUnmount(() => {
       :editor="editor"
       :disabled="!editable || isUploading"
       class="shrink-0 mt-auto w-full"
+      :class="toolbarClass"
       @upload-image="handleUploadImage"
       @upload-error="handleUploadError"
     />

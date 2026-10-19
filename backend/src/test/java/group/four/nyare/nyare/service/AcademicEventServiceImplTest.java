@@ -74,7 +74,7 @@ class AcademicEventServiceImplTest {
     void createEvent_withValidRequestAndNote_returnsResponse() {
         AcademicEventRequest request = new AcademicEventRequest(1L, noteId, "Milestone 1",
                 "Submit architectural diagram", LocalDateTime.now().plusDays(7));
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(sampleCourse));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(sampleCourse));
         when(noteRepository.findById(noteId)).thenReturn(Optional.of(sampleNote));
         when(academicEventRepository.save(any(AcademicEvent.class))).thenAnswer(inv -> {
             AcademicEvent ev = inv.getArgument(0);
@@ -82,7 +82,7 @@ class AcademicEventServiceImplTest {
             return ev;
         });
 
-        AcademicEventResponse response = academicEventService.createEvent(request);
+        AcademicEventResponse response = academicEventService.createEvent(request, 1L);
 
         assertThat(response).isNotNull();
         assertThat(response.getTitle()).isEqualTo("Milestone 1");
@@ -95,14 +95,14 @@ class AcademicEventServiceImplTest {
     void createEvent_withoutNoteId_createsEvent() {
         AcademicEventRequest request = new AcademicEventRequest(1L, null, "Midterm Exam",
                 "Room 302", LocalDateTime.now().plusDays(14));
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(sampleCourse));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(sampleCourse));
         when(academicEventRepository.save(any(AcademicEvent.class))).thenAnswer(inv -> {
             AcademicEvent ev = inv.getArgument(0);
             ReflectionTestUtils.setField(ev, "id", eventId);
             return ev;
         });
 
-        AcademicEventResponse response = academicEventService.createEvent(request);
+        AcademicEventResponse response = academicEventService.createEvent(request, 1L);
 
         assertThat(response).isNotNull();
         assertThat(response.getNoteId()).isNull();
@@ -113,11 +113,21 @@ class AcademicEventServiceImplTest {
     @DisplayName("createEvent throws ResourceNotFoundException when course is not found")
     void createEvent_withUnknownCourse_throwsResourceNotFoundException() {
         AcademicEventRequest request = new AcademicEventRequest(99L, null, "Midterm", null, LocalDateTime.now().plusDays(5));
-        when(courseRepository.findById(99L)).thenReturn(Optional.empty());
+        when(courseRepository.findByIdAndUserId(99L, 1L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> academicEventService.createEvent(request))
+        assertThatThrownBy(() -> academicEventService.createEvent(request, 1L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Course not found with ID: 99");
+    }
+
+    @Test
+    @DisplayName("createEvent throws ResourceNotFoundException when the course belongs to another user")
+    void createEvent_courseOfOtherUser_throwsResourceNotFound() {
+        AcademicEventRequest request = new AcademicEventRequest(1L, null, "Midterm", null, LocalDateTime.now().plusDays(5));
+        when(courseRepository.findByIdAndUserId(1L, 2L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> academicEventService.createEvent(request, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -125,10 +135,10 @@ class AcademicEventServiceImplTest {
     void createEvent_withUnknownNote_throwsResourceNotFoundException() {
         UUID unknownNoteId = UUID.randomUUID();
         AcademicEventRequest request = new AcademicEventRequest(1L, unknownNoteId, "Midterm", null, LocalDateTime.now().plusDays(5));
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(sampleCourse));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(sampleCourse));
         when(noteRepository.findById(unknownNoteId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> academicEventService.createEvent(request))
+        assertThatThrownBy(() -> academicEventService.createEvent(request, 1L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Note not found with ID: " + unknownNoteId);
     }
@@ -142,34 +152,37 @@ class AcademicEventServiceImplTest {
         ReflectionTestUtils.setField(otherNote, "id", noteId);
 
         AcademicEventRequest request = new AcademicEventRequest(1L, noteId, "Midterm", null, LocalDateTime.now().plusDays(5));
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(sampleCourse));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(sampleCourse));
         when(noteRepository.findById(noteId)).thenReturn(Optional.of(otherNote));
 
-        assertThatThrownBy(() -> academicEventService.createEvent(request))
+        assertThatThrownBy(() -> academicEventService.createEvent(request, 1L))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining("Note does not belong to course with ID: 1");
     }
 
     @Test
-    @DisplayName("listEvents passes userId, courseId, and upcoming to repository")
-    void listEvents_passesFiltersToRepository() {
+    @DisplayName("listEvents scopes results to the session user")
+    void listEvents_scopedToUser_returnsOnlyOwnData() {
+        AcademicEvent otherEvent = new AcademicEvent(sampleCourse, null, "Milestone 2",
+                "Second milestone", LocalDateTime.now().plusDays(10));
+        ReflectionTestUtils.setField(otherEvent, "id", UUID.randomUUID());
+
         ArgumentCaptor<LocalDateTime> timeCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
         when(academicEventRepository.findAllFiltered(eq(42L), eq(1L), eq(true), timeCaptor.capture()))
-                .thenReturn(List.of(sampleEvent));
+                .thenReturn(List.of(sampleEvent, otherEvent));
 
         List<AcademicEventResponse> responses = academicEventService.listEvents(42L, 1L, true);
 
-        assertThat(responses).hasSize(1);
-        assertThat(responses.get(0).getId()).isEqualTo(eventId);
+        assertThat(responses).hasSize(2);
         assertThat(timeCaptor.getValue()).isNotNull();
     }
 
     @Test
     @DisplayName("getEvent returns event when found")
     void getEvent_withValidId_returnsEvent() {
-        when(academicEventRepository.findById(eventId)).thenReturn(Optional.of(sampleEvent));
+        when(academicEventRepository.findByIdAndCourseUserId(eventId, 1L)).thenReturn(Optional.of(sampleEvent));
 
-        AcademicEventResponse response = academicEventService.getEvent(eventId);
+        AcademicEventResponse response = academicEventService.getEvent(eventId, 1L);
 
         assertThat(response).isNotNull();
         assertThat(response.getId()).isEqualTo(eventId);
@@ -179,11 +192,20 @@ class AcademicEventServiceImplTest {
     @DisplayName("getEvent throws ResourceNotFoundException when event not found")
     void getEvent_withUnknownId_throwsResourceNotFoundException() {
         UUID unknownId = UUID.randomUUID();
-        when(academicEventRepository.findById(unknownId)).thenReturn(Optional.empty());
+        when(academicEventRepository.findByIdAndCourseUserId(unknownId, 1L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> academicEventService.getEvent(unknownId))
+        assertThatThrownBy(() -> academicEventService.getEvent(unknownId, 1L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Academic event not found with ID: " + unknownId);
+    }
+
+    @Test
+    @DisplayName("getEvent throws ResourceNotFoundException when the event belongs to another user")
+    void getEvent_otherUser_throwsResourceNotFound() {
+        when(academicEventRepository.findByIdAndCourseUserId(eventId, 2L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> academicEventService.getEvent(eventId, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -191,11 +213,11 @@ class AcademicEventServiceImplTest {
     void updateEvent_withValidRequest_updatesAndReturnsEvent() {
         AcademicEventRequest request = new AcademicEventRequest(1L, noteId, "Updated Milestone",
                 "Updated details", LocalDateTime.now().plusDays(10));
-        when(academicEventRepository.findById(eventId)).thenReturn(Optional.of(sampleEvent));
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(sampleCourse));
+        when(academicEventRepository.findByIdAndCourseUserId(eventId, 1L)).thenReturn(Optional.of(sampleEvent));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(sampleCourse));
         when(noteRepository.findById(noteId)).thenReturn(Optional.of(sampleNote));
 
-        AcademicEventResponse response = academicEventService.updateEvent(eventId, request);
+        AcademicEventResponse response = academicEventService.updateEvent(eventId, request, 1L);
 
         assertThat(response).isNotNull();
         assertThat(response.getTitle()).isEqualTo("Updated Milestone");
@@ -207,9 +229,9 @@ class AcademicEventServiceImplTest {
     void updateEvent_withUnknownEvent_throwsResourceNotFoundException() {
         UUID unknownId = UUID.randomUUID();
         AcademicEventRequest request = new AcademicEventRequest(1L, null, "Title", null, LocalDateTime.now().plusDays(5));
-        when(academicEventRepository.findById(unknownId)).thenReturn(Optional.empty());
+        when(academicEventRepository.findByIdAndCourseUserId(unknownId, 1L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> academicEventService.updateEvent(unknownId, request))
+        assertThatThrownBy(() -> academicEventService.updateEvent(unknownId, request, 1L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Academic event not found with ID: " + unknownId);
     }
@@ -218,10 +240,10 @@ class AcademicEventServiceImplTest {
     @DisplayName("updateEvent throws ResourceNotFoundException when course not found")
     void updateEvent_withUnknownCourse_throwsResourceNotFoundException() {
         AcademicEventRequest request = new AcademicEventRequest(99L, null, "Title", null, LocalDateTime.now().plusDays(5));
-        when(academicEventRepository.findById(eventId)).thenReturn(Optional.of(sampleEvent));
-        when(courseRepository.findById(99L)).thenReturn(Optional.empty());
+        when(academicEventRepository.findByIdAndCourseUserId(eventId, 1L)).thenReturn(Optional.of(sampleEvent));
+        when(courseRepository.findByIdAndUserId(99L, 1L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> academicEventService.updateEvent(eventId, request))
+        assertThatThrownBy(() -> academicEventService.updateEvent(eventId, request, 1L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Course not found with ID: 99");
     }
@@ -235,21 +257,31 @@ class AcademicEventServiceImplTest {
         ReflectionTestUtils.setField(otherNote, "id", noteId);
 
         AcademicEventRequest request = new AcademicEventRequest(1L, noteId, "Title", null, LocalDateTime.now().plusDays(5));
-        when(academicEventRepository.findById(eventId)).thenReturn(Optional.of(sampleEvent));
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(sampleCourse));
+        when(academicEventRepository.findByIdAndCourseUserId(eventId, 1L)).thenReturn(Optional.of(sampleEvent));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(sampleCourse));
         when(noteRepository.findById(noteId)).thenReturn(Optional.of(otherNote));
 
-        assertThatThrownBy(() -> academicEventService.updateEvent(eventId, request))
+        assertThatThrownBy(() -> academicEventService.updateEvent(eventId, request, 1L))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining("Note does not belong to course with ID: 1");
     }
 
     @Test
+    @DisplayName("updateEvent throws ResourceNotFoundException when the event belongs to another user")
+    void updateEvent_otherUser_throwsResourceNotFound() {
+        AcademicEventRequest request = new AcademicEventRequest(1L, null, "Title", null, LocalDateTime.now().plusDays(5));
+        when(academicEventRepository.findByIdAndCourseUserId(eventId, 2L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> academicEventService.updateEvent(eventId, request, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
     @DisplayName("deleteEvent deletes event when found")
     void deleteEvent_withValidId_deletesEvent() {
-        when(academicEventRepository.findById(eventId)).thenReturn(Optional.of(sampleEvent));
+        when(academicEventRepository.findByIdAndCourseUserId(eventId, 1L)).thenReturn(Optional.of(sampleEvent));
 
-        academicEventService.deleteEvent(eventId);
+        academicEventService.deleteEvent(eventId, 1L);
 
         verify(academicEventRepository).delete(sampleEvent);
     }
@@ -258,10 +290,19 @@ class AcademicEventServiceImplTest {
     @DisplayName("deleteEvent throws ResourceNotFoundException when event not found")
     void deleteEvent_withUnknownId_throwsResourceNotFoundException() {
         UUID unknownId = UUID.randomUUID();
-        when(academicEventRepository.findById(unknownId)).thenReturn(Optional.empty());
+        when(academicEventRepository.findByIdAndCourseUserId(unknownId, 1L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> academicEventService.deleteEvent(unknownId))
+        assertThatThrownBy(() -> academicEventService.deleteEvent(unknownId, 1L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Academic event not found with ID: " + unknownId);
+    }
+
+    @Test
+    @DisplayName("deleteEvent throws ResourceNotFoundException when the event belongs to another user")
+    void deleteEvent_otherUser_throwsResourceNotFound() {
+        when(academicEventRepository.findByIdAndCourseUserId(eventId, 2L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> academicEventService.deleteEvent(eventId, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 }

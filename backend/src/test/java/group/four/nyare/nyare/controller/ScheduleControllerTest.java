@@ -9,13 +9,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -40,26 +40,34 @@ class ScheduleControllerTest {
     @MockitoBean
     private JpaMetamodelMappingContext jpaMappingContext;
 
+    private static final Long USER_ID = 1L;
+
     private ScheduleResponse sampleSchedule;
 
     @BeforeEach
     void setUp() {
+        when(sessionContext.requireUserId()).thenReturn(USER_ID);
         sampleSchedule = new ScheduleResponse(1L, 10L, DayOfWeek.MONDAY, LocalTime.of(9, 0), LocalTime.of(10, 30));
+    }
+
+    private MockHttpSession mockSession() {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute(UserController.SESSION_USER_ID, USER_ID);
+        return session;
     }
 
     @Test
     @DisplayName("listSchedules with session user passes userId to service")
     void listSchedules_withSessionUser_passesUserIdToService() throws Exception {
         // given
-        when(sessionContext.getUserId()).thenReturn(Optional.of(42L));
-        when(scheduleService.listSchedules(eq(42L), any(), any())).thenReturn(List.of(sampleSchedule));
+        when(scheduleService.listSchedules(eq(USER_ID), any(), any())).thenReturn(List.of(sampleSchedule));
 
         // when & then
-        mockMvc.perform(get("/api/schedules"))
+        mockMvc.perform(get("/api/schedules").session(mockSession()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].id").value(1));
 
-        verify(scheduleService).listSchedules(42L, null, null);
+        verify(scheduleService).listSchedules(USER_ID, null, null);
     }
 }

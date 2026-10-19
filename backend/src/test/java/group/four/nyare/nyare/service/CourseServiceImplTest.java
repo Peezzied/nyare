@@ -2,7 +2,6 @@ package group.four.nyare.nyare.service;
 
 import group.four.nyare.nyare.dto.CourseRequest;
 import group.four.nyare.nyare.dto.CourseResponse;
-import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.User;
@@ -70,15 +69,15 @@ class CourseServiceImplTest {
     }
 
     @Test
-    @DisplayName("createCourse uses request userId when session user is null")
-    void createCourse_withFallbackUserIdInRequest_createsAndReturnsCourse() {
+    @DisplayName("createCourse uses the session user and ignores a request user id")
+    void createCourse_usesSessionUser_ignoresRequestUserId() {
         // given
-        CourseRequest request = new CourseRequest("CS101", "Intro to CS", 1L);
+        CourseRequest request = new CourseRequest("CS101", "Intro to CS");
         when(userRepository.findById(1L)).thenReturn(Optional.of(sampleUser));
         when(courseRepository.save(any(Course.class))).thenReturn(sampleCourse);
 
         // when
-        CourseResponse response = courseService.createCourse(request, null);
+        CourseResponse response = courseService.createCourse(request, 1L);
 
         // then
         assertThat(response).isNotNull();
@@ -86,79 +85,43 @@ class CourseServiceImplTest {
     }
 
     @Test
-    @DisplayName("createCourse throws BadRequestException when no user identifier is present")
-    void createCourse_withoutUser_throwsBadRequestException() {
-        // given
-        CourseRequest request = new CourseRequest("CS101", "Intro to CS");
-
-        // when & then
-        assertThatThrownBy(() -> courseService.createCourse(request, null))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessageContaining("User identifier is required to create a course");
-    }
-
-    @Test
     @DisplayName("createCourse throws ResourceNotFoundException when user is not found")
     void createCourse_withUnknownUser_throwsResourceNotFoundException() {
         // given
-        CourseRequest request = new CourseRequest("CS101", "Intro to CS", 99L);
+        CourseRequest request = new CourseRequest("CS101", "Intro to CS");
         when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> courseService.createCourse(request, null))
+        assertThatThrownBy(() -> courseService.createCourse(request, 99L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("User not found with ID: 99");
     }
 
     @Test
-    @DisplayName("listCourses returns user courses when session user is present")
-    void listCourses_withSessionUser_returnsUserCourses() {
+    @DisplayName("listCourses scopes results to the session user")
+    void listCourses_scopedToUser_returnsOnlyOwnData() {
         // given
-        when(courseRepository.findByUserId(1L)).thenReturn(List.of(sampleCourse));
+        Course otherCourse = new Course("CS102", "Data Structures", sampleUser);
+        ReflectionTestUtils.setField(otherCourse, "id", 11L);
+        when(courseRepository.findByUserId(1L)).thenReturn(List.of(sampleCourse, otherCourse));
 
         // when
-        List<CourseResponse> courses = courseService.listCourses(1L, null);
+        List<CourseResponse> courses = courseService.listCourses(1L);
 
         // then
-        assertThat(courses).hasSize(1);
-        assertThat(courses.get(0).getName()).isEqualTo("CS101");
-    }
-
-    @Test
-    @DisplayName("listCourses returns user courses when query userId is present")
-    void listCourses_withQueryUserId_returnsUserCourses() {
-        // given
-        when(courseRepository.findByUserId(1L)).thenReturn(List.of(sampleCourse));
-
-        // when
-        List<CourseResponse> courses = courseService.listCourses(null, 1L);
-
-        // then
-        assertThat(courses).hasSize(1);
-        assertThat(courses.get(0).getName()).isEqualTo("CS101");
-    }
-
-    @Test
-    @DisplayName("listCourses returns all courses when no user filter is provided")
-    void listCourses_withoutFilter_returnsAllCourses() {
-        // given
-        when(courseRepository.findAll()).thenReturn(List.of(sampleCourse));
-
-        // when
-        List<CourseResponse> courses = courseService.listCourses(null, null);
-
-        // then
-        assertThat(courses).hasSize(1);
+        assertThat(courses).hasSize(2);
+        assertThat(courses).allSatisfy(course -> assertThat(course.getUserId()).isEqualTo(1L));
+        verify(courseRepository).findByUserId(1L);
     }
 
     @Test
     @DisplayName("getCourse returns course response when ID exists")
     void getCourse_withValidId_returnsCourse() {
         // given
-        when(courseRepository.findById(10L)).thenReturn(Optional.of(sampleCourse));
+        when(courseRepository.findByIdAndUserId(10L, 1L)).thenReturn(Optional.of(sampleCourse));
 
         // when
-        CourseResponse response = courseService.getCourse(10L);
+        CourseResponse response = courseService.getCourse(10L, 1L);
 
         // then
         assertThat(response).isNotNull();
@@ -169,22 +132,33 @@ class CourseServiceImplTest {
     @DisplayName("getCourse throws ResourceNotFoundException when ID is unknown")
     void getCourse_withUnknownId_throwsResourceNotFoundException() {
         // given
-        when(courseRepository.findById(99L)).thenReturn(Optional.empty());
+        when(courseRepository.findByIdAndUserId(99L, 1L)).thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> courseService.getCourse(99L))
+        assertThatThrownBy(() -> courseService.getCourse(99L, 1L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Course not found with ID: 99");
+    }
+
+    @Test
+    @DisplayName("getCourse throws ResourceNotFoundException when the course belongs to another user")
+    void getCourse_otherUser_throwsResourceNotFound() {
+        // given
+        when(courseRepository.findByIdAndUserId(10L, 2L)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> courseService.getCourse(10L, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
     @DisplayName("deleteCourse removes course when ID exists")
     void deleteCourse_withValidId_deletesCourse() {
         // given
-        when(courseRepository.findById(10L)).thenReturn(Optional.of(sampleCourse));
+        when(courseRepository.findByIdAndUserId(10L, 1L)).thenReturn(Optional.of(sampleCourse));
 
         // when
-        courseService.deleteCourse(10L);
+        courseService.deleteCourse(10L, 1L);
 
         // then
         verify(courseRepository).delete(sampleCourse);
@@ -194,11 +168,22 @@ class CourseServiceImplTest {
     @DisplayName("deleteCourse throws ResourceNotFoundException when ID is unknown")
     void deleteCourse_withUnknownId_throwsResourceNotFoundException() {
         // given
-        when(courseRepository.findById(99L)).thenReturn(Optional.empty());
+        when(courseRepository.findByIdAndUserId(99L, 1L)).thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> courseService.deleteCourse(99L))
+        assertThatThrownBy(() -> courseService.deleteCourse(99L, 1L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Course not found with ID: 99");
+    }
+
+    @Test
+    @DisplayName("deleteCourse throws ResourceNotFoundException when the course belongs to another user")
+    void deleteCourse_otherUser_throwsResourceNotFound() {
+        // given
+        when(courseRepository.findByIdAndUserId(10L, 2L)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> courseService.deleteCourse(10L, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 }

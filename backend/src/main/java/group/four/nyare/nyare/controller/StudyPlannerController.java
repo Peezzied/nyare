@@ -51,7 +51,7 @@ public class StudyPlannerController {
      */
     @GetMapping("/status")
     public ResponseEntity<PlannerStatusResponse> getStatus() {
-        Long userId = sessionContext.getUserId().orElse(null);
+        Long userId = sessionContext.requireUserId();
         PlannerStatusResponse response = studyPlannerService.getPlannerStatus(userId);
         return ResponseEntity.ok(response);
     }
@@ -66,7 +66,7 @@ public class StudyPlannerController {
      */
     @PostMapping(value = "/process", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter process() {
-        Long userId = sessionContext.getUserId().orElse(null);
+        Long userId = sessionContext.requireUserId();
         PlannerStatusResponse status = studyPlannerService.getPlannerStatus(userId);
 
         // 0 disables the async timeout (servlet spec): the run is bounded by the

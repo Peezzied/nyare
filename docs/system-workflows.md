@@ -349,3 +349,5 @@ flowchart TD
 *Sequential Flow*: When the student clicks Process, the system retrieves all pending dirty notes and processes them chronologically date by date. It cleans prior uncompleted entities for edited notes, extracts fresh entities, and runs study planning anchored to `LocalDate.now()` to schedule tasks on upcoming dates.
 
 *Feedback Loop*: When the student provides feedback (e.g. *"I have no time tonight"*), the feedback is incorporated into the planning context and the AI reconsiders task recommendations.
+
+*Session*: Protected calls need an active session. The client returns to the start screen when a call answers `401`.

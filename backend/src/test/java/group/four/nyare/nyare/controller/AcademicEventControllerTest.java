@@ -9,13 +9,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -41,11 +41,14 @@ class AcademicEventControllerTest {
     @MockitoBean
     private JpaMetamodelMappingContext jpaMappingContext;
 
+    private static final Long USER_ID = 1L;
+
     private UUID sampleId;
     private AcademicEventResponse sampleEvent;
 
     @BeforeEach
     void setUp() {
+        when(sessionContext.requireUserId()).thenReturn(USER_ID);
         sampleId = UUID.randomUUID();
         sampleEvent = new AcademicEventResponse(
                 sampleId,
@@ -58,19 +61,24 @@ class AcademicEventControllerTest {
         );
     }
 
+    private MockHttpSession mockSession() {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute(UserController.SESSION_USER_ID, USER_ID);
+        return session;
+    }
+
     @Test
     @DisplayName("listEvents with session user passes userId to service")
     void listEvents_withSessionUser_passesUserIdToService() throws Exception {
         // given
-        when(sessionContext.getUserId()).thenReturn(Optional.of(42L));
-        when(academicEventService.listEvents(eq(42L), any(), any())).thenReturn(List.of(sampleEvent));
+        when(academicEventService.listEvents(eq(USER_ID), any(), any())).thenReturn(List.of(sampleEvent));
 
         // when & then
-        mockMvc.perform(get("/api/academic-events"))
+        mockMvc.perform(get("/api/academic-events").session(mockSession()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].title").value("Midterm Exam"));
 
-        verify(academicEventService).listEvents(42L, null, null);
+        verify(academicEventService).listEvents(USER_ID, null, null);
     }
 }

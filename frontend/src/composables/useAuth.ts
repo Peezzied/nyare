@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import type { Ref } from 'vue'
 import { ApiError, authApi } from '@/api'
 import { getDevUser } from '@/api/auth'
+import { resetAllCaches } from './createCache'
 import type { UserResponse } from '@/types/api'
 
 /** Session user, or `null` while no valid linked user session exists. */
@@ -13,6 +14,9 @@ let sessionChecked = false
 /** Tracks whether the configured dev user is missing in the backend. */
 const isDevUserMissing: Ref<boolean> = ref(false)
 
+/** The shared in-flight session check. Concurrent callers await the same promise. */
+let sessionPromise: Promise<UserResponse | null | undefined> | null = null
+
 /**
  * Checks the session once per app load via `GET /api/users/me`.
  * The browser sends the session cookie through `credentials: 'include'` (see `apiClient`).
@@ -22,7 +26,19 @@ const isDevUserMissing: Ref<boolean> = ref(false)
  * @returns the session user, `null` when the backend confirmed no session,
  * or `undefined` when the session state could not be determined.
  */
-export async function ensureSession(): Promise<UserResponse | null | undefined> {
+export function ensureSession(): Promise<UserResponse | null | undefined> {
+  if (sessionChecked) {
+    return Promise.resolve(user.value)
+  }
+  if (!sessionPromise) {
+    sessionPromise = checkSession().finally(() => {
+      sessionPromise = null
+    })
+  }
+  return sessionPromise
+}
+
+async function checkSession(): Promise<UserResponse | null | undefined> {
   if (sessionChecked) {
     return user.value
   }
@@ -65,11 +81,13 @@ export function setSessionUser(next: UserResponse): void {
   isDevUserMissing.value = false
 }
 
-/** Clears the whole session state: the user and the concluded-check marker. */
+/** Clears the whole session state, the in-flight check, and every data cache. */
 export function clearSessionUser(): void {
   user.value = null
   sessionChecked = false
   isDevUserMissing.value = false
+  sessionPromise = null
+  resetAllCaches()
 }
 
 /** Exposes the shared session state for components. */

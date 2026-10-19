@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { ensureSession, useAuth } from '@/composables/useAuth'
+import { clearSessionUser, ensureSession, useAuth } from '@/composables/useAuth'
+import { setUnauthorizedHandler } from '@/api/client'
 import StartView from '../views/StartView.vue'
 import WelcomeView from '../views/WelcomeView.vue'
 import ScheduleView from '../views/ScheduleView.vue'
 import CreateScheduleView from '../views/CreateScheduleView.vue'
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -29,20 +29,9 @@ const router = createRouter({
       component: CreateScheduleView,
     },
     {
-      path: '/tasks',
-      alias: ['/todo'],
-      name: 'tasks',
-      component: () => import('@/views/TodoView.vue'),
-    },
-    {
       path: '/tasks/:id',
       name: 'task-detail',
       component: () => import('@/views/TaskDetailView.vue'),
-    },
-    {
-      path: '/notes',
-      name: 'notes',
-      component: () => import('../views/NotesView.vue'),
     },
     // Optional query params `courseId` and `entryDate` prefill the new note.
     {
@@ -61,10 +50,28 @@ const router = createRouter({
       name: 'select-account',
       component: () => import('../views/AccountSelectView.vue'),
     },
+    // Logged-in tab routes render inside the shared AppShell chrome.
     {
-      path: '/calendar',
-      name: 'calendar',
-      component: () => import('@/components/day-view/DayViewContainer.vue'),
+      path: '/',
+      component: () => import('@/components/AppShell.vue'),
+      children: [
+        {
+          path: '/tasks',
+          alias: ['/todo'],
+          name: 'tasks',
+          component: () => import('@/views/TodoView.vue'),
+        },
+        {
+          path: '/calendar',
+          name: 'calendar',
+          component: () => import('@/components/day-view/DayViewContainer.vue'),
+        },
+        {
+          path: '/notes',
+          name: 'notes',
+          component: () => import('../views/NotesView.vue'),
+        },
+      ],
     },
     {
       path: '/dev-missing',
@@ -72,6 +79,14 @@ const router = createRouter({
       component: () => import('@/views/DevAccountMissingView.vue'),
     },
   ],
+})
+
+// A protected 401 during use clears the session and returns to the start screen.
+setUnauthorizedHandler(() => {
+  clearSessionUser()
+  if (router.currentRoute.value.name !== 'start') {
+    void router.push({ name: 'start' })
+  }
 })
 
 // First-launch detection via `GET /api/users/me`.

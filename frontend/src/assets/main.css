@@ -182,3 +182,5 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Desktop scaffold layout disabled: onboarding screens are mobile-first and full-height. */

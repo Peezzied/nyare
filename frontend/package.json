@@ -9,6 +9,8 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "test:unit": "vitest",
+    "test:flow": "vitest run -c vitest.flow.config.ts --mode flow",
+    "test:flow:ai": "vitest run -c vitest.flow.config.ts --mode flow-ai",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "run-s \"lint:*\"",

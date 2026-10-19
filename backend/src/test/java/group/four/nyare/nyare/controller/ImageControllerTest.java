@@ -1,6 +1,7 @@
 package group.four.nyare.nyare.controller;
 
 import group.four.nyare.nyare.dto.ImageUploadResponse;
+import org.springframework.mock.web.MockHttpSession;
 import group.four.nyare.nyare.model.Image;
 import group.four.nyare.nyare.service.ImageService;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,14 @@ class ImageControllerTest {
     @MockitoBean
     private JpaMetamodelMappingContext jpaMappingContext;
 
+    private static final Long USER_ID = 1L;
+
+    private MockHttpSession mockSession() {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute(UserController.SESSION_USER_ID, USER_ID);
+        return session;
+    }
+
     @Test
     void uploadImage_returns201AndLocationHeader() throws Exception {
         UUID id = UUID.randomUUID();
@@ -45,7 +54,7 @@ class ImageControllerTest {
 
         MockMultipartFile file = new MockMultipartFile("file", "test.png", "image/png", new byte[]{1, 2, 3});
 
-        mockMvc.perform(multipart("/api/images").file(file))
+        mockMvc.perform(multipart("/api/images").file(file).session(mockSession()))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/api/images/" + id))
                 .andExpect(jsonPath("$.id").value(id.toString()))
@@ -58,7 +67,7 @@ class ImageControllerTest {
         Image image = new Image(new byte[]{1, 2, 3}, "image/png", "test.png", 3L);
         when(imageService.getImage(id)).thenReturn(image);
 
-        mockMvc.perform(get("/api/images/{id}", id))
+        mockMvc.perform(get("/api/images/{id}", id).session(mockSession()))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Type", "image/png"))
                 .andExpect(header().exists("Cache-Control"));
@@ -69,7 +78,7 @@ class ImageControllerTest {
         UUID id = UUID.randomUUID();
         doNothing().when(imageService).deleteImage(id);
 
-        mockMvc.perform(delete("/api/images/{id}", id))
+        mockMvc.perform(delete("/api/images/{id}", id).session(mockSession()))
                 .andExpect(status().isNoContent());
 
         verify(imageService).deleteImage(id);
