@@ -15,7 +15,7 @@ export interface UntimedDayItem {
 /**
  * Derives untimed items for one calendar day. A task is included only when
  * its date-only `scheduledDate` equals the active day; an event only when its
- * `deadline` equals the active day. Nothing is invented for dateless tasks.
+ * `deadline` falls on the active day. Nothing is invented for dateless tasks.
  */
 export function deriveUntimedItems(
   tasks: TaskResponse[],
@@ -35,7 +35,8 @@ export function deriveUntimedItems(
     })
   }
   for (const event of events) {
-    if (event.deadline !== activeDateKey) continue
+    // A deadline carries a clock time (`2026-10-22T09:00:00`); compare its date part only.
+    if (event.deadline.slice(0, 10) !== activeDateKey) continue
     items.push({
       id: event.id,
       title: event.title,

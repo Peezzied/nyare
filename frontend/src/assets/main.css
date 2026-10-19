@@ -20,6 +20,7 @@
   --color-text-main: #334155;
   --color-text-muted: #7b8b97;
   --color-app-border: #cbd5e1;
+  --color-calendar-canvas: #fdfef7;
 
   /* Task urgency tokens (FR-016) */
   --color-urgency-red: #d50000;
@@ -67,6 +68,9 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Hour row height for the day and week grids; read by getHourHeight() in src/utils/calendarStyle.ts. */
+  --calendar-hour-height: 80px;
 }
 
 @layer base {
@@ -184,3 +188,62 @@
 }
 
 /* Desktop scaffold layout disabled: onboarding screens are mobile-first and full-height. */
+
+/* Schedule-X Calendar Global Styling (Google Calendar Mobile) */
+:root,
+.sx__calendar,
+.sx-vue-calendar-wrapper,
+.sx__view-container {
+  --calendar-hour-height: 48px;
+  --sx-week-grid-hour-height: var(--calendar-hour-height);
+  --sx-calendar-week-grid-padding-left: 55px;
+  --sx-time-axis-line-length: 7px;
+  --sx-time-axis-label-width: calc(
+    var(--sx-calendar-week-grid-padding-left) - var(--sx-time-axis-line-length)
+  );
+  --sx-color-background: var(--color-calendar-canvas);
+  --sx-color-surface: var(--color-calendar-canvas);
+  --sx-color-outline-variant: #cbd5e1;
+}
+
+.sx__calendar,
+.sx__view-container {
+  background-color: var(--color-calendar-canvas) !important;
+}
+
+.sx__week-grid {
+  padding-left: var(--sx-calendar-week-grid-padding-left, 55px) !important;
+}
+
+/* Extend the horizontal hour line 7px into the gutter */
+.sx__week-grid__time-axis {
+  width: calc(100% - var(--sx-time-axis-label-width, 48px)) !important;
+}
+
+/* Center time labels in the column to the left of the intersecting line */
+.sx__week-grid__hour-text {
+  left: calc(-1 * var(--sx-time-axis-label-width, 48px)) !important;
+  right: auto !important;
+  top: -0.75em !important;
+  width: var(--sx-time-axis-label-width, 48px) !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  font-size: 0.6875rem !important;
+  font-weight: 500 !important;
+  color: #78716c !important;
+  user-select: none;
+}
+
+/* Disable Schedule-X event entrance and slide animations */
+.sx__time-grid-event.is-event-new,
+.sx__date-grid-event.is-event-new,
+.sx__month-grid-event.is-event-new {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.sx__slide-left,
+.sx__slide-right {
+  animation: none !important;
+}

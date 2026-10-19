@@ -110,7 +110,9 @@ function plannerStatus(): PlannerStatusResponse {
     dirtyDates: [...new Set(dirty.map((n) => n.entryDate))].sort(),
     courseNames: [
       ...new Set(
-        dirty.map((n) => nameById.get(n.courseId)).filter((name): name is string => name !== undefined),
+        dirty
+          .map((n) => nameById.get(n.courseId))
+          .filter((name): name is string => name !== undefined),
       ),
     ].sort(),
     pendingNotes: dirty.map((n) => ({
@@ -774,9 +776,7 @@ export function initMockAdapter(): void {
                 }
                 markNotesProcessed()
                 ctrl.enqueue(
-                  encoder.encode(
-                    `event: done\ndata: ${JSON.stringify(state.processSummary)}\n\n`,
-                  ),
+                  encoder.encode(`event: done\ndata: ${JSON.stringify(state.processSummary)}\n\n`),
                 )
                 ctrl.close()
               } finally {

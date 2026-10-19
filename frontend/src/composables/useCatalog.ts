@@ -35,10 +35,7 @@ export function useCatalog() {
     const g = cache.begin()
     const seq = cache.beginLoad()
     const fetchPromise = (async () => {
-      const [courseList, scheduleList] = await Promise.all([
-        coursesApi.list(),
-        schedulesApi.list(),
-      ])
+      const [courseList, scheduleList] = await Promise.all([coursesApi.list(), schedulesApi.list()])
       if (cache.isLatest(seq, g)) {
         courses.value = courseList
         schedules.value = scheduleList

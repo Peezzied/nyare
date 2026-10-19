@@ -94,7 +94,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div ref="rootEl" class="flex min-h-full mx-auto w-full ">
+  <div ref="rootEl" class="flex min-h-full mx-auto w-full">
     <p
       v-if="loading && notes.length === 0"
       class="mt-6 text-center text-sm text-text-muted"
@@ -109,9 +109,7 @@ onMounted(async () => {
       data-testid="notes-error"
       role="alert"
     >
-      <p class="font-sans text-base font-semibold text-text-main">
-        Notes failed to load.
-      </p>
+      <p class="font-sans text-base font-semibold text-text-main">Notes failed to load.</p>
 
       <p class="mt-1 text-sm text-text-muted">{{ error }}</p>
 
@@ -142,10 +140,7 @@ onMounted(async () => {
         />
       </div>
 
-      <div
-        v-if="pictureNote"
-        class="break-inside-avoid pb-4"
-      >
+      <div v-if="pictureNote" class="break-inside-avoid pb-4">
         <PictureNoteCard
           :photo-url="pictureNote.photoUrl"
           :course-id="pictureNote.note.courseId"
@@ -160,7 +155,7 @@ onMounted(async () => {
     </div>
 
     <Teleport :to="rootEl" :disabled="!rootEl">
-        <button
+      <button
         type="button"
         aria-label="Add note"
         data-testid="notes-fab"
@@ -168,7 +163,12 @@ onMounted(async () => {
         class="absolute right-4 bottom-4 z-10 flex min-h-14 min-w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-lg"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          <path
+            d="M12 5v14M5 12h14"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
         </svg>
       </button>
     </Teleport>

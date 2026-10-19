@@ -11,11 +11,7 @@ import { useAuth } from './useAuth'
 
 /** Terminal or live state of one Process run record. */
 export type ProcessNotificationStatus =
-  | 'running'
-  | 'done'
-  | 'cancelled'
-  | 'saved-after-cancel'
-  | 'error'
+  'running' | 'done' | 'cancelled' | 'saved-after-cancel' | 'error'
 
 /** One Process run captured for the notification center. */
 export interface ProcessNotification {

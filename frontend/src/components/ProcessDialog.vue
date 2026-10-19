@@ -122,8 +122,9 @@ function cancelRun(): void {
   props.proc.cancel()
 }
 
-function keepRunning(event: MouseEvent): void {
+function keepRunning(event: MouseEvent, dismiss: () => void): void {
   emit('keep-running', event)
+  dismiss()
 }
 
 watch(
@@ -148,11 +149,7 @@ watch(
 </script>
 
 <template>
-  <DialogShell
-    :open="open"
-    :title="title"
-    @update:open="emit('update:open', $event)"
-  >
+  <DialogShell :open="open" :title="title" @update:open="emit('update:open', $event)">
     <div v-if="phase === 'confirm'" class="mt-2">
       <p class="text-sm text-[#7B8B97]" style="font-family: 'Inter', sans-serif; font-weight: 400">
         Duckota reads the pending journal notes and updates the study plan.
@@ -395,7 +392,7 @@ watch(
           data-testid="process-minimize"
           class="min-h-[44px] rounded-xl border-b-4 border-[#007B99] bg-[#00A4C8] px-5 py-2.5 text-sm font-bold text-white transition-all duration-75 hover:bg-[#0090B0] focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 focus-visible:outline-none active:translate-y-1 active:border-b-0 disabled:cursor-not-allowed disabled:opacity-60"
           style="font-family: 'Quicksand', sans-serif; font-weight: 700"
-          @click="keepRunning($event); dismiss()"
+          @click="keepRunning($event, dismiss)"
         >
           Keep running
         </button>
