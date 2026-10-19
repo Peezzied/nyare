@@ -1,11 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, toValue } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
+import { routerKey, routeLocationKey } from 'vue-router'
 import NotesView from '../NotesView.vue'
 import NoteEditorModal from '@/components/notes/NoteEditorModal.vue'
+import AppHeader from '@/components/AppHeader.vue'
+import NavigationBar from '@/components/NavigationBar.vue'
 import { coursesApi, schedulesApi, notesApi } from '@/api'
 import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
+import { provideShellHeader } from '@/composables/useShellHeader'
 import type { NoteSummaryResponse } from '@/types/api'
 
 const mockPush = vi.fn<(path: string | { name: string; params?: { id: string } }) => Promise<void>>(
@@ -54,8 +58,30 @@ const NoteEditorStub = defineComponent({
 
 const globalStubs = { stubs: { NoteEditor: NoteEditorStub } }
 
-function mountView() {
-  return mount(NotesView, { global: globalStubs })
+// NotesView contributes its top bar through the shared shell header, so it renders
+// inside AppShell in the real app. This harness stands in for the shell chrome.
+const ShellHarness = defineComponent({
+  setup() {
+    const header = provideShellHeader()
+
+    return () =>
+      h('div', [
+        h(
+          AppHeader,
+          { title: toValue(header.title) },
+          {
+            left: () => (header.left ? h(header.left) : null),
+            right: () => (header.right ? h(header.right) : null),
+          },
+        ),
+        h(NotesView),
+        h(NavigationBar),
+      ])
+  },
+})
+
+function mountView(provide: Record<PropertyKey, unknown> = {}) {
+  return mount(ShellHarness, { global: { ...globalStubs, provide } })
 }
 
 describe('NotesView', () => {
@@ -280,4 +306,90 @@ describe('NotesView', () => {
     expect(list).toHaveBeenCalledTimes(2)
   })
 
+  it('performs no action on the top bar search click', async () => {
+    mockCatalog()
+    const list = vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.get('[data-testid="topbar-search"]').trigger('click')
+    await flushPromises()
+
+    expect(list).toHaveBeenCalledTimes(1)
+    expect(wrapper.find('[data-testid="notes-grid"]').exists()).toBe(true)
+  })
+
+  it('opens the account menu from the top bar menu button', async () => {
+    mockCatalog()
+    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
+    await flushPromises()
+
+    const menu = document.querySelector<HTMLElement>('[data-testid="account-menu"]')
+    expect(menu).not.toBeNull()
+    expect(menu?.textContent).toContain('Select Account')
+
+    wrapper.unmount()
+  })
+
+  it('navigates to select-account from the account menu', async () => {
+    mockCatalog()
+    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
+    await flushPromises()
+
+    const item = document.querySelector<HTMLElement>('[data-testid="select-account-item"]')
+    expect(item).not.toBeNull()
+    item?.click()
+    await flushPromises()
+
+    expect(mockPush).toHaveBeenCalledWith('/select-account')
+    await vi.waitFor(() => {
+      expect(document.querySelector('[data-testid="account-menu"]')).toBeNull()
+    })
+
+    wrapper.unmount()
+  })
+
+  it('renders the bottom navigation with the notes tab active', async () => {
+    mockCatalog()
+    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
+
+    const wrapper = mountView({
+      [routerKey]: { push: mockPush },
+      [routeLocationKey]: { path: '/notes' },
+    })
+    await flushPromises()
+
+    const tab = wrapper.get('nav[aria-label="Main navigation"]').get('[data-id="notes"]')
+    expect(tab.attributes('data-active')).toBe('true')
+    expect(tab.attributes('aria-current')).toBe('page')
+  })
+
+  it('navigates to the calendar from the bottom navigation', async () => {
+    mockCatalog()
+    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
+
+    const wrapper = mountView({
+      [routerKey]: { push: mockPush },
+      [routeLocationKey]: { path: '/notes' },
+    })
+    await flushPromises()
+
+    await wrapper
+      .get('nav[aria-label="Main navigation"]')
+      .get('[data-id="calendar"]')
+      .trigger('click')
+
+    expect(mockPush).toHaveBeenCalledWith('/calendar')
+  })
 })
