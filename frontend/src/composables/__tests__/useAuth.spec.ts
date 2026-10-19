@@ -181,4 +181,21 @@ describe('useAuth', () => {
     await expect(ensureSession()).resolves.toBeUndefined()
     expect(getCurrentUser).toHaveBeenCalledTimes(2)
   })
+
+  it('endSession clears the user without re-probing /me or dev auto-login', async () => {
+    import.meta.env.VITE_DEV_USER = 'dev_student'
+    getCurrentUser.mockResolvedValueOnce(mockUser)
+    const { useAuth } = await import('../useAuth')
+    const { user, ensureSession, endSession } = useAuth()
+
+    await ensureSession()
+    expect(user.value).toEqual(mockUser)
+
+    endSession()
+    expect(user.value).toBeNull()
+
+    await expect(ensureSession()).resolves.toBeNull()
+    expect(getCurrentUser).toHaveBeenCalledTimes(1)
+    expect(login).not.toHaveBeenCalled()
+  })
 })

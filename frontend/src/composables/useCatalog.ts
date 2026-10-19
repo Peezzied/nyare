@@ -59,6 +59,12 @@ export function useCatalog() {
     courses.value = [...courses.value, course]
   }
 
+  /** Deletes the course via the API and drops it from the cache. */
+  async function deleteCourse(id: number): Promise<void> {
+    await coursesApi.delete(id)
+    applyCourseDeleted(id)
+  }
+
   /** Removes the course and its schedules from the cache. */
   function applyCourseDeleted(id: number): void {
     courses.value = courses.value.filter((course) => course.id !== id)
@@ -89,6 +95,7 @@ export function useCatalog() {
     schedules,
     loaded,
     loadCatalog,
+    deleteCourse,
     applyCourseCreated,
     applyCourseDeleted,
     applyScheduleCreated,

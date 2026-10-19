@@ -96,11 +96,19 @@ describe('API Services', () => {
       expect(postSpy).toHaveBeenCalledWith('/api/users', { username: 'bob' })
     })
 
-    it('rejects register when VITE_DEV_USER is active', async () => {
+    it('allows register when VITE_DEV_USER is active', async () => {
       import.meta.env.VITE_DEV_USER = 'dev_student'
-      await expect(authApi.register({ username: 'bob' })).rejects.toThrow(
-        'Account creation is disabled while dev_student is active.',
-      )
+      const mockUser: UserResponse = {
+        id: 2,
+        username: 'bob',
+        createdAt: '2026-10-08T00:00:00Z',
+        updatedAt: '2026-10-08T00:00:00Z',
+      }
+      const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValue(mockUser)
+
+      const result = await authApi.register({ username: 'bob' })
+      expect(result).toEqual(mockUser)
+      expect(postSpy).toHaveBeenCalledWith('/api/users', { username: 'bob' })
     })
 
     it('calls listUsers endpoint', async () => {

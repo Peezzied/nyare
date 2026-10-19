@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import AccountSelectView from '../AccountSelectView.vue'
 import { authApi } from '@/api'
+import { setSessionUser, useAuth } from '@/composables/useAuth'
 import type { LoginRequest, UserRequest, UserResponse } from '@/types/api'
 
 const mockPush = vi.fn<(path: string) => Promise<void> | void>()
@@ -19,6 +20,7 @@ vi.mock('@/api', () => ({
     listUsers: vi.fn<() => Promise<UserResponse[]>>(),
     login: vi.fn<(request: LoginRequest) => Promise<UserResponse>>(),
     register: vi.fn<(request: UserRequest) => Promise<UserResponse>>(),
+    logout: vi.fn<() => Promise<void>>(),
     deleteUser: vi.fn<(id: number) => Promise<void>>(),
   },
 }))
@@ -47,35 +49,76 @@ describe('AccountSelectView', () => {
     expect(wrapper.text()).toContain('Add Account')
   })
 
-  it('creates an account via the add modal and logs in', async () => {
+  it('navigates to onboarding when Add Account is clicked', async () => {
     vi.mocked(authApi.listUsers).mockResolvedValueOnce([])
-    const mockUser: UserResponse = {
-      id: 1,
-      username: 'Alice',
-      createdAt: '2026-10-14T10:00:00Z',
-      updatedAt: '2026-10-14T10:00:00Z',
-    }
-    vi.mocked(authApi.register).mockResolvedValueOnce(mockUser)
-    vi.mocked(authApi.login).mockResolvedValueOnce(mockUser)
 
     const wrapper = mount(AccountSelectView)
     await flushPromises()
 
-    // Open Add Account modal
     const addAccountButton = wrapper.findAll('button').find((b) => b.text().includes('Add Account'))
     expect(addAccountButton).toBeDefined()
     await addAccountButton!.trigger('click')
 
-    expect(wrapper.text()).toContain('Add Student Profile')
+    expect(mockPush).toHaveBeenCalledWith({ path: '/welcome', query: { from: 'accounts' } })
+    expect(authApi.register).not.toHaveBeenCalled()
+  })
 
-    const input = wrapper.find('input[placeholder="Enter your username..."]')
-    await input.setValue('Alice')
-    await wrapper.find('form').trigger('submit.prevent')
+  it('warns a signed-in user and ends the session only after confirming', async () => {
+    const sessionedUser: UserResponse = {
+      id: 1,
+      username: 'Carol',
+      createdAt: '2026-10-10T12:00:00Z',
+      updatedAt: '2026-10-10T12:00:00Z',
+    }
+    setSessionUser(sessionedUser)
+    vi.mocked(authApi.listUsers).mockResolvedValueOnce([sessionedUser])
+    vi.mocked(authApi.logout).mockResolvedValueOnce()
+
+    const wrapper = mount(AccountSelectView)
     await flushPromises()
 
-    expect(authApi.register).toHaveBeenCalledWith({ username: 'Alice' })
-    expect(authApi.login).toHaveBeenCalledWith({ username: 'Alice' })
-    expect(mockPush).toHaveBeenCalledWith('/welcome')
+    const addAccountButton = wrapper.findAll('button').find((b) => b.text().includes('Add Account'))
+    await addAccountButton!.trigger('click')
+    await flushPromises()
+
+    // The warning dialog opens; nothing has signed out or navigated yet.
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(true)
+    expect(wrapper.text()).toContain('You will be signed out of')
+    expect(authApi.logout).not.toHaveBeenCalled()
+    expect(mockPush).not.toHaveBeenCalled()
+
+    await wrapper.find('[data-testid="add-account-confirm"]').trigger('click')
+    await flushPromises()
+
+    expect(authApi.logout).toHaveBeenCalled()
+    expect(useAuth().user.value).toBeNull()
+    expect(mockPush).toHaveBeenCalledWith({ path: '/welcome', query: { from: 'accounts' } })
+  })
+
+  it('keeps the session when the sign-out warning is cancelled', async () => {
+    const sessionedUser: UserResponse = {
+      id: 1,
+      username: 'Carol',
+      createdAt: '2026-10-10T12:00:00Z',
+      updatedAt: '2026-10-10T12:00:00Z',
+    }
+    setSessionUser(sessionedUser)
+    vi.mocked(authApi.listUsers).mockResolvedValueOnce([sessionedUser])
+
+    const wrapper = mount(AccountSelectView)
+    await flushPromises()
+
+    const addAccountButton = wrapper.findAll('button').find((b) => b.text().includes('Add Account'))
+    await addAccountButton!.trigger('click')
+    await flushPromises()
+
+    await wrapper.find('[data-testid="add-account-cancel"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(false)
+    expect(authApi.logout).not.toHaveBeenCalled()
+    expect(useAuth().user.value).toEqual(sessionedUser)
+    expect(mockPush).not.toHaveBeenCalled()
   })
 
   it('renders user cards with GitHub identicons and selects on click', async () => {

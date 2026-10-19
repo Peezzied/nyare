@@ -6,10 +6,7 @@ import type { CourseRequest, CourseResponse } from '@/types/api'
  * The backend has no update endpoint for courses.
  */
 export const coursesApi = {
-  /**
-   * Lists courses with `GET /api/courses`.
-   * The backend filters by the session user first. It uses `userId` only when no session exists.
-   */
+  /** Lists courses with `GET /api/courses`. The backend scopes them to the session user. */
   list(userId?: number): Promise<CourseResponse[]> {
     return apiClient.get<CourseResponse[]>('/api/courses', { userId })
   },

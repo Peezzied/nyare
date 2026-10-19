@@ -19,7 +19,7 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
-    "@lucide/vue": "^1.56.0",
+    "@lucide/vue": "^1.59.0",
     "@preact/signals": "^2.11.3",
     "@schedule-x/calendar": "^4.9.1",
     "@schedule-x/date-picker": "^4.2.0",
@@ -34,19 +34,22 @@
     "@vueuse/core": "^15.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cn": "^0.5.0",
+    "lucide-vue-next": "^1.0.0",
     "minidenticons": "^4.2.1",
-    "tailwind-merge": "^3.7.0",
-    "reka-ui": "^2.11.0",
     "preact": "^10.25.0",
+    "reka-ui": "^2.11.0",
+    "tailwind-merge": "^3.7.0",
     "tailwindcss": "^4.3.3",
     "temporal-polyfill": "0.3.2",
     "vue": "^3.5.42",
-    "vue-router": "^5.3.1"
+    "vue-router": "^5.3.1",
+    "vue-sonner": "^2.0.9"
   },
   "optionalDependencies": {
-  "@rolldown/binding-win32-x64-msvc": "^1.2.13",
-  "lightningcss-win32-x64-msvc": "^1.33.0"
-},
+    "@rolldown/binding-win32-x64-msvc": "^1.2.13",
+    "lightningcss-win32-x64-msvc": "^1.33.0"
+  },
   "devDependencies": {
     "@histoire/plugin-vue": "^1.0.0-beta.1",
     "@tsconfig/node24": "^24.0.5",
