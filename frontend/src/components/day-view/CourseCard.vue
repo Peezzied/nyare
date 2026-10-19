@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import type { DayEvent } from '../../types/calendar'
 import { formatTimeRange } from '../../utils/scheduleExpander'
+import { classDurationMinutes, getClassCardTier } from '../../utils/classCardTier'
 
 const props = withDefaults(
   defineProps<{
@@ -15,11 +16,12 @@ const props = withDefaults(
   { top: 0, height: 0, embedded: false },
 )
 
-const formattedTime = computed(() => {
-  const startTime = props.event.start.split(' ')[1] ?? ''
-  const endTime = props.event.end.split(' ')[1] ?? ''
-  return formatTimeRange(startTime, endTime)
-})
+const startTime = computed(() => props.event.start.split(' ')[1] ?? '')
+const endTime = computed(() => props.event.end.split(' ')[1] ?? '')
+
+const formattedTime = computed(() => formatTimeRange(startTime.value, endTime.value))
+
+const tier = computed(() => getClassCardTier(classDurationMinutes(startTime.value, endTime.value)))
 
 const colorClasses = computed(() => {
   switch (props.event.colorTheme) {
@@ -68,22 +70,23 @@ function handleClick(e: MouseEvent) {
 <template>
   <div
     ref="cardRef"
-    class="rounded-2xl p-4 border-[2.5px] shadow-sm flex flex-col justify-start transition-transform hover:scale-[1.01] cursor-pointer"
+    class="rounded-2xl shadow-sm flex flex-col justify-start overflow-hidden transition-transform hover:scale-[1.01] cursor-pointer"
     :class="[
       colorClasses.bg,
       colorClasses.border,
+      tier.card,
       props.embedded ? 'relative h-full w-full' : 'absolute left-2 right-2',
     ]"
     :style="props.embedded ? {} : { top: `${top}px`, height: `${height}px` }"
     @click="handleClick"
   >
     <!-- Course Title -->
-    <h3 class="text-xl font-bold text-white tracking-wide leading-tight">
+    <h3 class="font-bold text-white tracking-wide" :class="tier.title">
       {{ event.title }}
     </h3>
 
     <!-- Time & Detail Line -->
-    <p class="text-white/95 text-sm font-medium mt-1">
+    <p class="text-white/95 font-medium" :class="tier.description">
       <span>{{ formattedTime }}</span>
       <span v-if="event.detail"> • {{ event.detail }}</span>
     </p>

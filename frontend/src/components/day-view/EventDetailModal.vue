@@ -1,57 +1,78 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { ArrowLeft } from 'lucide-vue-next'
-import type {
-  AnimationPhase,
-  CourseBlockDetailState,
-  DetailModalKind,
-  NonCourseBlockDetailState,
-  TapOriginRect,
-} from '@/types/detailModal'
-import CourseBlockDetail from './CourseBlockDetail.vue'
-import UntimedBlockDetail from './UntimedBlockDetail.vue'
+import { ArrowLeft } from '@lucide/vue'
+import type { AnimationPhase, TapOriginRect } from '@/types/detailModal'
+import type { CalendarItemDetailView, LinkedNoteRef } from '@/types/calendarItemDetail'
+import CalendarItemDetail from './CalendarItemDetail.vue'
 
 const props = withDefaults(
   defineProps<{
     isOpen: boolean
     originRect: TapOriginRect | null
-    kind: DetailModalKind
-    data: CourseBlockDetailState | NonCourseBlockDetailState | null
+    item: CalendarItemDetailView | null
+    /** The app frame to fill: the centred column the day view renders inside. */
+    frameEl: HTMLElement | null
   }>(),
   {
     originRect: null,
-    data: null,
+    item: null,
+    frameEl: null,
   },
 )
 
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'navigate', routePath: string): void
+  (e: 'open-note', note: LinkedNoteRef): void
+  (e: 'complete-task', taskId: string): void
 }>()
+
+/** Skips the container transform when the user asks for reduced motion. */
+function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
+}
 
 const containerRef = ref<HTMLElement | null>(null)
 const phase = ref<AnimationPhase>('idle')
 const isTransitioning = ref(false)
 const isExpanded = ref(false)
 const showContent = ref(false)
-const showButtons = ref(false)
 const cardStyle = ref<Record<string, string>>({})
 
 let phaseTimer: ReturnType<typeof setTimeout> | null = null
 let contentTimer: ReturnType<typeof setTimeout> | null = null
-let buttonTimer: ReturnType<typeof setTimeout> | null = null
 let pushedHistory = false
 
 function clearAllTimers() {
   if (phaseTimer) clearTimeout(phaseTimer)
   if (contentTimer) clearTimeout(contentTimer)
-  if (buttonTimer) clearTimeout(buttonTimer)
   phaseTimer = null
   contentTimer = null
-  buttonTimer = null
 }
 
+/**
+ * Target geometry for the expanded container: the app frame when it is available, so the
+ * detail view never outgrows the centred column the day view renders inside.
+ * Falls back to the viewport when the frame is missing or not laid out yet.
+ */
 function calculateTargetStyle(): Record<string, string> {
+  const frame = props.frameEl
+  if (frame) {
+    const rect = frame.getBoundingClientRect()
+    if (rect.width > 0 && rect.height > 0) {
+      return {
+        top: `${rect.top}px`,
+        left: `${rect.left}px`,
+        width: `${rect.width}px`,
+        height: `${rect.height}px`,
+        borderRadius: getComputedStyle(frame).borderRadius || '0px',
+      }
+    }
+  }
+
   const w = typeof window !== 'undefined' && window.innerWidth > 0 ? window.innerWidth : 390
   const h = typeof window !== 'undefined' && window.innerHeight > 0 ? window.innerHeight : 844
   return {
@@ -63,12 +84,19 @@ function calculateTargetStyle(): Record<string, string> {
   }
 }
 
+/** Re-fits the expanded panel when the viewport changes while it is open. */
+function onViewportResize() {
+  if (isExpanded.value && phase.value !== 'collapsing') {
+    cardStyle.value = calculateTargetStyle()
+  }
+}
+
 function runExpansion() {
   clearAllTimers()
+  const reducedMotion = prefersReducedMotion()
   phase.value = 'expanding'
   isTransitioning.value = false
   showContent.value = false
-  showButtons.value = false
   isExpanded.value = false
 
   const origin = props.originRect
@@ -102,24 +130,25 @@ function runExpansion() {
 
     requestAnimationFrame(() => {
       // Enable CSS transitions and animate to full-screen target
-      isTransitioning.value = true
+      isTransitioning.value = !reducedMotion
       isExpanded.value = true
       cardStyle.value = calculateTargetStyle()
 
       // Staggered entrance: inner text/details at 100ms
-      contentTimer = setTimeout(() => {
-        showContent.value = true
-      }, 100)
-
-      // 3D tactile buttons at 180ms
-      buttonTimer = setTimeout(() => {
-        showButtons.value = true
-      }, 180)
+      contentTimer = setTimeout(
+        () => {
+          showContent.value = true
+        },
+        reducedMotion ? 0 : 100,
+      )
 
       // Fully settled at 320ms
-      phaseTimer = setTimeout(() => {
-        phase.value = 'settled'
-      }, 320)
+      phaseTimer = setTimeout(
+        () => {
+          phase.value = 'settled'
+        },
+        reducedMotion ? 0 : 320,
+      )
     })
   })
 }
@@ -130,9 +159,9 @@ function requestClose(triggerHistoryBack = true) {
   }
 
   clearAllTimers()
+  const reducedMotion = prefersReducedMotion()
   phase.value = 'collapsing'
-  isTransitioning.value = true
-  showButtons.value = false
+  isTransitioning.value = !reducedMotion
 
   // Fast content exit in first 80ms
   showContent.value = false
@@ -161,11 +190,14 @@ function requestClose(triggerHistoryBack = true) {
   }
 
   // 240ms collapse animation finishes
-  phaseTimer = setTimeout(() => {
-    phase.value = 'idle'
-    isTransitioning.value = false
-    emit('close')
-  }, 240)
+  phaseTimer = setTimeout(
+    () => {
+      phase.value = 'idle'
+      isTransitioning.value = false
+      emit('close')
+    },
+    reducedMotion ? 0 : 240,
+  )
 }
 
 function onPopState() {
@@ -197,7 +229,6 @@ watch(
       phase.value = 'idle'
       isExpanded.value = false
       showContent.value = false
-      showButtons.value = false
       pushedHistory = false
     }
   },
@@ -208,6 +239,8 @@ onMounted(() => {
   if (typeof window !== 'undefined') {
     window.addEventListener('popstate', onPopState)
     window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('resize', onViewportResize)
+    window.visualViewport?.addEventListener('resize', onViewportResize)
   }
 })
 
@@ -218,17 +251,24 @@ onUnmounted(() => {
   if (typeof window !== 'undefined') {
     window.removeEventListener('popstate', onPopState)
     window.removeEventListener('keydown', onKeyDown)
+    window.removeEventListener('resize', onViewportResize)
+    window.visualViewport?.removeEventListener('resize', onViewportResize)
   }
   clearAllTimers()
 })
 
-const courseData = computed(() =>
-  props.kind === 'course' ? (props.data as CourseBlockDetailState | null) : null,
-)
-
-const untimedData = computed(() =>
-  props.kind === 'other' ? (props.data as NonCourseBlockDetailState | null) : null,
-)
+const detailTitle = computed(() => {
+  switch (props.item?.kind) {
+    case 'class':
+      return 'Class Details'
+    case 'task':
+      return 'Task Details'
+    case 'event':
+      return 'Event Details'
+    default:
+      return 'Item Details'
+  }
+})
 </script>
 
 <template>
@@ -250,6 +290,7 @@ const untimedData = computed(() =>
     <!-- Full-screen expanding container -->
     <div
       ref="containerRef"
+      data-testid="detail-modal-container"
       class="fixed bg-[#F5F6EE] overflow-hidden flex flex-col z-10 will-change-[top,left,width,height,border-radius]"
       :class="[
         isTransitioning && phase === 'expanding'
@@ -274,7 +315,7 @@ const untimedData = computed(() =>
         </button>
 
         <span class="text-sm font-semibold font-quicksand text-[#64748B]">
-          {{ kind === 'course' ? 'Class Details' : 'Item Details' }}
+          {{ detailTitle }}
         </span>
 
         <div class="w-11" />
@@ -285,14 +326,12 @@ const untimedData = computed(() =>
         class="p-6 pt-5 overflow-y-auto flex-1 transition-all duration-200 max-w-lg mx-auto w-full"
         :class="[showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2']"
       >
-        <CourseBlockDetail
-          v-if="kind === 'course' && courseData"
-          :data="courseData"
-          :show-buttons="showButtons"
-          @navigate="emit('navigate', $event)"
+        <CalendarItemDetail
+          v-if="item"
+          :item="item"
+          @open-note="emit('open-note', $event)"
+          @complete-task="emit('complete-task', $event)"
         />
-
-        <UntimedBlockDetail v-else-if="kind === 'other' && untimedData" :data="untimedData" />
       </div>
     </div>
   </div>

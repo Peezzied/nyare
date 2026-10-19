@@ -10,16 +10,10 @@ import { useNow } from '../../composables/useNow'
 import { getHourHeight } from '../../utils/calendarStyle'
 import type { DayEvent } from '../../types/calendar'
 import type { UntimedDayItem } from '../../utils/untimedItems'
-import { calculateGridBoundaries, formatTimeRange } from '../../utils/scheduleExpander'
-import { useRouter } from 'vue-router'
-import type {
-  ActiveModalState,
-  CourseBlockDetailState,
-  NonCourseBlockDetailState,
-} from '../../types/detailModal'
+import { calculateGridBoundaries } from '../../utils/scheduleExpander'
+import { toDateKey } from '../../utils/dayKey'
 import AllDayStrip from './AllDayStrip.vue'
 import CourseCard from './CourseCard.vue'
-import EventDetailModal from './EventDetailModal.vue'
 import TimeIndicator from './TimeIndicator.vue'
 
 const props = defineProps<{
@@ -29,7 +23,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'selectUntimed', item: UntimedDayItem): void
+  (e: 'selectUntimed', item: UntimedDayItem, originRect: DOMRect | null): void
+  (e: 'selectCourse', event: DayEvent, originRect: DOMRect): void
 }>()
 
 const PILL_INSET_LEFT = 0 // must match the left padding on .sx__time-grid-event
@@ -146,35 +141,41 @@ let didInitialScroll = false
 let savedScrollTop = 0
 
 // Update the calendar in-place when date, boundaries, or events change
-watch([() => props.selectedDate, boundaries, () => props.events], async ([newDate, newBoundaries, newEvents]) => {
-  if (scrollEl.value) savedScrollTop = scrollEl.value.scrollTop
-  const b = newBoundaries
-  const hours = b.endHour - b.startHour
+watch(
+  [() => props.selectedDate, boundaries, () => props.events],
+  ([newDate, newBoundaries, newEvents]) => {
+    if (scrollEl.value) savedScrollTop = scrollEl.value.scrollTop
+    const b = newBoundaries
+    const hours = b.endHour - b.startHour
 
-  calendarControls.setDayBoundaries({
-    start: `${String(b.startHour).padStart(2, '0')}:00`,
-    end: `${String(b.endHour).padStart(2, '0')}:00`,
-  })
-  calendarControls.setWeekOptions({
-    gridHeight: hours * getHourHeight(),
-    gridStep: 60,
-    timeAxisFormatOptions: { hour: 'numeric', hour12: true },
-  })
-  calendarControls.setDate(toPlainDate(newDate))
-  calendarApp.value.events.set(toSxEvents(newEvents))
+    calendarControls.setDayBoundaries({
+      start: `${String(b.startHour).padStart(2, '0')}:00`,
+      end: `${String(b.endHour).padStart(2, '0')}:00`,
+    })
+    calendarControls.setWeekOptions({
+      gridHeight: hours * getHourHeight(),
+      gridStep: 60,
+      timeAxisFormatOptions: { hour: 'numeric', hour12: true },
+    })
+    calendarControls.setDate(toPlainDate(newDate))
+    calendarApp.value.events.set(toSxEvents(newEvents))
 
-  if (scrollEl.value) {
-    scrollEl.value.scrollTop = savedScrollTop
-  }
-  measure()
-  settle(15)
+    // Schedule X replaces the day column when the date changes. Rebind the new
+    // column before restoring the scroll or measuring, so the old node is never
+    // measured after it leaves the document.
+    dayColEl.value = null
+    scrollEl.value = null
+    findDayCol(40, toDateKey(newDate), () => {
+      attachScrollListener()
+      settle(15)
+    })
 
-  // Wait for Vue to mount the Teleport components, then paint
-  await nextTick()
-  requestAnimationFrame(() => {
-    wrapperRef.value?.dispatchEvent(new CustomEvent('day-ready', { bubbles: true }))
-  })
-})
+    // Notify the swiper that the date change is in place
+    requestAnimationFrame(() => {
+      wrapperRef.value?.dispatchEvent(new CustomEvent('day-ready', { bubbles: true }))
+    })
+  },
+)
 
 function updateOverlay() {
   const area = areaRef.value
@@ -224,16 +225,19 @@ function settle(frames = 90) {
   settleFrame = requestAnimationFrame(tick)
 }
 
-function findDayCol(tries = 40) {
+function findDayCol(tries = 40, dateKey?: string, onFound?: () => void) {
   const el = areaRef.value?.querySelector<HTMLElement>('.sx__time-grid-day') ?? null
-  if (el) {
+  // Schedule X can still show the previous date for a frame or two after setDate
+  const isCurrentDate = !dateKey || el?.dataset.timeGridDate === dateKey
+  if (el && isCurrentDate) {
     dayColEl.value = el
     observeLayout()
     updateOverlay()
+    onFound?.()
     return
   }
   if (tries > 0) {
-    requestAnimationFrame(() => findDayCol(tries - 1))
+    requestAnimationFrame(() => findDayCol(tries - 1, dateKey, onFound))
   } else {
     console.warn('[DayView] .sx__time-grid-day not found')
   }
@@ -293,97 +297,13 @@ onUnmounted(() => {
 
 watch(nowTop, () => nextTick(updateOverlay))
 
-// ---- Modal State & Detail Expansion ----
-const router = useRouter()
-
-const modalState = ref<ActiveModalState>({
-  isOpen: false,
-  originRect: null,
-  kind: null,
-  animationPhase: 'idle',
-  payload: null,
-})
-
-function getThemeColorClass(theme: 'green' | 'blue' | 'purple' | 'orange') {
-  switch (theme) {
-    case 'green':
-      return 'bg-[#7CE19D]'
-    case 'blue':
-      return 'bg-[#80C2F8]'
-    case 'purple':
-      return 'bg-[#C084FC]'
-    case 'orange':
-      return 'bg-[#FB923C]'
-    default:
-      return 'bg-[#80C2F8]'
-  }
-}
-
+// ---- Detail taps: the day view container owns the modal ----
 function onSelectCourse(event: DayEvent, rect: DOMRect) {
-  const startTime = event.start.split(' ')[1] ?? ''
-  const endTime = event.end.split(' ')[1] ?? ''
-  const timeWindow = formatTimeRange(startTime, endTime)
-
-  const payload: CourseBlockDetailState = {
-    courseId: event.courseId,
-    courseName: event.title,
-    colorDot: getThemeColorClass(event.colorTheme),
-    timeWindow,
-    tasksTarget: '/tasks',
-    notesTarget: '/notes',
-  }
-
-  modalState.value = {
-    isOpen: true,
-    originRect: {
-      top: rect.top,
-      left: rect.left,
-      width: rect.width,
-      height: rect.height,
-    },
-    kind: 'course',
-    animationPhase: 'expanding',
-    payload,
-  }
+  emit('selectCourse', event, rect)
 }
 
-// ---- Untimed items ----
 function onSelectUntimed(item: UntimedDayItem, rect?: DOMRect) {
-  console.log('[DayView] Untimed item tapped:', item.title)
-  emit('selectUntimed', item)
-
-  const payload: NonCourseBlockDetailState = {
-    id: item.id,
-    title: item.title,
-    itemType: item.category === 'event' ? 'academic-event' : 'task',
-    linkedNote: null,
-  }
-
-  modalState.value = {
-    isOpen: true,
-    originRect: rect
-      ? {
-          top: rect.top,
-          left: rect.left,
-          width: rect.width,
-          height: rect.height,
-        }
-      : null,
-    kind: 'other',
-    animationPhase: 'expanding',
-    payload,
-  }
-}
-
-function onCloseModal() {
-  modalState.value.isOpen = false
-}
-
-function onModalNavigate(routePath: string) {
-  modalState.value.isOpen = false
-  if (router) {
-    router.push(routePath)
-  }
+  emit('selectUntimed', item, rect ?? null)
 }
 
 // ---- Jump button ----
@@ -465,16 +385,6 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
         {{ nowDirection === 'up' ? '↑' : '↓' }} Now
       </button>
     </div>
-
-    <!-- Expanding Event Detail Modal Overlay -->
-    <EventDetailModal
-      :is-open="modalState.isOpen"
-      :origin-rect="modalState.originRect"
-      :kind="modalState.kind ?? 'course'"
-      :data="modalState.payload"
-      @close="onCloseModal"
-      @navigate="onModalNavigate"
-    />
   </div>
 </template>
 
