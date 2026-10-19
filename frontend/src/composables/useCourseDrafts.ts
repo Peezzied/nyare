@@ -42,6 +42,11 @@ export function useCourseDrafts() {
     })
   }
 
+  function unstageCourse(tempId: string) {
+    draftCourses.value = draftCourses.value.filter((c) => c.tempId !== tempId)
+    draftSchedules.value = draftSchedules.value.filter((s) => s.tempId !== tempId)
+  }
+
   function resetDrafts() {
     draftCourses.value = []
     draftSchedules.value = []
@@ -69,6 +74,7 @@ export function useCourseDrafts() {
     draftSchedules,
     stageCourse,
     stageSchedule,
+    unstageCourse,
     resetDrafts,
     flush,
   }

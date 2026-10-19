@@ -112,26 +112,27 @@ import { HOUR_HEIGHT } from '@/constants/calendar'
 import { WEEKDAYS } from '@/components/TimeBlockCard.vue'
 import type { DayOfWeek } from '@/types/api'
 import type { PreviewBlock, PendingSlot } from '@/utils/weekPreview'
-import { minutesToTime, timeToMinutes } from '@/utils/weekPreview'
-import { formatTime12h } from '@/utils/scheduleExpander'
+import {
+  minutesToTime,
+  timeToMinutes,
+  moveSlot2D,
+  resizeSlotHandle,
+} from '@/utils/weekPreview'
 
 ensureDetachedDomSupport()
 
 interface WeekPreviewProps {
   blocks?: PreviewBlock[]
-  pendingSlot?: PendingSlot | null
-  selectedColor?: string
 }
 
 const props = withDefaults(defineProps<WeekPreviewProps>(), {
   blocks: () => [],
-  pendingSlot: null,
-  selectedColor: undefined,
 })
 
 const emit = defineEmits<{
   selectSlot: [slot: PendingSlot]
   selectBlock: [blockId: string]
+  moveBlock: [blockId: string, fromDay: DayOfWeek, slot: PendingSlot]
 }>()
 
 const TZ = 'Asia/Manila'
@@ -166,7 +167,7 @@ interface RawPreviewEvent {
   endTime: string
   color: string
   blockId: string
-  isPending: boolean
+  dimmed?: boolean
 }
 
 function toZonedDateTime(dateStr: string, timeStr: string): Temporal.ZonedDateTime {
@@ -174,31 +175,7 @@ function toZonedDateTime(dateStr: string, timeStr: string): Temporal.ZonedDateTi
   return Temporal.ZonedDateTime.from(`${dateStr}T${safeTime}:00[${TZ}]`)
 }
 
-function formatTimeRange(start: string, end: string): string {
-  return `${formatTime12h(start)} – ${formatTime12h(end)}`
-}
-
-const allRawEvents = computed<RawPreviewEvent[]>(() => {
-  const list: RawPreviewEvent[] = props.blocks.map((b) => ({
-    ...b,
-    isPending: false,
-  }))
-
-  if (props.pendingSlot) {
-    list.push({
-      id: '__pending_slot__',
-      day: props.pendingSlot.day,
-      title: '',
-      startTime: props.pendingSlot.startTime,
-      endTime: props.pendingSlot.endTime,
-      color: props.selectedColor || '#007B99',
-      blockId: '',
-      isPending: true,
-    })
-  }
-
-  return list
-})
+const allRawEvents = computed<RawPreviewEvent[]>(() => props.blocks.map((b) => ({ ...b })))
 
 function toSxEvents(events: RawPreviewEvent[]) {
   return events.map((e) => {
@@ -351,8 +328,14 @@ function setupCalendarDom() {
 }
 
 watch(
-  [() => props.blocks, () => props.pendingSlot, () => props.selectedColor],
+  [() => props.blocks],
   () => {
+    // Rebuilding the calendar mid-drag would drop the pointer capture and the
+    // element being visually translated, so defer rebuilds until the drag ends.
+    if (blockDrag) {
+      rebuildAfterDrag = true
+      return
+    }
     const scroller = areaRef.value?.querySelector<HTMLElement>('.sx__view-container')
     if (scroller) {
       savedScrollTop = scroller.scrollTop
@@ -363,7 +346,121 @@ watch(
   { deep: true },
 )
 
+type BlockDragMode = 'moving' | 'resizing-top' | 'resizing-bottom'
+
+interface BlockDrag {
+  pointerId: number
+  mode: BlockDragMode
+  raw: RawPreviewEvent
+  startClientX: number
+  startClientY: number
+  clickOffsetMinutes: number
+  eventEl: HTMLElement | null
+  moved: boolean
+  slot: PendingSlot | null
+}
+
+let blockDrag: BlockDrag | null = null
+let rebuildAfterDrag = false
+let suppressNextBlockClick = false
+
+function dayGridRect(): DOMRect | null {
+  const first = areaRef.value?.querySelector<HTMLElement>('.sx__time-grid-day')
+  return first?.parentElement?.getBoundingClientRect() ?? null
+}
+
+function onBlockPointerDown(e: PointerEvent, raw: RawPreviewEvent, mode: BlockDragMode = 'moving') {
+  if (e.button !== 0) return
+  const rect = dayGridRect()
+  if (!rect) return
+
+  const clickMinutes = ((e.clientY - rect.top) / HOUR_HEIGHT) * 60
+  blockDrag = {
+    pointerId: e.pointerId,
+    mode,
+    raw,
+    startClientX: e.clientX,
+    startClientY: e.clientY,
+    clickOffsetMinutes: clickMinutes - timeToMinutes(raw.startTime),
+    eventEl: (e.currentTarget as HTMLElement).closest<HTMLElement>('.sx__time-grid-event'),
+    moved: false,
+    slot: null,
+  }
+
+  window.addEventListener('pointermove', onBlockPointerMove)
+  window.addEventListener('pointerup', onBlockPointerUp)
+  window.addEventListener('pointercancel', onBlockPointerUp)
+}
+
+function onBlockPointerMove(e: PointerEvent) {
+  const drag = blockDrag
+  if (!drag || drag.pointerId !== e.pointerId) return
+  const rect = dayGridRect()
+  if (!rect) return
+
+  if (!drag.moved) {
+    if (Math.abs(e.clientX - drag.startClientX) < 4 && Math.abs(e.clientY - drag.startClientY) < 4) {
+      return
+    }
+    drag.moved = true
+  }
+
+  const offsetX = Math.max(0, Math.min(rect.width - 1, e.clientX - rect.left))
+  const offsetY = Math.max(0, Math.min(GRID_HEIGHT, e.clientY - rect.top))
+  const base: PendingSlot = {
+    day: drag.raw.day,
+    startTime: drag.raw.startTime,
+    endTime: drag.raw.endTime,
+  }
+  const slot =
+    drag.mode === 'moving'
+      ? moveSlot2D(base, offsetX, offsetY, drag.clickOffsetMinutes, rect.width)
+      : resizeSlotHandle(base, drag.mode === 'resizing-top' ? 'top' : 'bottom', offsetY)
+  drag.slot = slot
+
+  // Live visual: reposition the event container directly; rebuild is deferred.
+  const el = drag.eventEl
+  if (!el) return
+  const pxPerMinute = HOUR_HEIGHT / 60
+  const colWidth = rect.width / 7
+  const rawDayIndex = WEEKDAYS.findIndex((w) => w.value === drag.raw.day)
+  const newDayIndex = WEEKDAYS.findIndex((w) => w.value === slot.day)
+  const deltaX = (newDayIndex - rawDayIndex) * colWidth
+  const startMin = timeToMinutes(slot.startTime)
+  const rawStartMin = timeToMinutes(drag.raw.startTime)
+  const deltaY = drag.mode === 'resizing-bottom' ? 0 : (startMin - rawStartMin) * pxPerMinute
+  el.style.transform = `translate(${deltaX}px, ${deltaY}px)`
+  el.style.zIndex = '30'
+  if (drag.mode !== 'moving') {
+    const newHeight = Math.max(20, (timeToMinutes(slot.endTime) - startMin) * pxPerMinute)
+    el.style.height = `${newHeight}px`
+  }
+}
+
+function onBlockPointerUp(e: PointerEvent) {
+  const drag = blockDrag
+  if (!drag || drag.pointerId !== e.pointerId) return
+  blockDrag = null
+  window.removeEventListener('pointermove', onBlockPointerMove)
+  window.removeEventListener('pointerup', onBlockPointerUp)
+  window.removeEventListener('pointercancel', onBlockPointerUp)
+
+  if (drag.moved && drag.slot) {
+    suppressNextBlockClick = true
+    emit('moveBlock', drag.raw.blockId, drag.raw.day, drag.slot)
+  }
+  if (rebuildAfterDrag) {
+    rebuildAfterDrag = false
+    calendarKey.value++
+    nextTick(setupCalendarDom)
+  }
+}
+
 function onBlockClick(blockId: string) {
+  if (suppressNextBlockClick) {
+    suppressNextBlockClick = false
+    return
+  }
   emit('selectBlock', blockId)
 }
 
@@ -414,41 +511,55 @@ onUnmounted(() => {
           <template #headerContent><span /></template>
           <template #timeGridEvent="{ calendarEvent }">
             <div
-              v-if="(calendarEvent as any)._raw?.isPending"
-              data-testid="pending-slot-block"
-              class="flex h-full w-full flex-col overflow-hidden rounded-xl border border-dashed border-black/30 p-1 text-white shadow-md"
-              :style="{ backgroundColor: (calendarEvent as any)._raw.color }"
+              class="group relative h-full w-full touch-none"
+              @pointerdown="onBlockPointerDown($event, (calendarEvent as any)._raw)"
             >
-              <p
-                class="truncate text-[10px] font-bold leading-3 select-none text-white drop-shadow-xs"
+              <button
+                type="button"
+                :aria-label="
+                  (calendarEvent as any)._raw.title
+                    ? `${(calendarEvent as any)._raw.title} ${(calendarEvent as any)._raw.startTime} to ${(calendarEvent as any)._raw.endTime}`
+                    : `${(calendarEvent as any)._raw.startTime} to ${(calendarEvent as any)._raw.endTime}`
+                "
+                class="h-full w-full min-h-[44px] cursor-move overflow-hidden rounded-md border-[1.5px] border-black/20 p-1 text-left text-white shadow-sm transition-all active:scale-95"
+                :style="{
+                  backgroundColor: (calendarEvent as any)._raw.color,
+                  opacity: (calendarEvent as any)._raw.dimmed ? 0.55 : 1,
+                }"
+                @click.stop="onBlockClick((calendarEvent as any)._raw.blockId)"
               >
-                {{
-                  formatTimeRange(
-                    (calendarEvent as any)._raw.startTime,
-                    (calendarEvent as any)._raw.endTime,
-                  )
-                }}
-              </p>
+                <p
+                  v-if="(calendarEvent as any)._raw.title"
+                  class="truncate text-[10px] font-bold leading-3"
+                >
+                  {{ (calendarEvent as any)._raw.title }}
+                </p>
+              </button>
+              <div
+                data-testid="top-handle"
+                aria-hidden="true"
+                class="absolute -top-2 left-1/2 z-10 flex h-5 w-10 -translate-x-1/2 cursor-ns-resize touch-none items-center justify-center"
+                @pointerdown.stop="
+                  onBlockPointerDown($event, (calendarEvent as any)._raw, 'resizing-top')
+                "
+              >
+                <span
+                  class="h-1 w-6 rounded-full border border-black/20 bg-white shadow-md transition-transform group-active:scale-110"
+                />
+              </div>
+              <div
+                data-testid="bottom-handle"
+                aria-hidden="true"
+                class="absolute -bottom-2 left-1/2 z-10 flex h-5 w-10 -translate-x-1/2 cursor-ns-resize touch-none items-center justify-center"
+                @pointerdown.stop="
+                  onBlockPointerDown($event, (calendarEvent as any)._raw, 'resizing-bottom')
+                "
+              >
+                <span
+                  class="h-1 w-6 rounded-full border border-black/20 bg-white shadow-md transition-transform group-active:scale-110"
+                />
+              </div>
             </div>
-            <button
-              v-else
-              type="button"
-              :aria-label="
-                (calendarEvent as any)._raw.title
-                  ? `${(calendarEvent as any)._raw.title} ${(calendarEvent as any)._raw.startTime} to ${(calendarEvent as any)._raw.endTime}`
-                  : `${(calendarEvent as any)._raw.startTime} to ${(calendarEvent as any)._raw.endTime}`
-              "
-              class="h-full w-full min-h-[44px] overflow-hidden rounded-md border-[1.5px] border-black/20 p-1 text-left text-white shadow-sm transition-transform active:scale-95"
-              :style="{ backgroundColor: (calendarEvent as any)._raw.color }"
-              @click.stop="onBlockClick((calendarEvent as any)._raw.blockId)"
-            >
-              <p
-                v-if="(calendarEvent as any)._raw.title"
-                class="truncate text-[10px] font-bold leading-3"
-              >
-                {{ (calendarEvent as any)._raw.title }}
-              </p>
-            </button>
           </template>
         </ScheduleXCalendar>
       </div>

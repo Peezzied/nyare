@@ -5,9 +5,17 @@ import duckotaFeedback from '@/assets/mascot/duckota_feedback.png'
 const props = withDefaults(
   defineProps<{
     open: boolean
+    title?: string
+    message?: string
+    confirmLabel?: string
+    cancelLabel?: string
   }>(),
   {
     open: false,
+    title: 'Discard changes?',
+    message: 'You have unsaved changes. Are you sure you want to discard your draft?',
+    confirmLabel: 'Discard',
+    cancelLabel: 'Keep editing',
   },
 )
 
@@ -64,7 +72,7 @@ function handleDiscard() {
   <Transition name="popup">
     <div
       v-if="open"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.4)] px-4"
+      class="fixed inset-0 z-[80] flex items-center justify-center bg-[rgba(0,0,0,0.4)] px-4"
       role="presentation"
       @click.self="handleKeepEditing"
     >
@@ -93,7 +101,7 @@ function handleDiscard() {
           class="pr-32 text-lg font-bold text-[#DC2626]"
           style="font-family: 'Quicksand', sans-serif; font-weight: 700"
         >
-          Discard changes?
+          {{ props.title }}
         </h2>
 
         <p
@@ -101,7 +109,7 @@ function handleDiscard() {
           class="mt-2 text-sm text-[#7B8B97]"
           style="font-family: 'Inter', sans-serif; font-weight: 400"
         >
-          You have unsaved changes. Are you sure you want to discard your draft?
+          {{ props.message }}
         </p>
 
         <div class="mt-6 flex items-center justify-end gap-3">
@@ -112,7 +120,7 @@ function handleDiscard() {
             style="font-family: 'Quicksand', sans-serif; font-weight: 600"
             @click="handleKeepEditing"
           >
-            Keep editing
+            {{ props.cancelLabel }}
           </button>
 
           <button
@@ -121,7 +129,7 @@ function handleDiscard() {
             style="font-family: 'Quicksand', sans-serif; font-weight: 700"
             @click="handleDiscard"
           >
-            Discard
+            {{ props.confirmLabel }}
           </button>
         </div>
       </section>

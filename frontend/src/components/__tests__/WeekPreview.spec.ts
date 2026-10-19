@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import WeekPreview from '@/components/WeekPreview.vue'
-import type { PreviewBlock, PendingSlot } from '@/utils/weekPreview'
+import type { PreviewBlock } from '@/utils/weekPreview'
 
 describe('WeekPreview.vue', () => {
   it('renders the seven weekday labels and no date numbers', () => {
@@ -70,26 +70,4 @@ describe('WeekPreview.vue', () => {
     expect(wrapper.emitted('selectBlock')![0]).toEqual(['block-1'])
   })
 
-  it('renders styled pendingSlot card with time badge and without resize handles', () => {
-    const pendingSlot: PendingSlot = {
-      day: 'TUESDAY',
-      startTime: '10:15',
-      endTime: '11:45',
-    }
-
-    const wrapper = mount(WeekPreview, {
-      props: {
-        blocks: [],
-        pendingSlot,
-        selectedColor: '#D50000',
-      },
-    })
-
-    const pendingBlock = wrapper.find('[data-testid="pending-slot-block"]')
-    expect(pendingBlock.exists()).toBe(true)
-    expect(pendingBlock.text()).toContain('10:15 AM – 11:45 AM')
-
-    expect(wrapper.find('[data-testid="top-handle"]').exists()).toBe(false)
-    expect(wrapper.find('[data-testid="bottom-handle"]').exists()).toBe(false)
-  })
 })

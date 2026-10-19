@@ -12,6 +12,7 @@ export interface PreviewBlock {
   endTime: string
   color: string
   blockId: string
+  dimmed?: boolean
 }
 
 export interface PendingSlot {
@@ -101,5 +102,54 @@ export function slotFromOffset(
     day,
     startTime: minutesToTime(startMinutes),
     endTime: minutesToTime(endMinutes),
+  }
+}
+
+/** New slot when a block is dragged: day from X, start snapped to 15 min. */
+export function moveSlot2D(
+  slot: PendingSlot,
+  currentOffsetX: number,
+  currentOffsetY: number,
+  initialClickOffsetMinutes: number,
+  gridWidth: number,
+): PendingSlot {
+  const day = dayFromOffsetX(currentOffsetX, gridWidth)
+  const duration = timeToMinutes(slot.endTime) - timeToMinutes(slot.startTime)
+
+  const rawMinutes = (currentOffsetY / HOUR_HEIGHT) * 60
+  let newStart = Math.floor((rawMinutes - initialClickOffsetMinutes) / 15) * 15
+  newStart = Math.max(0, Math.min(24 * 60 - duration, newStart))
+  const newEnd = newStart + duration
+
+  return {
+    day,
+    startTime: minutesToTime(newStart),
+    endTime: minutesToTime(newEnd),
+  }
+}
+
+/** New slot when a block's top or bottom handle is dragged. */
+export function resizeSlotHandle(
+  slot: PendingSlot,
+  handle: 'top' | 'bottom',
+  currentOffsetY: number,
+): PendingSlot {
+  const currentStart = timeToMinutes(slot.startTime)
+  const currentEnd = timeToMinutes(slot.endTime)
+  const rawMinutes = (currentOffsetY / HOUR_HEIGHT) * 60
+
+  if (handle === 'top') {
+    const snappedStart = Math.floor(rawMinutes / 15) * 15
+    const newStart = Math.max(0, Math.min(currentEnd - 15, snappedStart))
+    return {
+      ...slot,
+      startTime: minutesToTime(newStart),
+    }
+  }
+  const snappedEnd = Math.ceil(rawMinutes / 15) * 15
+  const newEnd = Math.min(24 * 60, Math.max(currentStart + 15, snappedEnd))
+  return {
+    ...slot,
+    endTime: minutesToTime(newEnd),
   }
 }

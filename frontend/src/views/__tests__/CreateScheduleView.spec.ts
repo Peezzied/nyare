@@ -5,6 +5,7 @@ import { createMemoryHistory, createRouter } from 'vue-router'
 import type { DayOfWeek } from '@/types/api'
 import CreateScheduleView from '../CreateScheduleView.vue'
 import { useCourseDrafts } from '@/composables/useCourseDrafts'
+import { createCourseEditor } from '@/composables/useCourseEditor'
 import { toast } from 'vue-sonner'
 
 vi.mock('vue-sonner', () => ({
@@ -14,7 +15,7 @@ vi.mock('vue-sonner', () => ({
   },
   toast: {
     success: vi.fn<(message: string) => void>(),
-    error: vi.fn<(message: string) => void>(),
+    error: vi.fn<(message: string, options?: unknown) => void>(),
   },
 }))
 
@@ -82,7 +83,7 @@ describe('CreateScheduleView', () => {
     const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
     await router.isReady()
     expect(wrapper.find('input[type="text"]').exists()).toBe(true)
-    expect(wrapper.find('[aria-label="Confirm"]').exists()).toBe(true)
+    expect(wrapper.find('[aria-label="Save all"]').exists()).toBe(true)
   })
 
   it('renders course name input above color with dot to the left', async () => {
@@ -156,7 +157,7 @@ describe('CreateScheduleView', () => {
     await wrapper.findAll('input[type="time"]')[0]!.setValue('09:00')
     await wrapper.findAll('input[type="time"]')[1]!.setValue('10:00')
 
-    await wrapper.find('[aria-label="Confirm"]').trigger('click')
+    await wrapper.find('[aria-label="Save all"]').trigger('click')
     await flushPromises()
 
     const { draftCourses, draftSchedules } = useCourseDrafts()
@@ -179,10 +180,13 @@ describe('CreateScheduleView', () => {
     await wrapper.findAll('input[type="time"]')[0]!.setValue('09:00')
     await wrapper.findAll('input[type="time"]')[1]!.setValue('10:00')
 
-    await wrapper.find('[aria-label="Confirm"]').trigger('click')
+    await wrapper.find('[aria-label="Save all"]').trigger('click')
     await flushPromises()
 
-    expect(toast.error).toHaveBeenCalledWith('A course named "cs 101" already exists.')
+    expect(toast.error).toHaveBeenCalledWith(
+      'A course named "cs 101" already exists.',
+      expect.objectContaining({ action: expect.objectContaining({ label: 'Open course' }) }),
+    )
     expect(wrapper.find('[role="alert"]').exists()).toBe(false)
     expect(useCourseDrafts().draftCourses.value).toHaveLength(0)
   })
@@ -196,28 +200,33 @@ describe('CreateScheduleView', () => {
     await wrapper.findAll('input[type="time"]')[0]!.setValue('09:00')
     await wrapper.findAll('input[type="time"]')[1]!.setValue('10:00')
 
-    await wrapper.find('[aria-label="Confirm"]').trigger('click')
+    await wrapper.find('[aria-label="Save all"]').trigger('click')
     await flushPromises()
 
     expect(useCourseDrafts().draftCourses.value).toHaveLength(1)
 
     // Re-saving the same form instance does not flag duplicate against itself
-    await wrapper.find('[aria-label="Confirm"]').trigger('click')
+    await wrapper.find('[aria-label="Save all"]').trigger('click')
     await flushPromises()
     expect(toast.success).toHaveBeenCalledTimes(2)
     expect(wrapper.find('[role="status"]').exists()).toBe(false)
 
-    // But a new attempt with the same name is blocked
+    // But a new attempt with the same name is blocked. Staged drafts hydrate
+    // as editors, so add a fresh course before typing the duplicate name.
     const wrapper2 = mount(CreateScheduleView, { global: { plugins: [router] } })
     await router.isReady()
+    await wrapper2.find('[data-testid="add-course"]').trigger('click')
     await wrapper2.find('input[type="text"]').setValue('physics 101')
     await wrapper2.find('[aria-label="TUESDAY"]').trigger('click')
     await wrapper2.findAll('input[type="time"]')[0]!.setValue('11:00')
     await wrapper2.findAll('input[type="time"]')[1]!.setValue('12:00')
 
-    await wrapper2.find('[aria-label="Confirm"]').trigger('click')
+    await wrapper2.find('[aria-label="Save all"]').trigger('click')
     await flushPromises()
-    expect(toast.error).toHaveBeenCalledWith('A course named "physics 101" already exists.')
+    expect(toast.error).toHaveBeenCalledWith(
+      'A course named "Physics 101" already exists.',
+      expect.objectContaining({ action: expect.objectContaining({ label: 'Open course' }) }),
+    )
     expect(wrapper2.find('[role="alert"]').exists()).toBe(false)
   })
 
@@ -233,7 +242,7 @@ describe('CreateScheduleView', () => {
     await wrapper.findAll('input[type="time"]')[0]!.setValue('09:00')
     await wrapper.findAll('input[type="time"]')[1]!.setValue('10:00')
 
-    await wrapper.find('[aria-label="Confirm"]').trigger('click')
+    await wrapper.find('[aria-label="Save all"]').trigger('click')
     await flushPromises()
 
     expect(useCourseDrafts().draftCourses.value).toHaveLength(1)
@@ -253,7 +262,7 @@ describe('CreateScheduleView', () => {
     await wrapper.findAll('input[type="time"]')[0]!.setValue('09:30')
     await wrapper.findAll('input[type="time"]')[1]!.setValue('10:30')
 
-    await wrapper.find('[aria-label="Confirm"]').trigger('click')
+    await wrapper.find('[aria-label="Save all"]').trigger('click')
     await flushPromises()
 
     expect(toast.error).toHaveBeenCalledWith('A class time clashes with CS 101 on MONDAY.')
@@ -278,7 +287,7 @@ describe('CreateScheduleView', () => {
     await cards[1]!.findAll('input[type="time"]')[0]!.setValue('10:00')
     await cards[1]!.findAll('input[type="time"]')[1]!.setValue('11:00')
 
-    await wrapper.find('[aria-label="Confirm"]').trigger('click')
+    await wrapper.find('[aria-label="Save all"]').trigger('click')
     await flushPromises()
 
     expect(toast.error).toHaveBeenCalledWith('Two time blocks for this course overlap on MONDAY.')
@@ -340,7 +349,7 @@ describe('CreateScheduleView', () => {
     await wrapper2.find('[aria-label="FRIDAY"]').trigger('click')
     await wrapper2.findAll('input[type="time"]')[0]!.setValue('09:00')
     await wrapper2.findAll('input[type="time"]')[1]!.setValue('10:00')
-    await wrapper2.find('[aria-label="Confirm"]').trigger('click')
+    await wrapper2.find('[aria-label="Save all"]').trigger('click')
     await flushPromises()
 
     // Now close - should not prompt
@@ -433,7 +442,7 @@ describe('CreateScheduleView', () => {
     expect(wrapper.find('[role="grid"]').text()).toContain('CS 101')
   })
 
-  it('handles empty-space tap in preview to prefill class time, set pendingSlot, and show drawer in full mode', async () => {
+  it('handles empty-space tap in preview to prefill class time and set pendingSlot', async () => {
     const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
     await router.isReady()
 
@@ -449,8 +458,8 @@ describe('CreateScheduleView', () => {
 
     const startInput = wrapper.find('input[type="time"]')
     expect((startInput.element as HTMLInputElement).value).toBe('10:00')
-    expect((wrapper.vm as any).stage).toBe('full')
-    expect(weekPreview.props('pendingSlot')).toEqual({
+    expect((wrapper.vm as any).stage).toBe('partial')
+    expect((wrapper.vm as any).pendingSlot).toEqual({
       day: 'MONDAY',
       startTime: '10:00',
       endTime: '11:00',
@@ -469,7 +478,7 @@ describe('CreateScheduleView', () => {
     })
     await flushPromises()
 
-    expect(weekPreview.props('pendingSlot')).not.toBeNull()
+    expect((wrapper.vm as any).pendingSlot).not.toBeNull()
     expect((wrapper.vm as any).hasUnsavedChanges).toBe(false)
 
     const back = wrapper.find('[aria-label="Go back"]')
@@ -479,7 +488,7 @@ describe('CreateScheduleView', () => {
     const dialog = wrapper.findComponent({ name: 'DiscardDraftConfirmDialog' })
     expect(dialog.props('open')).toBe(false)
     expect(wrapper.emitted('close')).toHaveLength(1)
-    expect(weekPreview.props('pendingSlot')).toBeNull()
+    expect((wrapper.vm as any).pendingSlot).toBeNull()
   })
 
   it('shows discard dialog when closing after user modified a prefilled slot', async () => {
@@ -508,6 +517,30 @@ describe('CreateScheduleView', () => {
     expect(dialog.props('open')).toBe(true)
   })
 
+  it('applies a block drag move to the owning editor', async () => {
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    await wrapper.find('input[type="text"]').setValue('Math')
+    await wrapper.find('[aria-label="MONDAY"]').trigger('click')
+    await wrapper.findAll('input[type="time"]')[0]!.setValue('09:00')
+    await wrapper.findAll('input[type="time"]')[1]!.setValue('10:00')
+
+    const vm = wrapper.vm as any
+    const blockId = `${vm.activeEditorId}/${vm.blocks[0].id}`
+    const weekPreview = wrapper.findComponent({ name: 'WeekPreview' })
+    await weekPreview.vm.$emit('moveBlock', blockId, 'MONDAY', {
+      day: 'TUESDAY',
+      startTime: '11:00',
+      endTime: '12:00',
+    })
+    await flushPromises()
+
+    expect(vm.blocks[0].selectedDays).toEqual(['TUESDAY'])
+    expect(vm.blocks[0].startTime).toBe('11:00')
+    expect(vm.blocks[0].endTime).toBe('12:00')
+  })
+
   it('opens sheet in partial mode on selectBlock without starting a new class time', async () => {
     const wrapper = mount(CreateScheduleView, {
       props: { initialStage: 'full' },
@@ -521,7 +554,7 @@ describe('CreateScheduleView', () => {
     await flushPromises()
 
     expect((wrapper.vm as any).stage).toBe('partial')
-    expect(weekPreview.props('pendingSlot')).toBeNull()
+    expect((wrapper.vm as any).pendingSlot).toBeNull()
   })
 
   it('renders as a bottom sheet drawer with drawer content and no title', async () => {
@@ -547,7 +580,7 @@ describe('CreateScheduleView', () => {
     const input = wrapper.find('input[type="text"]')
     expect(input.attributes('readonly')).toBeDefined()
     expect(wrapper.find('[aria-labelledby="time-blocks-heading"]').exists()).toBe(true)
-    expect(wrapper.find('[aria-label="Confirm"]').attributes('style')).toContain('display: none')
+    expect(wrapper.find('[aria-label="Save all"]').exists()).toBe(true)
 
     const content = wrapper.find('[data-slot="drawer-content"]')
     expect(content.classes().some((cls) => cls.includes('rounded-none'))).toBe(false)
@@ -567,9 +600,6 @@ describe('CreateScheduleView', () => {
     const input = wrapper.find('input[type="text"]')
     expect(input.attributes('readonly')).toBeUndefined()
     expect(wrapper.find('[aria-labelledby="time-blocks-heading"]').exists()).toBe(true)
-    expect(wrapper.find('[aria-label="Confirm"]').attributes('style') ?? '').not.toContain(
-      'display: none',
-    )
 
     const content = wrapper.find('[data-slot="drawer-content"]')
     expect(content.classes().some((cls) => cls.includes('rounded-none'))).toBe(true)
@@ -579,7 +609,6 @@ describe('CreateScheduleView', () => {
     await flushPromises()
 
     expect(wrapper.find('input[type="text"]').attributes('readonly')).toBeDefined()
-    expect(wrapper.find('[aria-label="Confirm"]').attributes('style')).toContain('display: none')
     expect(content.classes().some((cls) => cls.includes('rounded-none'))).toBe(false)
   })
 
@@ -594,9 +623,6 @@ describe('CreateScheduleView', () => {
     await flushPromises()
 
     expect(wrapper.find('input[type="text"]').attributes('readonly')).toBeUndefined()
-    expect(wrapper.find('[aria-label="Confirm"]').attributes('style') ?? '').not.toContain(
-      'display: none',
-    )
   })
 
   it('switches between stages on vertical swipe gestures', async () => {
@@ -615,9 +641,6 @@ describe('CreateScheduleView', () => {
     await flushPromises()
 
     expect(wrapper.find('input[type="text"]').attributes('readonly')).toBeUndefined()
-    expect(wrapper.find('[aria-label="Confirm"]').attributes('style') ?? '').not.toContain(
-      'display: none',
-    )
 
     // Swipe down (deltaY positive)
     await content.trigger('touchstart', {
@@ -629,7 +652,6 @@ describe('CreateScheduleView', () => {
     await flushPromises()
 
     expect(wrapper.find('input[type="text"]').attributes('readonly')).toBeDefined()
-    expect(wrapper.find('[aria-label="Confirm"]').attributes('style')).toContain('display: none')
   })
 
   it('reverts to saved snapshot on discard without clearing course from week view', async () => {
@@ -641,7 +663,7 @@ describe('CreateScheduleView', () => {
     await wrapper.find('[aria-label="MONDAY"]').trigger('click')
     await wrapper.findAll('input[type="time"]')[0]!.setValue('09:00')
     await wrapper.findAll('input[type="time"]')[1]!.setValue('10:00')
-    await wrapper.find('[aria-label="Confirm"]').trigger('click')
+    await wrapper.find('[aria-label="Save all"]').trigger('click')
     await flushPromises()
 
     const weekPreview = wrapper.findComponent({ name: 'WeekPreview' })
@@ -696,7 +718,7 @@ describe('CreateScheduleView', () => {
     await wrapper.find('[aria-label="TUESDAY"]').trigger('click')
     await wrapper.findAll('input[type="time"]')[0]!.setValue('11:00')
     await wrapper.findAll('input[type="time"]')[1]!.setValue('12:00')
-    await wrapper.find('[aria-label="Confirm"]').trigger('click')
+    await wrapper.find('[aria-label="Save all"]').trigger('click')
     await flushPromises()
 
     expect((wrapper.vm as any).hasUnsavedChanges).toBe(false)
@@ -738,5 +760,313 @@ describe('CreateScheduleView', () => {
         }),
       ]),
     )
+  })
+
+  it('saves multiple courses at once through the course dock', async () => {
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    await wrapper.find('input[type="text"]').setValue('Math')
+    await wrapper.find('[aria-label="MONDAY"]').trigger('click')
+    await wrapper.findAll('input[type="time"]')[0]!.setValue('09:00')
+    await wrapper.findAll('input[type="time"]')[1]!.setValue('10:00')
+
+    // Save Math first so adding a course is not blocked by the dirty guard
+    await wrapper.find('[data-testid="save-course"]').trigger('click')
+    await flushPromises()
+
+    await wrapper.find('[data-testid="add-course"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.findAll('[data-testid="course-chip"]')).toHaveLength(2)
+
+    await wrapper.find('input[type="text"]').setValue('History')
+    await wrapper.find('[aria-label="TUESDAY"]').trigger('click')
+    await wrapper.findAll('input[type="time"]')[0]!.setValue('11:00')
+    await wrapper.findAll('input[type="time"]')[1]!.setValue('12:00')
+
+    await wrapper.find('[aria-label="Save all"]').trigger('click')
+    await flushPromises()
+
+    const { draftCourses, draftSchedules } = useCourseDrafts()
+    expect(draftCourses.value).toHaveLength(2)
+    expect(draftCourses.value.map((c) => c.name)).toEqual(['Math', 'History'])
+    expect(draftSchedules.value.map((s) => s.day)).toEqual(['MONDAY', 'TUESDAY'])
+    expect(toast.success).toHaveBeenCalledWith('All courses and schedules saved successfully.')
+  })
+
+  it('swaps the drawer form when a different course chip is tapped', async () => {
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    await wrapper.find('input[type="text"]').setValue('Math')
+    await wrapper.find('[aria-label="MONDAY"]').trigger('click')
+    await wrapper.findAll('input[type="time"]')[0]!.setValue('09:00')
+    await wrapper.findAll('input[type="time"]')[1]!.setValue('10:00')
+    await wrapper.find('[data-testid="save-course"]').trigger('click')
+    await flushPromises()
+
+    await wrapper.find('[data-testid="add-course"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('input[type="text"]').setValue('History')
+
+    // History is dirty: the switch is blocked by the guard dialog
+    const chips = wrapper.findAll('[data-testid="course-chip"]')
+    await chips[0]!.find('button').trigger('click')
+    await flushPromises()
+
+    const guardDialog = wrapper
+      .findAllComponents({ name: 'DiscardDraftConfirmDialog' })
+      .find((d) => d.props('open'))
+    expect(guardDialog?.props('message')).toBe('You have unsaved changes to History.')
+
+    // Discard reverts History and completes the pending switch to Math
+    await guardDialog!.vm.$emit('discard')
+    await flushPromises()
+    expect((wrapper.find('input[type="text"]').element as HTMLInputElement).value).toBe('Math')
+
+    // Math is saved and clean, so switching back runs without a prompt
+    await chips[1]!.find('button').trigger('click')
+    await flushPromises()
+    expect((wrapper.find('input[type="text"]').element as HTMLInputElement).value).toBe('')
+    expect(
+      wrapper.findAllComponents({ name: 'DiscardDraftConfirmDialog' }).some((d) => d.props('open')),
+    ).toBe(false)
+  })
+
+  it('removes a saved course via the active chip remove action and unstages it', async () => {
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    await wrapper.find('input[type="text"]').setValue('Math')
+    await wrapper.find('[aria-label="MONDAY"]').trigger('click')
+    await wrapper.findAll('input[type="time"]')[0]!.setValue('09:00')
+    await wrapper.findAll('input[type="time"]')[1]!.setValue('10:00')
+
+    await wrapper.find('[data-testid="save-course"]').trigger('click')
+    await flushPromises()
+
+    await wrapper.find('[data-testid="add-course"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('input[type="text"]').setValue('History')
+    await wrapper.find('[aria-label="TUESDAY"]').trigger('click')
+    await wrapper.findAll('input[type="time"]')[0]!.setValue('11:00')
+    await wrapper.findAll('input[type="time"]')[1]!.setValue('12:00')
+
+    await wrapper.find('[aria-label="Save all"]').trigger('click')
+    await flushPromises()
+    expect(useCourseDrafts().draftCourses.value).toHaveLength(2)
+
+    // The active chip is History; remove it and confirm
+    await wrapper.find('[data-testid="remove-course"]').trigger('click')
+    await flushPromises()
+
+    const removeDialog = wrapper
+      .findAllComponents({ name: 'DiscardDraftConfirmDialog' })
+      .find((d) => d.props('title') === 'Remove course?')
+    expect(removeDialog?.props('open')).toBe(true)
+
+    await removeDialog!.vm.$emit('discard')
+    await flushPromises()
+
+    expect(wrapper.findAll('[data-testid="course-chip"]')).toHaveLength(1)
+    expect((wrapper.find('input[type="text"]').element as HTMLInputElement).value).toBe('Math')
+    expect(useCourseDrafts().draftCourses.value).toHaveLength(1)
+    expect(useCourseDrafts().draftCourses.value[0]?.name).toBe('Math')
+  })
+
+  it('saves only the active course via the drawer save button', async () => {
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    await wrapper.find('input[type="text"]').setValue('Math')
+    await wrapper.find('[aria-label="MONDAY"]').trigger('click')
+    await wrapper.findAll('input[type="time"]')[0]!.setValue('09:00')
+    await wrapper.findAll('input[type="time"]')[1]!.setValue('10:00')
+
+    // Math is dirty: adding a course prompts; discarding reverts it
+    await wrapper.find('[data-testid="add-course"]').trigger('click')
+    await flushPromises()
+    const guardDialog = wrapper
+      .findAllComponents({ name: 'DiscardDraftConfirmDialog' })
+      .find((d) => d.props('open'))
+    await guardDialog!.vm.$emit('discard')
+    await flushPromises()
+
+    await wrapper.find('input[type="text"]').setValue('History')
+    await wrapper.find('[aria-label="TUESDAY"]').trigger('click')
+    await wrapper.findAll('input[type="time"]')[0]!.setValue('11:00')
+    await wrapper.findAll('input[type="time"]')[1]!.setValue('12:00')
+
+    // Active editor is History; the drawer save button stages only it
+    await wrapper.find('[data-testid="save-course"]').trigger('click')
+    await flushPromises()
+
+    const { draftCourses } = useCourseDrafts()
+    expect(draftCourses.value).toHaveLength(1)
+    expect(draftCourses.value[0]?.name).toBe('History')
+    expect(toast.success).toHaveBeenCalledWith('Course and schedule saved successfully.')
+
+    // Math was reverted to an untouched editor; Save all restages only History
+    await wrapper.find('[aria-label="Save all"]').trigger('click')
+    await flushPromises()
+    expect(draftCourses.value).toHaveLength(1)
+  })
+
+  it('blocks adding a course while the active course has unsaved changes', async () => {
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    await wrapper.find('input[type="text"]').setValue('Math')
+    await wrapper.find('[data-testid="add-course"]').trigger('click')
+    await flushPromises()
+
+    const dialog = wrapper
+      .findAllComponents({ name: 'DiscardDraftConfirmDialog' })
+      .find((d) => d.props('open'))
+    expect(dialog?.props('message')).toBe('You have unsaved changes to Math.')
+    expect(wrapper.findAll('[data-testid="course-chip"]')).toHaveLength(1)
+
+    // Keep editing stays on the dirty course drawer
+    await dialog!.vm.$emit('keepEditing')
+    await flushPromises()
+    expect(wrapper.findAll('[data-testid="course-chip"]')).toHaveLength(1)
+    expect((wrapper.find('input[type="text"]').element as HTMLInputElement).value).toBe('Math')
+    expect((wrapper.vm as any).stage).toBe('full')
+  })
+
+  it('discards active course edits and runs the deferred add after confirm', async () => {
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    await wrapper.find('input[type="text"]').setValue('Math')
+    await wrapper.find('[data-testid="add-course"]').trigger('click')
+    await flushPromises()
+
+    const dialog = wrapper
+      .findAllComponents({ name: 'DiscardDraftConfirmDialog' })
+      .find((d) => d.props('open'))
+    await dialog!.vm.$emit('discard')
+    await flushPromises()
+
+    // The reverted first editor stays blank; a fresh editor becomes active
+    expect(wrapper.findAll('[data-testid="course-chip"]')).toHaveLength(2)
+    expect((wrapper.find('input[type="text"]').element as HTMLInputElement).value).toBe('')
+    expect(wrapper.findAll('[data-testid="course-chip"]')[0]!.text()).toContain('New course')
+  })
+
+  it('keep editing on global discard activates the dirty course drawer', async () => {
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    // A non-active dirty editor can only exist through injected state; the
+    // dialog must navigate to its drawer rather than leave it hidden
+    const stray = createCourseEditor()
+    stray.name = 'Stray course'
+    ;(wrapper.vm as any).editors.push(stray)
+    await flushPromises()
+
+    await wrapper.find('[aria-label="Go back"]').trigger('click')
+    await flushPromises()
+
+    const dialog = wrapper
+      .findAllComponents({ name: 'DiscardDraftConfirmDialog' })
+      .find((d) => d.props('open'))
+    await dialog!.vm.$emit('keepEditing')
+    await flushPromises()
+
+    expect((wrapper.vm as any).activeEditorId).toBe(stray.id)
+    expect((wrapper.vm as any).stage).toBe('full')
+  })
+
+  it('toast action button opens the conflicting course drawer', async () => {
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    const firstEditorId = (wrapper.vm as any).activeEditorId
+    await wrapper.find('input[type="text"]').setValue('Math')
+    await wrapper.find('[aria-label="MONDAY"]').trigger('click')
+    await wrapper.findAll('input[type="time"]')[0]!.setValue('09:00')
+    await wrapper.findAll('input[type="time"]')[1]!.setValue('10:00')
+    await wrapper.find('[data-testid="save-course"]').trigger('click')
+    await flushPromises()
+
+    await wrapper.find('[data-testid="add-course"]').trigger('click')
+    await flushPromises()
+
+    await wrapper.find('input[type="text"]').setValue('math')
+    await wrapper.find('[aria-label="TUESDAY"]').trigger('click')
+    await wrapper.findAll('input[type="time"]')[0]!.setValue('11:00')
+    await wrapper.findAll('input[type="time"]')[1]!.setValue('12:00')
+
+    ;(wrapper.vm as any).stage = 'partial'
+    await flushPromises()
+
+    await wrapper.find('[aria-label="Save all"]').trigger('click')
+    await flushPromises()
+
+    // The conflict check reports the first clashing editor (Math)
+    const call = vi.mocked(toast.error).mock.calls[0]!
+    const action = (call[1] as { action: { onClick: () => void } }).action
+    action.onClick()
+    await flushPromises()
+
+    expect((wrapper.vm as any).activeEditorId).toBe(firstEditorId)
+    expect((wrapper.vm as any).stage).toBe('full')
+    expect((wrapper.find('input[type="text"]').element as HTMLInputElement).value).toBe('Math')
+  })
+
+  it('opens the drawer on chip switch and ignores taps on the active chip', async () => {
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    await wrapper.find('input[type="text"]').setValue('Math')
+    await wrapper.find('[aria-label="MONDAY"]').trigger('click')
+    await wrapper.findAll('input[type="time"]')[0]!.setValue('09:00')
+    await wrapper.findAll('input[type="time"]')[1]!.setValue('10:00')
+    await wrapper.find('[data-testid="save-course"]').trigger('click')
+    await flushPromises()
+
+    await wrapper.find('[data-testid="add-course"]').trigger('click')
+    await flushPromises()
+    ;(wrapper.vm as any).stage = 'partial'
+    await flushPromises()
+
+    // Switching to Math via its chip opens the drawer full
+    const chips = wrapper.findAll('[data-testid="course-chip"]')
+    await chips[0]!.find('button').trigger('click')
+    await flushPromises()
+    expect((wrapper.find('input[type="text"]').element as HTMLInputElement).value).toBe('Math')
+    expect((wrapper.vm as any).stage).toBe('full')
+
+    // Tapping the already-active chip is a no-op
+    ;(wrapper.vm as any).stage = 'partial'
+    await flushPromises()
+    await chips[0]!.find('button').trigger('click')
+    await flushPromises()
+    expect((wrapper.vm as any).stage).toBe('partial')
+    expect(
+      wrapper.findAllComponents({ name: 'DiscardDraftConfirmDialog' }).some((d) => d.props('open')),
+    ).toBe(false)
+  })
+
+  it('shows plural discard message when multiple courses have unsaved changes', async () => {
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    await wrapper.find('input[type="text"]').setValue('Math')
+
+    const stray = createCourseEditor()
+    stray.name = 'History'
+    ;(wrapper.vm as any).editors.push(stray)
+    await flushPromises()
+
+    await wrapper.find('[aria-label="Go back"]').trigger('click')
+    await flushPromises()
+
+    const dialog = wrapper
+      .findAllComponents({ name: 'DiscardDraftConfirmDialog' })
+      .find((d) => d.props('open'))
+    expect(dialog?.props('message')).toBe('This discards unsaved changes across 2 courses.')
   })
 })

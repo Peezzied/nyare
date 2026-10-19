@@ -1,8 +1,21 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCatalog } from '@/composables/useCatalog'
-import { useCourseDrafts, type DraftCourse, type DraftSchedule } from '@/composables/useCourseDrafts'
+import { useCourseDrafts, type DraftSchedule } from '@/composables/useCourseDrafts'
+import {
+  createCourseEditor,
+  isEditorDirty,
+  isEditorTouched,
+  allBlocksValid,
+  isEditorValid,
+  restoreEditorSnapshot,
+  resetEditor,
+  discardEditorPendingSlot,
+  validSchedulesOf,
+  editorSnapshot,
+  type CourseEditor,
+} from '@/composables/useCourseEditor'
 import {
   buildKnownSet,
   findDuplicateName,
@@ -16,9 +29,9 @@ import type { DayOfWeek } from '@/types/api'
 import { COURSE_PALETTE_24 } from '@/constants/palette'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
-import { Drawer, DrawerClose, DrawerContent, DrawerHeader } from '@/components/ui/drawer'
+import { Drawer, DrawerContent, DrawerHeader } from '@/components/ui/drawer'
 import DiscardDraftConfirmDialog from '@/components/DiscardDraftConfirmDialog.vue'
-import { Check, Plus, X } from 'lucide-vue-next'
+import { Plus, Save, SaveAll, X } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import { Toaster } from '@/components/ui/sonner'
 import type { DrawerOpenChangeDetails } from 'reka-ui'
@@ -53,12 +66,80 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const { courses: catalogCourses, schedules: catalogSchedules, loadCatalog } = useCatalog()
-const { draftCourses, draftSchedules, stageCourse } = useCourseDrafts()
+const { draftCourses, stageCourse, unstageCourse } = useCourseDrafts()
 
 const catalogAvailable = ref(true)
-const currentDraftTempId = ref<string | null>(null)
-const isSaved = ref(false)
 const showDiscardDialog = ref(false)
+const showRemoveDialog = ref(false)
+const pendingRemoveId = ref<string | null>(null)
+const showSwitchDialog = ref(false)
+let pendingSwitchAction: (() => void) | null = null
+
+// One editor per course being drafted. Previously staged drafts hydrate into
+// editors so every staged course is reachable from the course dock.
+const editors = ref<CourseEditor[]>(
+  draftCourses.value.length > 0
+    ? draftCourses.value.map((draft) => createCourseEditor(draft))
+    : [createCourseEditor()],
+)
+const activeEditorId = ref(editors.value[0]!.id)
+
+const activeEditor = computed(
+  () =>
+    editors.value.find((e) => e.id === activeEditorId.value) ?? editors.value[0]!,
+)
+
+const courseName = computed({
+  get: () => activeEditor.value.name,
+  set: (v: string) => {
+    activeEditor.value.name = v
+  },
+})
+const selectedColorId = computed({
+  get: () => activeEditor.value.colorId,
+  set: (v: string) => {
+    activeEditor.value.colorId = v
+  },
+})
+const colorOpen = computed({
+  get: () => activeEditor.value.colorOpen,
+  set: (v: boolean) => {
+    activeEditor.value.colorOpen = v
+  },
+})
+const blocks = computed({
+  get: () => activeEditor.value.blocks,
+  set: (v: TimeBlockDraft[]) => {
+    activeEditor.value.blocks = v
+  },
+})
+const pendingSlot = computed({
+  get: () => activeEditor.value.pendingSlot,
+  set: (v: PendingSlot | null) => {
+    activeEditor.value.pendingSlot = v
+  },
+})
+const pendingBlockId = computed({
+  get: () => activeEditor.value.pendingBlockId,
+  set: (v: string | null) => {
+    activeEditor.value.pendingBlockId = v
+  },
+})
+
+const hasUnsavedChanges = computed(() => editors.value.some((e) => isEditorDirty(e)))
+
+const dirtyEditors = computed(() => editors.value.filter((e) => isEditorDirty(e)))
+const discardMessage = computed(() =>
+  dirtyEditors.value.length > 1
+    ? `This discards unsaved changes across ${dirtyEditors.value.length} courses.`
+    : undefined,
+)
+
+const touchedEditors = computed(() => editors.value.filter((e) => isEditorTouched(e)))
+const canSaveAll = computed(() => !saving.value && touchedEditors.value.length > 0)
+const saveAllLabel = computed(() =>
+  touchedEditors.value.length > 1 ? `Save all (${touchedEditors.value.length})` : 'Save all',
+)
 
 onMounted(async () => {
   try {
@@ -74,7 +155,13 @@ onUnmounted(() => {
 })
 
 function handleWindowKeydown(event: KeyboardEvent) {
-  if (event.key === 'Escape' && isOpen.value && !showDiscardDialog.value) {
+  if (
+    event.key === 'Escape' &&
+    isOpen.value &&
+    !showDiscardDialog.value &&
+    !showRemoveDialog.value &&
+    !showSwitchDialog.value
+  ) {
     if (hasUnsavedChanges.value) {
       event.preventDefault()
       event.stopPropagation()
@@ -87,9 +174,18 @@ const knownSet = computed(() => {
   if (!catalogAvailable.value) {
     return { courses: [], schedules: [] }
   }
+  const editorIds = new Set(editors.value.map((e) => e.id))
+  const stagedNotInEditors = draftCourses.value.filter((d) => !editorIds.has(d.tempId))
   return buildKnownSet(catalogCourses.value, catalogSchedules.value, {
-    courses: draftCourses.value,
-    schedules: draftSchedules.value,
+    courses: [
+      ...stagedNotInEditors,
+      ...editors.value.map((e) => ({
+        tempId: e.id,
+        name: e.name,
+        colorId: e.colorId,
+        schedules: validSchedulesOf(e),
+      })),
+    ],
   })
 })
 
@@ -222,92 +318,157 @@ function onOpenChange(val: boolean, details?: DrawerOpenChangeDetails) {
 }
 
 const colorOptions = COURSE_PALETTE_24
-
-const courseName = ref('')
-const selectedColorId = ref(COURSE_PALETTE_24[0]!.id)
-const colorOpen = ref(false)
-const blocks = ref<TimeBlockDraft[]>([createBlock()])
 const saving = ref(false)
 
-const pendingSlot = ref<PendingSlot | null>(null)
-const pendingBlockId = ref<string | null>(null)
+function paletteFor(colorId: string) {
+  return COURSE_PALETTE_24.find((color) => color.id === colorId) ?? COURSE_PALETTE_24[0]!
+}
 
-const selectedColor = computed(
-  () =>
-    COURSE_PALETTE_24.find((color) => color.id === selectedColorId.value) ?? COURSE_PALETTE_24[0]!,
+const selectedColor = computed(() => paletteFor(selectedColorId.value))
+
+function activateEditor(id: string) {
+  if (!editors.value.some((e) => e.id === id)) return
+  activeEditorId.value = id
+  isOpen.value = true
+  emit('update:open', true)
+  nextTick(() => {
+    document
+      .getElementById(`course-chip-${id}`)
+      ?.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' })
+  })
+}
+
+function addCourseEditor() {
+  const editor = createCourseEditor()
+  editors.value.push(editor)
+  activateEditor(editor.id)
+  setStage('full')
+}
+
+const switchGuardMessage = computed(
+  () => `You have unsaved changes to ${activeEditor.value.name.trim() || 'New course'}.`,
 )
 
-const previewBlocks = computed(() => {
-  const activeList = derivePreviewBlocks(blocks.value, courseName.value, selectedColor.value)
+/**
+ * Blocks a dock/navigation action while the active editor is dirty. The
+ * confirm dialog either keeps the user on the dirty course or reverts it
+ * and runs the deferred action.
+ */
+function guardCourseNavigation(action: () => void) {
+  if (isEditorDirty(activeEditor.value)) {
+    pendingSwitchAction = action
+    showSwitchDialog.value = true
+    return
+  }
+  action()
+}
 
-  const otherDraftBlocks: PreviewBlock[] = []
-  for (const course of draftCourses.value) {
-    if (currentDraftTempId.value && course.tempId === currentDraftTempId.value) {
-      continue
-    }
-    const color =
-      COURSE_PALETTE_24.find((c) => c.id === course.colorId) ?? COURSE_PALETTE_24[0]!
-    for (const schedule of course.schedules) {
-      const safeTime = schedule.startTime.replace(/[^a-zA-Z0-9_-]/g, '')
-      otherDraftBlocks.push({
-        id: `${course.tempId}-${schedule.day}-${safeTime}`,
-        day: schedule.day,
-        title: course.name,
-        startTime: schedule.startTime,
-        endTime: schedule.endTime,
-        color: color.solid,
-        blockId: course.tempId,
+function selectCourseChip(id: string) {
+  if (id === activeEditorId.value) {
+    return
+  }
+  guardCourseNavigation(() => {
+    activateEditor(id)
+    setStage('full')
+  })
+}
+
+function requestEditorSwitch(id: string, after?: () => void) {
+  if (id === activeEditorId.value) {
+    after?.()
+    return
+  }
+  const run = () => {
+    activateEditor(id)
+    after?.()
+  }
+  if (!isEditorDirty(activeEditor.value)) {
+    run()
+    return
+  }
+  pendingSwitchAction = run
+  showSwitchDialog.value = true
+}
+
+function confirmSwitchDiscard() {
+  const action = pendingSwitchAction
+  pendingSwitchAction = null
+  showSwitchDialog.value = false
+  revertEditor(activeEditor.value)
+  action?.()
+}
+
+function cancelSwitchGuard() {
+  pendingSwitchAction = null
+  showSwitchDialog.value = false
+  activateEditor(activeEditorId.value)
+  setStage('full')
+}
+
+const pendingRemoveName = computed(() => {
+  const editor = editors.value.find((e) => e.id === pendingRemoveId.value)
+  return editor?.name.trim() || 'New course'
+})
+
+function requestRemoveEditor(id: string) {
+  const editor = editors.value.find((e) => e.id === id)
+  if (!editor) return
+  if (editor.isSaved || isEditorDirty(editor)) {
+    pendingRemoveId.value = id
+    showRemoveDialog.value = true
+    return
+  }
+  removeEditor(id)
+}
+
+function removeEditor(id: string) {
+  const index = editors.value.findIndex((e) => e.id === id)
+  if (index < 0) return
+
+  const editor = editors.value[index]!
+  editors.value.splice(index, 1)
+  if (editor.isSaved) {
+    unstageCourse(editor.id)
+  }
+
+  if (editors.value.length === 0) {
+    editors.value.push(createCourseEditor())
+  }
+
+  if (activeEditorId.value === id) {
+    const next = editors.value[Math.min(index, editors.value.length - 1)]!
+    activateEditor(next.id)
+  }
+}
+
+function confirmRemoveEditor() {
+  if (pendingRemoveId.value) {
+    removeEditor(pendingRemoveId.value)
+  }
+  pendingRemoveId.value = null
+  showRemoveDialog.value = false
+}
+
+function cancelRemoveEditor() {
+  pendingRemoveId.value = null
+  showRemoveDialog.value = false
+}
+
+const previewBlocks = computed(() => {
+  const list: PreviewBlock[] = []
+  for (const editor of editors.value) {
+    const color = paletteFor(editor.colorId)
+    const dimmed = editor.id !== activeEditorId.value
+    for (const block of derivePreviewBlocks(editor.blocks, editor.name, color)) {
+      list.push({
+        ...block,
+        blockId: `${editor.id}/${block.blockId}`,
+        dimmed,
       })
     }
   }
-
-  return [...otherDraftBlocks, ...activeList]
+  return list
 })
-
-function loadCourseDraft(course: DraftCourse) {
-  courseName.value = course.name
-  selectedColorId.value = course.colorId
-  currentDraftTempId.value = course.tempId
-  isSaved.value = true
-
-  const grouped = new Map<string, DayOfWeek[]>()
-  for (const s of course.schedules) {
-    const key = `${s.startTime}|${s.endTime}`
-    const days = grouped.get(key) ?? []
-    days.push(s.day)
-    grouped.set(key, days)
-  }
-
-  if (grouped.size > 0) {
-    const newBlocks: TimeBlockDraft[] = []
-    for (const [key, days] of grouped.entries()) {
-      const [start = '', end = ''] = key.split('|')
-      const block = createBlock()
-      block.selectedDays = days
-      block.startTime = start
-      block.endTime = end
-      block.state = 'saved'
-      syncScheduleDrafts(block)
-      for (const s of block.schedules) {
-        s.state = 'saved'
-      }
-      newBlocks.push(block)
-    }
-    blocks.value = newBlocks
-  } else {
-    blocks.value = [createBlock()]
-  }
-
-  lastSavedSnapshot.value = JSON.stringify({
-    name: courseName.value.trim(),
-    color: selectedColorId.value,
-    blocks: blocks.value.map((b) => ({
-      days: b.selectedDays,
-      start: b.startTime,
-      end: b.endTime,
-    })),
-  })
-}
 
 function handleSelectSlot(slot: PendingSlot) {
   pendingSlot.value = slot
@@ -322,7 +483,6 @@ function handleSelectSlot(slot: PendingSlot) {
     existingBlock.startTime = slot.startTime
     existingBlock.endTime = slot.endTime
     syncScheduleDrafts(existingBlock)
-    setStage('full')
     return
   }
 
@@ -349,20 +509,43 @@ function handleSelectSlot(slot: PendingSlot) {
   }
 
   pendingBlockId.value = targetBlock.id
-  setStage('full')
+}
+
+function handleMoveBlock(blockId: string, fromDay: DayOfWeek, slot: PendingSlot) {
+  const [editorId, innerBlockId] = blockId.split('/')
+  const editor = editors.value.find((e) => e.id === editorId)
+  const block = editor?.blocks.find((b) => b.id === innerBlockId)
+  if (!editor || !block) return
+
+  block.startTime = slot.startTime
+  block.endTime = slot.endTime
+  block.selectedDays = [
+    ...block.selectedDays.filter((d) => d !== fromDay && d !== slot.day),
+    slot.day,
+  ]
+  syncScheduleDrafts(block)
+  requestEditorSwitch(editor.id)
 }
 
 function handleSelectBlock(blockId: string) {
   isOpen.value = true
   setStage('partial')
 
-  const matchedCourse = draftCourses.value.find((c) => c.tempId === blockId)
-  if (matchedCourse && matchedCourse.tempId !== currentDraftTempId.value) {
-    if (hasUnsavedChanges.value) {
-      showDiscardDialog.value = true
-      return
-    }
-    loadCourseDraft(matchedCourse)
+  const [editorId, innerBlockId] = blockId.split('/')
+  if (editorId && innerBlockId) {
+    requestEditorSwitch(editorId, () => {
+      nextTick(() => {
+        document
+          .getElementById(`block-card-${innerBlockId}`)
+          ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      })
+    })
+    return
+  }
+
+  const byId = editors.value.find((e) => e.id === blockId)
+  if (byId) {
+    requestEditorSwitch(byId.id)
     return
   }
 
@@ -370,114 +553,29 @@ function handleSelectBlock(blockId: string) {
   el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
 }
 
-function discardPendingSlot() {
-  if (pendingSlot.value) {
-    pendingSlot.value = null
-    if (pendingBlockId.value) {
-      blocks.value = blocks.value.filter((b) => b.id !== pendingBlockId.value)
-      if (blocks.value.length === 0) {
-        blocks.value = [createBlock()]
-      }
-      pendingBlockId.value = null
-    }
+const isAddAnotherTimeDisabled = computed(() => {
+  if (blocks.value.length === 0) {
+    return false
   }
-}
-
-const allBlocksValid = computed(
-  () =>
-    blocks.value.length > 0 &&
-    blocks.value.every((block) => {
-      const selected = block.selectedDays.length > 0
-      const validTimes =
-        block.startTime !== '' && block.endTime !== '' && block.startTime < block.endTime
-      return selected && validTimes
-    }),
-)
-
-const canSubmit = computed(
-  () => courseName.value.trim().length > 0 && allBlocksValid.value && !saving.value,
-)
-
-const pendingScheduleCount = computed(
-  () =>
-    blocks.value
-      .flatMap((block) => block.schedules)
-      .filter((schedule) => schedule.state !== 'saved').length,
-)
-
-interface SavedSnapshot {
-  name: string
-  color: string
-  blocks: { days: DayOfWeek[]; start: string; end: string }[]
-}
-
-const lastSavedSnapshot = ref<string>('')
-
-const hasUnsavedChanges = computed(() => {
-  if (isSaved.value) {
-    const effectiveBlocks =
-      pendingSlot.value && pendingBlockId.value
-        ? blocks.value.filter((b) => {
-            if (b.id !== pendingBlockId.value) return true
-            const matchesDays =
-              b.selectedDays.length === 1 && b.selectedDays[0] === pendingSlot.value!.day
-            const matchesTimes =
-              b.startTime === pendingSlot.value!.startTime &&
-              b.endTime === pendingSlot.value!.endTime
-            return !(matchesDays && matchesTimes)
-          })
-        : blocks.value
-
-    const current = JSON.stringify({
-      name: courseName.value.trim(),
-      color: selectedColorId.value,
-      blocks: effectiveBlocks.map((b) => ({
-        days: b.selectedDays,
-        start: b.startTime,
-        end: b.endTime,
-      })),
-    })
-    if (current === lastSavedSnapshot.value) {
-      return false
-    }
-    return true
-  }
-  if (courseName.value.trim().length > 0) {
-    return true
-  }
-  const hasFailedOrPending = blocks.value.some((b) =>
-    b.schedules.some((s) => s.state === 'failed' || (s.submitted && s.state !== 'saved')),
-  )
-  if (hasFailedOrPending) {
-    return true
-  }
+  const currentBlock = blocks.value[blocks.value.length - 1]!
   if (
-    pendingSlot.value &&
-    pendingBlockId.value &&
-    blocks.value.length === 1 &&
-    blocks.value[0]?.id === pendingBlockId.value
+    !currentBlock.startTime ||
+    !currentBlock.endTime ||
+    currentBlock.startTime >= currentBlock.endTime
   ) {
-    const block = blocks.value[0]
-    const matchesPendingDays =
-      block.selectedDays.length === 1 && block.selectedDays[0] === pendingSlot.value.day
-    const matchesPendingTimes =
-      block.startTime === pendingSlot.value.startTime && block.endTime === pendingSlot.value.endTime
-    if (matchesPendingDays && matchesPendingTimes) {
-      return false
-    }
+    return false
   }
-  const hasSelectedDays = blocks.value.some((b) => b.selectedDays.length > 0)
-  const hasTimes = blocks.value.some((b) => b.startTime !== '' || b.endTime !== '')
-  return hasSelectedDays || hasTimes
+  const unavail = unavailableDaysForBlock(currentBlock)
+  return unavail.length === 7
 })
 
 function unavailableDaysForBlock(block: TimeBlockDraft): DayOfWeek[] {
   if (!catalogAvailable.value) {
     return []
   }
-  const knownSchedules = currentDraftTempId.value
-    ? knownSet.value.schedules.filter((s) => s.courseId !== currentDraftTempId.value)
-    : knownSet.value.schedules
+  const knownSchedules = knownSet.value.schedules.filter(
+    (s) => s.courseId !== activeEditor.value.id,
+  )
 
   const siblings = blocks.value.filter((b) => b.id !== block.id)
   return unavailableDaysFor(block, knownSchedules, siblings)
@@ -507,7 +605,10 @@ function syncUnavailableDays(block: TimeBlockDraft) {
         startTime: block.startTime,
         endTime: block.endTime,
       }
-      const clash = findClash(candidate, knownSet.value.schedules)
+      const clash = findClash(
+        candidate,
+        knownSet.value.schedules.filter((s) => s.courseId !== activeEditor.value.id),
+      )
       if (clash) {
         toast.error(`A class time clashes with ${clash.courseName || 'another class'} on ${day}.`)
         break
@@ -526,22 +627,6 @@ function syncUnavailableDays(block: TimeBlockDraft) {
   }
 }
 
-const isAddAnotherTimeDisabled = computed(() => {
-  if (blocks.value.length === 0) {
-    return false
-  }
-  const currentBlock = blocks.value[blocks.value.length - 1]!
-  if (
-    !currentBlock.startTime ||
-    !currentBlock.endTime ||
-    currentBlock.startTime >= currentBlock.endTime
-  ) {
-    return false
-  }
-  const unavail = unavailableDaysForBlock(currentBlock)
-  return unavail.length === 7
-})
-
 function goBack() {
   if (hasUnsavedChanges.value) {
     showDiscardDialog.value = true
@@ -554,7 +639,9 @@ function closeImmediately() {
   if (!isOpen.value) {
     return
   }
-  discardPendingSlot()
+  for (const editor of editors.value) {
+    discardEditorPendingSlot(editor)
+  }
   isOpen.value = false
   emit('update:open', false)
   emit('close')
@@ -563,56 +650,21 @@ function closeImmediately() {
   }
 }
 
-function resetFormState() {
-  courseName.value = ''
-  selectedColorId.value = COURSE_PALETTE_24[0]!.id
-  blocks.value = [createBlock()]
-  currentDraftTempId.value = null
-  isSaved.value = false
-  lastSavedSnapshot.value = ''
+function revertEditor(editor: CourseEditor) {
+  if (editor.isSaved && editor.lastSavedSnapshot) {
+    try {
+      restoreEditorSnapshot(editor)
+    } catch {
+      resetEditor(editor)
+    }
+    return
+  }
+  resetEditor(editor)
 }
 
 function handleDiscard() {
-  discardPendingSlot()
-
-  const staged = currentDraftTempId.value
-    ? draftCourses.value.find((c) => c.tempId === currentDraftTempId.value)
-    : undefined
-
-  if (isSaved.value && lastSavedSnapshot.value) {
-    try {
-      const saved = JSON.parse(lastSavedSnapshot.value) as SavedSnapshot
-      courseName.value = saved.name || ''
-      selectedColorId.value = saved.color || COURSE_PALETTE_24[0]!.id
-      if (Array.isArray(saved.blocks) && saved.blocks.length > 0) {
-        blocks.value = saved.blocks.map((b) => {
-          const newBlock = createBlock()
-          newBlock.selectedDays = b.days || []
-          newBlock.startTime = b.start || ''
-          newBlock.endTime = b.end || ''
-          newBlock.state = 'saved'
-          syncScheduleDrafts(newBlock)
-          for (const s of newBlock.schedules) {
-            s.state = 'saved'
-          }
-          return newBlock
-        })
-      } else if (staged) {
-        loadCourseDraft(staged)
-      } else {
-        blocks.value = [createBlock()]
-      }
-    } catch {
-      if (staged) {
-        loadCourseDraft(staged)
-      } else {
-        resetFormState()
-      }
-    }
-  } else if (staged) {
-    loadCourseDraft(staged)
-  } else {
-    resetFormState()
+  for (const editor of editors.value) {
+    revertEditor(editor)
   }
 
   showDiscardDialog.value = false
@@ -621,6 +673,12 @@ function handleDiscard() {
 
 function handleKeepEditing() {
   showDiscardDialog.value = false
+  const dirty = dirtyEditors.value[0]
+  if (dirty) {
+    activateEditor(dirty.id)
+    setStage('full')
+    return
+  }
   isOpen.value = true
   emit('update:open', true)
 }
@@ -654,18 +712,112 @@ function errorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message
   }
-  return 'Something went wrong while saving the course.'
+  return 'Something went wrong while saving the courses.'
 }
 
-async function submit() {
-  if (courseName.value.trim().length === 0) {
-    toast.error('Enter a course name before saving.')
+function editorBasicsError(editor: CourseEditor): string | null {
+  if (editor.name.trim().length === 0) {
+    return 'Enter a course name before saving.'
+  }
+  if (!allBlocksValid(editor)) {
+    return `"${editor.name.trim()}" needs at least one weekday, and every time must have an end time after its start time.`
+  }
+  return null
+}
+
+function editorConflictError(editor: CourseEditor): string | null {
+  const coursesToCheck = knownSet.value.courses.filter((c) => c.id !== editor.id)
+  const duplicate = findDuplicateName(editor.name, coursesToCheck)
+  if (duplicate) {
+    return `A course named "${editor.name.trim()}" already exists.`
+  }
+
+  const schedulesToCheck = knownSet.value.schedules.filter((s) => s.courseId !== editor.id)
+  const editorBlocks = editor.blocks
+
+  for (let i = 0; i < editorBlocks.length; i++) {
+    const b1 = editorBlocks[i]!
+    for (const day of b1.selectedDays) {
+      const candidate: ScheduleCandidate = {
+        day,
+        startTime: b1.startTime,
+        endTime: b1.endTime,
+      }
+      const clash = findClash(candidate, schedulesToCheck)
+      if (clash) {
+        return `A class time clashes with ${clash.courseName || 'another class'} on ${day}.`
+      }
+
+      for (let j = i + 1; j < editorBlocks.length; j++) {
+        const b2 = editorBlocks[j]!
+        if (
+          b2.selectedDays.includes(day) &&
+          rangesOverlap(b1.startTime, b1.endTime, b2.startTime, b2.endTime)
+        ) {
+          return `Two time blocks for this course overlap on ${day}.`
+        }
+      }
+    }
+  }
+
+  return null
+}
+
+/** Error toast with an action button that jumps to the offending course drawer. */
+function toastCourseError(message: string, editor: CourseEditor) {
+  toast.error(message, {
+    action: {
+      label: 'Open course',
+      onClick: () => {
+        activateEditor(editor.id)
+        setStage('full')
+      },
+    },
+  })
+}
+
+function stageEditor(editor: CourseEditor): void {
+  const stagedSchedules: DraftSchedule[] = []
+  for (const block of editor.blocks) {
+    syncScheduleDrafts(block)
+    for (const schedule of block.schedules) {
+      if (block.selectedDays.includes(schedule.day)) {
+        schedule.state = 'saved'
+        stagedSchedules.push({
+          day: schedule.day,
+          startTime: block.startTime,
+          endTime: block.endTime,
+        })
+      }
+    }
+    block.state = 'saved'
+  }
+
+  stageCourse({
+    tempId: editor.id,
+    name: editor.name.trim(),
+    colorId: editor.colorId,
+    schedules: stagedSchedules,
+  })
+
+  editor.isSaved = true
+  editor.lastSavedSnapshot = editorSnapshot(editor)
+  editor.pendingSlot = null
+  editor.pendingBlockId = null
+  emit('created', editor.id as unknown as number)
+}
+
+async function saveCourse() {
+  const editor = activeEditor.value
+  if (!isEditorTouched(editor)) {
+    toast.error('Add a course name and class time before saving.')
     return
   }
-  if (!allBlocksValid.value) {
-    toast.error(
-      'Each time block needs at least one weekday, and every time must have an end time after its start time.',
-    )
+
+  const basicsError = editorBasicsError(editor)
+  if (basicsError) {
+    setStage('full')
+    toast.error(basicsError)
     return
   }
 
@@ -676,45 +828,52 @@ async function submit() {
   }
 
   if (catalogAvailable.value) {
-    const currentTempId = currentDraftTempId.value
-    const coursesToCheck = currentTempId
-      ? knownSet.value.courses.filter((c) => c.id !== currentTempId)
-      : knownSet.value.courses
-
-    const duplicate = findDuplicateName(courseName.value, coursesToCheck)
-    if (duplicate) {
-      toast.error(`A course named "${courseName.value.trim()}" already exists.`)
+    const conflictError = editorConflictError(editor)
+    if (conflictError) {
+      toastCourseError(conflictError, editor)
       return
     }
+  }
 
-    const schedulesToCheck = currentTempId
-      ? knownSet.value.schedules.filter((s) => s.courseId !== currentTempId)
-      : knownSet.value.schedules
+  saving.value = true
 
-    for (let i = 0; i < blocks.value.length; i++) {
-      const b1 = blocks.value[i]!
-      for (const day of b1.selectedDays) {
-        const candidate: ScheduleCandidate = {
-          day,
-          startTime: b1.startTime,
-          endTime: b1.endTime,
-        }
-        const clash = findClash(candidate, schedulesToCheck)
-        if (clash) {
-          toast.error(`A class time clashes with ${clash.courseName || 'another class'} on ${day}.`)
-          return
-        }
+  try {
+    stageEditor(editor)
+    toast.success('Course and schedule saved successfully.')
+  } catch (error) {
+    toast.error(errorMessage(error))
+  } finally {
+    saving.value = false
+  }
+}
 
-        for (let j = i + 1; j < blocks.value.length; j++) {
-          const b2 = blocks.value[j]!
-          if (
-            b2.selectedDays.includes(day) &&
-            rangesOverlap(b1.startTime, b1.endTime, b2.startTime, b2.endTime)
-          ) {
-            toast.error(`Two time blocks for this course overlap on ${day}.`)
-            return
-          }
-        }
+async function saveAll() {
+  const touched = touchedEditors.value
+  if (touched.length === 0) {
+    toast.error('Add a course before saving.')
+    return
+  }
+
+  for (const editor of touched) {
+    const basicsError = editorBasicsError(editor)
+    if (basicsError) {
+      toastCourseError(basicsError, editor)
+      return
+    }
+  }
+
+  try {
+    await loadCatalog()
+  } catch {
+    catalogAvailable.value = false
+  }
+
+  if (catalogAvailable.value) {
+    for (const editor of touched) {
+      const conflictError = editorConflictError(editor)
+      if (conflictError) {
+        toastCourseError(conflictError, editor)
+        return
       }
     }
   }
@@ -722,46 +881,15 @@ async function submit() {
   saving.value = true
 
   try {
-    const tempId = currentDraftTempId.value ?? `draft-${Date.now()}`
-    currentDraftTempId.value = tempId
-
-    const stagedSchedules: DraftSchedule[] = []
-    for (const block of blocks.value) {
-      syncScheduleDrafts(block)
-      for (const schedule of block.schedules) {
-        if (block.selectedDays.includes(schedule.day)) {
-          schedule.state = 'saved'
-          stagedSchedules.push({
-            day: schedule.day,
-            startTime: block.startTime,
-            endTime: block.endTime,
-          })
-        }
-      }
-      block.state = 'saved'
+    for (const editor of touched) {
+      stageEditor(editor)
     }
 
-    stageCourse({
-      tempId,
-      name: courseName.value.trim(),
-      colorId: selectedColorId.value,
-      schedules: stagedSchedules,
-    })
-
-    isSaved.value = true
-    lastSavedSnapshot.value = JSON.stringify({
-      name: courseName.value.trim(),
-      color: selectedColorId.value,
-      blocks: blocks.value.map((b) => ({
-        days: b.selectedDays,
-        start: b.startTime,
-        end: b.endTime,
-      })),
-    })
-    toast.success('Course and schedule saved successfully.')
-    pendingSlot.value = null
-    pendingBlockId.value = null
-    emit('created', tempId as unknown as number)
+    toast.success(
+      touched.length > 1
+        ? 'All courses and schedules saved successfully.'
+        : 'Course and schedule saved successfully.',
+    )
   } catch (error) {
     toast.error(errorMessage(error))
   } finally {
@@ -780,7 +908,7 @@ function retryFailed() {
     block.state = blockStatus(block)
   }
 
-  void submit()
+  void saveAll()
 }
 
 function selectColor(colorId: string) {
@@ -796,21 +924,76 @@ defineExpose({
   hasUnsavedChanges,
   isOpen,
   stage,
+  editors,
+  activeEditorId,
 })
 </script>
 
 <template>
   <div class="relative h-[100svh] w-full overflow-hidden bg-[#F6F7EE]">
     <!-- Background Week Calendar Preview -->
-    <div class="absolute inset-0 z-0">
+    <div
+      class="absolute inset-x-0 top-14 z-0 bottom-[calc(4rem+env(safe-area-inset-bottom))]"
+    >
       <WeekPreview
         :blocks="previewBlocks"
-        :pending-slot="pendingSlot"
-        :selected-color="selectedColor.solid"
         @select-slot="handleSelectSlot"
         @select-block="handleSelectBlock"
+        @move-block="handleMoveBlock"
       />
     </div>
+
+    <!-- Top navigation: back on the left, global Save all on the right -->
+    <header
+      class="absolute inset-x-0 top-0 z-40 flex h-14 items-center justify-between px-3"
+    >
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        aria-label="Go back"
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#334155] transition-colors hover:bg-[#C2E8F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8]"
+        @click="goBack"
+      >
+        <X class="h-5 w-5" aria-hidden="true" />
+      </Button>
+
+      <Button
+        type="button"
+        data-testid="save-all"
+        aria-label="Save all"
+        :aria-busy="saving"
+        :disabled="!canSaveAll"
+        class="flex h-10 shrink-0 items-center gap-1.5 rounded-xl bg-[#007B99] px-4 font-sans text-sm font-bold text-white shadow-[0_3px_0_#00556B] transition-all hover:bg-[#006B85] active:translate-y-0.5 active:shadow-[0_1px_0_#00556B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007B99] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:active:translate-y-0"
+        style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+        @click="saveAll"
+      >
+        <svg
+          v-if="saving"
+          class="h-4 w-4 animate-spin text-white"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+        <SaveAll v-else class="h-4 w-4 stroke-[2.5]" aria-hidden="true" />
+        <span>{{ saving ? 'Saving...' : saveAllLabel }}</span>
+      </Button>
+    </header>
 
     <Drawer
       :open="isOpen"
@@ -823,37 +1006,34 @@ defineExpose({
       <DrawerContent
         :portal="props.portal"
         :full-view="stage === 'full'"
-        class="border-t border-[#C2E8F1] bg-[#FDFEF7] outline-none shadow-2xl"
+        class="border-t border-[#C2E8F1] bg-[#FDFEF7] outline-none shadow-2xl data-[swipe-direction=down]:bottom-[calc(4rem+env(safe-area-inset-bottom))] data-[swipe-direction=down]:h-[calc(100svh-4rem-env(safe-area-inset-bottom))]"
         @click:handle="toggleStage"
         @touchstart="handleTouchStart"
         @touchend="handleTouchEnd"
+        @interact-outside.prevent
       >
-        <!-- Header -->
-        <DrawerHeader
-          class="relative z-10 flex flex-row w-full items-center justify-between px-5 py-0"
-        >
-          <DrawerClose as-child>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label="Go back"
-              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#334155] transition-colors hover:bg-[#C2E8F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8]"
-              @click="goBack"
-            >
-              <X class="h-5 w-5" aria-hidden="true" />
-            </Button>
-          </DrawerClose>
+        <DrawerHeader class="relative z-10 flex w-full flex-row items-center justify-between px-5 !py-0">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label="Close drawer"
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#334155] transition-colors hover:bg-[#C2E8F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8]"
+            @click="goBack"
+          >
+            <X class="size-5" aria-hidden="true" />
+          </Button>
 
           <Button
             v-show="stage === 'full'"
             type="button"
-            aria-label="Confirm"
+            data-testid="save-course"
+            aria-label="Save course"
             :aria-busy="saving"
-            :disabled="!canSubmit"
+            :disabled="saving || !isEditorValid(activeEditor)"
             class="flex h-10 shrink-0 items-center gap-1.5 rounded-xl bg-[#007B99] px-4 font-sans text-sm font-bold text-white shadow-[0_3px_0_#00556B] transition-all hover:bg-[#006B85] active:translate-y-0.5 active:shadow-[0_1px_0_#00556B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007B99] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:active:translate-y-0"
             style="font-family: 'Quicksand', sans-serif; font-weight: 700"
-            @click="submit"
+            @click="saveCourse"
           >
             <svg
               v-if="saving"
@@ -877,7 +1057,7 @@ defineExpose({
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               ></path>
             </svg>
-            <Check v-else class="h-4 w-4 stroke-[2.5]" aria-hidden="true" />
+            <Save v-else class="h-4 w-4 stroke-[2.5]" aria-hidden="true" />
             <span>{{ saving ? 'Saving...' : 'Save' }}</span>
           </Button>
         </DrawerHeader>
@@ -891,7 +1071,7 @@ defineExpose({
               : 'overflow-y-hidden pt-2 pb-6'
           "
         >
-          <form class="min-w-0 space-y-6" @submit.prevent="submit">
+          <form class="min-w-0 space-y-6" @submit.prevent="saveAll">
             <!-- Course details -->
             <section
               data-testid="course-details-section"
@@ -910,7 +1090,7 @@ defineExpose({
                 :tabindex="stage === 'partial' ? -1 : 0"
                 :disabled="saving"
                 aria-label="Course name"
-                class="w-full bg-transparent px-0 py-1 font-sans text-lg font-bold text-[#1E293B] placeholder:font-semibold placeholder:text-slate-400 outline-none disabled:cursor-not-allowed disabled:text-slate-400 sm:text-2xl"
+                class="w-full bg-transparent px-0 py-1 font-sans text-2xl font-bold text-[#1E293B] placeholder:font-semibold placeholder:text-slate-400 outline-none disabled:cursor-not-allowed disabled:text-slate-400"
                 :class="{ 'cursor-pointer': stage === 'partial' }"
                 @focus="handleInputFocus"
                 @input="handleInput"
@@ -1037,14 +1217,6 @@ defineExpose({
               </TransitionGroup>
             </section>
 
-            <p
-              v-if="pendingScheduleCount > 0 && currentDraftTempId !== null && stage === 'full'"
-              class="text-xs font-medium text-[#7B8B97]"
-            >
-              {{ pendingScheduleCount }} schedule record{{ pendingScheduleCount === 1 ? '' : 's' }}
-              still pending.
-            </p>
-
             <div v-show="stage === 'full'" class="flex gap-2">
               <Button
                 v-if="blocks.some((block) => blockStatus(block) === 'failed')"
@@ -1062,11 +1234,107 @@ defineExpose({
       </DrawerContent>
     </Drawer>
 
+    <!-- Course dock: one chip per course editor, pinned + at the right -->
+    <footer
+      class="absolute inset-x-0 bottom-0 z-[60] flex min-h-16 items-center gap-2 border-t border-[#CBD5E1] bg-[#FDFEF7] px-3 pb-[env(safe-area-inset-bottom)]"
+    >
+      <div
+        class="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto py-2.5"
+        style="scrollbar-width: none"
+      >
+        <div
+          v-for="editor in editors"
+          :id="`course-chip-${editor.id}`"
+          :key="editor.id"
+          data-testid="course-chip"
+          role="group"
+          class="flex h-11 max-w-44 shrink-0 items-stretch overflow-hidden rounded-xl border font-sans text-sm font-bold transition-all"
+          :class="
+            editor.id === activeEditorId
+              ? 'border-transparent'
+              : 'border-[#D5EBF1] bg-[#FDFEF7] text-[#1E293B] shadow-[0_2px_0_#E2E8F0] hover:border-[#00A4C8] hover:bg-[#F0F8FA]'
+          "
+          :style="
+            editor.id === activeEditorId
+              ? {
+                  backgroundColor: paletteFor(editor.colorId).bg,
+                  borderColor: paletteFor(editor.colorId).border,
+                  color: paletteFor(editor.colorId).text,
+                  boxShadow: `0 3px 0 ${paletteFor(editor.colorId).border}`,
+                }
+              : {}
+          "
+        >
+          <button
+            type="button"
+            :aria-pressed="editor.id === activeEditorId"
+            :aria-label="`Switch to ${editor.name.trim() || 'New course'}`"
+            class="flex min-w-0 flex-1 items-center gap-2 px-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#00A4C8] active:scale-[0.97]"
+            @click="selectCourseChip(editor.id)"
+          >
+            <span
+              class="h-3 w-3 shrink-0 rounded-full"
+              :style="{ backgroundColor: paletteFor(editor.colorId).solid }"
+              aria-hidden="true"
+            ></span>
+            <span class="min-w-0 truncate">{{ editor.name.trim() || 'New course' }}</span>
+            <span
+              v-if="isEditorDirty(editor)"
+              class="ml-0.5 h-1.5 w-1.5 shrink-0 rounded-full"
+              :style="{ backgroundColor: paletteFor(editor.colorId).solid }"
+              aria-label="Unsaved changes"
+            ></span>
+          </button>
+          <button
+            v-if="editor.id === activeEditorId"
+            type="button"
+            data-testid="remove-course"
+            :aria-label="`Remove ${editor.name.trim() || 'New course'}`"
+            class="flex w-11 shrink-0 items-center justify-center border-l transition-colors hover:bg-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#00A4C8]"
+            :style="{ borderColor: paletteFor(editor.colorId).border }"
+            @click.stop="requestRemoveEditor(editor.id)"
+          >
+            <X class="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        data-testid="add-course"
+        aria-label="Add another course"
+        :disabled="saving"
+        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#BCE3ED] bg-[#E8F6FA] text-[#007B99] shadow-[0_3px_0_#B0DBE5] transition-all hover:bg-[#DCF1F7] hover:text-[#006880] active:translate-y-0.5 active:shadow-[0_1px_0_#B0DBE5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none disabled:active:translate-y-0"
+        @click="guardCourseNavigation(addCourseEditor)"
+      >
+        <Plus class="h-5 w-5 stroke-[2.5]" aria-hidden="true" />
+      </button>
+    </footer>
+
     <DiscardDraftConfirmDialog
       :open="showDiscardDialog"
+      :message="discardMessage"
       @update:open="showDiscardDialog = $event"
       @keep-editing="handleKeepEditing"
       @discard="handleDiscard"
+    />
+    <DiscardDraftConfirmDialog
+      :open="showSwitchDialog"
+      title="Discard changes?"
+      :message="switchGuardMessage"
+      @update:open="showSwitchDialog = $event"
+      @keep-editing="cancelSwitchGuard"
+      @discard="confirmSwitchDiscard"
+    />
+    <DiscardDraftConfirmDialog
+      :open="showRemoveDialog"
+      title="Remove course?"
+      :message="`This removes ${pendingRemoveName} and its class times from your draft.`"
+      confirm-label="Remove"
+      cancel-label="Keep course"
+      @update:open="showRemoveDialog = $event"
+      @keep-editing="cancelRemoveEditor"
+      @discard="confirmRemoveEditor"
     />
     <Toaster />
   </div>
