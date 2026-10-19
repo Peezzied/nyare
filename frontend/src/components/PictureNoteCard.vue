@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { getCourseColor, type CoursePaletteColor } from '@/constants/palette'
 import { formatEntryDateLong } from '@/utils/noteDate'
 
-// ponytail: prototype picture card is visual-only and has no click action.
+const emit = defineEmits<{ open: [event: Event] }>()
 const props = defineProps<{
   photoUrl: string
   courseId: number
@@ -20,8 +20,13 @@ const entryLabel = computed(() => formatEntryDateLong(props.entryDate))
 
 <template>
   <article
-    class="cursor-default break-inside-avoid overflow-hidden rounded-2xl border border-app-border bg-card"
+    class="cursor-pointer break-inside-avoid overflow-hidden rounded-2xl border border-app-border bg-card transition-transform active:scale-[0.98]"
+    role="button"
+    tabindex="0"
     data-testid="picture-note-card"
+    @click="emit('open', $event)"
+    @keydown.enter="emit('open', $event)"
+    @keydown.space.prevent="emit('open', $event)"
   >
     <img
       :src="photoUrl"

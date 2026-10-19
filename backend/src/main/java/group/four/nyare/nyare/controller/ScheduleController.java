@@ -29,18 +29,18 @@ public class ScheduleController {
     public ResponseEntity<List<ScheduleResponse>> listSchedules(
             @RequestParam(required = false) Long courseId,
             @RequestParam(required = false) DayOfWeek day) {
-        Long userId = sessionContext.getUserId().orElse(null);
+        Long userId = sessionContext.requireUserId();
         return ResponseEntity.ok(scheduleService.listSchedules(userId, courseId, day));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ScheduleResponse> getSchedule(@PathVariable Long id) {
-        return ResponseEntity.ok(scheduleService.getSchedule(id));
+        return ResponseEntity.ok(scheduleService.getSchedule(id, sessionContext.requireUserId()));
     }
 
     @PostMapping
     public ResponseEntity<ScheduleResponse> createSchedule(@Valid @RequestBody ScheduleRequest request) {
-        ScheduleResponse response = scheduleService.createSchedule(request);
+        ScheduleResponse response = scheduleService.createSchedule(request, sessionContext.requireUserId());
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(response.getId())
@@ -52,12 +52,12 @@ public class ScheduleController {
     public ResponseEntity<ScheduleResponse> updateSchedule(
             @PathVariable Long id,
             @Valid @RequestBody ScheduleRequest request) {
-        return ResponseEntity.ok(scheduleService.updateSchedule(id, request));
+        return ResponseEntity.ok(scheduleService.updateSchedule(id, request, sessionContext.requireUserId()));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSchedule(@PathVariable Long id) {
-        scheduleService.deleteSchedule(id);
+        scheduleService.deleteSchedule(id, sessionContext.requireUserId());
         return ResponseEntity.noContent().build();
     }
 }

@@ -1,28 +1,91 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { ChevronDown, ChevronRight } from 'lucide-vue-next'
-import { tasksApi } from '@/api/tasks'
-import { useCatalog } from '@/composables/useCatalog'
+import { ref, computed, h, onMounted } from 'vue'
+import { Plus } from '@lucide/vue'
+import HamburgerMenu from '@/components/HamburgerMenu.vue'
+import { Button } from '@/components/ui/button'
 import {
-  TASK_DISPLAY_TIMES,
-  TASK_DUE_DATES,
-  TODO_FIXTURE_TASKS_V2,
-  TODO_FIXTURE_COURSES,
-} from '@/api/mocks/fixtures'
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '@/components/ui/accordion'
+import { useCatalog } from '@/composables/useCatalog'
+import { useTasks } from '@/composables/useTasks'
 import { getPlanCategory } from '@/utils/planCategory'
-import TodoHeader from '@/components/TodoHeader.vue'
+import { useShellHeader } from '@/composables/useShellHeader'
+import { toTapOriginRect } from '@/composables/useNoteTransition'
 import TaskRow from '@/components/TaskRow.vue'
+import TaskContainerModal from '@/components/tasks/TaskContainerModal.vue'
+import type { TapOriginRect } from '@/types/notesTransition'
 import type { TaskResponse, PlanCategory } from '@/types/api'
 
 type ActiveFilter = 'ALL' | PlanCategory
 
-const router = useRouter()
-const catalog = useCatalog()
+useShellHeader({ title: 'To-do', left: () => h(HamburgerMenu) })
 
-const tasks = ref<TaskResponse[]>([])
+const catalog = useCatalog()
+const { tasks, loadTasks, updateTaskStatus } = useTasks()
 const loading = ref(true)
 const activeFilter = ref<ActiveFilter>('ALL')
+
+interface TaskModalState {
+  open: boolean
+  taskId: string | null
+  originRect: TapOriginRect | null
+  triggerKind: 'row' | 'fab'
+}
+
+const taskModal = ref<TaskModalState>({
+  open: false,
+  taskId: null,
+  originRect: null,
+  triggerKind: 'fab',
+})
+
+function openTaskModal(options: {
+  taskId: string | null
+  originRect: TapOriginRect | null
+  triggerKind: 'row' | 'fab'
+}) {
+  // A second tap while the overlay is up or animating is ignored.
+  if (taskModal.value.open) {
+    return
+  }
+  taskModal.value = {
+    open: true,
+    taskId: options.taskId,
+    originRect: options.originRect,
+    triggerKind: options.triggerKind,
+  }
+}
+
+function newTask(event?: Event) {
+  if (taskModal.value.open) {
+    return
+  }
+  const el = (event?.currentTarget ?? event?.target) as Element | null
+  openTaskModal({
+    taskId: null,
+    originRect: el ? toTapOriginRect(el) : null,
+    triggerKind: 'fab',
+  })
+}
+
+function openTaskFromRow(task: TaskResponse, event?: Event) {
+  if (taskModal.value.open) {
+    return
+  }
+  const el = (event?.currentTarget ?? event?.target) as Element | null
+  openTaskModal({
+    taskId: task.id,
+    originRect: el ? toTapOriginRect(el) : null,
+    triggerKind: 'row',
+  })
+}
+
+function closeTaskModal() {
+  taskModal.value = { ...taskModal.value, open: false }
+}
 
 const filters: { key: ActiveFilter; label: string }[] = [
   { key: 'ALL', label: 'All' },
@@ -31,18 +94,9 @@ const filters: { key: ActiveFilter; label: string }[] = [
   { key: 'BACKLOG', label: 'Backlog' },
 ]
 
-// Independent section collapse state; Scheduled open by default
-const expandedSections = ref<Record<PlanCategory, boolean>>({
-  SCHEDULED: true,
-  LATER: false,
-  BACKLOG: false,
-})
-
 function getCourseName(courseId: number): string {
   const found = catalog.courses.value.find((c) => c.id === courseId)
-  if (found) return found.name
-  const fixtureCourse = TODO_FIXTURE_COURSES.find((c) => c.id === courseId)
-  return fixtureCourse?.name ?? `Course ${courseId}`
+  return found?.name ?? `Course ${courseId}`
 }
 
 function getCategory(task: TaskResponse): PlanCategory {
@@ -50,7 +104,7 @@ function getCategory(task: TaskResponse): PlanCategory {
 }
 
 function getDueDate(task: TaskResponse): string | null {
-  return TASK_DUE_DATES[task.id] ?? task.scheduledDate ?? null
+  return task.scheduledDate ?? null
 }
 
 const scheduledTasks = computed(() =>
@@ -92,10 +146,7 @@ async function loadData() {
   loading.value = true
   try {
     await catalog.loadCatalog()
-    const fetched = await tasksApi.list()
-    const fetchedIds = new Set(fetched.map((t) => t.id))
-    const extras = TODO_FIXTURE_TASKS_V2.filter((t) => !fetchedIds.has(t.id))
-    tasks.value = [...fetched, ...extras]
+    await loadTasks()
   } finally {
     loading.value = false
   }
@@ -106,32 +157,18 @@ async function toggleTask(task: TaskResponse) {
   const nextStatus = previous === 'COMPLETED' ? 'TODO' : 'COMPLETED'
   tasks.value = tasks.value.map((t) => (t.id === task.id ? { ...t, status: nextStatus } : t))
   try {
-    const updated = await tasksApi.updateStatus(task.id, nextStatus)
-    tasks.value = tasks.value.map((t) => (t.id === task.id ? updated : t))
+    await updateTaskStatus(task.id, nextStatus)
   } catch {
-    const isFixtureTask = TODO_FIXTURE_TASKS_V2.some((t) => t.id === task.id)
-    if (!isFixtureTask) {
-      tasks.value = tasks.value.map((t) => (t.id === task.id ? { ...t, status: previous } : t))
-    }
+    tasks.value = tasks.value.map((t) => (t.id === task.id ? { ...t, status: previous } : t))
   }
-}
-
-function navigateToTask(task: TaskResponse) {
-  router.push({ name: 'task-detail', params: { id: task.id } })
-}
-
-function toggleSection(category: PlanCategory) {
-  expandedSections.value[category] = !expandedSections.value[category]
 }
 
 onMounted(loadData)
 </script>
 
 <template>
-  <div class="flex min-h-screen flex-col bg-(--color-app-bg) text-(--color-text-main)">
-    <TodoHeader />
-
-    <main class="flex-1 pb-20">
+  <div class="relative flex min-h-full flex-col bg-(--color-app-bg) text-(--color-text-main)">
+    <div class="flex-1 pb-6">
       <div class="px-4 pt-3 pb-2">
         <div
           class="inline-flex rounded-full border border-(--color-app-border) bg-(--color-card) p-1"
@@ -170,49 +207,65 @@ onMounted(loadData)
             :task="task"
             :course-name="getCourseName(task.courseId)"
             :due-date="getDueDate(task)"
-            :time="TASK_DISPLAY_TIMES[task.id] ?? ''"
-            @open="navigateToTask(task)"
+            :time="''"
+            @click="openTaskFromRow(task, $event)"
+            @keydown.enter="openTaskFromRow(task, $event)"
             @toggle="toggleTask(task)"
           />
         </ul>
       </template>
 
       <template v-else>
-        <section v-for="s in sections" :key="s.category">
-          <div class="mx-4 border-b border-(--color-app-border)">
-            <button
-              type="button"
-              class="flex w-full items-center gap-2 py-3 text-left"
-              :aria-expanded="expandedSections[s.category]"
-              @click="toggleSection(s.category)"
-            >
-              <component
-                :is="expandedSections[s.category] ? ChevronDown : ChevronRight"
-                class="h-6 w-6 shrink-0"
-              />
-              <span class="text-xl font-bold">{{ s.label }}</span>
-            </button>
-          </div>
-
-          <template v-if="expandedSections[s.category]">
-            <p v-if="s.list.length === 0" class="px-4 py-3 text-sm text-(--color-text-muted)">
-              No {{ s.label.toLowerCase() }} tasks
-            </p>
-            <ul v-else>
-              <TaskRow
-                v-for="task in s.list"
-                :key="task.id"
-                :task="task"
-                :course-name="getCourseName(task.courseId)"
-                :due-date="getDueDate(task)"
-                :time="TASK_DISPLAY_TIMES[task.id] ?? ''"
-                @open="navigateToTask(task)"
-                @toggle="toggleTask(task)"
-              />
-            </ul>
-          </template>
-        </section>
+        <Accordion type="multiple" :default-value="['SCHEDULED']">
+          <AccordionItem
+            v-for="s in sections"
+            :key="s.category"
+            :value="s.category"
+            class="mx-4 border-b border-(--color-app-border) last:border-b"
+          >
+            <AccordionTrigger class="py-3 text-xl font-bold hover:no-underline">
+              {{ s.label }}
+            </AccordionTrigger>
+            <AccordionContent class="p-0">
+              <p v-if="s.list.length === 0" class="px-4 py-3 text-sm text-(--color-text-muted)">
+                No {{ s.label.toLowerCase() }} tasks
+              </p>
+              <ul v-else>
+                <TaskRow
+                  v-for="task in s.list"
+                  :key="task.id"
+                  :task="task"
+                  :course-name="getCourseName(task.courseId)"
+                  :due-date="getDueDate(task)"
+                  :time="''"
+                  @click="openTaskFromRow(task, $event)"
+                  @keydown.enter="openTaskFromRow(task, $event)"
+                  @toggle="toggleTask(task)"
+                />
+              </ul>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </template>
-    </main>
+    </div>
+
+    <Button
+      type="button"
+      variant="default"
+      size="icon-touch"
+      data-testid="tasks-fab"
+      aria-label="Add task"
+      class="absolute right-4 bottom-4 z-10 h-14 w-14 rounded-2xl shadow-lg"
+      @click="newTask($event)"
+    >
+      <Plus class="size-6" aria-hidden="true" />
+    </Button>
+
+    <TaskContainerModal
+      :is-open="taskModal.open"
+      :task-id="taskModal.taskId"
+      :origin-rect="taskModal.originRect"
+      @close="closeTaskModal"
+    />
   </div>
 </template>

@@ -5,7 +5,7 @@ import TactileButton from '@/components/TactileButton.vue'
 const router = useRouter()
 
 function begin() {
-  router.push('/welcome')
+  router.push('/select-account')
 }
 </script>
 

@@ -1,12 +1,11 @@
 <script setup lang="ts">
 // Round mascot button with an optional badge and an AI processing ring.
-// Only DuckotaButton.story.vue renders it now.
+// AppShell renders it as the floating Process trigger.
 import { computed } from 'vue'
 import duckotaImg from '@/assets/mascot/duckota_in_button.png'
 import { COURSE_PALETTE_24 } from '@/constants/palette'
 
 export interface DuckotaButtonProps {
-  size?: 'sm' | 'md' | 'lg'
   /** Visual style: tactile has a solid drop shadow, floating has a soft shadow, plain has no shadow. */
   variant?: 'tactile' | 'floating' | 'plain'
   /** Accessible name. The button aria-label and the mascot image alt text use it. */
@@ -20,7 +19,6 @@ export interface DuckotaButtonProps {
 }
 
 const props = withDefaults(defineProps<DuckotaButtonProps>(), {
-  size: 'md',
   variant: 'tactile',
   label: 'Duckota',
   badgeColor: 'destructive',
@@ -52,17 +50,7 @@ const rainbowGradient = computed(() => {
   return `conic-gradient(from 0deg, ${colors.join(', ')})`
 })
 
-const sizeClasses = computed(() => {
-  switch (props.size) {
-    case 'sm':
-      return 'size-11 border-2'
-    case 'lg':
-      return 'size-20 border-4'
-    case 'md':
-    default:
-      return 'size-14 border-[3px]'
-  }
-})
+const SIZE_CLASSES = 'size-16 border-4'
 
 const variantClasses = computed(() => {
   if (props.disabled) {
@@ -96,18 +84,6 @@ const badgeColorClasses = computed(() => {
   }
 })
 
-const innerShadowClasses = computed(() => {
-  switch (props.size) {
-    case 'sm':
-      return 'shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]'
-    case 'lg':
-      return 'shadow-[inset_0_4px_8px_rgba(0,0,0,0.25)]'
-    case 'md':
-    default:
-      return 'shadow-[inset_0_3px_6px_rgba(0,0,0,0.22)]'
-  }
-})
-
 function handleClick(event: MouseEvent) {
   if (props.disabled || props.processing) {
     event.preventDefault()
@@ -124,7 +100,7 @@ function handleClick(event: MouseEvent) {
     :aria-disabled="disabled || processing"
     :disabled="disabled || processing"
     class="relative inline-flex items-center justify-center rounded-full bg-[#E5EDF2] border-[#616161] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#00A4C8] cursor-pointer"
-    :class="[sizeClasses, variantClasses]"
+    :class="[SIZE_CLASSES, variantClasses]"
     @click="handleClick"
   >
     <!-- Outer ambient glow ring during AI processing -->
@@ -150,8 +126,7 @@ function handleClick(event: MouseEvent) {
 
     <!-- Inner shadow inside the circular button disc -->
     <span
-      class="absolute inset-0 rounded-full pointer-events-none"
-      :class="innerShadowClasses"
+      class="absolute inset-0 rounded-full pointer-events-none shadow-[inset_0_4px_8px_rgba(0,0,0,0.25)]"
       aria-hidden="true"
     />
 

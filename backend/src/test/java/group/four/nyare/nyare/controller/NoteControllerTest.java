@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
@@ -19,7 +20,6 @@ import tools.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -51,6 +51,8 @@ class NoteControllerTest {
     @MockitoBean
     private JpaMetamodelMappingContext jpaMappingContext;
 
+    private static final Long USER_ID = 1L;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private UUID noteId;
@@ -59,19 +61,27 @@ class NoteControllerTest {
 
     @BeforeEach
     void setUp() {
+        when(sessionContext.requireUserId()).thenReturn(USER_ID);
         noteId = UUID.randomUUID();
         sampleResponse = new NoteResponse(noteId, 1L, "Lecture Notes", Instant.now(), Instant.now());
         sampleSummary = new NoteSummaryResponse(noteId, 1L, "Lecture Notes", false, 13, Instant.now(), Instant.now());
+    }
+
+    private MockHttpSession mockSession() {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute(UserController.SESSION_USER_ID, USER_ID);
+        return session;
     }
 
     @Test
     void createNote_withValidPayload_returns201AndLocationHeader() throws Exception {
         // given
         NoteRequest request = new NoteRequest(1L, "Lecture Notes");
-        when(noteService.createNote(any(NoteRequest.class))).thenReturn(sampleResponse);
+        when(noteService.createNote(any(NoteRequest.class), any())).thenReturn(sampleResponse);
 
         // when & then
         mockMvc.perform(post("/api/notes")
+                        .session(mockSession())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -86,6 +96,7 @@ class NoteControllerTest {
 
         // when & then
         mockMvc.perform(post("/api/notes")
+                        .session(mockSession())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -99,6 +110,7 @@ class NoteControllerTest {
 
         // when & then
         mockMvc.perform(post("/api/notes")
+                        .session(mockSession())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -108,41 +120,39 @@ class NoteControllerTest {
     @Test
     void listNotes_withCourseId_returns200AndList() throws Exception {
         // given
-        when(sessionContext.getUserId()).thenReturn(Optional.of(42L));
-        when(noteService.listNotes(42L, 1L)).thenReturn(List.of(sampleSummary));
+        when(noteService.listNotes(USER_ID, 1L)).thenReturn(List.of(sampleSummary));
 
         // when & then
-        mockMvc.perform(get("/api/notes").param("courseId", "1"))
+        mockMvc.perform(get("/api/notes").param("courseId", "1").session(mockSession()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(noteId.toString()))
                 .andExpect(jsonPath("$[0].preview").value("Lecture Notes"))
                 .andExpect(jsonPath("$[0].truncated").value(false));
 
-        verify(noteService).listNotes(42L, 1L);
+        verify(noteService).listNotes(USER_ID, 1L);
     }
 
     @Test
     void listNotes_withoutCourseId_returns200AndList() throws Exception {
         // given
-        when(sessionContext.getUserId()).thenReturn(Optional.of(42L));
-        when(noteService.listNotes(42L, null)).thenReturn(List.of(sampleSummary));
+        when(noteService.listNotes(USER_ID, null)).thenReturn(List.of(sampleSummary));
 
         // when & then
-        mockMvc.perform(get("/api/notes"))
+        mockMvc.perform(get("/api/notes").session(mockSession()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(noteId.toString()))
                 .andExpect(jsonPath("$[0].preview").value("Lecture Notes"));
 
-        verify(noteService).listNotes(42L, null);
+        verify(noteService).listNotes(USER_ID, null);
     }
 
     @Test
     void getNote_withExistingId_returns200() throws Exception {
         // given
-        when(noteService.getNote(noteId)).thenReturn(sampleResponse);
+        when(noteService.getNote(eq(noteId), any())).thenReturn(sampleResponse);
 
         // when & then
-        mockMvc.perform(get("/api/notes/{id}", noteId))
+        mockMvc.perform(get("/api/notes/{id}", noteId).session(mockSession()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(noteId.toString()));
     }
@@ -150,11 +160,11 @@ class NoteControllerTest {
     @Test
     void getNote_withNonExistingId_returns404ProblemDetail() throws Exception {
         // given
-        when(noteService.getNote(noteId))
+        when(noteService.getNote(eq(noteId), any()))
                 .thenThrow(new ResourceNotFoundException("Note not found with ID: " + noteId));
 
         // when & then
-        mockMvc.perform(get("/api/notes/{id}", noteId))
+        mockMvc.perform(get("/api/notes/{id}", noteId).session(mockSession()))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.title").value("Resource Not Found"));
     }
@@ -163,10 +173,11 @@ class NoteControllerTest {
     void updateNote_withValidPayload_returns200() throws Exception {
         // given
         NoteRequest request = new NoteRequest(1L, "Updated text");
-        when(noteService.updateNote(eq(noteId), any(NoteRequest.class))).thenReturn(sampleResponse);
+        when(noteService.updateNote(eq(noteId), any(NoteRequest.class), any())).thenReturn(sampleResponse);
 
         // when & then
         mockMvc.perform(put("/api/notes/{id}", noteId)
+                        .session(mockSession())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -180,6 +191,7 @@ class NoteControllerTest {
 
         // when & then
         mockMvc.perform(put("/api/notes/{id}", noteId)
+                        .session(mockSession())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -189,23 +201,23 @@ class NoteControllerTest {
     @Test
     void deleteNote_withExistingId_returns204() throws Exception {
         // given
-        doNothing().when(noteService).deleteNote(noteId);
+        doNothing().when(noteService).deleteNote(eq(noteId), any());
 
         // when & then
-        mockMvc.perform(delete("/api/notes/{id}", noteId))
+        mockMvc.perform(delete("/api/notes/{id}", noteId).session(mockSession()))
                 .andExpect(status().isNoContent());
 
-        verify(noteService).deleteNote(noteId);
+        verify(noteService).deleteNote(eq(noteId), any());
     }
 
     @Test
     void deleteNote_withNonExistingId_returns404ProblemDetail() throws Exception {
         // given
         doThrow(new ResourceNotFoundException("Note not found with ID: " + noteId))
-                .when(noteService).deleteNote(noteId);
+                .when(noteService).deleteNote(eq(noteId), any());
 
         // when & then
-        mockMvc.perform(delete("/api/notes/{id}", noteId))
+        mockMvc.perform(delete("/api/notes/{id}", noteId).session(mockSession()))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.title").value("Resource Not Found"));
     }

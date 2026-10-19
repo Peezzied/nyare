@@ -38,13 +38,17 @@ describe('PictureNoteCard', () => {
     expect(wrapper.get('[data-testid="picture-note-badge"]').text()).toBe('Course 2')
   })
 
-  it('holds no clickable elements and ignores clicks', async () => {
+  it('emits open with the DOM event on click and Enter', async () => {
     const wrapper = mount(PictureNoteCard, { props })
 
     expect(wrapper.find('a, button').exists()).toBe(false)
-    const before = wrapper.html()
-    await wrapper.trigger('click')
 
-    expect(wrapper.html()).toBe(before)
+    await wrapper.trigger('click')
+    await wrapper.trigger('keydown.enter')
+
+    const emitted = wrapper.emitted('open')
+    expect(emitted).toHaveLength(2)
+    expect(emitted![0]![0]).toBeInstanceOf(Event)
+    expect(emitted![1]![0]).toBeInstanceOf(Event)
   })
 })

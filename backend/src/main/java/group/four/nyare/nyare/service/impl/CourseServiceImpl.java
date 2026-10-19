@@ -2,7 +2,6 @@ package group.four.nyare.nyare.service.impl;
 
 import group.four.nyare.nyare.dto.CourseRequest;
 import group.four.nyare.nyare.dto.CourseResponse;
-import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.User;
@@ -31,14 +30,9 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional
-    public CourseResponse createCourse(CourseRequest request, Long sessionUserId) {
-        Long targetUserId = sessionUserId != null ? sessionUserId : request.getUserId();
-        if (targetUserId == null) {
-            throw new BadRequestException("User identifier is required to create a course");
-        }
-
-        User user = userRepository.findById(targetUserId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + targetUserId));
+    public CourseResponse createCourse(CourseRequest request, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
 
         Course course = new Course(request.getName(), request.getDescription(), user);
         Course savedCourse = courseRepository.save(course);
@@ -46,30 +40,23 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<CourseResponse> listCourses(Long sessionUserId, Long queryUserId) {
-        Long targetUserId = sessionUserId != null ? sessionUserId : queryUserId;
-        if (targetUserId != null) {
-            return courseRepository.findByUserId(targetUserId).stream()
-                    .map(this::toResponse)
-                    .toList();
-        }
-
-        return courseRepository.findAll().stream()
+    public List<CourseResponse> listCourses(Long userId) {
+        return courseRepository.findByUserId(userId).stream()
                 .map(this::toResponse)
                 .toList();
     }
 
     @Override
-    public CourseResponse getCourse(Long id) {
-        Course course = courseRepository.findById(id)
+    public CourseResponse getCourse(Long id, Long userId) {
+        Course course = courseRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + id));
         return toResponse(course);
     }
 
     @Override
     @Transactional
-    public void deleteCourse(Long id) {
-        Course course = courseRepository.findById(id)
+    public void deleteCourse(Long id, Long userId) {
+        Course course = courseRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + id));
         courseRepository.delete(course);
     }

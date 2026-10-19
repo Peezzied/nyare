@@ -3,6 +3,13 @@
         "gh_grep": {
             "type": "remote",
             "url": "https://mcp.grep.app"
+        },
+        "github": {
+            "type": "remote",
+            "url": "https://api.githubcopilot.com/mcp/",
+            "headers": {
+                "Authorization": "Bearer YOUR_GITHUB_PAT"
+            }
         }
     }
 }

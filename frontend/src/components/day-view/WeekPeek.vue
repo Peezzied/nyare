@@ -54,43 +54,27 @@ function layout(event: DayEvent) {
 
 <template>
   <div class="relative flex h-full w-full flex-col bg-[#F5F6EE]" aria-hidden="true">
-    <WeekHeaderRow
-      :days="days"
-      :today-key="todayKey"
-      :gutter-left="gutter"
-      :cols-width="0"
-    />
+    <WeekHeaderRow :days="days" :today-key="todayKey" :gutter-left="gutter" :cols-width="0" />
 
     <div class="relative min-h-0 flex-1 sx-nyare-week overflow-hidden">
       <div class="absolute inset-0 sx-nyare-fill">
         <div class="sx-vue-calendar-wrapper">
           <div class="sx__calendar-wrapper">
             <div class="sx__calendar">
-              <div
-                class="sx__view-container"
-                :style="{ transform: `translateY(${-scrollTop}px)` }"
-              >
+              <div class="sx__view-container" :style="{ transform: `translateY(${-scrollTop}px)` }">
                 <div
                   class="sx__week-grid"
                   :style="{ height: `calc(24 * var(--calendar-hour-height, 48px))` }"
                 >
                   <div class="sx__week-grid__time-axis">
-                    <div
-                      v-for="hour in hours"
-                      :key="hour"
-                      class="sx__week-grid__hour"
-                    >
+                    <div v-for="hour in hours" :key="hour" class="sx__week-grid__hour">
                       <span class="sx__week-grid__hour-text">
                         {{ formatTime12h(`${String(hour).padStart(2, '0')}:00`) }}
                       </span>
                     </div>
                   </div>
 
-                  <div
-                    v-for="day in days"
-                    :key="day.key"
-                    class="sx__time-grid-day"
-                  >
+                  <div v-for="day in days" :key="day.key" class="sx__time-grid-day">
                     <div
                       v-for="event in day.events"
                       :key="event.id"

@@ -1,10 +1,9 @@
 package group.four.nyare.nyare.controller;
 
+import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.dto.CourseRequest;
 import group.four.nyare.nyare.dto.CourseResponse;
 import group.four.nyare.nyare.service.CourseService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -27,42 +25,35 @@ import java.util.List;
 public class CourseController {
 
     private final CourseService courseService;
+    private final SessionContext sessionContext;
 
-    public CourseController(CourseService courseService) {
+    public CourseController(CourseService courseService, SessionContext sessionContext) {
         this.courseService = courseService;
+        this.sessionContext = sessionContext;
     }
 
     @PostMapping
-    public ResponseEntity<CourseResponse> createCourse(@Valid @RequestBody CourseRequest request,
-                                                       HttpServletRequest httpRequest) {
-        HttpSession session = httpRequest.getSession(false);
-        Long sessionUserId = session != null ? (Long) session.getAttribute(UserController.SESSION_USER_ID) : null;
-
-        CourseResponse createdCourse = courseService.createCourse(request, sessionUserId);
+    public ResponseEntity<CourseResponse> createCourse(@Valid @RequestBody CourseRequest request) {
+        CourseResponse createdCourse = courseService.createCourse(request, sessionContext.requireUserId());
         URI location = URI.create("/api/courses/" + createdCourse.getId());
         return ResponseEntity.created(location).body(createdCourse);
     }
 
     @GetMapping
-    public ResponseEntity<List<CourseResponse>> listCourses(
-            @RequestParam(required = false) Long userId,
-            HttpServletRequest httpRequest) {
-        HttpSession session = httpRequest.getSession(false);
-        Long sessionUserId = session != null ? (Long) session.getAttribute(UserController.SESSION_USER_ID) : null;
-
-        List<CourseResponse> courses = courseService.listCourses(sessionUserId, userId);
+    public ResponseEntity<List<CourseResponse>> listCourses() {
+        List<CourseResponse> courses = courseService.listCourses(sessionContext.requireUserId());
         return ResponseEntity.ok(courses);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CourseResponse> getCourse(@PathVariable Long id) {
-        CourseResponse course = courseService.getCourse(id);
+        CourseResponse course = courseService.getCourse(id, sessionContext.requireUserId());
         return ResponseEntity.ok(course);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
-        courseService.deleteCourse(id);
+        courseService.deleteCourse(id, sessionContext.requireUserId());
         return ResponseEntity.noContent().build();
     }
 }

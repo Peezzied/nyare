@@ -265,8 +265,16 @@ class UserSessionDomainIntegrationTest {
         assertThat(academicEventRepository.count()).isEqualTo(1);
         assertThat(scheduleRepository.count()).isEqualTo(1);
 
-        // When: Delete course via endpoint
-        mockMvc.perform(delete("/api/courses/" + course.getId()))
+        // Login as the user
+        MvcResult loginResult = mockMvc.perform(post("/api/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new LoginRequest("cascade_user"))))
+                .andExpect(status().isOk())
+                .andReturn();
+        MockHttpSession session = (MockHttpSession) loginResult.getRequest().getSession();
+
+        // When: Delete course via endpoint with active session
+        mockMvc.perform(delete("/api/courses/" + course.getId()).session(session))
                 .andExpect(status().isNoContent());
 
         // Then: Course and all child records are removed

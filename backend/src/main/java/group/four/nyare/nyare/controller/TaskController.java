@@ -37,7 +37,7 @@ public class TaskController {
 
     @PostMapping
     public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskRequest request) {
-        TaskResponse response = taskService.createTask(request);
+        TaskResponse response = taskService.createTask(request, sessionContext.requireUserId());
         URI location = URI.create("/api/tasks/" + response.getId());
         return ResponseEntity.created(location).body(response);
     }
@@ -47,14 +47,14 @@ public class TaskController {
             @RequestParam(required = false) Long courseId,
             @RequestParam(required = false) TaskStatus status,
             @RequestParam(required = false) Boolean scheduled) {
-        Long userId = sessionContext.getUserId().orElse(null);
+        Long userId = sessionContext.requireUserId();
         List<TaskResponse> tasks = taskService.listTasks(userId, courseId, status, scheduled);
         return ResponseEntity.ok(tasks);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<TaskResponse> getTask(@PathVariable UUID id) {
-        TaskResponse response = taskService.getTask(id);
+        TaskResponse response = taskService.getTask(id, sessionContext.requireUserId());
         return ResponseEntity.ok(response);
     }
 
@@ -62,7 +62,7 @@ public class TaskController {
     public ResponseEntity<TaskResponse> updateTask(
             @PathVariable UUID id,
             @Valid @RequestBody TaskRequest request) {
-        TaskResponse response = taskService.updateTask(id, request);
+        TaskResponse response = taskService.updateTask(id, request, sessionContext.requireUserId());
         return ResponseEntity.ok(response);
     }
 
@@ -70,13 +70,13 @@ public class TaskController {
     public ResponseEntity<TaskResponse> updateTaskStatus(
             @PathVariable UUID id,
             @Valid @RequestBody TaskStatusRequest request) {
-        TaskResponse response = taskService.updateTaskStatus(id, request);
+        TaskResponse response = taskService.updateTaskStatus(id, request, sessionContext.requireUserId());
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable UUID id) {
-        taskService.deleteTask(id);
+        taskService.deleteTask(id, sessionContext.requireUserId());
         return ResponseEntity.noContent().build();
     }
 }

@@ -9,6 +9,8 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "test:unit": "vitest",
+    "test:flow": "vitest run -c vitest.flow.config.ts --mode flow",
+    "test:flow:ai": "vitest run -c vitest.flow.config.ts --mode flow-ai",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "run-s \"lint:*\"",
@@ -39,7 +41,7 @@
     "reka-ui": "^2.11.0",
     "tailwind-merge": "^3.7.0",
     "tailwindcss": "^4.3.3",
-    "temporal-polyfill": "^1.0.6",
+    "temporal-polyfill": "0.3.2",
     "vue": "^3.5.42",
     "vue-router": "^5.3.1"
   },

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Calendar } from 'lucide-vue-next'
+import { Calendar } from '@lucide/vue'
 import { getCourseColor } from '@/constants/palette'
 import { formatDuration, formatDueLabel, getTaskUrgency, URGENCY_COLORS } from '@/utils/taskUrgency'
 import { Checkbox } from '@/components/ui/checkbox'

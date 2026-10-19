@@ -14,6 +14,7 @@ The repository contains scaffold code and demo components.
   - `BACKLOG`: task has no `scheduledDate` and no `duration`.
 - Use day-level granularity for task planning.
 - Do not implement time-blocking or priority scores.
+- Keep views and components pure. Never embed development environment rules (`import.meta.env.DEV`, `VITE_DEV_USER`) or dev-specific template branches into views. Enforce dev constraints at service boundaries or composables.
 
 ## Repository Rules
 
@@ -64,7 +65,8 @@ The project does not require external state libraries.
 The backend server runs on port 8080.
 Configure `server.proxy` in `vite.config.ts` to route `/api` requests to `http://localhost:8080`.
 Use the native `fetch` function for REST endpoints.
-Use `fetch` with a `ReadableStream` reader to receive Server-Sent Events from `POST /api/study-planner/process` (`EventSource` supports `GET` only). Pass an `AbortSignal` to `streamProcess`/`process` to cancel a run; the backend then stops at the next checkpoint and rolls back. After a cancel, `useProcess` rechecks `GET /api/study-planner/status`; a run that committed anyway sets `savedAfterCancel` and calls `onSavedAfterCancel` for a full tasks and events refetch.
+Use `fetch` with a `ReadableStream` reader to receive Server-Sent Events from `POST /api/study-planner/process` (`EventSource` supports `GET` only). Pass an `AbortSignal` to `streamProcess`/`process` to cancel a run; the backend then stops at the next checkpoint and rolls back. Navigation does not cancel a run. Only an explicit `cancel()` or a session reset does. After a cancel, `useProcess` rechecks `GET /api/study-planner/status`; a run that committed anyway sets `savedAfterCancel` and calls `onSavedAfterCancel` for a full tasks and events refetch.
+A protected `401` during use calls the registered unauthorized handler (`setUnauthorizedHandler` in `src/api/client.ts`), which clears session state and navigates to route `start`. Calls to `/api/users/me` and `/api/users/login` do not call the handler.
 Do not install Axios.
 
 ## Backend Roundtrip Conventions
@@ -98,6 +100,8 @@ Reduce HTTP roundtrips. Load each list once per intent.
 
 ## Conventions
 
+- Keep views and components pure and untainted by development environment rules.
+- Enforce developer safeguards, auto-logins, and mock restrictions at service boundaries or composables.
 - Use `<script setup lang="ts">` and the Composition API for components.
 - Define routes in `src/router/index.ts`.
 - Import route components dynamically.

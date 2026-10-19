@@ -1,0 +1,523 @@
+<script setup lang="ts">
+// Task form and detail content. Create mode is active when taskId is null.
+import { computed, onMounted, reactive, ref } from 'vue'
+import { ArrowLeft, CalendarIcon, Clock, FileText, Trash2, X } from '@lucide/vue'
+import { parseDate, type DateValue } from '@internationalized/date'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Textarea } from '@/components/ui/textarea'
+import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
+import DialogShell from '@/components/ui/DialogShell.vue'
+import CoursePicker from '@/components/CoursePicker.vue'
+import { ApiError } from '@/api'
+import { useCatalog } from '@/composables/useCatalog'
+import { useTasks } from '@/composables/useTasks'
+import { minutesToDuration } from '@/utils/duration'
+import { URGENCY_COLORS, formatDuration, getTaskUrgency } from '@/utils/taskUrgency'
+import {
+  formCanSave,
+  formIsDirty,
+  formSection,
+  fromTask,
+  toTaskRequest,
+  type TaskFormState,
+} from '@/utils/taskForm'
+import type { PlanCategory, TaskResponse, TaskStatus } from '@/types/api'
+
+interface Props {
+  /** Task UUID in view mode. Null renders the create form. */
+  taskId: string | null
+  /** Reveals the identity and plan zones. */
+  showContent?: boolean
+  /** Reveals the save action and description zone. */
+  showControls?: boolean
+  /** True inside the container modal, false on the direct-link route. */
+  embedded?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  showContent: true,
+  showControls: true,
+  embedded: false,
+})
+
+const emit = defineEmits<{
+  (e: 'close'): void
+  (e: 'deleted'): void
+  (e: 'missing'): void
+}>()
+
+const { courses, schedules, loadCatalog } = useCatalog()
+const { getTask, createTask, updateTask, updateTaskStatus, deleteTask } = useTasks()
+
+const DURATION_PRESETS = [15, 30, 45, 60, 90, 120, 180] as const
+
+const form = reactive<TaskFormState>({
+  title: '',
+  courseId: null,
+  description: '',
+  scheduledDate: '',
+  durationMinutes: null,
+})
+
+const loadedTask = ref<TaskResponse | null>(null)
+const saving = ref(false)
+const deleting = ref(false)
+const deleteOpen = ref(false)
+const errorMessage = ref<string | null>(null)
+const lastErrorAction = ref<'save' | 'delete'>('save')
+
+const isViewMode = computed(() => props.taskId !== null)
+const done = computed(() => loadedTask.value?.status === 'COMPLETED')
+const dirty = computed(() => formIsDirty(form, loadedTask.value))
+const canSave = computed(() => formCanSave(form))
+const titleError = computed(() =>
+  dirty.value && form.title.trim().length === 0 ? 'Add a title to save this task.' : null,
+)
+const courseError = computed(() =>
+  dirty.value && form.courseId === null ? 'Choose a course to save this task.' : null,
+)
+const section = computed<PlanCategory>(() => formSection(form))
+const sectionLabel = computed(() => {
+  if (section.value === 'SCHEDULED') return 'Scheduled'
+  if (section.value === 'LATER') return 'Later'
+  return 'Backlog'
+})
+
+const dateIconColor = computed(() => URGENCY_COLORS[getTaskUrgency(form.scheduledDate || null)])
+
+const isDatePickerOpen = ref(false)
+
+const calendarDate = computed<DateValue | undefined>({
+  get: () => {
+    if (!form.scheduledDate) {
+      return undefined
+    }
+    try {
+      return parseDate(form.scheduledDate)
+    } catch {
+      return undefined
+    }
+  },
+  set: (value) => {
+    form.scheduledDate = value ? value.toString() : ''
+    if (value) {
+      isDatePickerOpen.value = false
+    }
+  },
+})
+
+const formattedScheduledDate = computed(() => {
+  if (!form.scheduledDate) {
+    return 'Add date'
+  }
+  const [year, month, day] = form.scheduledDate.split('-').map(Number)
+  if (year && month && day) {
+    return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    })
+  }
+  return form.scheduledDate
+})
+
+function onDurationChange(value?: unknown) {
+  if (value === '' || value === null || value === undefined) {
+    form.durationMinutes = null
+    return
+  }
+  const parsed = Number(value)
+  form.durationMinutes = Number.isNaN(parsed) ? null : parsed
+}
+
+function staggeredClass(shown: boolean): string {
+  return `transition-[opacity,transform] ${shown ? 'opacity-100 translate-y-0 duration-200' : 'opacity-0 translate-y-2 duration-[80ms]'}`
+}
+
+const contentStaggerClass = computed(() => staggeredClass(props.showContent))
+const controlsStaggerClass = computed(() => staggeredClass(props.showControls))
+
+function applyTask(task: TaskResponse) {
+  loadedTask.value = task
+  Object.assign(form, fromTask(task))
+}
+
+async function resolveTask() {
+  if (!props.taskId) {
+    return
+  }
+  try {
+    applyTask(await getTask(props.taskId))
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 404) {
+      emit('missing')
+      return
+    }
+    errorMessage.value = err instanceof Error ? err.message : 'Failed to load task'
+  }
+}
+
+async function toggleDone(next: boolean | 'indeterminate') {
+  if (!props.taskId || !loadedTask.value) {
+    return
+  }
+  const previous = loadedTask.value.status
+  const nextStatus: TaskStatus = next === true ? 'COMPLETED' : 'TODO'
+  loadedTask.value = { ...loadedTask.value, status: nextStatus }
+  try {
+    loadedTask.value = await updateTaskStatus(props.taskId, nextStatus)
+  } catch {
+    if (loadedTask.value) {
+      loadedTask.value = { ...loadedTask.value, status: previous }
+    }
+  }
+}
+
+async function handleSave() {
+  if (saving.value || !dirty.value || !canSave.value) {
+    return
+  }
+
+  saving.value = true
+  errorMessage.value = null
+  lastErrorAction.value = 'save'
+  try {
+    if (props.taskId === null) {
+      await createTask(toTaskRequest(form, 'TODO'))
+      emit('close')
+      return
+    }
+    const updated = await updateTask(
+      props.taskId,
+      toTaskRequest(form, loadedTask.value?.status ?? 'TODO'),
+    )
+    applyTask(updated)
+  } catch (err) {
+    errorMessage.value = err instanceof Error ? err.message : 'Failed to save task'
+  } finally {
+    saving.value = false
+  }
+}
+
+async function confirmDelete() {
+  if (!props.taskId || deleting.value) {
+    return
+  }
+  deleting.value = true
+  errorMessage.value = null
+  lastErrorAction.value = 'delete'
+  try {
+    await deleteTask(props.taskId)
+    deleteOpen.value = false
+    emit('deleted')
+  } catch (err) {
+    deleteOpen.value = false
+    errorMessage.value = err instanceof Error ? err.message : 'Failed to delete task'
+  } finally {
+    deleting.value = false
+  }
+}
+
+function handleRetry() {
+  if (lastErrorAction.value === 'delete') {
+    void confirmDelete()
+    return
+  }
+  void handleSave()
+}
+
+onMounted(() => {
+  void loadCatalog()
+  void resolveTask()
+})
+</script>
+
+<template>
+  <div class="flex h-full flex-col overflow-hidden bg-[#F5F6EE] text-slate-800">
+    <!-- Header bar: close left, title center, save right -->
+    <header
+      class="relative flex h-14 shrink-0 items-center justify-between border-b-[3px] border-(--color-app-border) px-4"
+      :class="contentStaggerClass"
+    >
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-touch"
+        data-testid="task-back"
+        aria-label="Close"
+        class="text-(--color-text-main)"
+        @click="emit('close')"
+      >
+        <ArrowLeft class="size-6" />
+      </Button>
+
+      <h1
+        class="pointer-events-none absolute left-1/2 -translate-x-1/2 text-xl font-bold tracking-tight text-slate-800"
+        style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+      >
+        {{ isViewMode ? 'Task' : 'New task' }}
+      </h1>
+
+      <Button
+        type="button"
+        variant="tactile"
+        size="touch"
+        data-testid="task-save"
+        :disabled="saving || !dirty || !canSave"
+        :class="controlsStaggerClass"
+        @click="handleSave"
+      >
+        {{ saving ? 'Saving…' : 'Save' }}
+      </Button>
+    </header>
+
+    <main class="flex-1 overflow-y-auto px-4 py-4">
+      <!-- Identity zone -->
+      <section :class="contentStaggerClass">
+        <div class="flex items-start gap-2">
+          <div v-if="isViewMode" class="flex h-11 w-11 shrink-0 items-start justify-center pt-1.5">
+            <Checkbox
+              data-testid="task-complete"
+              :model-value="done"
+              aria-label="Mark task as completed"
+              @update:model-value="toggleDone"
+            />
+          </div>
+          <Textarea
+            v-model="form.title"
+            data-testid="task-title"
+            aria-label="Task title"
+            rows="1"
+            placeholder="Task title"
+            class="min-h-0 min-w-0 flex-1 resize-none rounded-none border-0 bg-transparent px-0 py-0 text-2xl font-bold text-slate-800 shadow-none placeholder-slate-400 outline-none focus-visible:border-0 focus-visible:ring-0 md:text-2xl"
+            style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          />
+        </div>
+        <p
+          v-if="titleError"
+          data-testid="task-title-error"
+          class="mt-1 text-xs font-semibold text-red-600"
+        >
+          {{ titleError }}
+        </p>
+
+        <div class="mt-2">
+          <template v-if="isViewMode">
+            <CoursePicker
+              v-model="form.courseId"
+              :courses="courses"
+              :schedules="schedules"
+              data-testid="task-course-chip"
+              empty-label="Required"
+              aria-label="Course"
+            />
+          </template>
+          <template v-else>
+            <CoursePicker
+              v-model="form.courseId"
+              :courses="courses"
+              :schedules="schedules"
+              data-testid="task-course"
+              aria-label="Course"
+            />
+            <p
+              v-if="courses.length === 0"
+              data-testid="task-course-required"
+              class="text-xs font-semibold text-amber-700"
+            >
+              A course is required. Create a course first.
+            </p>
+            <p
+              v-if="courseError"
+              data-testid="task-course-error"
+              class="mt-1 text-xs font-semibold text-red-600"
+            >
+              {{ courseError }}
+            </p>
+          </template>
+        </div>
+      </section>
+
+      <!-- Plan zone -->
+      <section class="mt-4 rounded-2xl bg-white p-1" :class="contentStaggerClass">
+        <div class="flex min-h-11 items-center gap-3 px-3">
+          <CalendarIcon
+            class="h-5 w-5 shrink-0"
+            :style="{ color: dateIconColor }"
+            aria-hidden="true"
+          />
+          <Popover v-model:open="isDatePickerOpen">
+            <PopoverTrigger as-child>
+              <Button
+                type="button"
+                variant="ghost"
+                size="touch"
+                data-testid="task-date"
+                aria-label="Scheduled date"
+                class="min-w-0 flex-1 justify-start px-0 text-sm font-normal hover:bg-transparent"
+                :class="form.scheduledDate ? 'text-slate-700' : 'text-slate-400'"
+              >
+                {{ formattedScheduledDate }}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent class="w-auto p-0" align="start">
+              <Calendar v-model="calendarDate" initial-focus />
+            </PopoverContent>
+          </Popover>
+          <Button
+            v-if="form.scheduledDate"
+            type="button"
+            variant="ghost"
+            size="icon-touch"
+            data-testid="task-date-clear"
+            aria-label="Clear date"
+            class="rounded-full text-slate-400"
+            @click="form.scheduledDate = ''"
+          >
+            <X class="size-4" />
+          </Button>
+        </div>
+
+        <div class="h-px bg-slate-100" />
+
+        <div class="flex min-h-11 items-center gap-3 px-3">
+          <Clock class="h-5 w-5 shrink-0 text-(--color-text-muted)" aria-hidden="true" />
+          <NativeSelect
+            data-testid="task-duration"
+            aria-label="Duration"
+            class="min-w-0 flex-1"
+            :model-value="form.durationMinutes ?? ''"
+            @update:model-value="onDurationChange"
+          >
+            <NativeSelectOption value="">Not set</NativeSelectOption>
+            <NativeSelectOption v-for="preset in DURATION_PRESETS" :key="preset" :value="preset">
+              {{ formatDuration(minutesToDuration(preset)) }}
+            </NativeSelectOption>
+          </NativeSelect>
+        </div>
+
+        <div class="h-px bg-slate-100" />
+
+        <div class="flex min-h-11 items-center gap-3 px-3">
+          <span class="text-sm text-(--color-text-muted)">Plan</span>
+          <span
+            data-testid="task-section"
+            :aria-label="`Plan section: ${sectionLabel}`"
+            class="ml-auto rounded-full bg-[#E1F5FE] px-3 py-1 text-xs font-bold text-[#007B99]"
+          >
+            {{ sectionLabel }}
+          </span>
+        </div>
+      </section>
+
+      <!-- Description zone -->
+      <section class="mt-4 rounded-2xl bg-white p-3" :class="controlsStaggerClass">
+        <Textarea
+          v-model="form.description"
+          data-testid="task-description"
+          aria-label="Task description"
+          rows="3"
+          placeholder="Add details"
+          class="min-h-0 w-full resize-none rounded-none border-0 bg-transparent px-0 py-0 text-sm text-slate-700 shadow-none placeholder-slate-400 outline-none focus-visible:border-0 focus-visible:ring-0"
+          style="font-family: 'Inter', sans-serif; font-weight: 400"
+        />
+      </section>
+
+      <!-- Source zone: only when the task came from a note -->
+      <a
+        v-if="loadedTask?.noteId"
+        :href="`/notes/${loadedTask.noteId}`"
+        data-testid="task-source-note"
+        class="mt-4 flex min-h-11 items-center gap-3 rounded-2xl bg-white px-3 text-sm font-semibold text-(--color-text-main)"
+        :class="controlsStaggerClass"
+      >
+        <FileText class="h-5 w-5 shrink-0 text-(--color-text-muted)" aria-hidden="true" />
+        <span>From a note</span>
+      </a>
+
+      <!-- Danger zone: delete the task (view mode only) -->
+      <Button
+        v-if="isViewMode"
+        type="button"
+        variant="tactile-destructive"
+        size="touch"
+        data-testid="task-delete"
+        class="mt-4 w-full"
+        style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+        :class="controlsStaggerClass"
+        @click="deleteOpen = true"
+      >
+        <Trash2 class="size-5" aria-hidden="true" />
+        Delete task
+      </Button>
+
+      <!-- Request failure -->
+      <Alert
+        v-if="errorMessage"
+        variant="destructive"
+        data-testid="task-error"
+        class="mt-4 rounded-xl border-red-200 bg-red-50 p-3 text-xs text-red-800"
+      >
+        <AlertDescription class="flex items-center justify-between text-xs text-red-800">
+          <span>{{ errorMessage }}</span>
+          <Button
+            type="button"
+            variant="link"
+            size="touch"
+            data-testid="task-error-retry"
+            class="font-bold text-red-700"
+            @click="handleRetry"
+          >
+            Retry
+          </Button>
+        </AlertDescription>
+      </Alert>
+    </main>
+
+    <DialogShell v-model:open="deleteOpen" title="Delete Task" :busy="deleting">
+      <p
+        class="mt-2 text-sm text-[#7B8B97]"
+        style="font-family: 'Inter', sans-serif; font-weight: 400"
+      >
+        Are you sure you want to delete this task?
+      </p>
+      <p
+        class="mt-3 text-sm font-semibold text-[#334155]"
+        style="font-family: 'Quicksand', sans-serif; font-weight: 600"
+      >
+        {{ form.title }}
+      </p>
+
+      <template #actions="{ disabled, dismiss }">
+        <Button
+          type="button"
+          variant="secondary"
+          size="touch"
+          data-testid="task-delete-cancel"
+          :disabled="disabled"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
+          @click="dismiss"
+        >
+          Cancel
+        </Button>
+
+        <Button
+          type="button"
+          variant="tactile-destructive"
+          size="touch"
+          data-testid="task-delete-confirm"
+          :disabled="disabled"
+          :aria-busy="deleting"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          @click="confirmDelete"
+        >
+          CONFIRM
+        </Button>
+      </template>
+    </DialogShell>
+  </div>
+</template>

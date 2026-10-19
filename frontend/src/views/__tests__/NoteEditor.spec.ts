@@ -2,9 +2,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import NoteEditor from '../NoteEditor.vue'
 import TiptapEditor from '@/components/editor/TiptapEditor.vue'
-import CoursePickerDialog from '@/components/editor/CoursePickerDialog.vue'
+import CoursePickerDialog from '@/components/CoursePickerDialog.vue'
 import { notesApi } from '@/api/notes'
-import { coursesApi, schedulesApi } from '@/api'
+import { coursesApi, schedulesApi, studyPlannerApi } from '@/api'
 import { useCatalog } from '@/composables/useCatalog'
 import type {
   NoteRequest,
@@ -59,6 +59,13 @@ describe('NoteEditor.vue', () => {
       { id: 2, name: 'MATH 201 Calculus II', description: null, userId: 1 },
     ])
     vi.spyOn(schedulesApi, 'list').mockResolvedValue([])
+    vi.spyOn(studyPlannerApi, 'status').mockResolvedValue({
+      hasPendingNotes: false,
+      dirtyNoteCount: 0,
+      dirtyDates: [],
+      courseNames: [],
+      pendingNotes: [],
+    })
   })
 
   it('locks editor and disables save button when course is unassigned (course anchor gating)', async () => {
@@ -393,6 +400,10 @@ describe('NoteEditor.vue', () => {
     })
     await flushPromises()
 
+    const tiptap = wrapper.findComponent(TiptapEditor)
+    await tiptap.vm.$emit('update:modelValue', '<p>Valid text content edited</p>')
+    await flushPromises()
+
     const saveButton = wrapper.find('[data-testid="save-button"]')
     await saveButton.trigger('click')
     await flushPromises()
@@ -511,6 +522,51 @@ describe('NoteEditor.vue', () => {
     expect(statusBadge.text()).toBe('Pending update')
   })
 
+  it('keeps save button disabled on an unchanged note and enables it after an edit', async () => {
+    mockRoute.params = { id: 'note-processed-1' }
+    vi.mocked(notesApi.get).mockResolvedValueOnce({
+      id: 'note-processed-1',
+      courseId: 1,
+      title: 'Processed Note',
+      content: 'Original note content',
+      entryDate: '2026-10-13',
+      createdAt: '2026-10-13T00:00:00Z',
+      updatedAt: '2026-10-13T00:00:00Z',
+      lastProcessedAt: '2026-10-13T00:00:00Z',
+    })
+
+    const wrapper = mount(NoteEditor)
+    await flushPromises()
+
+    const saveButton = wrapper.find('[data-testid="save-button"]')
+    expect(saveButton.attributes('disabled')).toBeDefined()
+
+    const tiptap = wrapper.findComponent(TiptapEditor)
+    await tiptap.vm.$emit('update:modelValue', '<p>Original note content with additions</p>')
+    await flushPromises()
+
+    expect(saveButton.attributes('disabled')).toBeUndefined()
+  })
+
+  it('keeps save button disabled on a seeded new note and enables it after an edit', async () => {
+    const wrapper = mount(NoteEditor, {
+      props: {
+        initialCourseId: 1,
+        initialContent: 'Seeded content',
+      },
+    })
+    await flushPromises()
+
+    const saveButton = wrapper.find('[data-testid="save-button"]')
+    expect(saveButton.attributes('disabled')).toBeDefined()
+
+    const tiptap = wrapper.findComponent(TiptapEditor)
+    await tiptap.vm.$emit('update:modelValue', '<p>Seeded content edited</p>')
+    await flushPromises()
+
+    expect(saveButton.attributes('disabled')).toBeUndefined()
+  })
+
   it('defaults to h-dvh class when visualViewport is not present', async () => {
     const wrapper = mount(NoteEditor)
     await flushPromises()
@@ -570,5 +626,293 @@ describe('NoteEditor.vue', () => {
     )
 
     vi.unstubAllGlobals()
+  })
+
+  it('does not show unsaved changes dialog when leaving an unchanged loaded note', async () => {
+    mockRoute.params = { id: 'note-uuid-existing-unchanged' }
+    const existingNote: NoteResponse = {
+      id: 'note-uuid-existing-unchanged',
+      courseId: 2,
+      title: 'Calculus Derivatives',
+      content: '# Derivatives Overview\n\nChain rule notes',
+      entryDate: '2026-10-12',
+      createdAt: '2026-10-12T00:00:00Z',
+      updatedAt: '2026-10-12T00:00:00Z',
+    }
+    vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
+
+    const wrapper = mount(NoteEditor, { attachTo: document.body })
+    await flushPromises()
+
+    const backButton = wrapper.find('[data-testid="back-button"]')
+    await backButton.trigger('click')
+    await flushPromises()
+
+    const unsavedDialog = document.body.querySelector('[data-testid="unsaved-changes-dialog"]')
+    expect(unsavedDialog).toBeNull()
+    expect(mockRouter.back).toHaveBeenCalled()
+
+    expect(beforeRouteLeaveCallback).toBeDefined()
+    const confirmSpy = vi.spyOn(window, 'confirm')
+    expect(beforeRouteLeaveCallback!()).toBe(true)
+    expect(confirmSpy).not.toHaveBeenCalled()
+
+    wrapper.unmount()
+  })
+
+  it('does not trigger unsaved changes dialog when focusing inputs or reselecting identical values', async () => {
+    mockRoute.params = { id: 'note-uuid-existing-focus' }
+    const existingNote: NoteResponse = {
+      id: 'note-uuid-existing-focus',
+      courseId: 2,
+      title: 'Chemistry Lab',
+      content: 'Observation notes',
+      entryDate: '2026-10-12',
+      createdAt: '2026-10-12T00:00:00Z',
+      updatedAt: '2026-10-12T00:00:00Z',
+    }
+    vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
+
+    const wrapper = mount(NoteEditor, { attachTo: document.body })
+    await flushPromises()
+
+    const titleInput = wrapper.find<HTMLInputElement>('[data-testid="title-input"]')
+    await titleInput.trigger('focus')
+    await titleInput.trigger('click')
+
+    const picker = wrapper.findComponent(CoursePickerDialog)
+    await picker.vm.$emit('select', 2)
+    await flushPromises()
+
+    const backButton = wrapper.find('[data-testid="back-button"]')
+    await backButton.trigger('click')
+    await flushPromises()
+
+    const unsavedDialog = document.body.querySelector('[data-testid="unsaved-changes-dialog"]')
+    expect(unsavedDialog).toBeNull()
+    expect(mockRouter.back).toHaveBeenCalled()
+
+    wrapper.unmount()
+  })
+
+  it('shows unsaved changes dialog when modified and avoids dialog when changes are reverted', async () => {
+    mockRoute.params = { id: 'note-uuid-existing-revert' }
+    const existingNote: NoteResponse = {
+      id: 'note-uuid-existing-revert',
+      courseId: 2,
+      title: 'Calculus Derivatives',
+      content: '# Derivatives Overview\n\nChain rule notes',
+      entryDate: '2026-10-12',
+      createdAt: '2026-10-12T00:00:00Z',
+      updatedAt: '2026-10-12T00:00:00Z',
+    }
+    vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
+
+    const wrapper = mount(NoteEditor, { attachTo: document.body })
+    await flushPromises()
+
+    const titleInput = wrapper.find<HTMLInputElement>('[data-testid="title-input"]')
+    await titleInput.setValue('Calculus Derivatives with Integrals')
+    await flushPromises()
+
+    const backButton = wrapper.find('[data-testid="back-button"]')
+    await backButton.trigger('click')
+    await flushPromises()
+
+    let unsavedDialog = document.body.querySelector('[data-testid="unsaved-changes-dialog"]')
+    expect(unsavedDialog).not.toBeNull()
+
+    const cancelButton = document.body.querySelector(
+      '[data-testid="cancel-discard-button"]',
+    ) as HTMLButtonElement
+    cancelButton.click()
+    await flushPromises()
+
+    mockRouter.back.mockClear()
+
+    await titleInput.setValue('Calculus Derivatives')
+    await flushPromises()
+
+    await backButton.trigger('click')
+    await flushPromises()
+
+    unsavedDialog = document.body.querySelector('[data-testid="unsaved-changes-dialog"]')
+    expect(unsavedDialog).toBeNull()
+    expect(mockRouter.back).toHaveBeenCalledTimes(1)
+
+    wrapper.unmount()
+  })
+
+  it('clears unsaved changes when course selection and editor content are reverted', async () => {
+    mockRoute.params = { id: 'note-uuid-existing-content-revert' }
+    const existingNote: NoteResponse = {
+      id: 'note-uuid-existing-content-revert',
+      courseId: 1,
+      title: 'Physics Mechanics',
+      content: 'Original physics body',
+      entryDate: '2026-10-12',
+      createdAt: '2026-10-12T00:00:00Z',
+      updatedAt: '2026-10-12T00:00:00Z',
+    }
+    vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
+
+    const wrapper = mount(NoteEditor, { attachTo: document.body })
+    await flushPromises()
+
+    const tiptap = wrapper.findComponent(TiptapEditor)
+    await tiptap.vm.$emit('update:modelValue', '<p>Modified physics body</p>')
+    await flushPromises()
+
+    const backButton = wrapper.find('[data-testid="back-button"]')
+    await backButton.trigger('click')
+    await flushPromises()
+
+    let unsavedDialog = document.body.querySelector('[data-testid="unsaved-changes-dialog"]')
+    expect(unsavedDialog).not.toBeNull()
+
+    const cancelButton = document.body.querySelector(
+      '[data-testid="cancel-discard-button"]',
+    ) as HTMLButtonElement
+    cancelButton.click()
+    await flushPromises()
+
+    mockRouter.back.mockClear()
+
+    await tiptap.vm.$emit('update:modelValue', '<p>Original physics body</p>')
+    await flushPromises()
+
+    await backButton.trigger('click')
+    await flushPromises()
+
+    unsavedDialog = document.body.querySelector('[data-testid="unsaved-changes-dialog"]')
+    expect(unsavedDialog).toBeNull()
+    expect(mockRouter.back).toHaveBeenCalledTimes(1)
+
+    wrapper.unmount()
+  })
+
+  it('does not show unsaved dialog when user restores new note fields to empty', async () => {
+    const wrapper = mount(NoteEditor, {
+      props: {
+        initialCourseId: 1,
+      },
+      attachTo: document.body,
+    })
+    await flushPromises()
+
+    const titleInput = wrapper.find<HTMLInputElement>('[data-testid="title-input"]')
+    await titleInput.setValue('Transient Title')
+    await flushPromises()
+
+    const backButton = wrapper.find('[data-testid="back-button"]')
+    await backButton.trigger('click')
+    await flushPromises()
+
+    let unsavedDialog = document.body.querySelector('[data-testid="unsaved-changes-dialog"]')
+    expect(unsavedDialog).not.toBeNull()
+
+    const cancelButton = document.body.querySelector(
+      '[data-testid="cancel-discard-button"]',
+    ) as HTMLButtonElement
+    cancelButton.click()
+    await flushPromises()
+
+    mockRouter.back.mockClear()
+
+    await titleInput.setValue('')
+    await flushPromises()
+
+    await backButton.trigger('click')
+    await flushPromises()
+
+    unsavedDialog = document.body.querySelector('[data-testid="unsaved-changes-dialog"]')
+    expect(unsavedDialog).toBeNull()
+    expect(mockRouter.back).toHaveBeenCalledTimes(1)
+
+    wrapper.unmount()
+  })
+
+  it('loads the note through the noteId prop in embedded mode', async () => {
+    const existingNote: NoteResponse = {
+      id: 'note-embedded-1',
+      courseId: 1,
+      title: 'Embedded Note',
+      content: 'Embedded content',
+      entryDate: '2026-10-12',
+      createdAt: '2026-10-12T00:00:00Z',
+      updatedAt: '2026-10-12T00:00:00Z',
+    }
+    vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
+
+    const wrapper = mount(NoteEditor, {
+      props: { embedded: true, noteId: 'note-embedded-1' },
+    })
+    await flushPromises()
+
+    expect(notesApi.get).toHaveBeenCalledWith('note-embedded-1')
+    expect(wrapper.find<HTMLInputElement>('[data-testid="title-input"]').element.value).toBe(
+      'Embedded Note',
+    )
+    wrapper.unmount()
+  })
+
+  it('emits close instead of router.back on Back in embedded mode', async () => {
+    const wrapper = mount(NoteEditor, {
+      props: { embedded: true, noteId: null },
+    })
+    await flushPromises()
+
+    await wrapper.find('[data-testid="back-button"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.emitted('close')).toHaveLength(1)
+    expect(mockRouter.back).not.toHaveBeenCalled()
+    expect(beforeRouteLeaveCallback).toBeNull()
+    wrapper.unmount()
+  })
+
+  it('emits saved with the note id then close after a successful embedded save', async () => {
+    vi.mocked(notesApi.create).mockResolvedValueOnce({
+      id: 'saved-embedded-1',
+      courseId: 1,
+      title: 'Embedded Save',
+      content: 'Valid embedded content edited',
+      entryDate: '2026-10-13',
+      createdAt: '2026-10-13T00:00:00Z',
+      updatedAt: '2026-10-13T00:00:00Z',
+    })
+
+    const wrapper = mount(NoteEditor, {
+      props: {
+        embedded: true,
+        noteId: null,
+        initialCourseId: 1,
+        initialTitle: 'Embedded Save',
+        initialContent: 'Valid embedded content',
+      },
+    })
+    await flushPromises()
+
+    const tiptap = wrapper.findComponent(TiptapEditor)
+    await tiptap.vm.$emit('update:modelValue', '<p>Valid embedded content edited</p>')
+    await flushPromises()
+
+    await wrapper.find('[data-testid="save-button"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.emitted('saved')).toEqual([['saved-embedded-1']])
+    expect(wrapper.emitted('close')).toHaveLength(1)
+    expect(mockRouter.back).not.toHaveBeenCalled()
+    wrapper.unmount()
+  })
+
+  it('applies opacity-0 to the metadata section when showContent is false', async () => {
+    const wrapper = mount(NoteEditor, {
+      props: { embedded: true, showContent: false },
+    })
+    await flushPromises()
+
+    expect(wrapper.find('section').classes()).toContain('opacity-0')
+    wrapper.unmount()
   })
 })

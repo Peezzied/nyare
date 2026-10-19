@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import ScheduleCalendar from './ScheduleCalendar.vue'
-import DayViewHeader from './DayViewHeader.vue'
 import { mockCourses, mockEvents, mockSchedules, mockTasks } from '../../mocks/calendarData'
-import { expandSchedulesForDate, formatDateHeader } from '../../utils/scheduleExpander'
+import { expandSchedulesForDate } from '../../utils/scheduleExpander'
 import { deriveUntimedItems } from '../../utils/untimedItems'
 import { toDateKey } from '../../utils/dayKey'
 
@@ -32,7 +31,6 @@ const currentDate = ref(wednesdayDate)
         <div
           class="w-full max-w-[420px] h-[780px] bg-[#F5F6EE] flex flex-col rounded-[32px] shadow-2xl border border-slate-300 overflow-hidden"
         >
-          <DayViewHeader :date-title="formatDateHeader(wednesdayDate)" mode="day" />
           <ScheduleCalendar
             :events="wednesdayEvents"
             :untimed-items="wednesdayUntimed"
@@ -47,7 +45,6 @@ const currentDate = ref(wednesdayDate)
         <div
           class="w-full max-w-[420px] h-[780px] bg-[#F5F6EE] flex flex-col rounded-[32px] shadow-2xl border border-slate-300 overflow-hidden"
         >
-          <DayViewHeader :date-title="formatDateHeader(thursdayDate)" mode="day" />
           <ScheduleCalendar
             :events="thursdayEvents"
             :untimed-items="thursdayUntimed"
@@ -62,7 +59,6 @@ const currentDate = ref(wednesdayDate)
         <div
           class="w-full max-w-[420px] h-[780px] bg-[#F5F6EE] flex flex-col rounded-[32px] shadow-2xl border border-slate-300 overflow-hidden"
         >
-          <DayViewHeader :date-title="formatDateHeader(sundayDate)" mode="day" />
           <ScheduleCalendar
             :events="sundayEvents"
             :untimed-items="sundayUntimed"
@@ -77,7 +73,6 @@ const currentDate = ref(wednesdayDate)
         <div
           class="w-full max-w-2xl h-[800px] bg-[#F5F6EE] flex flex-col rounded-2xl shadow-xl border border-slate-300 overflow-hidden"
         >
-          <DayViewHeader :date-title="formatDateHeader(currentDate)" mode="day" />
           <ScheduleCalendar
             :events="wednesdayEvents"
             :untimed-items="wednesdayUntimed"

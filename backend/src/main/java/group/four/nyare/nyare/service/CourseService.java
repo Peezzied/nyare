@@ -2,7 +2,6 @@ package group.four.nyare.nyare.service;
 
 import group.four.nyare.nyare.dto.CourseRequest;
 import group.four.nyare.nyare.dto.CourseResponse;
-import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 
 import java.util.List;
@@ -13,39 +12,39 @@ import java.util.List;
 public interface CourseService {
 
     /**
-     * Creates and persists a new course for a user.
+     * Creates and persists a new course owned by the session user.
      *
-     * @param request       the validated course payload
-     * @param sessionUserId optional user identifier from the active session
+     * @param request the validated course payload
+     * @param userId  the owner user identifier from the active session
      * @return the created course response
-     * @throws BadRequestException       if no user identifier can be resolved
-     * @throws ResourceNotFoundException if resolved user does not exist
+     * @throws ResourceNotFoundException if the session user does not exist
      */
-    CourseResponse createCourse(CourseRequest request, Long sessionUserId);
+    CourseResponse createCourse(CourseRequest request, Long userId);
 
     /**
-     * Lists courses filtered by user if present, or all courses.
+     * Lists courses owned by the session user.
      *
-     * @param sessionUserId the active session user identifier
-     * @param queryUserId   optional query parameter user identifier
+     * @param userId the owner user identifier from the active session
      * @return list of course responses
      */
-    List<CourseResponse> listCourses(Long sessionUserId, Long queryUserId);
+    List<CourseResponse> listCourses(Long userId);
 
     /**
-     * Retrieves a single course by identifier.
+     * Retrieves a single course owned by the session user.
      *
-     * @param id the course identifier
+     * @param id     the course identifier
+     * @param userId the owner user identifier from the active session
      * @return the course response
-     * @throws ResourceNotFoundException if course does not exist
+     * @throws ResourceNotFoundException if the course does not exist or belongs to another user
      */
-    CourseResponse getCourse(Long id);
+    CourseResponse getCourse(Long id, Long userId);
 
     /**
-     * Deletes a course by identifier.
+     * Deletes a course owned by the session user.
      *
-     * @param id the course identifier
-     * @throws ResourceNotFoundException if course does not exist
+     * @param id     the course identifier
+     * @param userId the owner user identifier from the active session
+     * @throws ResourceNotFoundException if the course does not exist or belongs to another user
      */
-    void deleteCourse(Long id);
+    void deleteCourse(Long id, Long userId);
 }

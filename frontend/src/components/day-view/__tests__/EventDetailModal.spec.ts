@@ -105,7 +105,7 @@ describe('EventDetailModal', () => {
 
     const backdrop = wrapper.find('[data-testid="modal-backdrop"]')
     expect(backdrop.exists()).toBe(true)
-    expect(backdrop.classes()).toContain('bg-black/40')
+    expect(backdrop.classes()).toContain('bg-black/20')
     await backdrop.trigger('click')
 
     vi.advanceTimersByTime(250)

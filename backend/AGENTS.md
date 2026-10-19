@@ -33,6 +33,7 @@ Nyare backend is a Spring Boot service powering the calendar-first academic plan
    - Controllers never touch repositories; Entities never escape the service layer (DTOs only).
    - Class-level `@Transactional(readOnly = true)` on services; explicit `@Transactional` on mutations.
    - Combined Processing & Planning: `StudyPlannerService.processNotes(Long userId)` executes two-phase multi-day sequential extraction across pending dirty dates and anchors final task scheduling to `LocalDate.now()`. Pre-flight status query available via `getPlannerStatus(Long userId)`.
+   - Session scoping: protected `/api/**` paths require a session and answer 401 (RFC 7807) without one. Service methods take the session user ID and scope every read and write to it; a by-ID access to another user's record throws `ResourceNotFoundException` (404).
 2. **Canonical Exceptions Only**:
    - Never create custom exception classes per entity/feature.
    - Throw only `ResourceNotFoundException` (404) or `BadRequestException` (400) with descriptive messages.

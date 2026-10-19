@@ -93,6 +93,29 @@ describe('TiptapEditor', () => {
     expect(alert.text()).toContain('Custom upload error message')
   })
 
+  it('does not enable undo when external content loads into the editor', async () => {
+    const wrapper = mount(TiptapEditor, {
+      props: {
+        modelValue: '',
+      },
+    })
+    await flushPromises()
+
+    const toolbar = wrapper.findComponent({ name: 'TiptapToolbar' })
+    const editor = toolbar.props('editor') as {
+      can: () => { undo: () => boolean }
+      getHTML: () => string
+    }
+
+    expect(editor.can().undo()).toBe(false)
+
+    await wrapper.setProps({ modelValue: '<p>Loaded from server</p>' })
+    await flushPromises()
+
+    expect(editor.getHTML()).toContain('Loaded from server')
+    expect(editor.can().undo()).toBe(false)
+  })
+
   it('renders a scrollable text container and pinned bottom toolbar', () => {
     const wrapper = mount(TiptapEditor, {
       props: {

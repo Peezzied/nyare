@@ -1,10 +1,33 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { defineComponent, h, toValue } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
+import { routerKey, routeLocationKey } from 'vue-router'
 import NotesView from '../NotesView.vue'
+import NoteEditorModal from '@/components/notes/NoteEditorModal.vue'
+import AppHeader from '@/components/AppHeader.vue'
+import NavigationBar from '@/components/NavigationBar.vue'
 import { coursesApi, schedulesApi, notesApi } from '@/api'
 import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
+import { provideShellHeader } from '@/composables/useShellHeader'
 import type { NoteSummaryResponse } from '@/types/api'
+
+const mockPush = vi.fn<(path: string | { name: string; params?: { id: string } }) => Promise<void>>(
+  () => Promise.resolve(),
+)
+
+vi.mock('vue-router', () => {
+  const routerKey = Symbol('routerKey')
+  const routeLocationKey = Symbol('routeLocationKey')
+  const routerStub = {
+    push: (path: string | { name: string; params?: { id: string } }) => mockPush(path),
+  }
+  return {
+    useRouter: () => routerStub,
+    routerKey,
+    routeLocationKey,
+  }
+})
 
 const summary: NoteSummaryResponse = {
   id: 'note-1',
@@ -25,19 +48,56 @@ function mockCatalog(): void {
   vi.spyOn(schedulesApi, 'list').mockResolvedValue([])
 }
 
+// NoteEditor uses useRoute, which the vue-router mock above does not provide.
+const NoteEditorStub = defineComponent({
+  name: 'NoteEditor',
+  setup() {
+    return () => h('div', { 'data-testid': 'note-editor-stub' })
+  },
+})
+
+const globalStubs = { stubs: { NoteEditor: NoteEditorStub } }
+
+// NotesView contributes its top bar through the shared shell header, so it renders
+// inside AppShell in the real app. This harness stands in for the shell chrome.
+const ShellHarness = defineComponent({
+  setup() {
+    const header = provideShellHeader()
+
+    return () =>
+      h('div', [
+        h(
+          AppHeader,
+          { title: toValue(header.title) },
+          {
+            left: () => (header.left ? h(header.left) : null),
+            right: () => (header.right ? h(header.right) : null),
+          },
+        ),
+        h(NotesView),
+        h(NavigationBar),
+      ])
+  },
+})
+
+function mountView(provide: Record<PropertyKey, unknown> = {}) {
+  return mount(ShellHarness, { global: { ...globalStubs, provide } })
+}
+
 describe('NotesView', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
     vi.stubEnv('VITE_USE_MOCKS', 'false')
     useCatalog().resetCatalog()
     useNotes().resetNotes()
+    mockPush.mockClear()
   })
 
   it('renders cards in the grid', async () => {
     mockCatalog()
     vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
 
-    const wrapper = mount(NotesView)
+    const wrapper = mountView()
     await flushPromises()
 
     expect(wrapper.find('[data-testid="notes-grid"]').exists()).toBe(true)
@@ -56,7 +116,7 @@ describe('NotesView', () => {
       },
     ])
 
-    const wrapper = mount(NotesView)
+    const wrapper = mountView()
     await flushPromises()
 
     expect(wrapper.find('[data-testid="note-image"]').exists()).toBe(true)
@@ -65,22 +125,27 @@ describe('NotesView', () => {
   it('shows isolated preview cards when dev API returns empty', async () => {
     mockCatalog()
     vi.spyOn(notesApi, 'list').mockResolvedValue([])
+    vi.stubEnv('VITE_USE_MOCKS', 'true')
 
-    const wrapper = mount(NotesView)
-    await flushPromises()
+    try {
+      const wrapper = mountView()
+      await flushPromises()
 
-    expect(wrapper.findAll('[data-testid="note-card"]').length).toBe(6)
-    expect(wrapper.text()).toContain('Limits recap')
-    expect(wrapper.text()).toContain('Pipeline stages')
-    expect(wrapper.find('[data-testid="picture-note-card"]').exists()).toBe(true)
-    expect(wrapper.find('[data-testid="notes-empty"]').exists()).toBe(false)
+      expect(wrapper.findAll('[data-testid="note-card"]').length).toBe(6)
+      expect(wrapper.text()).toContain('Limits recap')
+      expect(wrapper.text()).toContain('Pipeline stages')
+      expect(wrapper.find('[data-testid="picture-note-card"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="notes-empty"]').exists()).toBe(false)
+    } finally {
+      vi.unstubAllEnvs()
+    }
   })
 
   it('prefers real API notes over preview data', async () => {
     mockCatalog()
     vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
 
-    const wrapper = mount(NotesView)
+    const wrapper = mountView()
     await flushPromises()
 
     expect(wrapper.findAll('[data-testid="note-card"]').length).toBe(1)
@@ -94,7 +159,7 @@ describe('NotesView', () => {
     vi.stubEnv('DEV', false)
 
     try {
-      const wrapper = mount(NotesView)
+      const wrapper = mountView()
       await flushPromises()
 
       expect(wrapper.find('[data-testid="notes-empty"]').exists()).toBe(true)
@@ -109,7 +174,7 @@ describe('NotesView', () => {
     mockCatalog()
     const list = vi.spyOn(notesApi, 'list').mockRejectedValue(new Error('Network error'))
 
-    const wrapper = mount(NotesView)
+    const wrapper = mountView()
     await flushPromises()
 
     expect(wrapper.find('[data-testid="notes-error"]').exists()).toBe(true)
@@ -121,47 +186,31 @@ describe('NotesView', () => {
     expect(wrapper.find('[data-testid="notes-grid"]').exists()).toBe(true)
   })
 
-  it('keeps a compact cream header without a plus button', async () => {
+  it('opens a new note from the floating plus button', async () => {
     mockCatalog()
     vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
 
-    const wrapper = mount(NotesView)
-    await flushPromises()
-
-    const topbar = wrapper.get('[data-testid="notes-topbar"]')
-    expect(topbar.classes()).toContain('sticky')
-    expect(topbar.classes()).toContain('bg-app-bg')
-    expect(topbar.classes()).not.toContain('bg-[#0B8043]')
-    expect(wrapper.find('[data-testid="topbar-menu"]').exists()).toBe(true)
-    expect(wrapper.find('[data-testid="topbar-search"]').exists()).toBe(true)
-    expect(wrapper.find('[data-testid="topbar-add"]').exists()).toBe(false)
-    expect(wrapper.get('[data-testid="notes-title"]').classes()).toContain('text-center')
-    expect(wrapper.get('[data-testid="notes-title"]').text()).toBe('Notes')
-  })
-
-  it('shows a visual-only floating plus button', async () => {
-    mockCatalog()
-    const list = vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
-
-    const wrapper = mount(NotesView)
+    const wrapper = mountView()
     await flushPromises()
 
     const fab = wrapper.get('[data-testid="notes-fab"]')
+
     expect(fab.classes()).toContain('bg-primary')
     expect(fab.classes()).toContain('rounded-2xl')
-    expect(fab.classes()).not.toContain('rounded-full')
-    await fab.trigger('click')
-    await flushPromises()
 
-    expect(list).toHaveBeenCalledTimes(1)
-    expect(wrapper.find('[data-testid="notes-grid"]').exists()).toBe(true)
+    await fab.trigger('click')
+
+    const modal = wrapper.findComponent(NoteEditorModal)
+    expect(modal.props('isOpen')).toBe(true)
+    expect(modal.props('noteId')).toBeNull()
+    expect(mockPush).not.toHaveBeenCalled()
   })
 
   it('hides the picture preview card outside mock mode', async () => {
     mockCatalog()
     vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
 
-    const wrapper = mount(NotesView)
+    const wrapper = mountView()
     await flushPromises()
 
     expect(wrapper.find('[data-testid="picture-note-card"]').exists()).toBe(false)
@@ -173,7 +222,7 @@ describe('NotesView', () => {
     vi.stubEnv('VITE_USE_MOCKS', 'true')
 
     try {
-      const wrapper = mount(NotesView)
+      const wrapper = mountView()
       await flushPromises()
 
       expect(wrapper.find('[data-testid="picture-note-card"]').exists()).toBe(true)
@@ -183,14 +232,92 @@ describe('NotesView', () => {
     }
   })
 
-  it('performs no action on top bar button clicks', async () => {
+  it('opens the editor modal for the clicked note without routing', async () => {
+    mockCatalog()
+    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.get('[data-testid="note-card"]').trigger('click')
+    await flushPromises()
+
+    const modal = wrapper.findComponent(NoteEditorModal)
+    expect(modal.props('isOpen')).toBe(true)
+    expect(modal.props('noteId')).toBe('note-1')
+    expect(wrapper.find('[data-testid="note-editor-modal"]').exists()).toBe(true)
+    expect(mockPush).not.toHaveBeenCalled()
+  })
+
+  it('ignores a second open trigger while the modal is open', async () => {
+    mockCatalog()
+    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.get('[data-testid="note-card"]').trigger('click')
+    await flushPromises()
+
+    await wrapper.get('[data-testid="notes-fab"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.findComponent(NoteEditorModal).props('noteId')).toBe('note-1')
+  })
+
+  it('closes the modal on popstate without a route push and preserves scroll', async () => {
+    vi.useFakeTimers()
+    vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => {
+      cb(0)
+      return 0
+    })
+    const scrollSpy = vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
+    mockCatalog()
+    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.get('[data-testid="note-card"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="note-editor-modal"]').exists()).toBe(true)
+
+    window.dispatchEvent(new Event('popstate'))
+    await vi.advanceTimersByTimeAsync(300)
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="note-editor-modal"]').exists()).toBe(false)
+    expect(mockPush).not.toHaveBeenCalled()
+    expect(scrollSpy).not.toHaveBeenCalled()
+
+    wrapper.unmount()
+    vi.useRealTimers()
+    vi.unstubAllGlobals()
+  })
+
+  it('refreshes the notes list when the editor saves', async () => {
     mockCatalog()
     const list = vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
 
-    const wrapper = mount(NotesView)
+    const wrapper = mountView()
     await flushPromises()
 
-    await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
+    expect(list).toHaveBeenCalledTimes(1)
+
+    await wrapper.findComponent(NoteEditorModal).vm.$emit('saved', 'note-1')
+    await flushPromises()
+
+    expect(list).toHaveBeenCalledTimes(2)
+  })
+
+  it('performs no action on the top bar search click', async () => {
+    mockCatalog()
+    const list = vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
+
+    const wrapper = mountView()
+    await flushPromises()
+
     await wrapper.get('[data-testid="topbar-search"]').trigger('click')
     await flushPromises()
 
@@ -198,16 +325,76 @@ describe('NotesView', () => {
     expect(wrapper.find('[data-testid="notes-grid"]').exists()).toBe(true)
   })
 
-  it('performs no action on card clicks', async () => {
+  it('opens the account menu from the top bar menu button', async () => {
     mockCatalog()
     vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
 
-    const wrapper = mount(NotesView)
+    const wrapper = mountView()
     await flushPromises()
 
-    await wrapper.get('[data-testid="note-card"]').trigger('click')
+    await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
     await flushPromises()
 
-    expect(wrapper.find('[data-testid="notes-grid"]').exists()).toBe(true)
+    const menu = document.querySelector<HTMLElement>('[data-testid="account-menu"]')
+    expect(menu).not.toBeNull()
+    expect(menu?.textContent).toContain('Select Account')
+
+    wrapper.unmount()
+  })
+
+  it('navigates to select-account from the account menu', async () => {
+    mockCatalog()
+    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
+    await flushPromises()
+
+    const item = document.querySelector<HTMLElement>('[data-testid="select-account-item"]')
+    expect(item).not.toBeNull()
+    item?.click()
+    await flushPromises()
+
+    expect(mockPush).toHaveBeenCalledWith('/select-account')
+    await vi.waitFor(() => {
+      expect(document.querySelector('[data-testid="account-menu"]')).toBeNull()
+    })
+
+    wrapper.unmount()
+  })
+
+  it('renders the bottom navigation with the notes tab active', async () => {
+    mockCatalog()
+    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
+
+    const wrapper = mountView({
+      [routerKey]: { push: mockPush },
+      [routeLocationKey]: { path: '/notes' },
+    })
+    await flushPromises()
+
+    const tab = wrapper.get('nav[aria-label="Main navigation"]').get('[data-id="notes"]')
+    expect(tab.attributes('data-active')).toBe('true')
+    expect(tab.attributes('aria-current')).toBe('page')
+  })
+
+  it('navigates to the calendar from the bottom navigation', async () => {
+    mockCatalog()
+    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
+
+    const wrapper = mountView({
+      [routerKey]: { push: mockPush },
+      [routeLocationKey]: { path: '/notes' },
+    })
+    await flushPromises()
+
+    await wrapper
+      .get('nav[aria-label="Main navigation"]')
+      .get('[data-id="calendar"]')
+      .trigger('click')
+
+    expect(mockPush).toHaveBeenCalledWith('/calendar')
   })
 })

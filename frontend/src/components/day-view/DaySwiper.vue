@@ -220,12 +220,7 @@ onUnmounted(() => {
         class="pointer-events-none absolute top-0 z-30 h-full w-full bg-[#F5F6EE]"
         :style="{ left: peekLeft }"
       >
-        <slot
-          name="peek"
-          :date="peekDate"
-          :scrollTop="peekScrollTop"
-          :gutterLeft="peekGutter"
-        />
+        <slot name="peek" :date="peekDate" :scrollTop="peekScrollTop" :gutterLeft="peekGutter" />
       </div>
     </div>
   </div>

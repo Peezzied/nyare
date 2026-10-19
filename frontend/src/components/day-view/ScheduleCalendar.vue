@@ -492,7 +492,7 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
 }
 
 /* Hide Schedule X's own toolbar, date header and all-day row
-   (DayViewHeader and AllDayStrip are used instead) */
+   (AppHeader and AllDayStrip are used instead) */
 .sx-nyare-wrapper :deep(.sx__calendar-header),
 .sx-nyare-wrapper :deep(.sx__week-grid__date-axis),
 .sx-nyare-wrapper :deep(.sx__date-grid) {

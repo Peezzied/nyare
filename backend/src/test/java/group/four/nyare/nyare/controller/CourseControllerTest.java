@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.controller;
 
+import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.dto.CourseRequest;
 import group.four.nyare.nyare.dto.CourseResponse;
 import group.four.nyare.nyare.service.CourseService;
@@ -39,7 +40,12 @@ class CourseControllerTest {
     private CourseService courseService;
 
     @MockitoBean
+    private SessionContext sessionContext;
+
+    @MockitoBean
     private JpaMetamodelMappingContext jpaMappingContext;
+
+    private static final Long USER_ID = 1L;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -48,6 +54,13 @@ class CourseControllerTest {
     @BeforeEach
     void setUp() {
         sampleCourse = new CourseResponse(10L, "CS101", "Intro to CS", 1L);
+        when(sessionContext.requireUserId()).thenReturn(USER_ID);
+    }
+
+    private MockHttpSession mockSession() {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute(UserController.SESSION_USER_ID, USER_ID);
+        return session;
     }
 
     @Test
@@ -55,13 +68,11 @@ class CourseControllerTest {
     void createCourse_withSessionUser_returnsCreated() throws Exception {
         // given
         CourseRequest request = new CourseRequest("CS101", "Intro to CS");
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute(UserController.SESSION_USER_ID, 1L);
-        when(courseService.createCourse(any(CourseRequest.class), eq(1L))).thenReturn(sampleCourse);
+        when(courseService.createCourse(any(CourseRequest.class), eq(USER_ID))).thenReturn(sampleCourse);
 
         // when & then
         mockMvc.perform(post("/api/courses")
-                        .session(session)
+                        .session(mockSession())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -75,12 +86,10 @@ class CourseControllerTest {
     @DisplayName("listCourses with session user returns user courses")
     void listCourses_withSession_returnsUserCourses() throws Exception {
         // given
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute(UserController.SESSION_USER_ID, 1L);
-        when(courseService.listCourses(eq(1L), any())).thenReturn(List.of(sampleCourse));
+        when(courseService.listCourses(eq(USER_ID))).thenReturn(List.of(sampleCourse));
 
         // when & then
-        mockMvc.perform(get("/api/courses").session(session))
+        mockMvc.perform(get("/api/courses").session(mockSession()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].name").value("CS101"));
@@ -90,10 +99,10 @@ class CourseControllerTest {
     @DisplayName("getCourse with valid ID returns course response")
     void getCourse_withValidId_returnsCourse() throws Exception {
         // given
-        when(courseService.getCourse(10L)).thenReturn(sampleCourse);
+        when(courseService.getCourse(10L, USER_ID)).thenReturn(sampleCourse);
 
         // when & then
-        mockMvc.perform(get("/api/courses/10"))
+        mockMvc.perform(get("/api/courses/10").session(mockSession()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(10))
                 .andExpect(jsonPath("$.name").value("CS101"));
@@ -103,12 +112,12 @@ class CourseControllerTest {
     @DisplayName("deleteCourse with valid ID returns 204 No Content")
     void deleteCourse_withValidId_returnsNoContent() throws Exception {
         // given
-        doNothing().when(courseService).deleteCourse(10L);
+        doNothing().when(courseService).deleteCourse(10L, USER_ID);
 
         // when & then
-        mockMvc.perform(delete("/api/courses/10"))
+        mockMvc.perform(delete("/api/courses/10").session(mockSession()))
                 .andExpect(status().isNoContent());
 
-        verify(courseService).deleteCourse(10L);
+        verify(courseService).deleteCourse(10L, USER_ID);
     }
 }
