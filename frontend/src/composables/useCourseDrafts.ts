@@ -1,6 +1,9 @@
 import { ref } from 'vue'
-import type { DayOfWeek } from '@/types/api'
+import type { CourseResponse, DayOfWeek } from '@/types/api'
+import { ApiError } from '@/api/client'
 import { coursesApi, schedulesApi } from '@/api'
+import { useCatalog } from '@/composables/useCatalog'
+import { createCache } from './createCache'
 
 export interface DraftSchedule {
   tempId?: string
@@ -14,10 +17,18 @@ export interface DraftCourse {
   name: string
   colorId: string
   schedules: DraftSchedule[]
+  /** Backend id when this draft re-persists an already saved course. */
+  courseId?: number
 }
 
 const draftCourses = ref<DraftCourse[]>([])
 const draftSchedules = ref<DraftSchedule[]>([])
+
+// Session-scoped drafts: sign-out or an account switch empties them (FR-017).
+createCache(() => {
+  draftCourses.value = []
+  draftSchedules.value = []
+})
 
 export function useCourseDrafts() {
   function stageCourse(course: DraftCourse) {
@@ -52,21 +63,56 @@ export function useCourseDrafts() {
     draftSchedules.value = []
   }
 
-  async function flush() {
-    for (const course of draftCourses.value) {
+  /**
+   * Persists every staged draft. Re-persisted drafts replace their backend
+   * course (delete then create, since courses have no update endpoint).
+   * Successfully persisted drafts unstage; on failure the rest stay staged
+   * for retry. Returns each created course with its draft `tempId`.
+   */
+  async function flush(): Promise<{ tempId: string; course: CourseResponse }[]> {
+    const { applyCourseCreated, applyCourseDeleted, applyScheduleCreated } = useCatalog()
+    const created: { tempId: string; course: CourseResponse }[] = []
+    for (const course of draftCourses.value.slice()) {
+      if (course.courseId != null) {
+        try {
+          await coursesApi.delete(course.courseId)
+        } catch (error) {
+          // A stale id must not block re-persisting the draft.
+          if (!(error instanceof ApiError && error.status === 404)) {
+            throw error
+          }
+        }
+        applyCourseDeleted(course.courseId)
+      }
       const createdCourse = await coursesApi.create({
         name: course.name,
       })
+      applyCourseCreated(createdCourse)
       const courseSchedules = draftSchedules.value.filter((s) => s.tempId === course.tempId)
-      for (const s of courseSchedules) {
-        await schedulesApi.create({
-          courseId: createdCourse.id,
-          day: s.day,
-          startTime: s.startTime,
-          endTime: s.endTime,
-        })
+      try {
+        for (const s of courseSchedules) {
+          applyScheduleCreated(
+            await schedulesApi.create({
+              courseId: createdCourse.id,
+              day: s.day,
+              startTime: s.startTime,
+              endTime: s.endTime,
+            }),
+          )
+        }
+      } catch (error) {
+        try {
+          await coursesApi.delete(createdCourse.id)
+          applyCourseDeleted(createdCourse.id)
+        } catch {
+          // Compensation is best effort; the draft stays staged either way.
+        }
+        throw error
       }
+      unstageCourse(course.tempId)
+      created.push({ tempId: course.tempId, course: createdCourse })
     }
+    return created
   }
 
   return {

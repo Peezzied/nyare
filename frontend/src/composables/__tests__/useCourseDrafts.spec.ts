@@ -1,13 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useCourseDrafts } from '../useCourseDrafts'
 import { coursesApi, schedulesApi } from '@/api'
+import type { CourseResponse, ScheduleResponse } from '@/types/api'
 
 vi.mock('@/api', () => ({
   coursesApi: {
-    create: vi.fn<() => Promise<any>>(),
+    create: vi.fn<() => Promise<unknown>>(),
+    delete: vi.fn<() => Promise<unknown>>(),
   },
   schedulesApi: {
-    create: vi.fn<() => Promise<any>>(),
+    create: vi.fn<() => Promise<unknown>>(),
   },
 }))
 
@@ -75,7 +77,7 @@ describe('useCourseDrafts', () => {
       id: 42,
       name: 'Math 101',
       color: '#FF5733',
-    } as any)
+    } as unknown as CourseResponse)
 
     vi.mocked(schedulesApi.create).mockResolvedValueOnce({
       id: 101,
@@ -83,7 +85,7 @@ describe('useCourseDrafts', () => {
       day: 'FRIDAY',
       startTime: '13:00',
       endTime: '14:00',
-    } as any)
+    } as ScheduleResponse)
 
     stageCourse({
       tempId: 'temp-math',
@@ -107,6 +109,80 @@ describe('useCourseDrafts', () => {
       startTime: '13:00',
       endTime: '14:00',
     })
+  })
+
+  it('unstages persisted drafts and returns the created courses on flush', async () => {
+    const { draftCourses, draftSchedules, stageCourse, flush } = useCourseDrafts()
+
+    vi.mocked(coursesApi.create).mockResolvedValueOnce({
+      id: 7,
+      name: 'Biology',
+    } as unknown as CourseResponse)
+    vi.mocked(schedulesApi.create).mockResolvedValueOnce({
+      id: 70,
+      courseId: 7,
+      day: 'MONDAY',
+      startTime: '09:00',
+      endTime: '10:00',
+    } as ScheduleResponse)
+
+    stageCourse({
+      tempId: 'temp-bio',
+      name: 'Biology',
+      colorId: 'sage',
+      schedules: [{ day: 'MONDAY', startTime: '09:00', endTime: '10:00' }],
+    })
+
+    const created = await flush()
+
+    expect(created).toEqual([{ tempId: 'temp-bio', course: { id: 7, name: 'Biology' } }])
+    expect(draftCourses.value).toHaveLength(0)
+    expect(draftSchedules.value).toHaveLength(0)
+  })
+
+  it('replaces the persisted course when the draft carries courseId', async () => {
+    const { stageCourse, flush } = useCourseDrafts()
+
+    vi.mocked(coursesApi.create).mockResolvedValueOnce({
+      id: 9,
+      name: 'Chemistry',
+    } as unknown as CourseResponse)
+
+    stageCourse({
+      tempId: 'temp-chem',
+      name: 'Chemistry',
+      colorId: 'coral',
+      schedules: [],
+      courseId: 4,
+    })
+
+    await flush()
+
+    expect(coursesApi.delete).toHaveBeenCalledWith(4)
+    expect(coursesApi.create).toHaveBeenCalledWith({ name: 'Chemistry' })
+  })
+
+  it('keeps the draft staged and deletes the new course when a schedule create fails', async () => {
+    const { draftCourses, stageCourse, flush } = useCourseDrafts()
+
+    vi.mocked(coursesApi.create).mockResolvedValueOnce({
+      id: 11,
+      name: 'Geology',
+    } as unknown as CourseResponse)
+    vi.mocked(schedulesApi.create).mockRejectedValueOnce(new Error('schedule failed'))
+
+    stageCourse({
+      tempId: 'temp-geo',
+      name: 'Geology',
+      colorId: 'coral',
+      schedules: [{ day: 'FRIDAY', startTime: '13:00', endTime: '14:00' }],
+    })
+
+    await expect(flush()).rejects.toThrow('schedule failed')
+
+    expect(coursesApi.delete).toHaveBeenCalledWith(11)
+    expect(draftCourses.value).toHaveLength(1)
+    expect(draftCourses.value[0]?.name).toBe('Geology')
   })
 
   it('updates an existing course and replaces its schedules when tempId matches', () => {

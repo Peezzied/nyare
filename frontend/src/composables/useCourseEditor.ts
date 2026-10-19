@@ -15,6 +15,8 @@ export interface CourseEditor {
   pendingBlockId: string | null
   isSaved: boolean
   lastSavedSnapshot: string
+  /** Backend id once `flush` persists the draft; `undefined` while unsaved. */
+  persistedId?: number
 }
 
 interface SavedSnapshot {
@@ -36,6 +38,7 @@ export function createCourseEditor(draft?: DraftCourse): CourseEditor {
     pendingBlockId: null,
     isSaved: false,
     lastSavedSnapshot: '',
+    persistedId: draft?.courseId,
   })
 
   if (draft) {
@@ -69,6 +72,7 @@ export function loadDraftIntoEditor(editor: CourseEditor, draft: DraftCourse): v
   editor.name = draft.name
   editor.colorId = draft.colorId
   editor.isSaved = true
+  editor.persistedId = draft.courseId
 
   const grouped = new Map<string, DayOfWeek[]>()
   for (const s of draft.schedules) {
@@ -246,4 +250,5 @@ export function resetEditor(editor: CourseEditor): void {
   editor.pendingBlockId = null
   editor.isSaved = false
   editor.lastSavedSnapshot = ''
+  editor.persistedId = undefined
 }

@@ -2,6 +2,9 @@
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCatalog } from '@/composables/useCatalog'
+import { setSessionUser, useAuth } from '@/composables/useAuth'
+import { useOnboarding } from '@/composables/useOnboarding'
+import { authApi } from '@/api'
 import { useCourseDrafts, type DraftSchedule } from '@/composables/useCourseDrafts'
 import {
   createCourseEditor,
@@ -31,7 +34,9 @@ import { Button } from '@/components/ui/button'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { Drawer, DrawerContent, DrawerHeader } from '@/components/ui/drawer'
 import DiscardDraftConfirmDialog from '@/components/DiscardDraftConfirmDialog.vue'
-import { Plus, Save, SaveAll, X } from 'lucide-vue-next'
+import StepProgress from '@/components/StepProgress.vue'
+import DialogShell from '@/components/ui/DialogShell.vue'
+import { ArrowLeft, Check, Plus, Save, X } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import { Toaster } from '@/components/ui/sonner'
 import type { DrawerOpenChangeDetails } from 'reka-ui'
@@ -65,11 +70,20 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const { courses: catalogCourses, schedules: catalogSchedules, loadCatalog } = useCatalog()
-const { draftCourses, stageCourse, unstageCourse } = useCourseDrafts()
+const {
+  courses: catalogCourses,
+  schedules: catalogSchedules,
+  loadCatalog,
+  deleteCourse,
+} = useCatalog()
+const { draftCourses, stageCourse, unstageCourse, resetDrafts, flush } = useCourseDrafts()
+const { user } = useAuth()
+const { studentName, isNameValid } = useOnboarding()
 
 const catalogAvailable = ref(true)
 const showDiscardDialog = ref(false)
+const showSubmitConfirm = ref(false)
+const pendingStepTarget = ref<string | null>(null)
 const showRemoveDialog = ref(false)
 const pendingRemoveId = ref<string | null>(null)
 const showSwitchDialog = ref(false)
@@ -126,7 +140,10 @@ const pendingBlockId = computed({
   },
 })
 
-const hasUnsavedChanges = computed(() => editors.value.some((e) => isEditorDirty(e)))
+// Staged drafts persist only through Save all, so they count as unsaved work.
+const hasUnsavedChanges = computed(
+  () => editors.value.some((e) => isEditorDirty(e)) || draftCourses.value.length > 0,
+)
 
 const dirtyEditors = computed(() => editors.value.filter((e) => isEditorDirty(e)))
 const discardMessage = computed(() =>
@@ -137,15 +154,28 @@ const discardMessage = computed(() =>
 
 const touchedEditors = computed(() => editors.value.filter((e) => isEditorTouched(e)))
 const canSaveAll = computed(() => !saving.value && touchedEditors.value.length > 0)
-const saveAllLabel = computed(() =>
-  touchedEditors.value.length > 1 ? `Save all (${touchedEditors.value.length})` : 'Save all',
-)
+
+// Dock onboarding: a lone editor means the student has not discovered the add
+// action yet, so the dock advertises it until a second course exists.
+const showAddCourseHint = computed(() => editors.value.length <= 1)
+const submitConfirmMessage = computed(() => {
+  if (user.value) {
+    return touchedEditors.value.length > 1
+      ? `This saves ${touchedEditors.value.length} courses and their class times to your account.`
+      : 'This saves your course and its class times to your account.'
+  }
+  return 'This creates your account and saves your class schedule.'
+})
 
 onMounted(async () => {
-  try {
-    await loadCatalog()
-  } catch {
-    catalogAvailable.value = false
+  // Sessionless onboarding defers registration to Save all; there is no
+  // catalog to load before an account exists.
+  if (user.value) {
+    try {
+      await loadCatalog()
+    } catch {
+      catalogAvailable.value = false
+    }
   }
   window.addEventListener('keydown', handleWindowKeydown)
 })
@@ -160,7 +190,8 @@ function handleWindowKeydown(event: KeyboardEvent) {
     isOpen.value &&
     !showDiscardDialog.value &&
     !showRemoveDialog.value &&
-    !showSwitchDialog.value
+    !showSwitchDialog.value &&
+    !showSubmitConfirm.value
   ) {
     if (hasUnsavedChanges.value) {
       event.preventDefault()
@@ -365,6 +396,9 @@ function guardCourseNavigation(action: () => void) {
 
 function selectCourseChip(id: string) {
   if (id === activeEditorId.value) {
+    // Tapping the active chip reopens a closed drawer.
+    isOpen.value = true
+    emit('update:open', true)
     return
   }
   guardCourseNavigation(() => {
@@ -418,10 +452,10 @@ function requestRemoveEditor(id: string) {
     showRemoveDialog.value = true
     return
   }
-  removeEditor(id)
+  void removeEditor(id)
 }
 
-function removeEditor(id: string) {
+async function removeEditor(id: string) {
   const index = editors.value.findIndex((e) => e.id === id)
   if (index < 0) return
 
@@ -429,6 +463,13 @@ function removeEditor(id: string) {
   editors.value.splice(index, 1)
   if (editor.isSaved) {
     unstageCourse(editor.id)
+  }
+  if (editor.persistedId != null) {
+    try {
+      await deleteCourse(editor.persistedId)
+    } catch (error) {
+      toast.error(errorMessage(error))
+    }
   }
 
   if (editors.value.length === 0) {
@@ -443,7 +484,7 @@ function removeEditor(id: string) {
 
 function confirmRemoveEditor() {
   if (pendingRemoveId.value) {
-    removeEditor(pendingRemoveId.value)
+    void removeEditor(pendingRemoveId.value)
   }
   pendingRemoveId.value = null
   showRemoveDialog.value = false
@@ -627,6 +668,9 @@ function syncUnavailableDays(block: TimeBlockDraft) {
   }
 }
 
+const ONBOARDING_STEP_ROUTES = ['/', '/welcome', '/create-schedule'] as const
+const ONBOARDING_STEP_LABELS = ['Start', 'Your name', 'Class schedule']
+
 function goBack() {
   if (hasUnsavedChanges.value) {
     showDiscardDialog.value = true
@@ -635,18 +679,39 @@ function goBack() {
   closeImmediately()
 }
 
-function closeImmediately() {
-  if (!isOpen.value) {
+function onStepSelect(step: number) {
+  const target = ONBOARDING_STEP_ROUTES[step - 1]
+  if (!target) {
     return
   }
+  if (hasUnsavedChanges.value) {
+    pendingStepTarget.value = target
+    showDiscardDialog.value = true
+    return
+  }
+  closeImmediately(target)
+}
+
+/** Closes only the editor drawer; the week preview and course dock stay open. */
+function closeDrawer() {
   for (const editor of editors.value) {
     discardEditorPendingSlot(editor)
   }
   isOpen.value = false
   emit('update:open', false)
-  emit('close')
+}
+
+function closeImmediately(target = '/welcome') {
+  for (const editor of editors.value) {
+    discardEditorPendingSlot(editor)
+  }
+  if (isOpen.value) {
+    isOpen.value = false
+    emit('update:open', false)
+    emit('close')
+  }
   if (router.currentRoute.value.path === '/create-schedule') {
-    router.push('/schedule')
+    router.push(target)
   }
 }
 
@@ -666,13 +731,17 @@ function handleDiscard() {
   for (const editor of editors.value) {
     revertEditor(editor)
   }
+  resetDrafts()
 
   showDiscardDialog.value = false
-  closeImmediately()
+  const target = pendingStepTarget.value ?? '/welcome'
+  pendingStepTarget.value = null
+  closeImmediately(target)
 }
 
 function handleKeepEditing() {
   showDiscardDialog.value = false
+  pendingStepTarget.value = null
   const dirty = dirtyEditors.value[0]
   if (dirty) {
     activateEditor(dirty.id)
@@ -726,13 +795,17 @@ function editorBasicsError(editor: CourseEditor): string | null {
 }
 
 function editorConflictError(editor: CourseEditor): string | null {
-  const coursesToCheck = knownSet.value.courses.filter((c) => c.id !== editor.id)
+  const coursesToCheck = knownSet.value.courses.filter(
+    (c) => c.id !== editor.id && c.id !== editor.persistedId,
+  )
   const duplicate = findDuplicateName(editor.name, coursesToCheck)
   if (duplicate) {
     return `A course named "${editor.name.trim()}" already exists.`
   }
 
-  const schedulesToCheck = knownSet.value.schedules.filter((s) => s.courseId !== editor.id)
+  const schedulesToCheck = knownSet.value.schedules.filter(
+    (s) => s.courseId !== editor.id && s.courseId !== editor.persistedId,
+  )
   const editorBlocks = editor.blocks
 
   for (let i = 0; i < editorBlocks.length; i++) {
@@ -798,13 +871,13 @@ function stageEditor(editor: CourseEditor): void {
     name: editor.name.trim(),
     colorId: editor.colorId,
     schedules: stagedSchedules,
+    courseId: editor.persistedId,
   })
 
   editor.isSaved = true
   editor.lastSavedSnapshot = editorSnapshot(editor)
   editor.pendingSlot = null
   editor.pendingBlockId = null
-  emit('created', editor.id as unknown as number)
 }
 
 async function saveCourse() {
@@ -821,10 +894,12 @@ async function saveCourse() {
     return
   }
 
-  try {
-    await loadCatalog()
-  } catch {
-    catalogAvailable.value = false
+  if (user.value) {
+    try {
+      await loadCatalog()
+    } catch {
+      catalogAvailable.value = false
+    }
   }
 
   if (catalogAvailable.value) {
@@ -839,7 +914,7 @@ async function saveCourse() {
 
   try {
     stageEditor(editor)
-    toast.success('Course and schedule saved successfully.')
+    toast.success('Course kept for this session. Use Submit to save it to your account.')
   } catch (error) {
     toast.error(errorMessage(error))
   } finally {
@@ -847,10 +922,20 @@ async function saveCourse() {
   }
 }
 
-async function saveAll() {
+/**
+ * Validates the touched editors, then asks the student to confirm submission.
+ * The shared dialogs stay closed while the confirm sheet is up.
+ */
+function requestSubmit() {
+  // Sessionless onboarding needs the welcome name to register an account.
+  if (!user.value && !isNameValid.value) {
+    void router.replace('/welcome')
+    return
+  }
+
   const touched = touchedEditors.value
   if (touched.length === 0) {
-    toast.error('Add a course before saving.')
+    toast.error('Add a course before submitting.')
     return
   }
 
@@ -862,18 +947,41 @@ async function saveAll() {
     }
   }
 
-  try {
-    await loadCatalog()
-  } catch {
-    catalogAvailable.value = false
+  showSubmitConfirm.value = true
+}
+
+function confirmSubmit() {
+  showSubmitConfirm.value = false
+  void saveAll()
+}
+
+async function saveAll() {
+  // Sessionless onboarding needs the welcome name to register an account.
+  if (!user.value && !isNameValid.value) {
+    void router.replace('/welcome')
+    return
   }
 
-  if (catalogAvailable.value) {
-    for (const editor of touched) {
-      const conflictError = editorConflictError(editor)
-      if (conflictError) {
-        toastCourseError(conflictError, editor)
-        return
+  const touched = touchedEditors.value
+  if (touched.length === 0) {
+    toast.error('Add a course before submitting.')
+    return
+  }
+
+  if (user.value) {
+    try {
+      await loadCatalog()
+    } catch {
+      catalogAvailable.value = false
+    }
+
+    if (catalogAvailable.value) {
+      for (const editor of touched) {
+        const conflictError = editorConflictError(editor)
+        if (conflictError) {
+          toastCourseError(conflictError, editor)
+          return
+        }
       }
     }
   }
@@ -882,7 +990,26 @@ async function saveAll() {
 
   try {
     for (const editor of touched) {
-      stageEditor(editor)
+      if (!editor.isSaved || isEditorDirty(editor)) {
+        stageEditor(editor)
+      }
+    }
+
+    // Registration happens at the end of onboarding: the welcome name becomes
+    // the new account's username before the drafts are persisted.
+    if (!user.value) {
+      const createdUser = await authApi.register({ username: studentName.value.trim() })
+      const sessionUser = await authApi.login({ username: createdUser.username })
+      setSessionUser(sessionUser)
+    }
+
+    const created = await flush()
+    for (const { tempId, course } of created) {
+      const editor = editors.value.find((e) => e.id === tempId)
+      if (editor) {
+        editor.persistedId = course.id
+      }
+      emit('created', course.id)
     }
 
     toast.success(
@@ -892,9 +1019,12 @@ async function saveAll() {
     )
   } catch (error) {
     toast.error(errorMessage(error))
+    return
   } finally {
     saving.value = false
   }
+
+  router.replace('/calendar')
 }
 
 function retryFailed() {
@@ -933,7 +1063,7 @@ defineExpose({
   <div class="relative h-[100svh] w-full overflow-hidden bg-[#F6F7EE]">
     <!-- Background Week Calendar Preview -->
     <div
-      class="absolute inset-x-0 top-14 z-0 bottom-[calc(4rem+env(safe-area-inset-bottom))]"
+      class="absolute inset-x-0 top-[100px] z-0 bottom-[calc(4rem+env(safe-area-inset-bottom))]"
     >
       <WeekPreview
         :blocks="previewBlocks"
@@ -943,56 +1073,72 @@ defineExpose({
       />
     </div>
 
-    <!-- Top navigation: back on the left, global Save all on the right -->
-    <header
-      class="absolute inset-x-0 top-0 z-40 flex h-14 items-center justify-between px-3"
-    >
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        aria-label="Go back"
-        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#334155] transition-colors hover:bg-[#C2E8F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8]"
-        @click="goBack"
-      >
-        <X class="h-5 w-5" aria-hidden="true" />
-      </Button>
+    <!-- Top navigation: onboarding steps centered above the title row -->
+    <header class="absolute inset-x-0 top-0 z-40 px-3 pt-2">
+      <div class="flex justify-center">
+        <StepProgress
+          :active-step="3"
+          :step-labels="ONBOARDING_STEP_LABELS"
+          interactive
+          @select="onStepSelect"
+        />
+      </div>
 
-      <Button
-        type="button"
-        data-testid="save-all"
-        aria-label="Save all"
-        :aria-busy="saving"
-        :disabled="!canSaveAll"
-        class="flex h-10 shrink-0 items-center gap-1.5 rounded-xl bg-[#007B99] px-4 font-sans text-sm font-bold text-white shadow-[0_3px_0_#00556B] transition-all hover:bg-[#006B85] active:translate-y-0.5 active:shadow-[0_1px_0_#00556B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007B99] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:active:translate-y-0"
-        style="font-family: 'Quicksand', sans-serif; font-weight: 700"
-        @click="saveAll"
-      >
-        <svg
-          v-if="saving"
-          class="h-4 w-4 animate-spin text-white"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
+      <div class="relative flex h-12 items-center justify-between">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label="Go back"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#00A4C8] text-white shadow-[0_3px_0_#007B99] transition-all hover:bg-[#0096B7] active:translate-y-0.5 active:shadow-[0_1px_0_#007B99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2"
+          @click="goBack"
         >
-          <circle
-            class="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            stroke-width="4"
-          ></circle>
-          <path
-            class="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
-        </svg>
-        <SaveAll v-else class="h-4 w-4 stroke-[2.5]" aria-hidden="true" />
-        <span>{{ saving ? 'Saving...' : saveAllLabel }}</span>
-      </Button>
+          <ArrowLeft class="h-5 w-5 stroke-[2.5]" aria-hidden="true" />
+        </Button>
+
+        <h1
+          class="min-w-0 flex-1 truncate px-2 text-center text-2xl font-bold text-[#1E293B]"
+          style="font-family: 'Quicksand', sans-serif"
+        >
+          Create a Schedule
+        </h1>
+
+        <Button
+          type="button"
+          data-testid="submit-schedule"
+          aria-label="Submit schedule"
+          :aria-busy="saving"
+          :disabled="!canSaveAll"
+          class="flex h-10 shrink-0 items-center gap-1.5 rounded-xl bg-[#007B99] px-4 font-sans text-sm font-bold text-white shadow-[0_3px_0_#00556B] transition-all hover:bg-[#006B85] active:translate-y-0.5 active:shadow-[0_1px_0_#00556B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007B99] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:active:translate-y-0"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          @click="requestSubmit"
+        >
+          <svg
+            v-if="saving"
+            class="h-4 w-4 animate-spin text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          <Check v-else class="h-4 w-4 stroke-[2.5]" aria-hidden="true" />
+          <span>{{ saving ? 'Saving...' : 'Submit' }}</span>
+        </Button>
+      </div>
     </header>
 
     <Drawer
@@ -1019,7 +1165,7 @@ defineExpose({
             size="icon"
             aria-label="Close drawer"
             class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#334155] transition-colors hover:bg-[#C2E8F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8]"
-            @click="goBack"
+            @click="closeDrawer"
           >
             <X class="size-5" aria-hidden="true" />
           </Button>
@@ -1071,7 +1217,7 @@ defineExpose({
               : 'overflow-y-hidden pt-2 pb-6'
           "
         >
-          <form class="min-w-0 space-y-6" @submit.prevent="saveAll">
+          <form class="min-w-0 space-y-6" @submit.prevent="requestSubmit">
             <!-- Course details -->
             <section
               data-testid="course-details-section"
@@ -1297,6 +1443,20 @@ defineExpose({
             <X class="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
+
+        <!-- Empty-dock hint: a working CTA that doubles as the add affordance -->
+        <button
+          v-if="showAddCourseHint"
+          type="button"
+          data-testid="add-course-hint"
+          aria-label="Add a course"
+          :disabled="saving"
+          class="flex h-11 shrink-0 items-center gap-1.5 rounded-xl border border-dashed border-[#7FC8DC] bg-[#F0F8FA] px-3.5 font-sans text-xs font-bold whitespace-nowrap text-[#007B99] transition-all hover:bg-[#E8F6FA] hover:text-[#006880] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-60"
+          @click="guardCourseNavigation(addCourseEditor)"
+        >
+          <Plus class="h-4 w-4 stroke-[2.5]" aria-hidden="true" />
+          Add a course
+        </button>
       </div>
 
       <button
@@ -1304,9 +1464,14 @@ defineExpose({
         data-testid="add-course"
         aria-label="Add another course"
         :disabled="saving"
-        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#BCE3ED] bg-[#E8F6FA] text-[#007B99] shadow-[0_3px_0_#B0DBE5] transition-all hover:bg-[#DCF1F7] hover:text-[#006880] active:translate-y-0.5 active:shadow-[0_1px_0_#B0DBE5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none disabled:active:translate-y-0"
+        class="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#BCE3ED] bg-[#E8F6FA] text-[#007B99] shadow-[0_3px_0_#B0DBE5] transition-all hover:bg-[#DCF1F7] hover:text-[#006880] active:translate-y-0.5 active:shadow-[0_1px_0_#B0DBE5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none disabled:active:translate-y-0"
         @click="guardCourseNavigation(addCourseEditor)"
       >
+        <span
+          v-if="showAddCourseHint"
+          class="absolute -inset-1 rounded-full border-2 border-[#00A4C8]/50 motion-safe:animate-ping"
+          aria-hidden="true"
+        />
         <Plus class="h-5 w-5 stroke-[2.5]" aria-hidden="true" />
       </button>
     </footer>
@@ -1326,6 +1491,46 @@ defineExpose({
       @keep-editing="cancelSwitchGuard"
       @discard="confirmSwitchDiscard"
     />
+    <DialogShell
+      v-model:open="showSubmitConfirm"
+      title="Submit your schedule?"
+      :busy="saving"
+    >
+      <p
+        class="mt-2 text-sm text-[#7B8B97]"
+        style="font-family: 'Inter', sans-serif; font-weight: 400"
+      >
+        {{ submitConfirmMessage }}
+      </p>
+
+      <template #actions="{ disabled, dismiss }">
+        <Button
+          type="button"
+          variant="secondary"
+          size="touch"
+          data-testid="submit-cancel"
+          :disabled="disabled"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
+          @click="dismiss"
+        >
+          Keep editing
+        </Button>
+
+        <Button
+          type="button"
+          variant="tactile"
+          size="touch"
+          data-testid="submit-confirm"
+          :disabled="disabled"
+          :aria-busy="saving"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          @click="confirmSubmit"
+        >
+          Submit
+        </Button>
+      </template>
+    </DialogShell>
+
     <DiscardDraftConfirmDialog
       :open="showRemoveDialog"
       title="Remove course?"

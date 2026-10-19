@@ -58,7 +58,12 @@ describe('useNotifications', () => {
 
   it('persists records per user and restores them after a session reset', async () => {
     // given
-    const user: UserResponse = { id: 7, username: 'sam', createdAt: '', updatedAt: '' }
+    const user: UserResponse = {
+      id: 7,
+      username: 'sam',
+      createdAt: '',
+      updatedAt: '',
+    }
     const notifications = useNotifications()
 
     // when a run finishes under this user
