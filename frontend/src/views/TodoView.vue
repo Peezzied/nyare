@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, h, onMounted } from 'vue'
 import { Plus } from '@lucide/vue'
+import HamburgerMenu from '@/components/HamburgerMenu.vue'
 import { Button } from '@/components/ui/button'
 import {
   Accordion,
@@ -20,7 +21,7 @@ import type { TaskResponse, PlanCategory } from '@/types/api'
 
 type ActiveFilter = 'ALL' | PlanCategory
 
-useShellHeader({ title: 'To-do' })
+useShellHeader({ title: 'To-do', left: () => h(HamburgerMenu) })
 
 const catalog = useCatalog()
 const { tasks, loadTasks, updateTaskStatus } = useTasks()

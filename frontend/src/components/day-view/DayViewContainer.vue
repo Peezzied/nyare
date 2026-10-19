@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, h, onMounted, ref } from 'vue'
-import { Menu } from '@lucide/vue'
 import { useAcademicEvents } from '@/composables/useAcademicEvents'
 import { useCatalog } from '@/composables/useCatalog'
 import { useShellHeader } from '@/composables/useShellHeader'
@@ -9,8 +8,7 @@ import { toDateKey } from '../../utils/dayKey'
 import { expandSchedulesForDate, formatDateHeader } from '../../utils/scheduleExpander'
 import { deriveUntimedItems } from '../../utils/untimedItems'
 import { formatWeekTitle } from '../../utils/weekDays'
-import BurgerMenu from './BurgerMenu.vue'
-import HeaderIconButton from '../HeaderIconButton.vue'
+import HamburgerMenu from '../HamburgerMenu.vue'
 import DayPeek from './DayPeek.vue'
 import DaySwiper from './DaySwiper.vue'
 import ScheduleCalendar from './ScheduleCalendar.vue'
@@ -21,7 +19,6 @@ import WeekPeek from './WeekPeek.vue'
 // Defaults to today, in the day view
 const selectedDate = ref(new Date())
 const viewMode = ref<'day' | 'week'>('day')
-const isMenuOpen = ref(false)
 const catalog = useCatalog()
 
 // Tasks + events load once per intent; swiping only refilters locally.
@@ -55,14 +52,6 @@ function untimedFor(date: Date) {
 const dayEvents = computed(() => eventsFor(selectedDate.value))
 const untimedItems = computed(() => untimedFor(selectedDate.value))
 
-function toggleMenu() {
-  isMenuOpen.value = !isMenuOpen.value
-}
-
-function closeMenu() {
-  isMenuOpen.value = false
-}
-
 function toggleView() {
   viewMode.value = viewMode.value === 'day' ? 'week' : 'day'
 }
@@ -73,19 +62,11 @@ function openDay(date: Date) {
   viewMode.value = 'day'
 }
 
-function handleMenuAction(action: 'edit' | 'new' | 'delete' | 'archive') {
-  // Placeholder event action - no backend calls
-  console.log(`[DayView] Menu action executed: ${action}`)
-}
-
-// The shell header shows the date title, the schedule menu, and the
+// The shell header shows the date title, the account menu, and the
 // day/week mode switch.
 useShellHeader({
   title: headerTitle,
-  left: () =>
-    h(HeaderIconButton, { 'aria-label': 'Open menu', onClick: toggleMenu }, () =>
-      h(Menu, { class: 'h-6 w-6' }),
-    ),
+  left: () => h(HamburgerMenu),
   right: () => h(ViewModeToggle, { mode: viewMode.value, onToggle: toggleView }),
 })
 </script>
@@ -93,9 +74,6 @@ useShellHeader({
 <template>
   <!-- Fills the AppShell scroll area; the swiper manages its own height. -->
   <div class="flex h-full flex-col">
-    <!-- Burger Menu Dropdown -->
-    <BurgerMenu :is-open="isMenuOpen" @close="closeMenu" @action="handleMenuAction" />
-
     <!-- Swipe left/right anywhere on the calendar: a day in day view, a week in week view -->
     <DaySwiper
       :selected-date="selectedDate"

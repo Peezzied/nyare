@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { nextTick } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import HamburgerMenu from '../HamburgerMenu.vue'
 import { clearSessionUser, setSessionUser } from '@/composables/useAuth'
@@ -11,14 +12,29 @@ vi.mock('vue-router', () => ({
   }),
 }))
 
+const originalRaf = window.requestAnimationFrame
+let frameQueue: FrameRequestCallback[] = []
+
+function flushFrame(): void {
+  const queued = frameQueue
+  frameQueue = []
+  for (const callback of queued) callback(performance.now())
+}
+
 describe('HamburgerMenu', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     clearSessionUser()
+    frameQueue = []
+    window.requestAnimationFrame = (callback) => {
+      frameQueue.push(callback)
+      return frameQueue.length
+    }
   })
 
   afterEach(() => {
     clearSessionUser()
+    window.requestAnimationFrame = originalRaf
   })
 
   it('shows the Nyare brand and current user profile in the drawer', async () => {
@@ -67,6 +83,31 @@ describe('HamburgerMenu', () => {
     wrapper.unmount()
   })
 
+  it('paints the closed position before starting the open transition', async () => {
+    const wrapper = mount(HamburgerMenu)
+    await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
+    await nextTick()
+
+    const panel = document.querySelector<HTMLElement>('[data-testid="account-menu"]')
+    expect(panel).not.toBeNull()
+
+    const width = Math.min(Math.round(window.innerWidth * 0.78), 360)
+    expect(panel?.style.transform).toBe(`translateX(${-width}px)`)
+    expect(panel?.style.transition).toBe('none')
+
+    flushFrame()
+    await nextTick()
+    expect(panel?.style.transition).toBe('none')
+    expect(panel?.style.transform).toBe(`translateX(${-width}px)`)
+
+    flushFrame()
+    await nextTick()
+    expect(panel?.style.transition).toContain('transform')
+    expect(panel?.style.transform).toBe('translateX(0px)')
+
+    wrapper.unmount()
+  })
+
   it('closes the drawer on Escape', async () => {
     const wrapper = mount(HamburgerMenu)
     await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
@@ -82,4 +123,70 @@ describe('HamburgerMenu', () => {
     })
     wrapper.unmount()
   })
+
+  it('opens the drawer on a right swipe from the left edge', async () => {
+    const wrapper = mount(HamburgerMenu)
+    const edge = wrapper.get('[data-testid="menu-edge-swipe"]')
+
+    firePointer(edge.element, 'pointerdown', 4)
+    fireWindowPointer('pointerup', 84)
+    await flushPromises()
+
+    expect(document.querySelector('[data-testid="account-menu"]')).not.toBeNull()
+    wrapper.unmount()
+  })
+
+  it('makes the panel follow the pointer while dragging from the edge', async () => {
+    const wrapper = mount(HamburgerMenu)
+    const edge = wrapper.get('[data-testid="menu-edge-swipe"]')
+
+    firePointer(edge.element, 'pointerdown', 4)
+    fireWindowPointer('pointermove', 184)
+    await nextTick()
+
+    const panel = document.querySelector<HTMLElement>('[data-testid="account-menu"]')
+    expect(panel).not.toBeNull()
+
+    const width = Math.min(Math.round(window.innerWidth * 0.78), 360)
+    expect(panel?.style.transform).toBe(`translateX(${-width + 180}px)`)
+
+    wrapper.unmount()
+  })
+
+  it('closes the drawer on a left swipe on the panel', async () => {
+    const wrapper = mount(HamburgerMenu)
+    await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
+    await flushPromises()
+
+    const panel = document.querySelector<HTMLElement>('[data-testid="account-menu"]')
+    expect(panel).not.toBeNull()
+
+    firePointer(panel!, 'pointerdown', 200)
+    fireWindowPointer('pointerup', 40)
+    await flushPromises()
+
+    await vi.waitFor(() => {
+      expect(document.querySelector('[data-testid="account-menu"]')).toBeNull()
+    })
+    wrapper.unmount()
+  })
 })
+
+function firePointer(el: Element, type: string, clientX: number): void {
+  el.dispatchEvent(pointerEvent(type, clientX))
+}
+
+function fireWindowPointer(type: string, clientX: number): void {
+  window.dispatchEvent(pointerEvent(type, clientX))
+}
+
+function pointerEvent(type: string, clientX: number): MouseEvent {
+  const event = new MouseEvent(type, {
+    bubbles: true,
+    cancelable: true,
+    clientX,
+    clientY: 100,
+  })
+  Object.assign(event, { pointerId: 1, isPrimary: true })
+  return event
+}
