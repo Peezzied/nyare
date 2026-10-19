@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, h, onMounted, ref } from 'vue'
 import { Search } from '@lucide/vue'
+import SearchBar from '@/components/SearchBar.vue'
 import NoteCard from '@/components/NoteCard.vue'
 import PictureNoteCard from '@/components/PictureNoteCard.vue'
 import HeaderIconButton from '@/components/HeaderIconButton.vue'
@@ -94,7 +95,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div ref="rootEl" class="flex min-h-full mx-auto w-full">
+  <div ref="rootEl" class="flex flex-col min-h-full mx-auto w-full">
+    <SearchBar placeholder="Search notes…" />
+
     <p
       v-if="loading && notes.length === 0"
       class="mt-6 text-center text-sm text-text-muted"
