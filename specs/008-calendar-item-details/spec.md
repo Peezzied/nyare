@@ -92,6 +92,7 @@ A developer opens the component preview. One shared detail component renders all
 - A source note was deleted: the note link hides, and the detail view stays usable.
 - The linked note title is long: the view truncates the title and keeps the tap target at least 44 by 44 pixels.
 - A week day holds more items than the visible limit: the week view shows the overflow count and each visible item keeps its marker.
+- A visible week crosses a year boundary: the week number follows the Thursday of that week. Sunday 27 December 2026 to Saturday 2 January 2027 shows week 53, and Sunday 28 December 2025 to Saturday 3 January 2026 shows week 1.
 
 ## Requirements *(mandatory)*
 
@@ -121,6 +122,7 @@ A developer opens the component preview. One shared detail component renders all
 - **FR-022**: The shared detail component MUST show only the fields that exist for the item. It MUST hide a missing field instead of showing a placeholder.
 - **FR-023**: The system MUST include mock data that exercises every detailed-view state: a class, a task with a note, a task without a note, a task with a duration, a task without a duration, a scheduled task, a task with no scheduled date, an open task, a completed task, an event with a note, and an event without a note.
 - **FR-024**: The mock data MUST exercise every week-view marker state: a class item, an event item, an open task item, a completed task item, and a day with more items than the visible limit.
+- **FR-025**: The week view MUST show the ISO-8601 week number of the visible week in the left gutter of the week row header, above the time labels and left of the first day column. The number MUST be the ISO week of the Thursday of the visible Sunday-to-Saturday week. The label MUST have the accessible name `Week <number>`, MUST be non-interactive, and its text MUST meet a 4.5:1 contrast ratio on the header background. The label MUST NOT change the day-column widths, the two-chip limit, the `+N` overflow, or the day-cell tap target.
 
 ### Key Entities *(include if feature involves data)*
 

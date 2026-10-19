@@ -129,6 +129,15 @@ Frontend-only feature. Paths are relative to `frontend/`.
 
 ---
 
+## Phase 8: Week Number in the Week Row Header
+
+**Purpose**: Show the ISO week number in the left gutter of the week row header (FR-025).
+
+- [ ] T023 [P] Add `frontend/src/utils/weekNumber.ts` with `isoWeekNumber(date)` and `weekNumberFor(date)`, where `weekNumberFor` returns the ISO week of the Thursday of the visible Sunday-to-Saturday week, and add `frontend/src/utils/__tests__/weekNumber.spec.ts`. Assert 18 to 24 October 2026 is week 43, 27 December 2026 to 2 January 2027 is week 53, 28 December 2025 to 3 January 2026 is week 1, a Sunday input to `isoWeekNumber` returns the previous ISO week, and the input date is not mutated (FR-025).
+- [ ] T024 [US1] In `frontend/src/components/day-view/WeekCalendar.vue`, compute the week number with `weekNumberFor` and pass it as a `week-number` prop to `frontend/src/components/day-view/WeekHeaderRow.vue`. In `WeekHeaderRow.vue`, render a non-interactive label with the visible number and a hidden "Week " prefix in the `gutterLeft` space, hidden while `gutterLeft` is 0. Use the header's existing text color or one that passes 4.5:1, not the muted token. Keep the two-chip limit, the `+N` overflow, and the day-cell tap target unchanged. Add `frontend/src/components/day-view/__tests__/WeekHeaderRow.spec.ts`: no label when `gutterLeft` is 0, label "Week 43" when it is 75, and an unchanged chip count (FR-025).
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
