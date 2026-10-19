@@ -207,6 +207,114 @@ const INITIAL_FIXTURES: FixtureState = {
       createdAt: '2026-10-01T10:00:00Z',
       updatedAt: '2026-10-04T16:00:00Z',
     },
+    // Over-limit day (FR-024): four untimed items on one day, so the week
+    // header shows two chips and a "+2" marker, and the day strip collapses.
+    {
+      id: 'task-cs201-heap-impl',
+      courseId: 1,
+      noteId: 'note-cs201-avl',
+      title: 'Implement Binary Heap Operations',
+      description: 'Add sift-up and sift-down to the priority queue exercise.',
+      scheduledDate: '2026-10-21',
+      duration: 'PT1H',
+      status: 'TODO',
+      planCategory: 'SCHEDULED',
+      createdAt: '2026-10-08T09:00:00Z',
+      updatedAt: '2026-10-08T09:00:00Z',
+    },
+    {
+      id: 'task-math204-pset5',
+      courseId: 2,
+      noteId: 'note-math204-eigen',
+      title: 'Complete Linear Algebra Problem Set 5',
+      description: 'Practise orthogonal diagonalization of symmetric matrices.',
+      scheduledDate: '2026-10-21',
+      duration: 'PT1H15M',
+      status: 'TODO',
+      planCategory: 'SCHEDULED',
+      createdAt: '2026-10-08T10:00:00Z',
+      updatedAt: '2026-10-08T10:00:00Z',
+    },
+    {
+      id: 'task-phys102-lab-prep',
+      courseId: 3,
+      noteId: null,
+      title: 'Prepare Physics Lab 4 Equipment List',
+      description: 'Confirm apparatus for the magnetic field experiment.',
+      scheduledDate: '2026-10-21',
+      duration: null,
+      status: 'TODO',
+      planCategory: 'SCHEDULED',
+      createdAt: '2026-10-08T11:00:00Z',
+      updatedAt: '2026-10-08T11:00:00Z',
+    },
+    {
+      id: 'task-math204-proof-drill',
+      courseId: 2,
+      noteId: null,
+      title: 'MATH 204 Proof Drill',
+      description: 'Re-derive the spectral theorem for one symmetric matrix.',
+      scheduledDate: '2026-10-21',
+      duration: 'PT45M',
+      status: 'TODO',
+      planCategory: 'SCHEDULED',
+      createdAt: '2026-10-08T12:00:00Z',
+      updatedAt: '2026-10-08T12:00:00Z',
+    },
+    // Over-limit day on "today": five untimed items so the all-day strip
+    // collapses to three pills with a "+N more" row and a chevron.
+    {
+      id: 'task-cs201-readme',
+      courseId: 1,
+      noteId: null,
+      title: 'Update CS 201 Project README',
+      description: 'Document the AVL tree API and build steps.',
+      scheduledDate: localDayKey(),
+      duration: 'PT30M',
+      status: 'TODO',
+      planCategory: 'SCHEDULED',
+      createdAt: '2026-10-15T08:00:00Z',
+      updatedAt: '2026-10-15T08:00:00Z',
+    },
+    {
+      id: 'task-math204-flashcards',
+      courseId: 2,
+      noteId: null,
+      title: 'Make Eigenvalue Flashcards',
+      description: 'Cards for eigenvalue definitions and theorems.',
+      scheduledDate: localDayKey(),
+      duration: 'PT25M',
+      status: 'COMPLETED',
+      planCategory: 'SCHEDULED',
+      createdAt: '2026-10-15T08:30:00Z',
+      updatedAt: '2026-10-16T09:00:00Z',
+    },
+    {
+      id: 'task-phys102-formulas',
+      courseId: 3,
+      noteId: null,
+      title: 'Copy Physics Formula Sheet',
+      description: 'Transcribe Coulomb and Gauss law formulas.',
+      scheduledDate: localDayKey(),
+      duration: 'PT20M',
+      status: 'TODO',
+      planCategory: 'SCHEDULED',
+      createdAt: '2026-10-15T09:00:00Z',
+      updatedAt: '2026-10-15T09:00:00Z',
+    },
+    {
+      id: 'task-cs201-revlog',
+      courseId: 1,
+      noteId: null,
+      title: 'Review CS 201 Lecture 8 Notes',
+      description: 'Re-read hashing and collision resolution notes.',
+      scheduledDate: localDayKey(),
+      duration: 'PT40M',
+      status: 'TODO',
+      planCategory: 'SCHEDULED',
+      createdAt: '2026-10-15T09:30:00Z',
+      updatedAt: '2026-10-15T09:30:00Z',
+    },
   ],
   academicEvents: [
     {
@@ -227,6 +335,15 @@ const INITIAL_FIXTURES: FixtureState = {
       description: 'In-class assessment on computing characteristic polynomials and eigenvectors.',
       deadline: '2026-10-16T11:00:00',
       createdAt: '2026-10-02T09:00:00Z',
+    },
+    {
+      id: 'event-math204-drill',
+      courseId: 2,
+      noteId: null,
+      title: 'MATH 204 Problem Drill Session',
+      description: 'Timed practice on diagonalization problems.',
+      deadline: `${localDayKey()}T15:00:00`,
+      createdAt: '2026-10-15T10:00:00Z',
     },
     {
       id: 'event-phys102-exam1',
@@ -333,6 +450,16 @@ export const TASK_DISPLAY_TIMES: Record<string, string> = {
   'task-math204-pset4': '4:00 PM',
   'task-phys102-lab-report': '11:59 PM',
   'task-cs201-graph-preview': '8:00 AM',
+}
+
+/** Today's local date as `yyyy-MM-dd`. Keeps seeded calendar items evergreen:
+ *  the mock backend always shows them on the day the app is opened. */
+function localDayKey(offsetDays = 0): string {
+  const d = new Date()
+  d.setDate(d.getDate() + offsetDays)
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${m}-${day}`
 }
 
 /** Due-date map for urgency calculation in the redesigned task list.

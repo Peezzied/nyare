@@ -17,6 +17,8 @@ export interface ShellHeaderConfig {
   title: MaybeRefOrGetter<string>
   /** Replaces the default account-menu button. */
   left?: Component
+  /** Replaces the centered title. */
+  center?: Component
   /** Replaces the default spacer. */
   right?: Component
 }
@@ -39,5 +41,6 @@ export function useShellHeader(config: ShellHeaderConfig): void {
   if (!header) return
   header.title = config.title
   header.left = config.left === undefined ? undefined : markRaw(config.left)
+  header.center = config.center === undefined ? undefined : markRaw(config.center)
   header.right = config.right === undefined ? undefined : markRaw(config.right)
 }

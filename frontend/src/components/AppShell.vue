@@ -60,9 +60,7 @@ const preserveRun = ref(false)
 const notifications = useNotifications()
 const centerOpen = ref(false)
 const centerOrigin = ref<TapOriginRect | null>(null)
-const centerModalRef = ref<{ requestClose: (triggerHistoryBack?: boolean) => void } | null>(
-  null,
-)
+const centerModalRef = ref<{ requestClose: (triggerHistoryBack?: boolean) => void } | null>(null)
 // Set by the center's open-run event so the Process dialog opens after collapse.
 let reopenRunOnClose = false
 
@@ -193,6 +191,9 @@ onMounted(() => {
       <template v-if="header.left" #left>
         <component :is="header.left" />
       </template>
+      <template v-if="header.center" #center>
+        <component :is="header.center" />
+      </template>
       <template #right>
         <div class="flex items-center gap-1">
           <component :is="header.right" v-if="header.right" />
@@ -212,7 +213,7 @@ onMounted(() => {
         variant="floating"
         label="Process pending notes"
         data-testid="duckota-fab"
-        class="!absolute bottom-4 left-5 z-10"
+        class="!absolute bottom-4 left-5 z-20"
         :badge="badge"
         badge-color="destructive"
         :processing="proc.running.value"
@@ -248,8 +249,6 @@ onMounted(() => {
       />
       <ToastShelf />
     </main>
-
-
 
     <!-- the h-16 reserve keeps the view clear of the fixed bar -->
     <div class="h-16 shrink-0">
