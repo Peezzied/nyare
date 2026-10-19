@@ -14,6 +14,7 @@ import { calculateGridBoundaries } from '../../utils/scheduleExpander'
 import { toDateKey } from '../../utils/dayKey'
 import AllDayStrip from './AllDayStrip.vue'
 import CourseCard from './CourseCard.vue'
+import NowButton from './NowButton.vue'
 import TimeIndicator from './TimeIndicator.vue'
 
 const props = defineProps<{
@@ -132,6 +133,7 @@ let resizeObserver: ResizeObserver | null = null
 
 // Where the time line sits, in pixels relative to the Schedule X area
 const overlay = ref({ top: 0, left: 0, width: 0 })
+const todayColRect = ref<{ left: number; width: number } | null>(null) // today's column wash
 // Left edge of the day column, so the all-day strip lines up with the grid pills
 const gutterLeft = ref(55)
 
@@ -185,6 +187,7 @@ function updateOverlay() {
   const c = col.getBoundingClientRect()
   const diff = c.left - a.left
   gutterLeft.value = Math.abs(diff - 55) <= 1 ? 55 : Math.max(Math.round(diff), 0)
+  todayColRect.value = isToday.value ? { left: c.left - a.left, width: c.width } : null
   if (nowTop.value === null) return
   overlay.value = {
     top: c.top - a.top + nowTop.value,
@@ -332,12 +335,13 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
 </script>
 
 <template>
-  <div ref="wrapperRef" class="relative flex min-h-0 flex-1 flex-col bg-[#F5F6EE]">
+  <div ref="wrapperRef" class="relative flex min-h-0 flex-1 flex-col bg-app-bg">
     <!-- Tasks/events without a time: sits on top like Google Calendar's all-day row -->
     <AllDayStrip
       v-if="untimedItems.length > 0"
-      class="shrink-0"
+      class="shrink-0 pt-4"
       :items="untimedItems"
+      :today="isToday"
       :style="{ paddingLeft: `${gutterLeft}px` }"
       @select-untimed="onSelectUntimed"
     />
@@ -358,6 +362,13 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
         </ScheduleXCalendar>
       </div>
 
+      <!-- Subtle yellow wash across today's column -->
+      <div
+        v-if="dayColEl !== null && todayColRect"
+        class="pointer-events-none absolute inset-y-0 z-10 bg-urgency-yellow/10"
+        :style="{ left: `${todayColRect.left}px`, width: `${todayColRect.width}px` }"
+      />
+
       <!-- Time line: a normal Vue overlay above the calendar, clipped to this area -->
       <div
         v-if="dayColEl !== null && nowTop !== null"
@@ -375,15 +386,7 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
         </div>
       </div>
 
-      <!-- Now jump button: bottom LEFT (right side is reserved for a teammate) -->
-      <button
-        v-if="nowDirection"
-        type="button"
-        class="absolute bottom-4 left-4 z-30 rounded-full bg-[#0E7490] px-4 py-2 text-sm font-bold text-white shadow-lg active:scale-95 transition-transform"
-        @click="scrollToNow()"
-      >
-        {{ nowDirection === 'up' ? '↑' : '↓' }} Now
-      </button>
+      <NowButton v-if="nowDirection" :direction="nowDirection" @jump="scrollToNow()" />
     </div>
   </div>
 </template>
@@ -409,21 +412,26 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
   display: none !important;
 }
 
-/* Nyare background colour */
+/* Nyare canvas colour: a brighter cream sheet under the parchment chrome */
 .sx-nyare-wrapper :deep(.sx__calendar),
 .sx-nyare-wrapper :deep(.sx__view-container) {
-  background-color: #f5f6ee;
-  --sx-color-background: #f5f6ee;
-  --sx-color-outline-variant: #9ccfe0;
-  --sx-color-surface: #f5f6ee;
+  background-color: var(--color-calendar-canvas);
+  --sx-color-background: var(--color-calendar-canvas);
+  --sx-color-outline-variant: #cbd5e1;
+  --sx-color-surface: var(--color-calendar-canvas);
 }
 
-/* Grid lines: thin light blue */
+/* Grid lines: quiet warm-gray hairlines so the event colors carry the view */
 .sx-nyare-wrapper :deep(.sx__week-grid__hour) {
-  border-top: 1px solid #9ccfe0 !important;
+  border-top: 1px solid #cbd5e1 !important;
 }
 .sx-nyare-wrapper :deep(.sx__time-grid-day) {
-  border-left: 1px solid #9ccfe0 !important;
+  border-left: 1px solid #cbd5e1 !important;
+}
+
+/* Hour labels: project muted ink instead of Schedule-X's cool gray */
+.sx-nyare-wrapper :deep(.sx__week-grid__hour-text) {
+  color: var(--color-text-muted);
 }
 
 /* Strip Schedule X's default event card so CourseCard shows as designed.

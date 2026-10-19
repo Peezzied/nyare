@@ -171,9 +171,7 @@ describe('TodoView dismissal', () => {
     const wrapper = mountView()
     await flushPromises()
 
-    const scheduledTab = wrapper
-      .findAll('[role="tab"]')
-      .find((tab) => tab.text() === 'Scheduled')
+    const scheduledTab = wrapper.findAll('[role="tab"]').find((tab) => tab.text() === 'Scheduled')
     await scheduledTab?.trigger('click')
     await nextTick()
 

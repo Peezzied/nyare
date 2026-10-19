@@ -14,7 +14,7 @@ describe('WeekPill', () => {
     colorTheme: 'blue',
   }
 
-  it('renders title and detail text', () => {
+  it('renders the title and omits the detail line', () => {
     const wrapper = mount(WeekPill, {
       props: {
         event: sampleEvent,
@@ -22,7 +22,7 @@ describe('WeekPill', () => {
     })
 
     expect(wrapper.text()).toContain('Calculus 2')
-    expect(wrapper.text()).toContain('Room 301')
+    expect(wrapper.text()).not.toContain('Room 301')
   })
 
   it('emits select with event and originRect DOMRect on click', async () => {

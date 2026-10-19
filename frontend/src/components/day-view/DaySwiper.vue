@@ -204,7 +204,7 @@ onUnmounted(() => {
 <template>
   <div
     ref="viewportRef"
-    class="day-swiper relative min-h-0 flex-1 select-none overflow-hidden bg-[#F5F6EE]"
+    class="day-swiper relative min-h-0 flex-1 select-none overflow-hidden bg-app-bg"
     @pointerdown="onPointerDown"
     @pointermove="onPointerMove"
     @pointerup="onPointerUp"
@@ -217,7 +217,7 @@ onUnmounted(() => {
 
       <div
         v-if="peekDate"
-        class="pointer-events-none absolute top-0 z-30 h-full w-full bg-[#F5F6EE]"
+        class="pointer-events-none absolute top-0 z-30 h-full w-full bg-app-bg"
         :style="{ left: peekLeft }"
       >
         <slot name="peek" :date="peekDate" :scrollTop="peekScrollTop" :gutterLeft="peekGutter" />

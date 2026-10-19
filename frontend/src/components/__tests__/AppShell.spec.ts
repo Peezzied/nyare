@@ -97,10 +97,7 @@ describe('AppShell', () => {
   it('navigates to the notes tab from the bottom navigation', async () => {
     const wrapper = mountShell()
 
-    await wrapper
-      .get('nav[aria-label="Main navigation"]')
-      .get('[data-id="notes"]')
-      .trigger('click')
+    await wrapper.get('nav[aria-label="Main navigation"]').get('[data-id="notes"]').trigger('click')
 
     expect(mockPush).toHaveBeenCalledWith('/notes')
   })

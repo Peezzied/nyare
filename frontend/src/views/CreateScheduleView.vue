@@ -133,6 +133,11 @@ const pendingScheduleCount = computed(
       .filter((schedule) => schedule.state !== 'saved').length,
 )
 
+function pickColor(id: string) {
+  selectedColorId.value = id
+  colorOpen.value = false
+}
+
 function goBack() {
   router.push('/schedule')
 }
@@ -439,7 +444,7 @@ function retryFailed() {
                           : 'border-[#C2E8F1]'
                       "
                       :style="{ backgroundColor: color.solid }"
-                      @click="selectedColorId = color.id; colorOpen = false"
+                      @click="pickColor(color.id)"
                     >
                       <span
                         v-if="selectedColorId === color.id"
@@ -616,9 +621,7 @@ function retryFailed() {
           v-if="pendingScheduleCount > 0 && createdCourseId !== null"
           class="text-xs text-[#7B8B97]"
         >
-          {{ pendingScheduleCount }} schedule record{{
-            pendingScheduleCount === 1 ? '' : 's'
-          }}
+          {{ pendingScheduleCount }} schedule record{{ pendingScheduleCount === 1 ? '' : 's' }}
           still pending.
         </p>
 

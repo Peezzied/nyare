@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { Check, Flag } from '@lucide/vue'
 import type { UntimedDayItem } from '../../utils/untimedItems'
+import { CLASS_THEME_STYLES, classThemeForCourse } from '../../utils/calendarStyle'
 
 const props = defineProps<{
   item: UntimedDayItem
@@ -15,46 +17,34 @@ function handleClick(e: MouseEvent) {
   emit('select', props.item, rect)
 }
 
-// Same 4-theme derivation as CourseCard so a course keeps one color everywhere.
-const theme = computed(
-  () =>
-    (['green', 'blue', 'purple', 'orange'] as const)[Math.abs(props.item.courseId - 1) % 4] ??
-    'blue',
-)
+// Tri-block surfaces (DESIGN.md §6): an event is a saturated fill with white
+// ink, a task is a white card with a checkbox.
+const theme = computed(() => CLASS_THEME_STYLES[classThemeForCourse(props.item.courseId)])
 
-const colorClasses = computed(() => {
-  switch (theme.value) {
-    case 'green':
-      return 'bg-[#7CE19D] border-[#1E3A2F]'
-    case 'blue':
-      return 'bg-[#80C2F8] border-[#1E293B]'
-    case 'purple':
-      return 'bg-[#C084FC] border-[#3B0764]'
-    case 'orange':
-      return 'bg-[#FB923C] border-[#7C2D12]'
-    default:
-      return 'bg-[#80C2F8] border-[#1E293B]'
-  }
-})
+const surfaceClasses = computed(() =>
+  props.item.category === 'event'
+    ? `${theme.value.solid} ${theme.value.solidEdge} border-2 text-white`
+    : 'bg-white border border-[#CBD5E1] text-[#334155]',
+)
 </script>
 
 <template>
-  <!-- h-11 = 44px, the minimum comfortable tap target on a phone -->
+  <!-- h-7 keeps the all-day row compact on a phone -->
   <button
     type="button"
-    class="flex h-9 w-full min-w-0 items-center gap-2 overflow-hidden rounded-lg border-2 px-3 text-left text-sm shadow-sm transition-transform active:scale-[0.98]"
-    :class="colorClasses"
+    class="flex h-7 w-full min-w-0 items-center gap-2 overflow-hidden rounded-lg px-3 text-left text-sm transition-colors active:brightness-95"
+    :class="surfaceClasses"
     :aria-label="`${props.item.category}: ${props.item.title}`"
     @click="handleClick"
   >
     <span
       v-if="props.item.category === 'task'"
-      class="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 border-white/90 text-xs font-bold leading-none text-white"
+      class="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 border-[#94A3B8]"
       aria-hidden="true"
     >
-      {{ props.item.completed ? '✓' : '' }}
+      <Check v-if="props.item.completed" class="h-3.5 w-3.5 text-[#334155]" :stroke-width="3" />
     </span>
-    <span v-else class="shrink-0 text-base leading-none text-white" aria-hidden="true"> ⚑ </span>
-    <span class="min-w-0 flex-1 truncate font-bold text-white">{{ props.item.title }}</span>
+    <Flag v-else class="h-3.5 w-3.5 shrink-0" :stroke-width="2.5" aria-hidden="true" />
+    <span class="min-w-0 flex-1 truncate font-semibold">{{ props.item.title }}</span>
   </button>
 </template>

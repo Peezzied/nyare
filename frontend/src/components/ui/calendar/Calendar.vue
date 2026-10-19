@@ -29,6 +29,8 @@ const props = withDefaults(
       class?: HTMLAttributes['class']
       layout?: LayoutTypes
       yearRange?: DateValue[]
+      /** Renders a dot under a day cell when the predicate returns true. */
+      dayMarker?: (day: DateValue) => boolean
     }
   >(),
   {
@@ -38,7 +40,7 @@ const props = withDefaults(
 )
 const emits = defineEmits<CalendarRootEmits>()
 
-const delegatedProps = reactiveOmit(props, 'class', 'layout', 'placeholder')
+const delegatedProps = reactiveOmit(props, 'class', 'layout', 'placeholder', 'dayMarker')
 
 const placeholder = useVModel(props, 'placeholder', emits, {
   passive: true,
@@ -201,6 +203,11 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
           >
             <CalendarCell v-for="weekDate in weekDates" :key="weekDate.toString()" :date="weekDate">
               <CalendarCellTrigger :day="weekDate" :month="month.value" />
+              <span
+                v-if="dayMarker?.(weekDate)"
+                aria-hidden="true"
+                class="picker-day-dot pointer-events-none absolute bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full"
+              />
             </CalendarCell>
           </CalendarGridRow>
         </CalendarGridBody>
@@ -208,3 +215,17 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
     </div>
   </CalendarRoot>
 </template>
+
+<style scoped>
+.picker-day-dot {
+  background-color: #00a4c8;
+}
+
+[data-selected] + .picker-day-dot {
+  background-color: #ffffff;
+}
+
+[data-outside-view] + .picker-day-dot {
+  opacity: 0.35;
+}
+</style>

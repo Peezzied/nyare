@@ -19,6 +19,7 @@
   --color-text-main: #334155;
   --color-text-muted: #7b8b97;
   --color-app-border: #cbd5e1;
+  --color-calendar-canvas: #fdfef7;
 
   /* Task urgency tokens (FR-016) */
   --color-urgency-red: #d50000;
@@ -196,14 +197,14 @@
   --sx-time-axis-label-width: calc(
     var(--sx-calendar-week-grid-padding-left) - var(--sx-time-axis-line-length)
   );
-  --sx-color-background: #f5f6ee;
-  --sx-color-surface: #f5f6ee;
-  --sx-color-outline-variant: #9ccfe0;
+  --sx-color-background: var(--color-calendar-canvas);
+  --sx-color-surface: var(--color-calendar-canvas);
+  --sx-color-outline-variant: #cbd5e1;
 }
 
 .sx__calendar,
 .sx__view-container {
-  background-color: #f5f6ee !important;
+  background-color: var(--color-calendar-canvas) !important;
 }
 
 .sx__week-grid {
@@ -242,4 +243,3 @@
 .sx__slide-right {
   animation: none !important;
 }
-

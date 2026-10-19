@@ -61,7 +61,12 @@ describe('DaySwiper', () => {
     const el = wrapper.element
 
     // Drag left by 150px (exceeds 400 * 0.25 = 100px threshold)
-    dispatchPointer(el, 'pointerdown', { isPrimary: true, pointerId: 1, clientX: 200, clientY: 100 })
+    dispatchPointer(el, 'pointerdown', {
+      isPrimary: true,
+      pointerId: 1,
+      clientX: 200,
+      clientY: 100,
+    })
     dispatchPointer(el, 'pointermove', { isPrimary: true, pointerId: 1, clientX: 50, clientY: 100 })
     dispatchPointer(el, 'pointerup', { isPrimary: true, pointerId: 1, clientX: 50, clientY: 100 })
 
@@ -104,8 +109,18 @@ describe('DaySwiper', () => {
     const el = wrapper.element
 
     // Drag right by 150px
-    dispatchPointer(el, 'pointerdown', { isPrimary: true, pointerId: 1, clientX: 100, clientY: 100 })
-    dispatchPointer(el, 'pointermove', { isPrimary: true, pointerId: 1, clientX: 250, clientY: 100 })
+    dispatchPointer(el, 'pointerdown', {
+      isPrimary: true,
+      pointerId: 1,
+      clientX: 100,
+      clientY: 100,
+    })
+    dispatchPointer(el, 'pointermove', {
+      isPrimary: true,
+      pointerId: 1,
+      clientX: 250,
+      clientY: 100,
+    })
     dispatchPointer(el, 'pointerup', { isPrimary: true, pointerId: 1, clientX: 250, clientY: 100 })
 
     vi.advanceTimersByTime(250)
@@ -145,10 +160,20 @@ describe('DaySwiper', () => {
     const el = wrapper.element
 
     // Drag only 20px
-    dispatchPointer(el, 'pointerdown', { isPrimary: true, pointerId: 1, clientX: 200, clientY: 100 })
+    dispatchPointer(el, 'pointerdown', {
+      isPrimary: true,
+      pointerId: 1,
+      clientX: 200,
+      clientY: 100,
+    })
     // Advance time so it's not a quick swipe
     vi.advanceTimersByTime(500)
-    dispatchPointer(el, 'pointermove', { isPrimary: true, pointerId: 1, clientX: 180, clientY: 100 })
+    dispatchPointer(el, 'pointermove', {
+      isPrimary: true,
+      pointerId: 1,
+      clientX: 180,
+      clientY: 100,
+    })
     dispatchPointer(el, 'pointerup', { isPrimary: true, pointerId: 1, clientX: 180, clientY: 100 })
 
     vi.advanceTimersByTime(250)
@@ -204,8 +229,18 @@ describe('DaySwiper', () => {
     })
 
     const el = wrapper.element
-    dispatchPointer(el, 'pointerdown', { isPrimary: true, pointerId: 1, clientX: 200, clientY: 100 })
-    dispatchPointer(el, 'pointermove', { isPrimary: true, pointerId: 1, clientX: 100, clientY: 100 })
+    dispatchPointer(el, 'pointerdown', {
+      isPrimary: true,
+      pointerId: 1,
+      clientX: 200,
+      clientY: 100,
+    })
+    dispatchPointer(el, 'pointermove', {
+      isPrimary: true,
+      pointerId: 1,
+      clientX: 100,
+      clientY: 100,
+    })
 
     await wrapper.vm.$nextTick()
 

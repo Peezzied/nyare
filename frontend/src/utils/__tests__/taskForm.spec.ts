@@ -60,9 +60,7 @@ describe('taskForm', () => {
     })
 
     it('maps missing optional fields to empty strings and null', () => {
-      const form = fromTask(
-        makeTask({ description: null, scheduledDate: null, duration: null }),
-      )
+      const form = fromTask(makeTask({ description: null, scheduledDate: null, duration: null }))
       expect(form.description).toBe('')
       expect(form.scheduledDate).toBe('')
       expect(form.durationMinutes).toBeNull()
@@ -71,10 +69,7 @@ describe('taskForm', () => {
 
   describe('toTaskRequest', () => {
     it('trims the title and carries the status', () => {
-      const request = toTaskRequest(
-        makeForm({ title: '  Study now  ', courseId: 3 }),
-        'TODO',
-      )
+      const request = toTaskRequest(makeForm({ title: '  Study now  ', courseId: 3 }), 'TODO')
       expect(request.title).toBe('Study now')
       expect(request.status).toBe('TODO')
       expect(request.courseId).toBe(3)
@@ -90,9 +85,7 @@ describe('taskForm', () => {
     })
 
     it('maps a Not set duration to null and a set duration to ISO-8601', () => {
-      expect(
-        toTaskRequest(makeForm({ title: 'Study', courseId: 3 }), 'TODO').duration,
-      ).toBeNull()
+      expect(toTaskRequest(makeForm({ title: 'Study', courseId: 3 }), 'TODO').duration).toBeNull()
       expect(
         toTaskRequest(makeForm({ title: 'Study', courseId: 3, durationMinutes: 45 }), 'TODO')
           .duration,

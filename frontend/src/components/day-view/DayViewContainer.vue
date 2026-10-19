@@ -15,12 +15,15 @@ import { toDateKey } from '../../utils/dayKey'
 import { expandSchedulesForDate, formatDateHeader } from '../../utils/scheduleExpander'
 import { deriveUntimedItems } from '../../utils/untimedItems'
 import type { UntimedDayItem } from '../../utils/untimedItems'
-import { formatWeekTitle } from '../../utils/weekDays'
+import { useNow } from '../../composables/useNow'
+import { formatWeekTitle, weekDates } from '../../utils/weekDays'
+import DateTitlePicker from './DateTitlePicker.vue'
 import EventDetailModal from './EventDetailModal.vue'
 import HamburgerMenu from '../HamburgerMenu.vue'
 import DayPeek from './DayPeek.vue'
 import DaySwiper from './DaySwiper.vue'
 import ScheduleCalendar from './ScheduleCalendar.vue'
+import TodayButton from './TodayButton.vue'
 import ViewModeToggle from './ViewModeToggle.vue'
 import WeekCalendar from './WeekCalendar.vue'
 import WeekPeek from './WeekPeek.vue'
@@ -73,10 +76,33 @@ function toggleView() {
   viewMode.value = viewMode.value === 'day' ? 'week' : 'day'
 }
 
+// ---- Back-to-today pill: hidden while today is on screen ----
+const now = useNow()
+
+const isShowingToday = computed(() => {
+  const todayKey = toDateKey(now.value)
+  if (viewMode.value === 'day') return toDateKey(selectedDate.value) === todayKey
+  return weekDates(selectedDate.value).some((date) => toDateKey(date) === todayKey)
+})
+
+function goToday() {
+  selectedDate.value = new Date()
+}
+
 // Tapping a day in the week header opens that day
 function openDay(date: Date) {
   selectedDate.value = date
   viewMode.value = 'day'
+}
+
+// Mini month picker: a picked date moves the current view, not its mode.
+function jumpToDate(date: Date) {
+  selectedDate.value = date
+}
+
+// Busy-dot predicate for the mini month; reuses the already-loaded lists.
+function hasItemsOn(date: Date) {
+  return eventsFor(date).length > 0 || untimedFor(date).length > 0
 }
 
 // ---- Calendar item detail ----
@@ -155,18 +181,25 @@ async function completeTask(taskId: string) {
   }
 }
 
-// The shell header shows the date title, the account menu, and the
-// day/week mode switch.
+// The shell header shows the date title (tappable month picker), the
+// account menu, and the day/week mode switch.
 useShellHeader({
   title: headerTitle,
   left: () => h(HamburgerMenu),
+  center: () =>
+    h(DateTitlePicker, {
+      title: headerTitle.value,
+      selected: selectedDate.value,
+      hasItems: hasItemsOn,
+      onSelect: jumpToDate,
+    }),
   right: () => h(ViewModeToggle, { mode: viewMode.value, onToggle: toggleView }),
 })
 </script>
 
 <template>
   <!-- Fills the AppShell scroll area; the swiper manages its own height. -->
-  <div class="flex h-full flex-col">
+  <div class="relative flex h-full flex-col">
     <!-- Swipe left/right anywhere on the calendar: a day in day view, a week in week view -->
     <DaySwiper
       :selected-date="selectedDate"
@@ -209,6 +242,8 @@ useShellHeader({
         />
       </template>
     </DaySwiper>
+
+    <TodayButton v-if="!isShowingToday" @jump="goToday" />
 
     <!-- One detail modal for both views; the container owns it.
          No frame element: the shell fills the viewport, so the modal fits it. -->

@@ -53,7 +53,7 @@ function layout(event: DayEvent) {
 </script>
 
 <template>
-  <div class="relative flex h-full w-full flex-col bg-[#F5F6EE]" aria-hidden="true">
+  <div class="relative flex h-full w-full flex-col bg-app-bg" aria-hidden="true">
     <WeekHeaderRow :days="days" :today-key="todayKey" :gutter-left="gutter" :cols-width="0" />
 
     <div class="relative min-h-0 flex-1 sx-nyare-week overflow-hidden">
@@ -108,17 +108,21 @@ function layout(event: DayEvent) {
 
 .sx-nyare-week :deep(.sx__week-grid__hour),
 .sx-nyare-week .sx__week-grid__hour {
-  border-top: 1px solid #9ccfe0 !important;
+  border-top: 1px solid #cbd5e1 !important;
 }
 
 .sx-nyare-week :deep(.sx__time-grid-day),
 .sx-nyare-week .sx__time-grid-day {
-  border-left: 1px solid #9ccfe0 !important;
+  border-left: 1px solid #cbd5e1 !important;
 }
 
 .sx-nyare-week .sx__calendar,
 .sx-nyare-week .sx__view-container {
-  background-color: #f5f6ee !important;
+  background-color: var(--color-calendar-canvas) !important;
+}
+
+.sx-nyare-week .sx__week-grid__hour-text {
+  color: var(--color-text-muted);
 }
 
 .sx-nyare-week .sx__view-container {

@@ -20,7 +20,10 @@ export interface UseAcademicEvents {
   loading: Ref<boolean>
   error: Ref<string | null>
 
-  loadEvents: (params?: AcademicEventListParams, force?: boolean) => Promise<AcademicEventResponse[]>
+  loadEvents: (
+    params?: AcademicEventListParams,
+    force?: boolean,
+  ) => Promise<AcademicEventResponse[]>
   createEvent: (request: AcademicEventRequest) => Promise<AcademicEventResponse>
   updateEvent: (id: string, request: AcademicEventRequest) => Promise<AcademicEventResponse>
   deleteEvent: (id: string) => Promise<void>

@@ -53,9 +53,7 @@ describe('createCache registry', () => {
   it('never lets a slower older load overwrite a newer forced refetch', async () => {
     const slow = deferred<TaskResponse[]>()
     const fast = deferred<TaskResponse[]>()
-    vi.spyOn(tasksApi, 'list')
-      .mockReturnValueOnce(slow.promise)
-      .mockReturnValueOnce(fast.promise)
+    vi.spyOn(tasksApi, 'list').mockReturnValueOnce(slow.promise).mockReturnValueOnce(fast.promise)
     const { tasks, loadTasks } = useTasks()
 
     const first = loadTasks()

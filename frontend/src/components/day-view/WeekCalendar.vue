@@ -12,6 +12,7 @@ import type { DayEvent } from '../../types/calendar'
 import { toDateKey } from '../../utils/dayKey'
 import type { UntimedDayItem } from '../../utils/untimedItems'
 import { weekDates } from '../../utils/weekDays'
+import NowButton from './NowButton.vue'
 import WeekHeaderRow from './WeekHeaderRow.vue'
 import WeekPill from './WeekPill.vue'
 
@@ -119,6 +120,7 @@ let resizeObserver: ResizeObserver | null = null
 
 const gutterLeft = ref(55) // width of the time axis
 const overlay = ref({ top: 0, left: 0, width: 0 }) // the time line, relative to the grid area
+const todayColRect = ref<{ left: number; width: number } | null>(null) // today's column wash
 
 // Scroll memory: the first build scrolls to "now"; later date changes (swipes)
 // restore the position you were at.
@@ -159,8 +161,9 @@ function updateOverlay() {
   gutterLeft.value = Math.abs(diff - 55) <= 1 ? 55 : Math.max(Math.round(diff), 0)
 
   const todayCol = todayIndex.value >= 0 ? cols[todayIndex.value] : undefined
-  if (todayCol && nowTop.value !== null) {
-    const t = todayCol.getBoundingClientRect()
+  const t = todayCol?.getBoundingClientRect()
+  todayColRect.value = todayCol && t ? { left: t.left - a.left, width: t.width } : null
+  if (todayCol && t && nowTop.value !== null) {
     overlay.value = {
       top: f.top - a.top + nowTop.value,
       left: t.left - a.left,
@@ -294,7 +297,7 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
 </script>
 
 <template>
-  <div ref="wrapperRef" class="relative flex min-h-0 flex-1 flex-col bg-[#F5F6EE]">
+  <div ref="wrapperRef" class="relative flex min-h-0 flex-1 flex-col bg-app-bg">
     <!-- Day names, dates and untimed items; tap a day to open it -->
     <WeekHeaderRow
       :days="dayInfos"
@@ -314,6 +317,13 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
         </ScheduleXCalendar>
       </div>
 
+      <!-- Subtle yellow wash across today's column -->
+      <div
+        v-if="columnsReady && todayColRect"
+        class="pointer-events-none absolute inset-y-0 z-10 bg-urgency-yellow/10"
+        :style="{ left: `${todayColRect.left}px`, width: `${todayColRect.width}px` }"
+      />
+
       <!-- Time line: only across today's column, like Google Calendar -->
       <div
         v-if="columnsReady && nowTop !== null && todayIndex >= 0"
@@ -332,15 +342,7 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
         </div>
       </div>
 
-      <!-- Now jump button: bottom LEFT (right side is reserved for a teammate) -->
-      <button
-        v-if="nowDirection"
-        type="button"
-        class="absolute bottom-4 left-4 z-30 rounded-full bg-[#0E7490] px-4 py-2 text-sm font-bold text-white shadow-lg transition-transform active:scale-95"
-        @click="scrollToNow()"
-      >
-        {{ nowDirection === 'up' ? '↑' : '↓' }} Now
-      </button>
+      <NowButton v-if="nowDirection" :direction="nowDirection" @jump="scrollToNow()" />
     </div>
   </div>
 </template>
@@ -366,21 +368,26 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
   display: none !important;
 }
 
-/* Nyare background colour */
+/* Nyare canvas colour: a brighter cream sheet under the parchment chrome */
 .sx-nyare-week :deep(.sx__calendar),
 .sx-nyare-week :deep(.sx__view-container) {
-  background-color: #f5f6ee;
-  --sx-color-background: #f5f6ee;
-  --sx-color-outline-variant: #9ccfe0;
-  --sx-color-surface: #f5f6ee;
+  background-color: var(--color-calendar-canvas);
+  --sx-color-background: var(--color-calendar-canvas);
+  --sx-color-outline-variant: #cbd5e1;
+  --sx-color-surface: var(--color-calendar-canvas);
 }
 
-/* Grid lines: thin light blue, with a line between the day columns */
+/* Grid lines: quiet warm-gray hairlines so the event colors carry the view */
 .sx-nyare-week :deep(.sx__week-grid__hour) {
-  border-top: 1px solid #9ccfe0 !important;
+  border-top: 1px solid #cbd5e1 !important;
 }
 .sx-nyare-week :deep(.sx__time-grid-day) {
-  border-left: 1px solid #9ccfe0 !important;
+  border-left: 1px solid #cbd5e1 !important;
+}
+
+/* Hour labels: project muted ink instead of Schedule-X's cool gray */
+.sx-nyare-week :deep(.sx__week-grid__hour-text) {
+  color: var(--color-text-muted);
 }
 
 /* Strip Schedule X's default event card so WeekPill shows as designed */

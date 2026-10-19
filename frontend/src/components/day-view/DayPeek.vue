@@ -46,7 +46,7 @@ function layout(event: DayEvent) {
 </script>
 
 <template>
-  <div class="relative flex h-full w-full flex-col bg-[#F5F6EE]" aria-hidden="true">
+  <div class="relative flex h-full w-full flex-col bg-app-bg" aria-hidden="true">
     <AllDayStrip
       v-if="untimedItems.length > 0"
       class="shrink-0"
@@ -59,20 +59,13 @@ function layout(event: DayEvent) {
         <div class="sx-vue-calendar-wrapper">
           <div class="sx__calendar-wrapper">
             <div class="sx__calendar">
-              <div
-                class="sx__view-container"
-                :style="{ transform: `translateY(${-scrollTop}px)` }"
-              >
+              <div class="sx__view-container" :style="{ transform: `translateY(${-scrollTop}px)` }">
                 <div
                   class="sx__week-grid"
                   :style="{ height: `calc(${totalHours} * var(--calendar-hour-height, 48px))` }"
                 >
                   <div class="sx__week-grid__time-axis">
-                    <div
-                      v-for="hour in hours"
-                      :key="hour"
-                      class="sx__week-grid__hour"
-                    >
+                    <div v-for="hour in hours" :key="hour" class="sx__week-grid__hour">
                       <span class="sx__week-grid__hour-text">
                         {{ formatTime12h(`${String(hour).padStart(2, '0')}:00`) }}
                       </span>
@@ -113,16 +106,20 @@ function layout(event: DayEvent) {
 
 .sx-nyare-wrapper :deep(.sx__week-grid__hour),
 .sx-nyare-wrapper .sx__week-grid__hour {
-  border-top: 1px solid #9ccfe0 !important;
+  border-top: 1px solid #cbd5e1 !important;
 }
 
 .sx-nyare-wrapper :deep(.sx__time-grid-day),
 .sx-nyare-wrapper .sx__time-grid-day {
-  border-left: 1px solid #9ccfe0 !important;
+  border-left: 1px solid #cbd5e1 !important;
 }
 
 .sx-nyare-wrapper .sx__calendar,
 .sx-nyare-wrapper .sx__view-container {
-  background-color: #f5f6ee !important;
+  background-color: var(--color-calendar-canvas) !important;
+}
+
+.sx-nyare-wrapper .sx__week-grid__hour-text {
+  color: var(--color-text-muted);
 }
 </style>

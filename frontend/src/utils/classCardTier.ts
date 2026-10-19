@@ -5,7 +5,7 @@ export type ClassCardTierName = 'xs' | 'sm' | 'md' | 'lg'
 
 export interface ClassCardTier {
   readonly name: ClassCardTierName
-  /** Padding and border width for the card root. */
+  /** Padding for the card root. */
   readonly card: string
   /** Type scale and clamp for the title. */
   readonly title: string
@@ -15,30 +15,30 @@ export interface ClassCardTier {
 
 const TIER_XS: ClassCardTier = {
   name: 'xs',
-  card: 'p-1 border-[1px]',
-  title: 'text-[11px] leading-tight line-clamp-1',
-  description: 'mt-0.5 text-[11px] leading-3 line-clamp-1',
+  card: 'px-1.5 py-1',
+  title: 'text-[11px] leading-[13px] line-clamp-1',
+  description: 'mt-px text-[11px] leading-3 line-clamp-1',
 }
 
 const TIER_SM: ClassCardTier = {
   name: 'sm',
-  card: 'p-2 border-[2px]',
-  title: 'text-sm leading-tight line-clamp-2',
-  description: 'mt-0.5 text-xs leading-4 line-clamp-1',
+  card: 'p-1.5',
+  title: 'text-[13px] leading-[16px] line-clamp-2',
+  description: 'mt-0.5 text-[11px] leading-[13px] line-clamp-1',
 }
 
 const TIER_MD: ClassCardTier = {
   name: 'md',
-  card: 'p-2 border-[2px]',
-  title: 'text-base leading-tight line-clamp-2',
-  description: 'mt-0.5 text-xs leading-4 line-clamp-2',
+  card: 'p-2',
+  title: 'text-sm leading-[18px] line-clamp-2',
+  description: 'mt-1 text-[11px] leading-[14px] line-clamp-2',
 }
 
 const TIER_LG: ClassCardTier = {
   name: 'lg',
-  card: 'p-4 border-[2.5px]',
-  title: 'text-xl leading-tight line-clamp-2',
-  description: 'mt-1 text-sm line-clamp-2',
+  card: 'p-3',
+  title: 'text-sm leading-[18px] line-clamp-2',
+  description: 'mt-1.5 text-xs leading-4 line-clamp-2',
 }
 
 const XS_BELOW_MINUTES = 60

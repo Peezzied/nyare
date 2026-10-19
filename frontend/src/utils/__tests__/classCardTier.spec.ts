@@ -4,7 +4,14 @@ import { classDurationMinutes, getClassCardTier } from '../classCardTier'
 const HOUR_HEIGHT_PX = 80
 const MIN_FONT_SIZE_PX = 11
 
-const PADDING_PX: Record<string, number> = { 'p-1': 4, 'p-2': 8, 'p-4': 16 }
+const PADDING_PX: Record<string, number> = {
+  'p-1': 4,
+  'py-1': 4,
+  'p-1.5': 6,
+  'p-2': 8,
+  'p-3': 12,
+  'p-4': 16,
+}
 const BORDER_PX: Record<string, number> = {
   'border-[1px]': 1,
   'border-[2px]': 2,
@@ -12,13 +19,21 @@ const BORDER_PX: Record<string, number> = {
 }
 const FONT_SIZE_PX: Record<string, number> = {
   'text-[11px]': 11,
+  'text-[13px]': 13,
   'text-xs': 12,
   'text-sm': 14,
   'text-base': 16,
   'text-xl': 20,
 }
-const LEADING_PX: Record<string, number> = { 'leading-3': 12, 'leading-4': 16 }
-const GAP_PX: Record<string, number> = { 'mt-0.5': 2, 'mt-1': 4 }
+const LEADING_PX: Record<string, number> = {
+  'leading-3': 12,
+  'leading-4': 16,
+  'leading-[13px]': 13,
+  'leading-[14px]': 14,
+  'leading-[16px]': 16,
+  'leading-[18px]': 18,
+}
+const GAP_PX: Record<string, number> = { 'mt-px': 1, 'mt-0.5': 2, 'mt-1': 4, 'mt-1.5': 6 }
 const CLAMP_LINES: Record<string, number> = { 'line-clamp-1': 1, 'line-clamp-2': 2 }
 
 function pick(classes: string[], map: Record<string, number>, fallback: number): number {

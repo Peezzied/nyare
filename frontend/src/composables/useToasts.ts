@@ -43,7 +43,10 @@ export function useToasts(): UseToasts {
   function pushToast(toast: Omit<Toast, 'id'>, durationMs = 4000): void {
     const id = crypto.randomUUID()
     toasts.value.push({ ...toast, id })
-    timers.set(id, setTimeout(() => dismissToast(id), durationMs))
+    timers.set(
+      id,
+      setTimeout(() => dismissToast(id), durationMs),
+    )
   }
 
   return { toasts, pushToast, dismissToast }

@@ -24,10 +24,11 @@ const forwardedProps = useForwardProps(delegatedProps)
     :class="
       cn(
         buttonVariants({ variant: 'ghost' }),
-        'size-8 p-0 font-normal aria-selected:opacity-100 cursor-default',
-        '[&[data-today]:not([data-selected])]:bg-accent [&[data-today]:not([data-selected])]:text-accent-foreground',
+        'size-8 p-0 font-normal aria-selected:opacity-100 cursor-pointer',
+        '[&[data-today]:not([data-selected])]:bg-[#E1F5FE] [&[data-today]:not([data-selected])]:font-semibold [&[data-today]:not([data-selected])]:text-[#0288D1]',
+        'hover:bg-[#E1F5FE]',
         // Selected
-        'data-[selected]:bg-primary data-[selected]:text-primary-foreground data-[selected]:opacity-100 [&[data-selected]:hover]:bg-primary data-[selected]:hover:text-primary-foreground data-[selected]:focus:bg-primary data-[selected]:focus:text-primary-foreground',
+        'data-[selected]:bg-[#00A4C8] data-[selected]:text-white data-[selected]:opacity-100 [&[data-selected]:hover]:bg-[#0090B0] data-[selected]:hover:text-white data-[selected]:focus:bg-[#00A4C8] data-[selected]:focus:text-white',
         // Disabled
         'data-[disabled]:text-muted-foreground data-[disabled]:opacity-50',
         // Unavailable
