@@ -3,9 +3,10 @@ import 'temporal-polyfill/global'
 import '@schedule-x/theme-default/dist/calendar.css'
 import { ScheduleXCalendar } from '@schedule-x/vue'
 import { createCalendar, createViewWeek } from '@schedule-x/calendar'
+import { createCalendarControlsPlugin } from '@schedule-x/calendar-controls'
 import { Temporal } from 'temporal-polyfill'
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { HOUR_HEIGHT } from '../../constants/calendar'
+import { computed, nextTick, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
+import { getHourHeight } from '../../utils/calendarStyle'
 import { useNow } from '../../composables/useNow'
 import type { DayEvent } from '../../types/calendar'
 import { toDateKey } from '../../utils/dayKey'
@@ -22,10 +23,11 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'selectDay', date: Date): void
+  (e: 'selectUntimed', item: UntimedDayItem, originRect: DOMRect | null): void
+  (e: 'selectCourse', event: DayEvent, originRect: DOMRect): void
 }>()
 
 const TZ = 'Asia/Manila'
-const GRID_HEIGHT = 24 * HOUR_HEIGHT
 
 const now = useNow()
 const todayKey = computed(() => toDateKey(now.value))
@@ -65,28 +67,30 @@ function toSxEvents(events: DayEvent[]) {
 }
 
 // ---- Calendar instance ----
-// Rebuilt (new key) whenever the week changes. Untimed items live in the
-// WeekHeaderRow above, not in Schedule X.
-const calendarKey = ref(0)
+// Untimed items live in the WeekHeaderRow above, not in Schedule X.
+const calendarControls = createCalendarControlsPlugin()
 
-const calendarApp = computed(() =>
-  createCalendar({
-    views: [createViewWeek()],
-    defaultView: 'week',
-    timezone: TZ,
-    firstDayOfWeek: 7, // Sunday
-    isResponsive: false, // otherwise a phone-width calendar switches itself to day view
-    skipAnimations: true,
-    selectedDate: Temporal.PlainDate.from(toDateKey(props.selectedDate)),
-    weekOptions: {
-      gridHeight: GRID_HEIGHT,
-      nDays: 7,
-      eventWidth: 94, // leaves a small gap to the right of each pill
-      gridStep: 60,
-      timeAxisFormatOptions: { hour: 'numeric', hour12: true },
+const calendarApp = shallowRef(
+  createCalendar(
+    {
+      views: [createViewWeek()],
+      defaultView: 'week',
+      timezone: TZ,
+      firstDayOfWeek: 7, // Sunday
+      isResponsive: false, // otherwise a phone-width calendar switches itself to day view
+      skipAnimations: true,
+      selectedDate: Temporal.PlainDate.from(toDateKey(props.selectedDate)),
+      weekOptions: {
+        gridHeight: 24 * getHourHeight(),
+        nDays: 7,
+        eventWidth: 94, // leaves a small gap to the right of each pill
+        gridStep: 60,
+        timeAxisFormatOptions: { hour: 'numeric', hour12: true },
+      },
+      events: toSxEvents(allEvents.value),
     },
-    events: toSxEvents(allEvents.value),
-  }),
+    [calendarControls],
+  ),
 )
 
 // ---- Current time (today's column only) ----
@@ -94,7 +98,7 @@ const nowMinutes = computed(() => now.value.getHours() * 60 + now.value.getMinut
 
 const nowTop = computed<number | null>(() => {
   if (todayIndex.value < 0) return null
-  return (nowMinutes.value / 60) * HOUR_HEIGHT
+  return (nowMinutes.value / 60) * getHourHeight()
 })
 
 function toMinutes(dateTime: string): number {
@@ -117,18 +121,27 @@ const gutterLeft = ref(0) // width of the time axis
 const colsWidth = ref(0) // width of the 7 day columns
 const overlay = ref({ top: 0, left: 0, width: 0 }) // the time line, relative to the grid area
 
-// Scroll memory: the first build scrolls to "now"; later rebuilds (swipes)
+// Scroll memory: the first build scrolls to "now"; later date changes (swipes)
 // restore the position you were at.
 let didInitialScroll = false
 let savedScrollTop = 0
 
-watch(
-  () => props.selectedDate,
-  () => {
-    if (scrollEl.value) savedScrollTop = scrollEl.value.scrollTop
-    calendarKey.value++
-  },
-)
+watch([() => props.selectedDate, allEvents], ([newDate, newEvents]) => {
+  if (scrollEl.value) savedScrollTop = scrollEl.value.scrollTop
+  calendarControls.setDate(Temporal.PlainDate.from(toDateKey(newDate)))
+  calendarApp.value.events.set(toSxEvents(newEvents))
+
+  if (scrollEl.value) {
+    scrollEl.value.scrollTop = savedScrollTop
+  }
+  measure()
+  settle(15)
+
+  // Notify the swiper that the week change is in place
+  requestAnimationFrame(() => {
+    wrapperRef.value?.dispatchEvent(new CustomEvent('day-ready', { bubbles: true }))
+  })
+})
 
 function queryColumns(): HTMLElement[] {
   return Array.from(areaRef.value?.querySelectorAll<HTMLElement>('.sx__time-grid-day') ?? [])
@@ -250,13 +263,6 @@ onUnmounted(() => {
   window.removeEventListener('resize', measure)
 })
 
-// After a calendar rebuild, find the new elements
-watch(calendarKey, () => {
-  columnsReady.value = false
-  scrollEl.value = null
-  nextTick(setup)
-})
-
 watch(nowTop, () => nextTick(updateOverlay))
 
 // ---- Jump button ----
@@ -267,14 +273,24 @@ const nowDirection = computed<'up' | 'down' | null>(() => {
   return null
 })
 
+// ---- Detail taps: the day view container owns the modal ----
+function onSelectCourse(event: DayEvent, rect: DOMRect) {
+  emit('selectCourse', event, rect)
+}
+
+function onSelectUntimed(item: UntimedDayItem, rect: DOMRect) {
+  emit('selectUntimed', item, rect)
+}
+
 function scrollToNow(behavior: ScrollBehavior = 'smooth') {
   const el = scrollEl.value
   if (!el) return
+  const hHeight = getHourHeight()
   const firstTop =
     allEvents.value.length > 0
-      ? Math.min(...allEvents.value.map((e) => (toMinutes(e.start) / 60) * HOUR_HEIGHT))
+      ? Math.min(...allEvents.value.map((e) => (toMinutes(e.start) / 60) * hHeight))
       : null
-  const target = nowTop.value ?? firstTop ?? 8 * HOUR_HEIGHT
+  const target = nowTop.value ?? firstTop ?? 8 * hHeight
   el.scrollTo({ top: Math.max(target - 120, 0), behavior })
 }
 </script>
@@ -288,13 +304,14 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
       :gutter-left="gutterLeft"
       :cols-width="colsWidth"
       @select="emit('selectDay', $event)"
+      @select-untimed="onSelectUntimed"
     />
 
     <div ref="areaRef" class="relative min-h-0 flex-1 sx-nyare-week">
       <div class="absolute inset-0 sx-nyare-fill">
-        <ScheduleXCalendar :calendar-app="calendarApp" :key="calendarKey">
+        <ScheduleXCalendar :calendar-app="calendarApp">
           <template #timeGridEvent="{ calendarEvent }">
-            <WeekPill :event="(calendarEvent as any)._raw as DayEvent" />
+            <WeekPill :event="(calendarEvent as any)._raw as DayEvent" @select="onSelectCourse" />
           </template>
         </ScheduleXCalendar>
       </div>
@@ -366,13 +383,6 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
 }
 .sx-nyare-week :deep(.sx__time-grid-day) {
   border-left: 1px solid #9ccfe0 !important;
-}
-
-/* Time-axis labels */
-.sx-nyare-week :deep(.sx__week-grid__hour-text) {
-  color: #a8a29e;
-  font-weight: 600;
-  font-size: 0.75rem;
 }
 
 /* Strip Schedule X's default event card so WeekPill shows as designed */

@@ -28,8 +28,8 @@ Frontend-only feature. Paths are relative to `frontend/`.
 
 **Purpose**: Land the detail-view presentation prerequisite and confirm existing reuse points.
 
-- [ ] T001 Confirm the calendar detail modal host exists in `frontend/src/components/day-view/EventDetailModal.vue`. If it is absent on this branch, bring it and its click wiring from `feat/calendar-improvements` (commit `76a6313`), without the two per-type content components.
-- [ ] T002 Confirm the reuse points that this feature depends on: `frontend/src/utils/courseColors.ts` (`getCourseDotStyle`), `frontend/src/utils/taskUrgency.ts` (`formatDuration`), `frontend/src/utils/scheduleFormat.ts` (`formatTimeRange`), `frontend/src/utils/planCategory.ts` (`getPlanCategory`), and `frontend/src/api/tasks.ts` (`tasksApi.updateStatus`). Record any missing helper before you start Phase 2.
+- [x] T001 Confirm the calendar detail modal host and its click wiring are present in `frontend/src/components/day-view/EventDetailModal.vue` (ported in commit `d4867df`). Install `@schedule-x/calendar-controls` at `^4.9.1` to match `@schedule-x/calendar`, because `ScheduleCalendar.vue` and `WeekCalendar.vue` import it, and add it to `frontend/package.json`. Change the `lucide-vue-next` import in `EventDetailModal.vue` to `@lucide/vue`. The imports of `CourseBlockDetail.vue` and `UntimedBlockDetail.vue` inside `EventDetailModal.vue` stay unresolved until T006 replaces them.
+- [x] T002 Confirm the reuse points that this feature depends on: `frontend/src/utils/courseColors.ts` (`getCourseDotStyle`), `frontend/src/utils/taskUrgency.ts` (`formatDuration`), `frontend/src/utils/scheduleExpander.ts` (`formatTimeRange`), `frontend/src/utils/planCategory.ts` (`getPlanCategory`), and `frontend/src/api/tasks.ts` (`tasksApi.updateStatus`). Record any missing helper before you start Phase 2.
 
 ---
 
@@ -39,10 +39,10 @@ Frontend-only feature. Paths are relative to `frontend/`.
 
 **CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T003 [P] Create the shared view model types in `frontend/src/types/calendarItemDetail.ts`. Include `CalendarItemKind` = `'class' | 'task' | 'event'`, `CalendarItemCategory` = `'class' | 'event' | 'task'`, `LinkedNoteRef` (`id: string`, `title: string | null`), `CalendarItemDetailView`, and `CalendarItemMarkerState`. Copy the field constraints verbatim from `specs/008-calendar-item-details/data-model.md` (duration applies to task only, note applies to task and event, timeWindow is `string | null`).
-- [ ] T004 [P] Create the builder in `frontend/src/utils/calendarItemDetail.ts`. Export `buildCalendarItemDetail` for a class (`DayEvent` + kind), a task (`TaskResponse` + cached notes), and an event (`AcademicEventResponse` + cached notes). Enforce FR-017 (event duration is always null), FR-018 (empty `noteId` sets note to null), FR-019 (unknown duration sets duration to null, never fabricate). Build `timeWindow` with `formatTimeRange` for a class, the scheduled date or the `getPlanCategory` label for a task, and the deadline date and time for an event. Build a task duration with `formatDuration`. Also export `buildMarkerState`.
-- [ ] T005 Create the shared detail component in `frontend/src/components/day-view/CalendarItemDetail.vue`. Accept the `item: CalendarItemDetailView` prop. Render a field only when its value is non-null (FR-022). Emit `open-note` with the `LinkedNoteRef` and `complete-task` with the task id. Keep the note control and the complete control at a minimum 44 by 44 pixel tap target with an accessible name (FR-020). Render all three kinds from this one component (FR-021).
-- [ ] T006 Wire the modal host `frontend/src/components/day-view/EventDetailModal.vue` to render `CalendarItemDetail.vue` instead of branching on item type. Forward `open-note` and `complete-task`. Keep the existing expand and collapse motion, the `popstate` handling, and the reduced-motion fallback.
+- [x] T003 [P] Create the shared view model types in `frontend/src/types/calendarItemDetail.ts`. Include `CalendarItemKind` = `'class' | 'task' | 'event'`, `CalendarItemCategory` = `'class' | 'event' | 'task'`, `LinkedNoteRef` (`id: string`, `title: string | null`), `CalendarItemDetailView`, and `CalendarItemMarkerState`. Copy the field constraints verbatim from `specs/008-calendar-item-details/data-model.md` (duration applies to task only, note applies to task and event, timeWindow is `string | null`).
+- [x] T004 [P] Create the builder in `frontend/src/utils/calendarItemDetail.ts`. Export `buildCalendarItemDetail` for a class (`DayEvent` + kind), a task (`TaskResponse` + cached notes), and an event (`AcademicEventResponse` + cached notes). Enforce FR-017 (event duration is always null), FR-018 (empty `noteId` sets note to null), FR-019 (unknown duration sets duration to null, never fabricate). Build `timeWindow` with `formatTimeRange` for a class, the scheduled date or the `getPlanCategory` label for a task, and the deadline date and time for an event. Build a task duration with `formatDuration`. Also export `buildMarkerState`.
+- [x] T005 Create the shared detail component in `frontend/src/components/day-view/CalendarItemDetail.vue`. Accept the `item: CalendarItemDetailView` prop. Render a field only when its value is non-null (FR-022). Emit `open-note` with the `LinkedNoteRef` and `complete-task` with the task id. Keep the note control and the complete control at a minimum 44 by 44 pixel tap target with an accessible name (FR-020). Render all three kinds from this one component (FR-021).
+- [x] T006 Wire the modal host `frontend/src/components/day-view/EventDetailModal.vue` to render `CalendarItemDetail.vue` instead of branching on item type. Forward `open-note` and `complete-task`. Keep the existing expand and collapse motion, the `popstate` handling, and the reduced-motion fallback.
 
 **Checkpoint**: The shared component renders a class, a task, and an event from one view model.
 
@@ -56,13 +56,13 @@ Frontend-only feature. Paths are relative to `frontend/`.
 
 ### Tests for User Story 1
 
-- [ ] T007 [P] [US1] Add a marker mapping test in `frontend/src/components/day-view/__tests__/CategoryMarker.spec.ts`. Assert `class` renders no indicator, `event` renders the flag indicator, an open `task` renders the empty completion box, and a completed `task` renders the checked box (FR-001 through FR-005).
+- [x] T007 [P] [US1] Add a marker mapping test in `frontend/src/components/day-view/__tests__/CategoryMarker.spec.ts`. Assert `class` renders no indicator, `event` renders the flag indicator, an open `task` renders the empty completion box, and a completed `task` renders the checked box (FR-001 through FR-005).
 
 ### Implementation for User Story 1
 
-- [ ] T008 [P] [US1] Create `frontend/src/components/day-view/CategoryMarker.vue`. Accept `category: CalendarItemCategory` and optional `completed: boolean`. Render the tri-block form: no indicator for a class, a flag or alarm icon for an event, a completion box for a task (checked when completed). Set `aria-hidden="true"` on the icon and expose the category name for the parent item label (FR-002, FR-003, FR-004, FR-005).
-- [ ] T009 [US1] Add the class marker and the detail-open tap to `frontend/src/components/day-view/WeekPill.vue`. Use `CategoryMarker` with `category="class"`. Emit the class `DayEvent` and its `DOMRect` on tap (FR-002, FR-006).
-- [ ] T010 [US1] Add the task and event markers to `frontend/src/components/day-view/WeekHeaderRow.vue` chips. Use `CategoryMarker` with the item `category` and the `completed` flag. Extend the chip accessible name to include the category. Emit the item and its `DOMRect` on tap (FR-003, FR-004, FR-005).
+- [x] T008 [P] [US1] Create `frontend/src/components/day-view/CategoryMarker.vue`. Accept `category: CalendarItemCategory` and optional `completed: boolean`. Render the tri-block form: no indicator for a class, a flag or alarm icon for an event, a completion box for a task (checked when completed). Set `aria-hidden="true"` on the icon and expose the category name for the parent item label (FR-002, FR-003, FR-004, FR-005).
+- [x] T009 [US1] Add the class marker and the detail-open tap to `frontend/src/components/day-view/WeekPill.vue`. Use `CategoryMarker` with `category="class"`. Emit the class `DayEvent` and its `DOMRect` on tap (FR-002, FR-006).
+- [x] T010 [US1] Add the task and event markers to `frontend/src/components/day-view/WeekHeaderRow.vue` chips. Use `CategoryMarker` with the item `category` and the `completed` flag. Extend the chip accessible name to include the category. Emit the item and its `DOMRect` on tap (FR-003, FR-004, FR-005).
 
 **Checkpoint**: All week-view items show the correct marker. User Story 1 is independently testable.
 
@@ -76,13 +76,13 @@ Frontend-only feature. Paths are relative to `frontend/`.
 
 ### Tests for User Story 2
 
-- [ ] T011 [P] [US2] Add a builder test in `frontend/src/utils/__tests__/calendarItemDetail.spec.ts`. Assert a task with no `noteId` sets note to null (FR-018), a task with no duration sets duration to null (FR-019), a task with no `scheduledDate` puts the plan-category label in `timeWindow`, and an event sets duration to null (FR-017).
+- [x] T011 [P] [US2] Add a builder test in `frontend/src/utils/__tests__/calendarItemDetail.spec.ts`. Assert a task with no `noteId` sets note to null (FR-018), a task with no duration sets duration to null (FR-019), a task with no `scheduledDate` puts the plan-category label in `timeWindow`, and an event sets duration to null (FR-017).
 
 ### Implementation for User Story 2
 
-- [ ] T012 [US2] Wire the task tap to open the detail view. In `frontend/src/components/day-view/DayViewContainer.vue` (and `ScheduleCalendar.vue` if the untimed pill is the tap source), build the task view model with `buildCalendarItemDetail` and open the modal (FR-006, FR-008, FR-012, FR-013).
-- [ ] T013 [US2] Handle the `open-note` event in `frontend/src/components/day-view/DayViewContainer.vue`. Navigate with `router.push({ name: 'note-edit', params: { id: note.id } })` (FR-009).
-- [ ] T014 [US2] Handle the `complete-task` event in `frontend/src/components/day-view/DayViewContainer.vue`. Call `tasksApi.updateStatus(taskId, 'COMPLETED')`, then update the cached task ref from the saved DTO. Do not call `list()` again. On failure, keep the prior state and surface the API error (FR-010, FR-011).
+- [x] T012 [US2] Wire the task tap to open the detail view. In `frontend/src/components/day-view/DayViewContainer.vue`, build the task view model with `buildCalendarItemDetail` and open the modal. The tap sources `frontend/src/components/day-view/ScheduleCalendar.vue` and `frontend/src/components/day-view/WeekCalendar.vue` forward the tapped untimed item upward (FR-006, FR-008, FR-012, FR-013).
+- [x] T013 [US2] Handle the `open-note` event in `frontend/src/components/day-view/DayViewContainer.vue`. Navigate with `router.push({ name: 'note-edit', params: { id: note.id } })` (FR-009).
+- [x] T014 [US2] Handle the `complete-task` event in `frontend/src/components/day-view/DayViewContainer.vue`. Call `tasksApi.updateStatus(taskId, 'COMPLETED')`, then update the cached task ref from the saved DTO. Do not call `list()` again. On failure, keep the prior state and surface the API error (FR-010, FR-011).
 
 **Checkpoint**: A student completes a task and reaches its note from the calendar. User Story 2 is independently testable.
 
@@ -96,7 +96,7 @@ Frontend-only feature. Paths are relative to `frontend/`.
 
 ### Implementation for User Story 3
 
-- [ ] T015 [US3] Wire the event tap to open the detail view. In `frontend/src/components/day-view/DayViewContainer.vue` and `ScheduleCalendar.vue`, build the event view model with `buildCalendarItemDetail` and open the modal (FR-007, FR-014, FR-016). Confirm no duration field renders (FR-017).
+- [x] T015 [US3] Wire the event tap to open the detail view. In `frontend/src/components/day-view/DayViewContainer.vue`, build the event view model with `buildCalendarItemDetail` and open the modal. The tap sources `frontend/src/components/day-view/ScheduleCalendar.vue` and `frontend/src/components/day-view/WeekCalendar.vue` forward the tapped untimed item upward (FR-007, FR-014, FR-016). Confirm no duration field renders (FR-017).
 
 **Checkpoint**: Events show the note link and the time window with no duration. User Stories 1, 2, and 3 work independently.
 
@@ -110,10 +110,10 @@ Frontend-only feature. Paths are relative to `frontend/`.
 
 ### Implementation for User Story 4
 
-- [ ] T016 [P] [US4] Create `frontend/src/api/mocks/calendarItemDetailFixtures.ts`. Export `CALENDAR_ITEM_DETAIL_FIXTURES`. Cover every state in FR-023: a class, a task with a note, a task without a note, a task with a duration, a task without a duration, a scheduled task, a task with no scheduled date, an open task, a completed task, an event with a note, and an event without a note. Also cover the FR-024 marker states: a class item, an event item, an open task item, a completed task item, and a day with more items than the visible limit.
-- [ ] T017 [P] [US4] Create `frontend/src/components/day-view/CalendarItemDetail.story.vue` with one variant per fixture. Do not include test code in the story.
-- [ ] T018 [US4] Extend `frontend/src/api/mocks/fixtures.ts` so at least one task and one event carry a `noteId` that resolves to a mock note, and add the over-limit day for FR-024.
-- [ ] T019 [US4] Remove the per-type detail components. Delete `frontend/src/components/day-view/CourseBlockDetail.vue` and `frontend/src/components/day-view/UntimedBlockDetail.vue` if they are present on this branch after `CalendarItemDetail.vue` replaces them (FR-021).
+- [x] T016 [P] [US4] Create `frontend/src/api/mocks/calendarItemDetailFixtures.ts`. Export `CALENDAR_ITEM_DETAIL_FIXTURES`. Cover every state in FR-023: a class, a task with a note, a task without a note, a task with a duration, a task without a duration, a scheduled task, a task with no scheduled date, an open task, a completed task, an event with a note, and an event without a note. Also cover the FR-024 marker states: a class item, an event item, an open task item, a completed task item, and a day with more items than the visible limit.
+- [x] T017 [P] [US4] Create `frontend/src/components/day-view/CalendarItemDetail.story.vue` with one variant per fixture. Do not include test code in the story.
+- [x] T018 [US4] Extend `frontend/src/api/mocks/fixtures.ts` so at least one task and one event carry a `noteId` that resolves to a mock note, and add the over-limit day for FR-024.
+- [x] T019 [US4] Remove the per-type detail components. Delete `frontend/src/components/day-view/CourseBlockDetail.vue` and `frontend/src/components/day-view/UntimedBlockDetail.vue` if they are present on this branch after `CalendarItemDetail.vue` replaces them (FR-021).
 
 **Checkpoint**: All four user stories are functional. One component and complete mock data exist.
 
@@ -123,9 +123,18 @@ Frontend-only feature. Paths are relative to `frontend/`.
 
 **Purpose**: Final verification across all stories.
 
-- [ ] T020 [P] Run `npm run lint:oxlint`, `npm run format`, and `npm run type-check` in `frontend/`. Fix all errors.
-- [ ] T021 Run `npm run story` and walk every scenario in `specs/008-calendar-item-details/quickstart.md`. Confirm the hide states, the failure state, and the a11y labels.
-- [ ] T022 [P] Verify SC-004 and SC-005: every detailed view shows a time window, every known task duration shows, no event shows a duration, and no fabricated duration or deadline appears.
+- [x] T020 [P] Run `npx prettier --check` on only the files this feature creates or changes, `npx oxlint src` (without `--fix`), and `npm run type-check` in `frontend/`. Fix all errors.
+- [x] T021 Run `npm run story` and walk every scenario in `specs/008-calendar-item-details/quickstart.md`. Confirm the hide states, the failure state, and the a11y labels.
+- [x] T022 [P] Verify SC-004 and SC-005: every detailed view shows a time window, every known task duration shows, no event shows a duration, and no fabricated duration or deadline appears.
+
+---
+
+## Phase 8: Week Number in the Week Row Header
+
+**Purpose**: Show the ISO week number in the left gutter of the week row header (FR-025).
+
+- [ ] T023 [P] Add `frontend/src/utils/weekNumber.ts` with `isoWeekNumber(date)` and `weekNumberFor(date)`, where `weekNumberFor` returns the ISO week of the Thursday of the visible Sunday-to-Saturday week, and add `frontend/src/utils/__tests__/weekNumber.spec.ts`. Assert 18 to 24 October 2026 is week 43, 27 December 2026 to 2 January 2027 is week 53, 28 December 2025 to 3 January 2026 is week 1, a Sunday input to `isoWeekNumber` returns the previous ISO week, and the input date is not mutated (FR-025).
+- [ ] T024 [US1] In `frontend/src/components/day-view/WeekCalendar.vue`, compute the week number with `weekNumberFor` and pass it as a `week-number` prop to `frontend/src/components/day-view/WeekHeaderRow.vue`. In `WeekHeaderRow.vue`, render a non-interactive label with the visible number and a hidden "Week " prefix in the `gutterLeft` space, hidden while `gutterLeft` is 0. Use the header's existing text color or one that passes 4.5:1, not the muted token. Keep the two-chip limit, the `+N` overflow, and the day-cell tap target unchanged. Add `frontend/src/components/day-view/__tests__/WeekHeaderRow.spec.ts`: no label when `gutterLeft` is 0, label "Week 43" when it is 75, and an unchanged chip count (FR-025).
 
 ---
 
