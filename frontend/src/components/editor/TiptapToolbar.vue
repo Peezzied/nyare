@@ -216,35 +216,58 @@ const isActionDisabled = (item: ToolbarActionItem): boolean => {
 
 <template>
   <div class="flex flex-row border-t-2 border-[#00A4C8]">
-    <div role="toolbar" aria-label="Rich text editor toolbar"
-      class="minimal-scrollbar flex flex-nowrap items-center gap-2 overflow-x-auto bg-card p-2 text-card-foreground select-none">
-      <input ref="fileInputRef" type="file" accept="image/*" class="hidden" data-testid="image-file-input"
-        @change="onFileChange" />
+    <div
+      role="toolbar"
+      aria-label="Rich text editor toolbar"
+      class="minimal-scrollbar flex flex-nowrap items-center gap-2 overflow-x-auto bg-card p-2 text-card-foreground select-none"
+    >
+      <input
+        ref="fileInputRef"
+        type="file"
+        accept="image/*"
+        class="hidden"
+        data-testid="image-file-input"
+        @change="onFileChange"
+      />
       <!-- Formatting Tools (Left Cluster) -->
       <div class="flex items-center gap-1 shrink-0" data-testid="formatting-cluster">
         <template v-for="item in formattingActions" :key="item.id">
-          <Button type="button" size="icon" :variant="item.isActive?.() ? 'secondary' : 'ghost'" :class="[
-            'size-9 shrink-0 transition-colors',
-            item.isActive?.()
-              ? 'bg-accent text-accent-foreground shadow-xs font-semibold'
-              : '',
-          ]" :aria-label="item.label" :aria-pressed="item.isActive ? (item.isActive() ? 'true' : 'false') : undefined"
-            :disabled="isActionDisabled(item)" @click="item.action">
+          <Button
+            type="button"
+            size="icon"
+            :variant="item.isActive?.() ? 'secondary' : 'ghost'"
+            :class="[
+              'size-9 shrink-0 transition-colors',
+              item.isActive?.() ? 'bg-accent text-accent-foreground shadow-xs font-semibold' : '',
+            ]"
+            :aria-label="item.label"
+            :aria-pressed="item.isActive ? (item.isActive() ? 'true' : 'false') : undefined"
+            :disabled="isActionDisabled(item)"
+            @click="item.action"
+          >
             <component :is="item.icon" class="size-4" />
           </Button>
         </template>
       </div>
     </div>
     <!-- History Tools (Floating Right Cluster: Standout Undo & Redo) -->
-    <div class="flex items-center gap-1.5 shrink-0 sticky right-0 ml-auto self-stretch bg-card px-2"
-      data-testid="history-cluster">
+    <div
+      class="flex items-center gap-1.5 shrink-0 sticky right-0 ml-auto self-stretch bg-card px-2"
+      data-testid="history-cluster"
+    >
       <template v-for="item in historyActions" :key="item.id">
-        <Button type="button" size="icon" variant="ghost" :class="[
-          'size-9 shrink-0 font-bold transition-all text-[#00A4C8] border border-[#00A4C8]/30 bg-[#00A4C8]/10 hover:bg-[#00A4C8]/20 active:scale-95 shadow-xs',
-          isActionDisabled(item)
-            ? 'opacity-30 pointer-events-none cursor-not-allowed'
-            : '',
-        ]" :aria-label="item.label" :disabled="isActionDisabled(item)" @click="item.action">
+        <Button
+          type="button"
+          size="icon"
+          variant="ghost"
+          :class="[
+            'size-9 shrink-0 font-bold transition-all text-[#00A4C8] border border-[#00A4C8]/30 bg-[#00A4C8]/10 hover:bg-[#00A4C8]/20 active:scale-95 shadow-xs',
+            isActionDisabled(item) ? 'opacity-30 pointer-events-none cursor-not-allowed' : '',
+          ]"
+          :aria-label="item.label"
+          :disabled="isActionDisabled(item)"
+          @click="item.action"
+        >
           <component :is="item.icon" class="size-4.5 stroke-[2.25]" />
         </Button>
       </template>

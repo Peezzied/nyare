@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { effectScope } from 'vue'
 import { studyPlannerApi } from '@/api'
 import { useProcess } from '../useProcess'
+import { resetAllCaches } from '../createCache'
 import type { StreamProcessCallbacks } from '@/api'
 import type { PlannerStatusResponse, ProcessProgressEvent, ProcessSummaryResponse } from '@/api'
 
@@ -36,6 +37,8 @@ const summaryPayload: ProcessSummaryResponse = {
 describe('useProcess', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
+    // The run state is module-level, so clear it to isolate each test.
+    resetAllCaches()
     // Default: every note is still pending after a cancel (rolled back).
     vi.spyOn(studyPlannerApi, 'status').mockResolvedValue(statusPayload)
   })
@@ -237,9 +240,8 @@ describe('useProcess', () => {
     expect(proc.savedAfterCancel.value).toBe(false)
   })
 
-  it('aborts the stream when the owning scope is disposed', async () => {
+  it('does not cancel the run when the owning scope is disposed', async () => {
     let signal: AbortSignal | undefined
-    const statusSpy = vi.spyOn(studyPlannerApi, 'status').mockResolvedValue(nothingPendingStatus)
     vi.spyOn(studyPlannerApi, 'streamProcess').mockImplementation(
       (callbacks: StreamProcessCallbacks) =>
         new Promise<void>((resolve) => {
@@ -248,24 +250,45 @@ describe('useProcess', () => {
         }),
     )
 
-    const onSavedAfterCancel = vi.fn<() => void>()
-    // effectScope stands in for a component. scope.stop() triggers onScopeDispose.
+    // effectScope stands in for a component. scope.stop() must not cancel the run.
     const scope = effectScope()
-    const proc = scope.run(() => useProcess({ onSavedAfterCancel }))!
+    const proc = scope.run(() => useProcess())!
 
     const promise = proc.start()
     expect(proc.running.value).toBe(true)
 
     scope.stop()
-    await promise
     await new Promise((r) => setTimeout(r))
 
-    expect(signal?.aborted).toBe(true)
+    expect(signal?.aborted).toBe(false)
+    expect(proc.running.value).toBe(true)
+
+    proc.cancel()
+    await promise
     expect(proc.cancelled.value).toBe(true)
     expect(proc.running.value).toBe(false)
-    // A committed status is mocked, but dispose must skip the recheck.
-    expect(statusSpy).not.toHaveBeenCalled()
-    expect(proc.savedAfterCancel.value).toBe(false)
-    expect(onSavedAfterCancel).not.toHaveBeenCalled()
+  })
+
+  it('aborts the active run and clears state when resetAllCaches runs', async () => {
+    let signal: AbortSignal | undefined
+    vi.spyOn(studyPlannerApi, 'streamProcess').mockImplementation(
+      (callbacks: StreamProcessCallbacks) =>
+        new Promise<void>((resolve) => {
+          signal = callbacks.signal
+          callbacks.signal?.addEventListener('abort', () => resolve())
+        }),
+    )
+
+    const proc = useProcess()
+    const promise = proc.start()
+    expect(proc.running.value).toBe(true)
+
+    resetAllCaches()
+    await promise
+
+    expect(signal?.aborted).toBe(true)
+    expect(proc.running.value).toBe(false)
+    expect(proc.summary.value).toBeNull()
+    expect(proc.error.value).toBeNull()
   })
 })

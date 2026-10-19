@@ -25,7 +25,8 @@ vi.mock('@/api', () => {
     authApi: {
       getCurrentUser: (...args: unknown[]) => getCurrentUser(...(args as [])),
       login: (...args: unknown[]) => login(...(args as [{ username: string }])),
-      getDevUser: () => (import.meta.env.DEV ? import.meta.env.VITE_DEV_USER || undefined : undefined),
+      getDevUser: () =>
+        import.meta.env.DEV ? import.meta.env.VITE_DEV_USER || undefined : undefined,
     },
   }
 })
@@ -132,6 +133,18 @@ describe('useAuth', () => {
     await ensureSession()
     await ensureSession()
     expect(getCurrentUser).toHaveBeenCalledTimes(2)
+  })
+
+  it('shares one in-flight check across concurrent ensureSession calls', async () => {
+    getCurrentUser.mockResolvedValueOnce(mockUser)
+    const { useAuth } = await import('../useAuth')
+    const { ensureSession } = useAuth()
+
+    const [first, second] = await Promise.all([ensureSession(), ensureSession()])
+
+    expect(first).toEqual(mockUser)
+    expect(second).toEqual(mockUser)
+    expect(getCurrentUser).toHaveBeenCalledTimes(1)
   })
 
   it('caches a concluded result so repeated calls do not refetch /me', async () => {

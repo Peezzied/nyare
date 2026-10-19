@@ -14,7 +14,7 @@ class WebConfigTest {
     @Test
     @DisplayName("Should configure CORS mappings for /api/** with allowed origins, methods, and credentials")
     void addCorsMappings_registersExpectedConfiguration() {
-        WebConfig webConfig = new WebConfig();
+        WebConfig webConfig = new WebConfig(new SessionInterceptor());
         TestCorsRegistry registry = new TestCorsRegistry();
 
         webConfig.addCorsMappings(registry);

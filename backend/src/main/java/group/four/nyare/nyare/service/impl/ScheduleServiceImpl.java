@@ -33,8 +33,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     @Transactional
-    public ScheduleResponse createSchedule(ScheduleRequest request) {
-        Course course = courseRepository.findById(request.getCourseId())
+    public ScheduleResponse createSchedule(ScheduleRequest request, Long userId) {
+        Course course = courseRepository.findByIdAndUserId(request.getCourseId(), userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Course not found with ID: " + request.getCourseId()));
 
@@ -62,8 +62,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public ScheduleResponse getSchedule(Long id) {
-        Schedule schedule = scheduleRepository.findById(id)
+    public ScheduleResponse getSchedule(Long id, Long userId) {
+        Schedule schedule = scheduleRepository.findByIdAndCourseUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Schedule not found with ID: " + id));
         return toResponse(schedule);
@@ -71,12 +71,12 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     @Transactional
-    public ScheduleResponse updateSchedule(Long id, ScheduleRequest request) {
-        Schedule schedule = scheduleRepository.findById(id)
+    public ScheduleResponse updateSchedule(Long id, ScheduleRequest request, Long userId) {
+        Schedule schedule = scheduleRepository.findByIdAndCourseUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Schedule not found with ID: " + id));
 
-        Course course = courseRepository.findById(request.getCourseId())
+        Course course = courseRepository.findByIdAndUserId(request.getCourseId(), userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Course not found with ID: " + request.getCourseId()));
 
@@ -92,11 +92,10 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     @Transactional
-    public void deleteSchedule(Long id) {
-        if (!scheduleRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Schedule not found with ID: " + id);
-        }
-        scheduleRepository.deleteById(id);
+    public void deleteSchedule(Long id, Long userId) {
+        Schedule schedule = scheduleRepository.findByIdAndCourseUserId(id, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found with ID: " + id));
+        scheduleRepository.delete(schedule);
     }
 
     private void validateTimes(LocalTime startTime, LocalTime endTime) {

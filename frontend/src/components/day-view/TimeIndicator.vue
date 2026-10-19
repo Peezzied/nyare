@@ -11,7 +11,9 @@ defineProps<{
     :style="{ top: `${top}px` }"
   >
     <!-- Dot at left edge of the grid -->
-    <div class="absolute left-0 w-3.5 h-3.5 rounded-full bg-[#0E7490] translate-x-[-7px] shrink-0" />
+    <div
+      class="absolute left-0 w-3.5 h-3.5 rounded-full bg-[#0E7490] translate-x-[-7px] shrink-0"
+    />
     <!-- Horizontal indicator line -->
     <div class="h-[2px] bg-[#0E7490] flex-1" />
     <!-- What's on right now -->

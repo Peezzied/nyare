@@ -9,12 +9,22 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
  * Spring Data JPA repository for academic event entities with mandatory user scoping.
  */
 public interface AcademicEventRepository extends JpaRepository<AcademicEvent, UUID> {
+
+    /**
+     * Finds an academic event by identifier only when its course belongs to the given user.
+     *
+     * @param id     the academic event identifier
+     * @param userId the owner user identifier
+     * @return the academic event when owned by the user, otherwise empty
+     */
+    Optional<AcademicEvent> findByIdAndCourseUserId(UUID id, Long userId);
 
     /**
      * Retrieves events matching user ID and optional course and upcoming filters.

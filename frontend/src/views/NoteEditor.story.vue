@@ -33,7 +33,9 @@ loaded.value = true
     </Variant>
 
     <Variant title="Mobile Viewport">
-      <div class="mx-auto h-[844px] w-[390px] overflow-hidden rounded-2xl border border-slate-300 bg-[#F6F7EE] shadow-lg">
+      <div
+        class="mx-auto h-[844px] w-[390px] overflow-hidden rounded-2xl border border-slate-300 bg-[#F6F7EE] shadow-lg"
+      >
         <NoteEditor
           class="!h-full"
           initial-title="Physics Seminar Notes"

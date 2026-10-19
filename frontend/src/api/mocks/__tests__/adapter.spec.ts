@@ -17,11 +17,13 @@ import type { ProcessSummaryResponse } from '@/types/api'
 describe('Mock Adapter', () => {
   const originalDevUser = import.meta.env.VITE_DEV_USER
 
-  beforeEach(() => {
+  beforeEach(async () => {
     import.meta.env.VITE_DEV_USER = ''
     initMockAdapter()
     // The mock store is module state, so each test starts from fresh fixtures.
     resetMockFixtures()
+    // Protected routes need a session, so start each test logged in.
+    await authApi.login({ username: 'karol' })
   })
 
   afterEach(() => {
@@ -317,11 +319,29 @@ describe('Mock Adapter', () => {
       })
     })
 
-    it('returns no pending notes on study planner status', async () => {
-      const result = await studyPlannerApi.status()
-      expect(result.hasPendingNotes).toBe(false)
-      expect(result.dirtyNoteCount).toBe(0)
-      expect(result.pendingNotes).toEqual([])
+    it('reports dirty notes on status and clears them on process', async () => {
+      // Fixture note-math204-eigen has lastProcessedAt: null, so it counts as dirty.
+      const before = await studyPlannerApi.status()
+      expect(before.hasPendingNotes).toBe(true)
+      expect(before.dirtyNoteCount).toBe(1)
+      expect(before.dirtyDates).toEqual(['2026-10-06'])
+      expect(before.courseNames).toEqual(['MATH 204 - Linear Algebra'])
+      expect(before.pendingNotes[0]?.id).toBe('note-math204-eigen')
+
+      await studyPlannerApi.process()
+
+      const after = await studyPlannerApi.status()
+      expect(after.hasPendingNotes).toBe(false)
+      expect(after.dirtyNoteCount).toBe(0)
+      expect(after.pendingNotes).toEqual([])
+    })
+
+    it('marks a newly created note as dirty', async () => {
+      await notesApi.create({ courseId: 1, content: 'New lecture notes' })
+
+      const status = await studyPlannerApi.status()
+      expect(status.dirtyNoteCount).toBe(2)
+      expect(status.courseNames).toContain('CS 201 - Data Structures & Algorithms')
     })
 
     it('supports image upload and deletion', async () => {
@@ -336,6 +356,38 @@ describe('Mock Adapter', () => {
 
       await imagesApi.delete(uploaded.id)
       await expect(apiClient.get(`/api/images/${uploaded.id}`)).rejects.toThrow(ApiError)
+    })
+  })
+
+  describe('session enforcement', () => {
+    it('rejects protected list calls with 401 when there is no session', async () => {
+      await authApi.logout()
+
+      const expectUnauthorized = async (call: Promise<unknown>) => {
+        await expect(call).rejects.toSatisfy((err: unknown) => {
+          expect(err).toBeInstanceOf(ApiError)
+          const apiErr = err as ApiError
+          expect(apiErr.status).toBe(401)
+          expect(apiErr.problem).toEqual({
+            title: 'Unauthorized',
+            status: 401,
+            detail: 'Authentication required',
+          })
+          return true
+        })
+      }
+
+      await expectUnauthorized(coursesApi.list())
+      await expectUnauthorized(tasksApi.list())
+      await expectUnauthorized(notesApi.list())
+    })
+
+    it('allows protected list calls after login', async () => {
+      await authApi.logout()
+      await authApi.login({ username: 'karol' })
+
+      const courses = await coursesApi.list()
+      expect(courses.length).toBe(3)
     })
   })
 

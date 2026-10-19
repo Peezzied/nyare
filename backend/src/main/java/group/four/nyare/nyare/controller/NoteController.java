@@ -38,7 +38,7 @@ public class NoteController {
 
     @PostMapping
     public ResponseEntity<NoteResponse> createNote(@Valid @RequestBody NoteRequest request) {
-        NoteResponse createdNote = noteService.createNote(request);
+        NoteResponse createdNote = noteService.createNote(request, sessionContext.requireUserId());
         URI location = URI.create("/api/notes/" + createdNote.getId());
         return ResponseEntity.created(location).body(createdNote);
     }
@@ -46,26 +46,26 @@ public class NoteController {
     @GetMapping
     public ResponseEntity<List<NoteSummaryResponse>> listNotes(
             @RequestParam(required = false) Long courseId) {
-        Long userId = sessionContext.getUserId().orElse(null);
+        Long userId = sessionContext.requireUserId();
         List<NoteSummaryResponse> notes = noteService.listNotes(userId, courseId);
         return ResponseEntity.ok(notes);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<NoteResponse> getNote(@PathVariable UUID id) {
-        NoteResponse note = noteService.getNote(id);
+        NoteResponse note = noteService.getNote(id, sessionContext.requireUserId());
         return ResponseEntity.ok(note);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<NoteResponse> updateNote(@PathVariable UUID id, @Valid @RequestBody NoteRequest request) {
-        NoteResponse updatedNote = noteService.updateNote(id, request);
+        NoteResponse updatedNote = noteService.updateNote(id, request, sessionContext.requireUserId());
         return ResponseEntity.ok(updatedNote);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteNote(@PathVariable UUID id) {
-        noteService.deleteNote(id);
+        noteService.deleteNote(id, sessionContext.requireUserId());
         return ResponseEntity.noContent().build();
     }
 }

@@ -1,100 +1,195 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { nextTick } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import TodoView from '../TodoView.vue'
-import { coursesApi, schedulesApi } from '@/api'
-import { tasksApi } from '@/api/tasks'
+import TaskContainerModal from '@/components/tasks/TaskContainerModal.vue'
+import TaskRow from '@/components/TaskRow.vue'
+import { coursesApi, schedulesApi, tasksApi } from '@/api'
 import { useCatalog } from '@/composables/useCatalog'
-import { routerKey, routeLocationKey } from 'vue-router'
+import { useTasks } from '@/composables/useTasks'
 import type { TaskResponse } from '@/types/api'
 
-const task: TaskResponse = {
-  id: 'task-1',
+vi.mock('vue-router', () => ({
+  useRouter: () => ({ push: vi.fn<() => Promise<void>>() }),
+}))
+
+const rowTask: TaskResponse = {
+  id: 'task-row-1',
   courseId: 1,
   noteId: null,
-  title: 'Read chapter 4',
+  title: 'Study',
   description: null,
-  scheduledDate: null,
+  scheduledDate: '2026-10-25',
   duration: null,
   status: 'TODO',
-  planCategory: null,
-  createdAt: '2026-10-10T09:00:00Z',
-  updatedAt: '2026-10-10T09:00:00Z',
+  createdAt: '2026-10-18T09:00:00Z',
+  updatedAt: '2026-10-18T09:00:00Z',
 }
 
-const mockPush = vi.fn<(path: string) => Promise<void>>(() => Promise.resolve())
+function mountView() {
+  return mount(TodoView)
+}
 
-vi.mock('vue-router', () => {
-  const routerKey = Symbol('routerKey')
-  const routeLocationKey = Symbol('routeLocationKey')
-  const routerStub = {
-    push: (path: string) => mockPush(path),
-  }
-  return {
-    useRouter: () => routerStub,
-    routerKey,
-    routeLocationKey,
-  }
-})
-
-describe('TodoView', () => {
+describe('TodoView FAB', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
     useCatalog().resetCatalog()
-  })
-
-  function mountView(): ReturnType<typeof mount> {
-    return mount(TodoView, {
-      global: {
-        provide: {
-          [routerKey]: { push: mockPush },
-          [routeLocationKey]: { path: '/tasks' },
-        },
-      },
-    })
-  }
-
-  function mockData(): void {
+    useTasks().resetTasks()
     vi.spyOn(coursesApi, 'list').mockResolvedValue([
       { id: 1, name: 'CS 201', description: null, userId: 1 },
     ])
     vi.spyOn(schedulesApi, 'list').mockResolvedValue([])
-    vi.spyOn(tasksApi, 'list').mockResolvedValue([task])
-  }
-
-  it('renders the bottom navigation with the tasks tab active', async () => {
-    mockData()
-
-    const wrapper = mountView()
-    await flushPromises()
-
-    const tab = wrapper.get('nav[aria-label="Main navigation"]').get('[data-id="tasks"]')
-    expect(tab.attributes('data-active')).toBe('true')
-    expect(tab.attributes('aria-current')).toBe('page')
+    vi.spyOn(tasksApi, 'list').mockResolvedValue([])
   })
 
-  it('navigates to the calendar from the bottom navigation', async () => {
-    mockData()
-
+  it('renders a 56px add task button with a Plus icon at the bottom right', async () => {
     const wrapper = mountView()
     await flushPromises()
 
-    await wrapper
-      .get('nav[aria-label="Main navigation"]')
-      .get('[data-id="calendar"]')
-      .trigger('click')
-
-    expect(mockPush).toHaveBeenCalledWith('/calendar')
+    const fab = wrapper.get('[data-testid="tasks-fab"]')
+    expect(fab.attributes('aria-label')).toBe('Add task')
+    expect(fab.classes()).toContain('bg-primary')
+    expect(fab.classes()).toContain('rounded-2xl')
+    expect(fab.classes()).toContain('h-14')
+    expect(fab.classes()).toContain('w-14')
+    expect(fab.classes()).toContain('right-4')
+    expect(fab.classes()).toContain('bottom-4')
+    expect(fab.find('svg').exists()).toBe(true)
   })
 
-  it('does not repeat the list fetch after bar navigation emulation', async () => {
-    mockData()
-
+  it('captures the FAB rect and opens the create modal on tap', async () => {
     const wrapper = mountView()
     await flushPromises()
 
-    const list = vi.mocked(tasksApi.list)
-    await wrapper.get('nav[aria-label="Main navigation"]').get('[data-id="notes"]').trigger('click')
+    await wrapper.get('[data-testid="tasks-fab"]').trigger('click')
 
-    expect(list).toHaveBeenCalledTimes(1)
+    const modal = wrapper.findComponent(TaskContainerModal)
+    expect(modal.props('isOpen')).toBe(true)
+    expect(modal.props('taskId')).toBeNull()
+    expect(modal.props('originRect')).not.toBeNull()
+  })
+
+  it('ignores a second tap while the container is open', async () => {
+    const wrapper = mountView()
+    await flushPromises()
+
+    const fab = wrapper.get('[data-testid="tasks-fab"]')
+    await fab.trigger('click')
+
+    const modal = wrapper.findComponent(TaskContainerModal)
+    const firstOrigin = modal.props('originRect')
+
+    await fab.trigger('click')
+
+    expect(modal.props('isOpen')).toBe(true)
+    expect(modal.props('originRect')).toBe(firstOrigin)
+  })
+})
+
+describe('TodoView row tap', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks()
+    useCatalog().resetCatalog()
+    useTasks().resetTasks()
+    vi.spyOn(coursesApi, 'list').mockResolvedValue([
+      { id: 1, name: 'CS 201', description: null, userId: 1 },
+    ])
+    vi.spyOn(schedulesApi, 'list').mockResolvedValue([])
+    vi.spyOn(tasksApi, 'list').mockResolvedValue([rowTask])
+  })
+
+  it('opens the modal with the tapped task and its row rect', async () => {
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.findComponent(TaskRow).trigger('click')
+
+    const modal = wrapper.findComponent(TaskContainerModal)
+    expect(modal.props('isOpen')).toBe(true)
+    expect(modal.props('taskId')).toBe('task-row-1')
+    expect(modal.props('originRect')).not.toBeNull()
+  })
+
+  it('expands a partly visible row from its visible part', async () => {
+    const wrapper = mountView()
+    await flushPromises()
+
+    const row = wrapper.findComponent(TaskRow)
+    const el = row.element as HTMLElement
+    vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({
+      top: 120,
+      left: 16,
+      width: 358,
+      height: 40,
+      right: 374,
+      bottom: 160,
+      x: 16,
+      y: 120,
+      toJSON: () => ({}),
+    } as DOMRect)
+
+    await row.trigger('click')
+
+    const modal = wrapper.findComponent(TaskContainerModal)
+    expect(modal.props('originRect')).toEqual({
+      top: 120,
+      left: 16,
+      width: 358,
+      height: 40,
+      borderRadius: '16px',
+    })
+  })
+
+  it('does not open the modal when the status checkbox is toggled', async () => {
+    const updateStatus = vi
+      .spyOn(tasksApi, 'updateStatus')
+      .mockResolvedValue({ ...rowTask, status: 'COMPLETED' })
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.get('[role="checkbox"]').trigger('click')
+    await flushPromises()
+
+    expect(updateStatus).toHaveBeenCalledWith('task-row-1', 'COMPLETED')
+    expect(wrapper.findComponent(TaskContainerModal).props('isOpen')).toBe(false)
+  })
+})
+
+describe('TodoView dismissal', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks()
+    useCatalog().resetCatalog()
+    useTasks().resetTasks()
+    vi.spyOn(coursesApi, 'list').mockResolvedValue([
+      { id: 1, name: 'CS 201', description: null, userId: 1 },
+    ])
+    vi.spyOn(schedulesApi, 'list').mockResolvedValue([])
+    vi.spyOn(tasksApi, 'list').mockResolvedValue([rowTask])
+  })
+
+  it('keeps the scroll position and active filter after an open and dismiss cycle', async () => {
+    const wrapper = mountView()
+    await flushPromises()
+
+    const scheduledTab = wrapper
+      .findAll('[role="tab"]')
+      .find((tab) => tab.text() === 'Scheduled')
+    await scheduledTab?.trigger('click')
+    await nextTick()
+
+    const list = wrapper.get('ul')
+    const scrollEl = list.element as HTMLElement
+    scrollEl.scrollTop = 240
+
+    await wrapper.findComponent(TaskRow).trigger('click')
+    await flushPromises()
+    expect(wrapper.findComponent(TaskContainerModal).props('isOpen')).toBe(true)
+
+    wrapper.findComponent(TaskContainerModal).vm.$emit('close')
+    await flushPromises()
+
+    expect(wrapper.findComponent(TaskContainerModal).props('isOpen')).toBe(false)
+    expect(scrollEl.scrollTop).toBe(240)
+    expect(wrapper.get('[role="tab"][aria-selected="true"]').text()).toBe('Scheduled')
   })
 })

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
-import TodoHeader from '../TodoHeader.vue'
+import AccountMenuButton from '../AccountMenuButton.vue'
 
 const mockPush = vi.fn<(path: string) => Promise<void>>()
 
@@ -10,13 +10,13 @@ vi.mock('vue-router', () => ({
   }),
 }))
 
-describe('TodoHeader', () => {
+describe('AccountMenuButton', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   it('navigates to select-account from the hamburger menu', async () => {
-    const wrapper = mount(TodoHeader)
+    const wrapper = mount(AccountMenuButton)
 
     await wrapper.get('button[aria-label="Open menu"]').trigger('click')
     await flushPromises()

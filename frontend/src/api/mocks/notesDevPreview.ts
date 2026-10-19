@@ -100,7 +100,7 @@ export function devPreviewCourseNames(): Map<number, string> {
   return new Map(PREVIEW_COURSE_NAMES)
 }
 
-/** Returns whether local dev fallback preview is enabled. */
+/** Returns whether the mock preview fallback is enabled. */
 export function devPreviewEnabled(): boolean {
-  return import.meta.env.DEV
+  return import.meta.env.VITE_USE_MOCKS === 'true'
 }

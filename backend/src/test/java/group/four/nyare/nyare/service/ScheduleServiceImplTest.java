@@ -59,10 +59,10 @@ class ScheduleServiceImplTest {
     void createSchedule_withValidRequest_returnsResponse() {
         ScheduleRequest request = new ScheduleRequest(1L, DayOfWeek.MONDAY,
                 LocalTime.of(9, 0), LocalTime.of(10, 30));
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(sampleCourse));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(sampleCourse));
         when(scheduleRepository.save(any(Schedule.class))).thenReturn(sampleSchedule);
 
-        ScheduleResponse response = scheduleService.createSchedule(request);
+        ScheduleResponse response = scheduleService.createSchedule(request, 1L);
 
         assertThat(response).isNotNull();
         assertThat(response.getId()).isEqualTo(10L);
@@ -75,11 +75,22 @@ class ScheduleServiceImplTest {
     void createSchedule_withUnknownCourse_throwsResourceNotFoundException() {
         ScheduleRequest request = new ScheduleRequest(99L, DayOfWeek.MONDAY,
                 LocalTime.of(9, 0), LocalTime.of(10, 30));
-        when(courseRepository.findById(99L)).thenReturn(Optional.empty());
+        when(courseRepository.findByIdAndUserId(99L, 1L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> scheduleService.createSchedule(request))
+        assertThatThrownBy(() -> scheduleService.createSchedule(request, 1L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Course not found with ID: 99");
+    }
+
+    @Test
+    @DisplayName("createSchedule throws ResourceNotFoundException when the course belongs to another user")
+    void createSchedule_courseOfOtherUser_throwsResourceNotFound() {
+        ScheduleRequest request = new ScheduleRequest(1L, DayOfWeek.MONDAY,
+                LocalTime.of(9, 0), LocalTime.of(10, 30));
+        when(courseRepository.findByIdAndUserId(1L, 2L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> scheduleService.createSchedule(request, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -87,9 +98,9 @@ class ScheduleServiceImplTest {
     void createSchedule_withInvalidTimes_throwsBadRequestException() {
         ScheduleRequest request = new ScheduleRequest(1L, DayOfWeek.MONDAY,
                 LocalTime.of(11, 0), LocalTime.of(10, 0));
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(sampleCourse));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(sampleCourse));
 
-        assertThatThrownBy(() -> scheduleService.createSchedule(request))
+        assertThatThrownBy(() -> scheduleService.createSchedule(request, 1L))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining("Start time must be before end time");
     }
@@ -112,23 +123,27 @@ class ScheduleServiceImplTest {
     }
 
     @Test
-    @DisplayName("listSchedules without day returns all repository schedules")
-    void listSchedules_withoutDay_returnsAllSchedules() {
+    @DisplayName("listSchedules scopes results to the session user")
+    void listSchedules_scopedToUser_returnsOnlyOwnData() {
+        Schedule tuesdaySchedule = new Schedule(sampleCourse, DayOfWeek.TUESDAY,
+                LocalTime.of(9, 0), LocalTime.of(10, 30));
+        ReflectionTestUtils.setField(tuesdaySchedule, "id", 11L);
+
         when(scheduleRepository.findAllFiltered(42L, 1L))
-                .thenReturn(List.of(sampleSchedule));
+                .thenReturn(List.of(sampleSchedule, tuesdaySchedule));
 
         List<ScheduleResponse> responses = scheduleService.listSchedules(42L, 1L, null);
 
-        assertThat(responses).hasSize(1);
+        assertThat(responses).hasSize(2);
         verify(scheduleRepository).findAllFiltered(42L, 1L);
     }
 
     @Test
     @DisplayName("getSchedule returns schedule when found")
     void getSchedule_withValidId_returnsSchedule() {
-        when(scheduleRepository.findById(10L)).thenReturn(Optional.of(sampleSchedule));
+        when(scheduleRepository.findByIdAndCourseUserId(10L, 1L)).thenReturn(Optional.of(sampleSchedule));
 
-        ScheduleResponse response = scheduleService.getSchedule(10L);
+        ScheduleResponse response = scheduleService.getSchedule(10L, 1L);
 
         assertThat(response).isNotNull();
         assertThat(response.getId()).isEqualTo(10L);
@@ -137,11 +152,20 @@ class ScheduleServiceImplTest {
     @Test
     @DisplayName("getSchedule throws ResourceNotFoundException when schedule is not found")
     void getSchedule_withUnknownId_throwsResourceNotFoundException() {
-        when(scheduleRepository.findById(99L)).thenReturn(Optional.empty());
+        when(scheduleRepository.findByIdAndCourseUserId(99L, 1L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> scheduleService.getSchedule(99L))
+        assertThatThrownBy(() -> scheduleService.getSchedule(99L, 1L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Schedule not found with ID: 99");
+    }
+
+    @Test
+    @DisplayName("getSchedule throws ResourceNotFoundException when the schedule belongs to another user")
+    void getSchedule_otherUser_throwsResourceNotFound() {
+        when(scheduleRepository.findByIdAndCourseUserId(10L, 2L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> scheduleService.getSchedule(10L, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -149,10 +173,10 @@ class ScheduleServiceImplTest {
     void updateSchedule_withValidRequest_updatesAndReturnsSchedule() {
         ScheduleRequest request = new ScheduleRequest(1L, DayOfWeek.WEDNESDAY,
                 LocalTime.of(14, 0), LocalTime.of(16, 0));
-        when(scheduleRepository.findById(10L)).thenReturn(Optional.of(sampleSchedule));
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(sampleCourse));
+        when(scheduleRepository.findByIdAndCourseUserId(10L, 1L)).thenReturn(Optional.of(sampleSchedule));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(sampleCourse));
 
-        ScheduleResponse response = scheduleService.updateSchedule(10L, request);
+        ScheduleResponse response = scheduleService.updateSchedule(10L, request, 1L);
 
         assertThat(response).isNotNull();
         assertThat(response.getDay()).isEqualTo(DayOfWeek.WEDNESDAY);
@@ -164,9 +188,9 @@ class ScheduleServiceImplTest {
     void updateSchedule_withUnknownSchedule_throwsResourceNotFoundException() {
         ScheduleRequest request = new ScheduleRequest(1L, DayOfWeek.WEDNESDAY,
                 LocalTime.of(14, 0), LocalTime.of(16, 0));
-        when(scheduleRepository.findById(99L)).thenReturn(Optional.empty());
+        when(scheduleRepository.findByIdAndCourseUserId(99L, 1L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> scheduleService.updateSchedule(99L, request))
+        assertThatThrownBy(() -> scheduleService.updateSchedule(99L, request, 1L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Schedule not found with ID: 99");
     }
@@ -176,10 +200,10 @@ class ScheduleServiceImplTest {
     void updateSchedule_withUnknownCourse_throwsResourceNotFoundException() {
         ScheduleRequest request = new ScheduleRequest(99L, DayOfWeek.WEDNESDAY,
                 LocalTime.of(14, 0), LocalTime.of(16, 0));
-        when(scheduleRepository.findById(10L)).thenReturn(Optional.of(sampleSchedule));
-        when(courseRepository.findById(99L)).thenReturn(Optional.empty());
+        when(scheduleRepository.findByIdAndCourseUserId(10L, 1L)).thenReturn(Optional.of(sampleSchedule));
+        when(courseRepository.findByIdAndUserId(99L, 1L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> scheduleService.updateSchedule(10L, request))
+        assertThatThrownBy(() -> scheduleService.updateSchedule(10L, request, 1L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Course not found with ID: 99");
     }
@@ -189,31 +213,51 @@ class ScheduleServiceImplTest {
     void updateSchedule_withInvalidTimes_throwsBadRequestException() {
         ScheduleRequest request = new ScheduleRequest(1L, DayOfWeek.WEDNESDAY,
                 LocalTime.of(16, 0), LocalTime.of(14, 0));
-        when(scheduleRepository.findById(10L)).thenReturn(Optional.of(sampleSchedule));
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(sampleCourse));
+        when(scheduleRepository.findByIdAndCourseUserId(10L, 1L)).thenReturn(Optional.of(sampleSchedule));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(sampleCourse));
 
-        assertThatThrownBy(() -> scheduleService.updateSchedule(10L, request))
+        assertThatThrownBy(() -> scheduleService.updateSchedule(10L, request, 1L))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining("Start time must be before end time");
     }
 
     @Test
+    @DisplayName("updateSchedule throws ResourceNotFoundException when the schedule belongs to another user")
+    void updateSchedule_otherUser_throwsResourceNotFound() {
+        ScheduleRequest request = new ScheduleRequest(1L, DayOfWeek.WEDNESDAY,
+                LocalTime.of(14, 0), LocalTime.of(16, 0));
+        when(scheduleRepository.findByIdAndCourseUserId(10L, 2L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> scheduleService.updateSchedule(10L, request, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
     @DisplayName("deleteSchedule deletes schedule when found")
     void deleteSchedule_withValidId_deletesSchedule() {
-        when(scheduleRepository.existsById(10L)).thenReturn(true);
+        when(scheduleRepository.findByIdAndCourseUserId(10L, 1L)).thenReturn(Optional.of(sampleSchedule));
 
-        scheduleService.deleteSchedule(10L);
+        scheduleService.deleteSchedule(10L, 1L);
 
-        verify(scheduleRepository).deleteById(10L);
+        verify(scheduleRepository).delete(sampleSchedule);
     }
 
     @Test
     @DisplayName("deleteSchedule throws ResourceNotFoundException when schedule not found")
     void deleteSchedule_withUnknownId_throwsResourceNotFoundException() {
-        when(scheduleRepository.existsById(99L)).thenReturn(false);
+        when(scheduleRepository.findByIdAndCourseUserId(99L, 1L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> scheduleService.deleteSchedule(99L))
+        assertThatThrownBy(() -> scheduleService.deleteSchedule(99L, 1L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Schedule not found with ID: 99");
+    }
+
+    @Test
+    @DisplayName("deleteSchedule throws ResourceNotFoundException when the schedule belongs to another user")
+    void deleteSchedule_otherUser_throwsResourceNotFound() {
+        when(scheduleRepository.findByIdAndCourseUserId(10L, 2L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> scheduleService.deleteSchedule(10L, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 }

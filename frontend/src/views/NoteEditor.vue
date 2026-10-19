@@ -5,7 +5,6 @@ import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import {
   ArrowLeft,
   AlertCircle,
-  ChevronDown,
   CalendarIcon,
   FileText,
   Clock,
@@ -25,10 +24,9 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import TiptapEditor from '@/components/editor/TiptapEditor.vue'
-import { notesApi } from '@/api/notes'
+import { useNotes } from '@/composables/useNotes'
 import { useCatalog } from '@/composables/useCatalog'
-import { getCourseBadgeStyle } from '@/utils/courseColors'
-import CoursePickerDialog from '@/components/editor/CoursePickerDialog.vue'
+import CoursePicker from '@/components/CoursePicker.vue'
 import { markdownToHtml, htmlToMarkdown, extractImageUrls } from '@/utils/markdown'
 import {
   getNoteProcessingStatus,
@@ -87,6 +85,7 @@ const emit = defineEmits<{
 const route = useRoute()
 const router = useRouter()
 const { courses, schedules, loadCatalog } = useCatalog()
+const { saveNote: persistNote, getNote } = useNotes()
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -113,7 +112,6 @@ const minDateString = getMinDateString(14)
 
 const title = ref(props.initialTitle)
 const selectedCourseId = ref<number | null>(props.initialCourseId)
-const isCoursePickerOpen = ref(false)
 const entryDate = ref(props.initialDate !== undefined ? props.initialDate : todayString)
 const isCalendarOpen = ref(false)
 const lastProcessedAt = ref<string | null>(props.initialLastProcessedAt ?? null)
@@ -316,29 +314,6 @@ if (props.initialContent) {
   }
 }
 
-const selectedCourse = computed(() => {
-  if (selectedCourseId.value === null) {
-    return null
-  }
-  return courses.value.find((c) => c.id === selectedCourseId.value) ?? null
-})
-
-const courseBadgeStyle = computed<Record<string, string> | undefined>(() => {
-  if (!selectedCourseId.value) {
-    return undefined
-  }
-  const badge = getCourseBadgeStyle(selectedCourseId.value)
-  return {
-    backgroundColor: badge.backgroundColor,
-    color: badge.color,
-    borderColor: badge.borderColor,
-  }
-})
-
-function onCourseSelect(courseId: number) {
-  selectedCourseId.value = courseId
-}
-
 const isSaveDisabled = computed(() => {
   if (selectedCourseId.value === null) {
     return true
@@ -350,6 +325,9 @@ const isSaveDisabled = computed(() => {
     return true
   }
   if (isSaving.value) {
+    return true
+  }
+  if (!isDirty.value) {
     return true
   }
   return false
@@ -468,7 +446,7 @@ async function loadNote(id: string) {
   try {
     isLoading.value = true
     errorMessage.value = null
-    const note = await notesApi.get(id)
+    const note = await getNote(id)
     title.value = note.title ?? ''
     selectedCourseId.value = note.courseId ?? null
     entryDate.value = note.entryDate ?? todayString
@@ -523,9 +501,9 @@ async function saveNote() {
     errorMessage.value = null
     let savedNote: NoteResponse
     if (isEditMode.value && activeNoteId.value) {
-      savedNote = await notesApi.update(activeNoteId.value, payload)
+      savedNote = await persistNote(payload, activeNoteId.value)
     } else {
-      savedNote = await notesApi.create(payload)
+      savedNote = await persistNote(payload)
     }
     lastProcessedAt.value = savedNote.lastProcessedAt ?? null
     updatedAt.value = savedNote.updatedAt ?? null
@@ -718,44 +696,28 @@ defineExpose({ requestBack: handleBack })
       <div class="flex flex-wrap items-center gap-y-2 gap-x-7 text-xs">
         <!-- Course Pill -->
         <div class="inline-flex items-center gap-1.5" data-testid="course-pill">
-          <label for="course-picker-trigger" class="font-bold uppercase tracking-wider text-slate-500">
+          <label
+            for="course-picker-trigger"
+            class="font-bold uppercase tracking-wider text-slate-500"
+          >
             Course:
           </label>
-          <div class="relative inline-flex items-center">
-            <button
-              id="course-picker-trigger"
-              type="button"
-              data-testid="course-picker-trigger"
-              aria-label="Course"
-              class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 pr-2.5 text-xs font-semibold cursor-pointer border transition-colors outline-none max-w-[200px]"
-              :style="courseBadgeStyle"
-              :class="
-                selectedCourseId
-                  ? ''
-                  : 'border-dashed border-red-400 bg-red-50 text-red-600 hover:bg-red-100/70'
-              "
-              @click="isCoursePickerOpen = true"
-            >
-              <span class="truncate">
-                {{ selectedCourse ? selectedCourse.name : 'Required' }}
-              </span>
-              <ChevronDown class="size-3.5 opacity-60 shrink-0" />
-            </button>
-          </div>
+          <CoursePicker
+            id="course-picker-trigger"
+            data-testid="course-picker-trigger"
+            aria-label="Course"
+            v-model="selectedCourseId"
+            :courses="courses"
+            :schedules="schedules"
+          />
         </div>
-
-        <!-- Course Picker Modal -->
-        <CoursePickerDialog
-          v-model:open="isCoursePickerOpen"
-          :selected-course-id="selectedCourseId"
-          :courses="courses"
-          :schedules="schedules"
-          @select="onCourseSelect"
-        />
 
         <!-- Date Pill -->
         <div class="inline-flex items-center gap-1.5" data-testid="date-pill">
-          <label for="date-picker-trigger" class="font-bold uppercase tracking-wider text-slate-500">
+          <label
+            for="date-picker-trigger"
+            class="font-bold uppercase tracking-wider text-slate-500"
+          >
             Date:
           </label>
           <Popover v-model:open="isCalendarOpen">

@@ -7,11 +7,13 @@ import group.four.nyare.nyare.service.ProcessListener;
 import group.four.nyare.nyare.service.StudyPlannerService;
 import jakarta.servlet.AsyncEvent;
 import jakarta.servlet.AsyncListener;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.mock.web.MockAsyncContext;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -19,7 +21,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -53,6 +54,19 @@ class StudyPlannerControllerTest {
     @MockitoBean
     private JpaMetamodelMappingContext jpaMappingContext;
 
+    private static final Long USER_ID = 1L;
+
+    @BeforeEach
+    void setUp() {
+        when(sessionContext.requireUserId()).thenReturn(USER_ID);
+    }
+
+    private MockHttpSession mockSession() {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute(UserController.SESSION_USER_ID, USER_ID);
+        return session;
+    }
+
     @Test
     void process_success_emitsInitProgressAndDoneEvents() throws Exception {
         // given
@@ -61,7 +75,6 @@ class StudyPlannerControllerTest {
                 true, 1, List.of(date), List.of("CS101"));
         ProcessSummaryResponse summary = new ProcessSummaryResponse(1, 0, 0, List.of(1L));
 
-        when(sessionContext.getUserId()).thenReturn(Optional.of(1L));
         when(studyPlannerService.getPlannerStatus(1L)).thenReturn(status);
         when(studyPlannerService.processNotes(eq(1L), any(ProcessListener.class))).thenAnswer(inv -> {
             ProcessListener listener = inv.getArgument(1);
@@ -70,7 +83,7 @@ class StudyPlannerControllerTest {
         });
 
         // when
-        MvcResult mvcResult = mockMvc.perform(post("/api/study-planner/process"))
+        MvcResult mvcResult = mockMvc.perform(post("/api/study-planner/process").session(mockSession()))
                 .andExpect(request().asyncStarted())
                 .andReturn();
         mvcResult.getAsyncResult(5000);
@@ -91,13 +104,12 @@ class StudyPlannerControllerTest {
                 List.of(LocalDate.of(2026, 10, 1), LocalDate.of(2026, 10, 2), LocalDate.of(2026, 10, 3)),
                 List.of("CS101"));
 
-        when(sessionContext.getUserId()).thenReturn(Optional.of(1L));
         when(studyPlannerService.getPlannerStatus(1L)).thenReturn(status);
         when(studyPlannerService.processNotes(eq(1L), any(ProcessListener.class)))
                 .thenReturn(new ProcessSummaryResponse(0, 0, 0, List.of()));
 
         // when
-        MvcResult mvcResult = mockMvc.perform(post("/api/study-planner/process"))
+        MvcResult mvcResult = mockMvc.perform(post("/api/study-planner/process").session(mockSession()))
                 .andExpect(request().asyncStarted())
                 .andReturn();
         mvcResult.getAsyncResult(5000);
@@ -117,7 +129,6 @@ class StudyPlannerControllerTest {
         CountDownLatch release = new CountDownLatch(1);
         AtomicReference<ProcessListener> listenerRef = new AtomicReference<>();
 
-        when(sessionContext.getUserId()).thenReturn(Optional.of(1L));
         when(studyPlannerService.getPlannerStatus(1L)).thenReturn(status);
         when(studyPlannerService.processNotes(eq(1L), any(ProcessListener.class))).thenAnswer(inv -> {
             listenerRef.set(inv.getArgument(1));
@@ -127,7 +138,7 @@ class StudyPlannerControllerTest {
         });
 
         // when
-        MvcResult mvcResult = mockMvc.perform(post("/api/study-planner/process"))
+        MvcResult mvcResult = mockMvc.perform(post("/api/study-planner/process").session(mockSession()))
                 .andExpect(request().asyncStarted())
                 .andReturn();
 

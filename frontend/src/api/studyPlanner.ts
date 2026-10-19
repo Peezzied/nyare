@@ -1,4 +1,4 @@
-import { apiClient, ApiError } from './client'
+import { apiClient, ApiError, notifyUnauthorized } from './client'
 import type {
   PlannerStatusResponse,
   ProblemDetail,
@@ -117,6 +117,10 @@ export async function streamProcess(callbacks: StreamProcessCallbacks): Promise<
     })
 
     if (!response.ok) {
+      // Plain `fetch` skips the apiClient 401 wrapper, so report it here.
+      if (response.status === 401) {
+        notifyUnauthorized('/api/study-planner/process')
+      }
       let errorPayload: unknown
       try {
         const text = await response.text()

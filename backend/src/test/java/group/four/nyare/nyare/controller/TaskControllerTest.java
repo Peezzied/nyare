@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
@@ -21,7 +22,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -51,6 +51,8 @@ class TaskControllerTest {
     @MockitoBean
     private JpaMetamodelMappingContext jpaMappingContext;
 
+    private static final Long USER_ID = 1L;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private UUID sampleId;
@@ -58,6 +60,7 @@ class TaskControllerTest {
 
     @BeforeEach
     void setUp() {
+        when(sessionContext.requireUserId()).thenReturn(USER_ID);
         sampleId = UUID.randomUUID();
         sampleTask = new TaskResponse(
                 sampleId,
@@ -74,20 +77,25 @@ class TaskControllerTest {
         );
     }
 
+    private MockHttpSession mockSession() {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute(UserController.SESSION_USER_ID, USER_ID);
+        return session;
+    }
+
     @Test
     @DisplayName("listTasks with session user passes userId to service")
     void listTasks_withSessionUser_passesUserIdToService() throws Exception {
         // given
-        when(sessionContext.getUserId()).thenReturn(Optional.of(42L));
-        when(taskService.listTasks(eq(42L), any(), any(), any())).thenReturn(List.of(sampleTask));
+        when(taskService.listTasks(eq(USER_ID), any(), any(), any())).thenReturn(List.of(sampleTask));
 
         // when & then
-        mockMvc.perform(get("/api/tasks"))
+        mockMvc.perform(get("/api/tasks").session(mockSession()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].title").value("Study Chapter 1"));
 
-        verify(taskService).listTasks(42L, null, null, null);
+        verify(taskService).listTasks(USER_ID, null, null, null);
     }
 
     @Test
@@ -95,10 +103,11 @@ class TaskControllerTest {
     void createTask_withValidRequest_returnsCreated() throws Exception {
         // given
         TaskRequest request = new TaskRequest(1L, "Study Chapter 1", "Description", null, null, TaskStatus.TODO);
-        when(taskService.createTask(any(TaskRequest.class))).thenReturn(sampleTask);
+        when(taskService.createTask(any(TaskRequest.class), any())).thenReturn(sampleTask);
 
         // when & then
         mockMvc.perform(post("/api/tasks")
+                        .session(mockSession())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -110,10 +119,10 @@ class TaskControllerTest {
     @DisplayName("getTask with valid ID returns task")
     void getTask_withValidId_returnsTask() throws Exception {
         // given
-        when(taskService.getTask(sampleId)).thenReturn(sampleTask);
+        when(taskService.getTask(eq(sampleId), any())).thenReturn(sampleTask);
 
         // when & then
-        mockMvc.perform(get("/api/tasks/" + sampleId))
+        mockMvc.perform(get("/api/tasks/" + sampleId).session(mockSession()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Study Chapter 1"));
     }
@@ -122,12 +131,12 @@ class TaskControllerTest {
     @DisplayName("deleteTask with valid ID returns 204 No Content")
     void deleteTask_withValidId_returnsNoContent() throws Exception {
         // given
-        doNothing().when(taskService).deleteTask(sampleId);
+        doNothing().when(taskService).deleteTask(eq(sampleId), any());
 
         // when & then
-        mockMvc.perform(delete("/api/tasks/" + sampleId))
+        mockMvc.perform(delete("/api/tasks/" + sampleId).session(mockSession()))
                 .andExpect(status().isNoContent());
 
-        verify(taskService).deleteTask(sampleId);
+        verify(taskService).deleteTask(eq(sampleId), any());
     }
 }

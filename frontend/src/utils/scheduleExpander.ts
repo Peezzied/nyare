@@ -64,7 +64,7 @@ export function formatTimeRange(startStr: string, endStr: string): string {
 export function expandSchedulesForDate(
   targetDate: Date,
   schedules: ScheduleResponse[],
-  courses: CourseResponse[]
+  courses: CourseResponse[],
 ): DayEvent[] {
   const targetDay = getDayOfWeek(targetDate)
   const courseMap = new Map<number, CourseResponse>()
@@ -88,7 +88,8 @@ export function expandSchedulesForDate(
     const endTimeFormatted = schedule.endTime.slice(0, 5)
 
     // Color is assigned by courseId so a course keeps the same color every day
-    const colorTheme = COLOR_PALETTE[Math.abs(schedule.courseId - 1) % COLOR_PALETTE.length] ?? 'green'
+    const colorTheme =
+      COLOR_PALETTE[Math.abs(schedule.courseId - 1) % COLOR_PALETTE.length] ?? 'green'
 
     return {
       id: String(schedule.id),
@@ -102,7 +103,10 @@ export function expandSchedulesForDate(
   })
 }
 
-export function calculateGridBoundaries(_events: DayEvent[]): { startHour: number; endHour: number } {
+export function calculateGridBoundaries(_events: DayEvent[]): {
+  startHour: number
+  endHour: number
+} {
   // Always show the whole day, midnight to midnight
   return { startHour: 0, endHour: 24 }
 }

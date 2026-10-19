@@ -69,11 +69,7 @@ function layout(event: DayEvent) {
           />
 
           <div class="absolute inset-0 grid grid-cols-7">
-            <div
-              v-for="day in days"
-              :key="day.key"
-              class="relative border-l border-[#9ccfe0]"
-            >
+            <div v-for="day in days" :key="day.key" class="relative border-l border-[#9ccfe0]">
               <div
                 v-for="event in day.events"
                 :key="event.id"

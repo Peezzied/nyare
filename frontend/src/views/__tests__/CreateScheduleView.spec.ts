@@ -118,8 +118,20 @@ describe('CreateScheduleView', () => {
 
   it('creates one schedule request per selected weekday and omits color and room', async () => {
     const createdCourse = { id: 42, name: 'Math', description: null, userId: 7 }
-    const mondaySchedule = { id: 101, courseId: 42, day: 'MONDAY' as DayOfWeek, startTime: '09:00', endTime: '10:00' }
-    const wednesdaySchedule = { id: 102, courseId: 42, day: 'WEDNESDAY' as DayOfWeek, startTime: '09:00', endTime: '10:00' }
+    const mondaySchedule = {
+      id: 101,
+      courseId: 42,
+      day: 'MONDAY' as DayOfWeek,
+      startTime: '09:00',
+      endTime: '10:00',
+    }
+    const wednesdaySchedule = {
+      id: 102,
+      courseId: 42,
+      day: 'WEDNESDAY' as DayOfWeek,
+      startTime: '09:00',
+      endTime: '10:00',
+    }
 
     vi.mocked(api.coursesApi.create).mockResolvedValueOnce(createdCourse)
     vi.mocked(api.schedulesApi.create)
@@ -207,9 +219,7 @@ describe('CreateScheduleView', () => {
     expect(api.schedulesApi.create).toHaveBeenCalledTimes(2)
     expect(wrapper.text()).toContain('Retry failed')
 
-    const retryButton = wrapper
-      .findAll('button')
-      .find((button) => button.text().includes('Retry'))!
+    const retryButton = wrapper.findAll('button').find((button) => button.text().includes('Retry'))!
     await retryButton.trigger('click')
     await flushPromises()
 

@@ -1,13 +1,15 @@
-
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, toValue } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
+import { routerKey, routeLocationKey } from 'vue-router'
 import NotesView from '../NotesView.vue'
 import NoteEditorModal from '@/components/notes/NoteEditorModal.vue'
+import AppHeader from '@/components/AppHeader.vue'
+import NavigationBar from '@/components/NavigationBar.vue'
 import { coursesApi, schedulesApi, notesApi } from '@/api'
 import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
-import { routerKey, routeLocationKey } from 'vue-router'
+import { provideShellHeader } from '@/composables/useShellHeader'
 import type { NoteSummaryResponse } from '@/types/api'
 
 const mockPush = vi.fn<(path: string | { name: string; params?: { id: string } }) => Promise<void>>(
@@ -18,8 +20,7 @@ vi.mock('vue-router', () => {
   const routerKey = Symbol('routerKey')
   const routeLocationKey = Symbol('routeLocationKey')
   const routerStub = {
-    push: (path: string | { name: string; params?: { id: string } }) =>
-      mockPush(path),
+    push: (path: string | { name: string; params?: { id: string } }) => mockPush(path),
   }
   return {
     useRouter: () => routerStub,
@@ -57,8 +58,30 @@ const NoteEditorStub = defineComponent({
 
 const globalStubs = { stubs: { NoteEditor: NoteEditorStub } }
 
-function mountView() {
-  return mount(NotesView, { global: globalStubs })
+// NotesView contributes its top bar through the shared shell header, so it renders
+// inside AppShell in the real app. This harness stands in for the shell chrome.
+const ShellHarness = defineComponent({
+  setup() {
+    const header = provideShellHeader()
+
+    return () =>
+      h('div', [
+        h(
+          AppHeader,
+          { title: toValue(header.title) },
+          {
+            left: () => (header.left ? h(header.left) : null),
+            right: () => (header.right ? h(header.right) : null),
+          },
+        ),
+        h(NotesView),
+        h(NavigationBar),
+      ])
+  },
+})
+
+function mountView(provide: Record<PropertyKey, unknown> = {}) {
+  return mount(ShellHarness, { global: { ...globalStubs, provide } })
 }
 
 describe('NotesView', () => {
@@ -144,9 +167,7 @@ describe('NotesView', () => {
 
   it('renders error state with retry when load fails', async () => {
     mockCatalog()
-    const list = vi.spyOn(notesApi, 'list').mockRejectedValue(
-      new Error('Network error'),
-    )
+    const list = vi.spyOn(notesApi, 'list').mockRejectedValue(new Error('Network error'))
 
     const wrapper = mountView()
     await flushPromises()
@@ -158,25 +179,6 @@ describe('NotesView', () => {
     await flushPromises()
 
     expect(wrapper.find('[data-testid="notes-grid"]').exists()).toBe(true)
-  })
-
-  it('keeps a compact cream header without a plus button', async () => {
-    mockCatalog()
-    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
-
-    const wrapper = mountView()
-    await flushPromises()
-
-    const topbar = wrapper.get('[data-testid="notes-topbar"]')
-
-    expect(topbar.classes()).toContain('sticky')
-    expect(topbar.classes()).toContain('bg-app-bg')
-    expect(topbar.classes()).not.toContain('bg-[#0B8043]')
-    expect(wrapper.find('[data-testid="topbar-menu"]').exists()).toBe(true)
-    expect(wrapper.find('[data-testid="topbar-search"]').exists()).toBe(true)
-    expect(wrapper.find('[data-testid="topbar-add"]').exists()).toBe(false)
-    expect(wrapper.get('[data-testid="notes-title"]').classes()).toContain('text-center')
-    expect(wrapper.get('[data-testid="notes-title"]').text()).toBe('Notes')
   })
 
   it('opens a new note from the floating plus button', async () => {
@@ -326,8 +328,13 @@ describe('NotesView', () => {
     await flushPromises()
 
     await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
+    await flushPromises()
 
-    expect(wrapper.get('[data-testid="account-menu"]').text()).toContain('Select Account')
+    const menu = document.querySelector<HTMLElement>('[data-testid="account-menu"]')
+    expect(menu).not.toBeNull()
+    expect(menu?.textContent).toContain('Select Account')
+
+    wrapper.unmount()
   })
 
   it('navigates to select-account from the account menu', async () => {
@@ -338,23 +345,28 @@ describe('NotesView', () => {
     await flushPromises()
 
     await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
-    await wrapper.get('[data-testid="select-account-item"]').trigger('click')
+    await flushPromises()
+
+    const item = document.querySelector<HTMLElement>('[data-testid="select-account-item"]')
+    expect(item).not.toBeNull()
+    item?.click()
+    await flushPromises()
 
     expect(mockPush).toHaveBeenCalledWith('/select-account')
-    expect(wrapper.find('[data-testid="account-menu"]').exists()).toBe(false)
+    await vi.waitFor(() => {
+      expect(document.querySelector('[data-testid="account-menu"]')).toBeNull()
+    })
+
+    wrapper.unmount()
   })
 
   it('renders the bottom navigation with the notes tab active', async () => {
     mockCatalog()
     vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
 
-    const wrapper = mount(NotesView, {
-      global: {
-        provide: {
-          [routerKey]: { push: mockPush },
-          [routeLocationKey]: { path: '/notes' },
-        },
-      },
+    const wrapper = mountView({
+      [routerKey]: { push: mockPush },
+      [routeLocationKey]: { path: '/notes' },
     })
     await flushPromises()
 
@@ -367,13 +379,9 @@ describe('NotesView', () => {
     mockCatalog()
     vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
 
-    const wrapper = mount(NotesView, {
-      global: {
-        provide: {
-          [routerKey]: { push: mockPush },
-          [routeLocationKey]: { path: '/notes' },
-        },
-      },
+    const wrapper = mountView({
+      [routerKey]: { push: mockPush },
+      [routeLocationKey]: { path: '/notes' },
     })
     await flushPromises()
 
