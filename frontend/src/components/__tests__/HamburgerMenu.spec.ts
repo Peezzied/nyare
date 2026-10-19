@@ -51,9 +51,7 @@ describe('HamburgerMenu', () => {
 
     const drawer = document.querySelector<HTMLElement>('[data-testid="account-menu"]')
     expect(drawer).not.toBeNull()
-    expect(drawer?.querySelector('[data-testid="nyare-wordmark"]')?.textContent).toContain(
-      'Nyare',
-    )
+    expect(drawer?.querySelector('[data-testid="nyare-wordmark"]')?.textContent).toContain('Nyare')
     expect(drawer?.querySelector('[data-testid="menu-profile-name"]')?.textContent?.trim()).toBe(
       'railey',
     )

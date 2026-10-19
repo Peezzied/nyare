@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { HOUR_HEIGHT } from '../../constants/calendar'
 import { addDays } from '../../utils/dayKey'
-import { formatTime12h } from '../../utils/scheduleExpander'
 import { resolveSwipe } from '../../utils/swipeGesture'
 
 const props = withDefaults(
@@ -27,15 +25,9 @@ const dragX = ref(0)
 const phase = ref<'idle' | 'dragging' | 'settling' | 'covering'>('idle')
 const peekSide = ref<-1 | 0 | 1>(0) // +1 = next on the right, -1 = previous on the left
 const dragBase = ref<Date>(props.selectedDate) // the date the drag started from
-const slideDistance = ref(0) // viewport width minus the fixed time axis
+const slideDistance = ref(0) // viewport width
 const peekScrollTop = ref(0)
-const peekGutter = ref(0) // width of the fixed time axis
-const axisTop = ref(0) // height of everything above the scrolling grid
-
-const hourLabels = Array.from({ length: 24 }, (_, hour) => ({
-  hour,
-  label: formatTime12h(`${String(hour).padStart(2, '0')}:00`),
-}))
+const peekGutter = ref(0) // width of the time axis
 
 const peekDate = computed(() =>
   phase.value === 'idle' || peekSide.value === 0
@@ -44,15 +36,10 @@ const peekDate = computed(() =>
 )
 
 function prefersReducedMotion() {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  return typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false
 }
-
-const sliding = computed(() => phase.value !== 'idle')
-
-// Everything left of the time axis is hidden while sliding; the fixed axis covers it
-const clipStyle = computed(() =>
-  sliding.value ? { clipPath: `inset(0 0 0 ${peekGutter.value}px)` } : {},
-)
 
 const trackStyle = computed(() => {
   if (phase.value !== 'dragging' && phase.value !== 'settling') return {}
@@ -101,16 +88,13 @@ function beginDrag(e: PointerEvent) {
   if (!viewport) return
   const vp = viewport.getBoundingClientRect()
   const scroller = viewport.querySelector<HTMLElement>('.sx__view-container')
-  const column = viewport.querySelector<HTMLElement>('.sx__time-grid-day')
+  const firstCol = viewport.querySelector<HTMLElement>('.sx__time-grid-day')
 
   peekScrollTop.value = scroller?.scrollTop ?? 0
-  peekGutter.value = column
-    ? Math.max(Math.round(column.getBoundingClientRect().left - vp.left), 0)
+  peekGutter.value = firstCol
+    ? Math.max(Math.round(firstCol.getBoundingClientRect().left - vp.left), 0)
     : 0
-  axisTop.value = scroller
-    ? Math.max(Math.round(scroller.getBoundingClientRect().top - vp.top), 0)
-    : 0
-  slideDistance.value = Math.max(vp.width - peekGutter.value, 1)
+  slideDistance.value = Math.max(vp.width, 1)
   dragBase.value = props.selectedDate
   phase.value = 'dragging'
   suppressClick = true
@@ -196,8 +180,7 @@ function endCover() {
 // The calendar dispatches "day-ready" once the new range is rendered and scrolled
 function onDayReady() {
   if (phase.value !== 'covering') return
-  // wait two frames so the new calendar has actually painted
-  requestAnimationFrame(() => requestAnimationFrame(endCover))
+  endCover()
 }
 
 // A drag must not count as a tap on whatever was under the finger
@@ -221,53 +204,23 @@ onUnmounted(() => {
 <template>
   <div
     ref="viewportRef"
-    class="day-swiper relative min-h-0 flex-1 select-none overflow-hidden"
+    class="day-swiper relative min-h-0 flex-1 select-none overflow-hidden bg-app-bg"
     @pointerdown="onPointerDown"
     @pointermove="onPointerMove"
     @pointerup="onPointerUp"
     @pointercancel="onPointerCancel"
     @click.capture="onClickCapture"
   >
-    <!-- Columns: clipped so nothing shows over the fixed time axis while sliding -->
-    <div class="absolute inset-0" :style="clipStyle">
-      <div class="absolute inset-0 flex flex-col" :style="trackStyle">
-        <slot />
+    <!-- Entire calendar + peek preview slide together -->
+    <div class="absolute inset-0 flex flex-col" :style="trackStyle">
+      <slot />
 
-        <div
-          v-if="peekDate"
-          class="pointer-events-none absolute top-0 z-30 h-full w-full"
-          :style="{ left: peekLeft }"
-        >
-          <slot name="peek" :date="peekDate" :scrollTop="peekScrollTop" :gutterLeft="peekGutter" />
-        </div>
-      </div>
-    </div>
-
-    <!-- Fixed time axis, shown only while sliding -->
-    <div
-      v-if="sliding"
-      class="pointer-events-none absolute left-0 top-0 z-40 h-full bg-[#F5F6EE]"
-      :style="{ width: `${peekGutter}px` }"
-    >
       <div
-        v-if="axisTop > 0"
-        class="border-b border-[#9ccfe0]"
-        :style="{ height: `${axisTop}px` }"
-      />
-      <div class="relative overflow-hidden" :style="{ height: `calc(100% - ${axisTop}px)` }">
-        <div
-          class="absolute left-0 right-0 top-0"
-          :style="{ transform: `translateY(${-peekScrollTop}px)` }"
-        >
-          <span
-            v-for="item in hourLabels"
-            :key="item.hour"
-            class="absolute left-2 text-xs font-semibold leading-4 text-[#a8a29e]"
-            :style="{ top: `${item.hour * HOUR_HEIGHT - 10}px` }"
-          >
-            {{ item.label }}
-          </span>
-        </div>
+        v-if="peekDate"
+        class="pointer-events-none absolute top-0 z-30 h-full w-full bg-app-bg"
+        :style="{ left: peekLeft }"
+      >
+        <slot name="peek" :date="peekDate" :scrollTop="peekScrollTop" :gutterLeft="peekGutter" />
       </div>
     </div>
   </div>

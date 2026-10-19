@@ -19,9 +19,11 @@ defineProps<{
       <AccountMenuButton />
     </slot>
 
-    <h1 class="text-xl font-bold tracking-tight text-text-main" data-testid="app-header-title">
-      {{ title }}
-    </h1>
+    <slot name="center">
+      <h1 class="text-xl font-bold tracking-tight text-text-main" data-testid="app-header-title">
+        {{ title }}
+      </h1>
+    </slot>
 
     <slot name="right">
       <div class="h-11 w-11" aria-hidden="true" />

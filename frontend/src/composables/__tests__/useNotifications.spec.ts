@@ -10,9 +10,7 @@ const statusPayload: PlannerStatusResponse = {
   dirtyNoteCount: 1,
   dirtyDates: ['2026-10-01'],
   courseNames: ['CS101'],
-  pendingNotes: [
-    { id: 'note-1', title: null, courseName: 'CS101', entryDate: '2026-10-01' },
-  ],
+  pendingNotes: [{ id: 'note-1', title: null, courseName: 'CS101', entryDate: '2026-10-01' }],
 }
 
 describe('useNotifications', () => {
@@ -74,12 +72,11 @@ describe('useNotifications', () => {
     notifications.finishRecord(id, 'done')
 
     // then the record is in localStorage under the user's key
-    await vi.waitFor(() =>
-      expect(localStorage.getItem('nyare.notifications.v1:7')).toContain(id),
-    )
-    const stored = JSON.parse(
-      localStorage.getItem('nyare.notifications.v1:7') ?? '[]',
-    ) as Array<{ id: string; status: string }>
+    await vi.waitFor(() => expect(localStorage.getItem('nyare.notifications.v1:7')).toContain(id))
+    const stored = JSON.parse(localStorage.getItem('nyare.notifications.v1:7') ?? '[]') as Array<{
+      id: string
+      status: string
+    }>
     expect(stored[0]?.id).toBe(id)
     expect(stored[0]?.status).toBe('done')
 
