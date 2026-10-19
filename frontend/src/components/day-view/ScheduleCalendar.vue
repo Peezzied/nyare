@@ -3,13 +3,15 @@ import 'temporal-polyfill/global'
 import '@schedule-x/theme-default/dist/calendar.css'
 import { ScheduleXCalendar } from '@schedule-x/vue'
 import { createCalendar, createViewDay } from '@schedule-x/calendar'
+import { createCalendarControlsPlugin } from '@schedule-x/calendar-controls'
 import { Temporal } from 'temporal-polyfill'
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
 import { useNow } from '../../composables/useNow'
-import { HOUR_HEIGHT } from '../../constants/calendar'
+import { getHourHeight } from '../../utils/calendarStyle'
 import type { DayEvent } from '../../types/calendar'
 import type { UntimedDayItem } from '../../utils/untimedItems'
 import { calculateGridBoundaries } from '../../utils/scheduleExpander'
+import { toDateKey } from '../../utils/dayKey'
 import AllDayStrip from './AllDayStrip.vue'
 import CourseCard from './CourseCard.vue'
 import TimeIndicator from './TimeIndicator.vue'
@@ -21,7 +23,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'selectUntimed', item: UntimedDayItem): void
+  (e: 'selectUntimed', item: UntimedDayItem, originRect: DOMRect | null): void
+  (e: 'selectCourse', event: DayEvent, originRect: DOMRect): void
 }>()
 
 const PILL_INSET_LEFT = 0 // must match the left padding on .sx__time-grid-event
@@ -47,38 +50,41 @@ function toSxEvents(events: DayEvent[]) {
 }
 
 // ---- Calendar instance ----
-// Schedule X cannot change dayBoundaries after creation, so the calendar is
-// rebuilt (new key) whenever the date or boundaries change.
 // Untimed items are NOT part of it: they live in the AllDayStrip above.
-const calendarKey = ref(0)
+const calendarControls = createCalendarControlsPlugin()
 
-const calendarApp = computed(() => {
-  const b = boundaries.value
-  const hours = b.endHour - b.startHour
+function toPlainDate(d: Date): Temporal.PlainDate {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const dateStr = String(d.getDate()).padStart(2, '0')
+  return Temporal.PlainDate.from(`${y}-${m}-${dateStr}`)
+}
 
-  // Build the date from LOCAL parts (toISOString would shift it to UTC)
-  const y = props.selectedDate.getFullYear()
-  const m = String(props.selectedDate.getMonth() + 1).padStart(2, '0')
-  const d = String(props.selectedDate.getDate()).padStart(2, '0')
-  const dateStr = `${y}-${m}-${d}`
+const initialB = boundaries.value
+const initialHours = initialB.endHour - initialB.startHour
 
-  return createCalendar({
-    views: [createViewDay()],
-    defaultView: 'day',
-    timezone: TZ,
-    selectedDate: Temporal.PlainDate.from(dateStr),
-    dayBoundaries: {
-      start: `${String(b.startHour).padStart(2, '0')}:00`,
-      end: `${String(b.endHour).padStart(2, '0')}:00`,
+const calendarApp = shallowRef(
+  createCalendar(
+    {
+      views: [createViewDay()],
+      defaultView: 'day',
+      timezone: TZ,
+      skipAnimations: true,
+      selectedDate: toPlainDate(props.selectedDate),
+      dayBoundaries: {
+        start: `${String(initialB.startHour).padStart(2, '0')}:00`,
+        end: `${String(initialB.endHour).padStart(2, '0')}:00`,
+      },
+      weekOptions: {
+        gridHeight: initialHours * getHourHeight(),
+        gridStep: 60,
+        timeAxisFormatOptions: { hour: 'numeric', hour12: true },
+      },
+      events: toSxEvents(props.events),
     },
-    weekOptions: {
-      gridHeight: hours * HOUR_HEIGHT,
-      gridStep: 60,
-      timeAxisFormatOptions: { hour: 'numeric', hour12: true },
-    },
-    events: toSxEvents(props.events),
-  })
-})
+    [calendarControls],
+  ),
+)
 
 // ---- Current time ----
 const isToday = computed(() => now.value.toDateString() === props.selectedDate.toDateString())
@@ -95,7 +101,7 @@ const nowTop = computed<number | null>(() => {
   if (!isToday.value) return null
   const hours = nowMinutes.value / 60
   if (hours < boundaries.value.startHour || hours > boundaries.value.endHour) return null
-  return (hours - boundaries.value.startHour) * HOUR_HEIGHT
+  return (hours - boundaries.value.startHour) * getHourHeight()
 })
 
 const currentEvent = computed(() =>
@@ -129,15 +135,43 @@ const overlay = ref({ top: 0, left: 0, width: 0 })
 // Left edge of the day column, so the all-day strip lines up with the grid pills
 const gutterLeft = ref(0)
 
-// Scroll memory: the first build scrolls to "now"; later rebuilds (swipes)
+// Scroll memory: the first build scrolls to "now"; later date changes (swipes)
 // restore the position you were at, like Google Calendar.
 let didInitialScroll = false
 let savedScrollTop = 0
 
-// Rebuild the calendar when the date or boundaries change
-watch([() => props.selectedDate, boundaries], () => {
+// Update the calendar in-place when date, boundaries, or events change
+watch([() => props.selectedDate, boundaries, () => props.events], ([newDate, newBoundaries, newEvents]) => {
   if (scrollEl.value) savedScrollTop = scrollEl.value.scrollTop
-  calendarKey.value++
+  const b = newBoundaries
+  const hours = b.endHour - b.startHour
+
+  calendarControls.setDayBoundaries({
+    start: `${String(b.startHour).padStart(2, '0')}:00`,
+    end: `${String(b.endHour).padStart(2, '0')}:00`,
+  })
+  calendarControls.setWeekOptions({
+    gridHeight: hours * getHourHeight(),
+    gridStep: 60,
+    timeAxisFormatOptions: { hour: 'numeric', hour12: true },
+  })
+  calendarControls.setDate(toPlainDate(newDate))
+  calendarApp.value.events.set(toSxEvents(newEvents))
+
+  // Schedule X replaces the day column when the date changes. Rebind the new
+  // column before restoring the scroll or measuring, so the old node is never
+  // measured after it leaves the document.
+  dayColEl.value = null
+  scrollEl.value = null
+  findDayCol(40, toDateKey(newDate), () => {
+    attachScrollListener()
+    settle(15)
+  })
+
+  // Notify the swiper that the date change is in place
+  requestAnimationFrame(() => {
+    wrapperRef.value?.dispatchEvent(new CustomEvent('day-ready', { bubbles: true }))
+  })
 })
 
 function updateOverlay() {
@@ -187,16 +221,19 @@ function settle(frames = 90) {
   settleFrame = requestAnimationFrame(tick)
 }
 
-function findDayCol(tries = 40) {
+function findDayCol(tries = 40, dateKey?: string, onFound?: () => void) {
   const el = areaRef.value?.querySelector<HTMLElement>('.sx__time-grid-day') ?? null
-  if (el) {
+  // Schedule X can still show the previous date for a frame or two after setDate
+  const isCurrentDate = !dateKey || el?.dataset.timeGridDate === dateKey
+  if (el && isCurrentDate) {
     dayColEl.value = el
     observeLayout()
     updateOverlay()
+    onFound?.()
     return
   }
   if (tries > 0) {
-    requestAnimationFrame(() => findDayCol(tries - 1))
+    requestAnimationFrame(() => findDayCol(tries - 1, dateKey, onFound))
   } else {
     console.warn('[DayView] .sx__time-grid-day not found')
   }
@@ -254,20 +291,15 @@ onUnmounted(() => {
   window.removeEventListener('resize', measure)
 })
 
-// After a calendar rebuild, find the new elements
-watch(calendarKey, () => {
-  dayColEl.value = null
-  scrollEl.value = null
-  nextTick(setup)
-})
-
 watch(nowTop, () => nextTick(updateOverlay))
 
-// ---- Untimed items ----
-function onSelectUntimed(item: UntimedDayItem) {
-  // Placeholder: no backend calls yet
-  console.log('[DayView] Untimed item tapped:', item.title)
-  emit('selectUntimed', item)
+// ---- Detail taps: the day view container owns the modal ----
+function onSelectCourse(event: DayEvent, rect: DOMRect) {
+  emit('selectCourse', event, rect)
+}
+
+function onSelectUntimed(item: UntimedDayItem, rect?: DOMRect) {
+  emit('selectUntimed', item, rect ?? null)
 }
 
 // ---- Jump button ----
@@ -281,15 +313,16 @@ const nowDirection = computed<'up' | 'down' | null>(() => {
 function scrollToNow(behavior: ScrollBehavior = 'smooth') {
   const el = scrollEl.value
   if (!el) return
+  const hHeight = getHourHeight()
   const firstTop =
     props.events.length > 0
       ? Math.min(
           ...props.events.map(
-            (e) => (toMinutes(e.start) / 60 - boundaries.value.startHour) * HOUR_HEIGHT,
+            (e) => (toMinutes(e.start) / 60 - boundaries.value.startHour) * hHeight,
           ),
         )
       : null
-  const target = nowTop.value ?? firstTop ?? (8 - boundaries.value.startHour) * HOUR_HEIGHT
+  const target = nowTop.value ?? firstTop ?? (8 - boundaries.value.startHour) * hHeight
   el.scrollTo({ top: Math.max(target - 120, 0), behavior })
 }
 </script>
@@ -302,7 +335,7 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
       class="shrink-0"
       :items="untimedItems"
       :style="{ paddingLeft: `${gutterLeft}px` }"
-      @select="onSelectUntimed"
+      @select-untimed="onSelectUntimed"
     />
 
     <!-- Schedule X area: takes all the remaining space and scrolls inside -->
@@ -310,9 +343,13 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
       <!-- Absolute box: always exactly the size of the free space, so Schedule X
            gets a real height and scrolls inside it -->
       <div class="absolute inset-0 sx-nyare-fill">
-        <ScheduleXCalendar :calendar-app="calendarApp" :key="calendarKey">
+        <ScheduleXCalendar :calendar-app="calendarApp">
           <template #timeGridEvent="{ calendarEvent }">
-            <CourseCard :event="(calendarEvent as any)._raw as DayEvent" embedded />
+            <CourseCard
+              :event="(calendarEvent as any)._raw as DayEvent"
+              embedded
+              @select="onSelectCourse"
+            />
           </template>
         </ScheduleXCalendar>
       </div>
@@ -383,13 +420,6 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
 }
 .sx-nyare-wrapper :deep(.sx__time-grid-day) {
   border-left: 1px solid #9ccfe0 !important;
-}
-
-/* Time-axis labels */
-.sx-nyare-wrapper :deep(.sx__week-grid__hour-text) {
-  color: #a8a29e;
-  font-weight: 600;
-  font-size: 0.75rem;
 }
 
 /* Strip Schedule X's default event card so CourseCard shows as designed.

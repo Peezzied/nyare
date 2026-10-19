@@ -7,8 +7,13 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'select', item: UntimedDayItem): void
+  (e: 'select', item: UntimedDayItem, originRect: DOMRect): void
 }>()
+
+function handleClick(e: MouseEvent) {
+  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+  emit('select', props.item, rect)
+}
 
 // Same 4-theme derivation as CourseCard so a course keeps one color everywhere.
 const theme = computed(
@@ -40,7 +45,7 @@ const colorClasses = computed(() => {
     class="flex h-9 w-full min-w-0 items-center gap-2 overflow-hidden rounded-lg border-2 px-3 text-left text-sm shadow-sm transition-transform active:scale-[0.98]"
     :class="colorClasses"
     :aria-label="`${props.item.category}: ${props.item.title}`"
-    @click="emit('select', props.item)"
+    @click="handleClick"
   >
     <span
       v-if="props.item.category === 'task'"

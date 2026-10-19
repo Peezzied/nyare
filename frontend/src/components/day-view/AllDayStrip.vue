@@ -7,7 +7,7 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'select', item: UntimedDayItem): void
+  (e: 'selectUntimed', item: UntimedDayItem, originRect: DOMRect): void
 }>()
 </script>
 
@@ -22,7 +22,10 @@ const emit = defineEmits<{
       class="flex max-h-[7.5rem] flex-col gap-1.5 overflow-y-auto overflow-x-hidden overscroll-contain [scrollbar-width:thin] [scrollbar-color:#a8a29e_transparent]"
     >
       <li v-for="item in items" :key="item.id" class="min-w-0 shrink-0">
-        <UntimedPill :item="item" @select="emit('select', $event)" />
+        <UntimedPill
+          :item="item"
+          @select="(pillItem, rect) => emit('selectUntimed', pillItem, rect)"
+        />
       </li>
     </ul>
   </section>
