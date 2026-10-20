@@ -16,3 +16,15 @@ export function resolveSwipe(dx: number, dy: number, durationMs: number): -1 | 0
   if (dx >= SWIPE_THRESHOLD_PX) return -1
   return 0
 }
+
+export const ROW_SWIPE_THRESHOLD_PX = 64
+
+/**
+ * Resolves a horizontal drag on a task row. Returns true when the gesture
+ * ends leftward past the threshold so the quick-actions sheet opens.
+ * Vertical-dominant drags return false so native scrolling wins.
+ */
+export function resolveRowSwipe(dx: number, dy: number): boolean {
+  if (Math.abs(dy) > Math.abs(dx)) return false
+  return dx <= -ROW_SWIPE_THRESHOLD_PX
+}
