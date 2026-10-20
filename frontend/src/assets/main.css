@@ -10,7 +10,7 @@
 @theme {
   --font-logo: 'DynaPuff', sans-serif;
   --font-sans: 'Quicksand', sans-serif;
-  --font-editor: 'Inter', sans-serif;
+  --font-secondary: 'Inter', sans-serif;
 
   --color-app-bg: #f6f7ee;
   --color-card: #ffffff;
@@ -31,7 +31,6 @@
 :root {
   --font-logo: 'DynaPuff', cursive;
   --font-primary: 'Quicksand', sans-serif;
-  --font-secondary: 'Inter', sans-serif;
   --color-app-bg: #f6f7ee;
   --color-nav-bg: #fdfef7;
   --color-primary: #00a4c8;
@@ -84,7 +83,7 @@
   textarea,
   select,
   .tiptap {
-    font-family: var(--font-secondary, var(--font-editor));
+    font-family: var(--font-secondary);
   }
 }
 

@@ -59,60 +59,80 @@ const INITIAL_FIXTURES: FixtureState = {
   courses: [
     {
       id: 1,
-      name: 'CS 201 - Data Structures & Algorithms',
-      description:
-        'Fundamental data structures, algorithmic complexity, trees, graphs, and search algorithms.',
+      name: 'Computer Architecture and Organization',
+      description: 'CS Core Course',
       userId: 1,
     },
     {
       id: 2,
-      name: 'MATH 204 - Linear Algebra',
-      description: 'Vector spaces, matrix decomposition, eigenvalues, and linear transformations.',
+      name: 'Principles of Programming Languages',
+      description: 'CS Core Course',
       userId: 1,
     },
     {
       id: 3,
-      name: 'PHYS 102 - General Physics II',
-      description: 'Electromagnetism, circuit analysis, wave optics, and thermal physics.',
+      name: 'GE Elective 1 - Living in the IT Era',
+      description: 'General Education Elective',
+      userId: 1,
+    },
+    {
+      id: 4,
+      name: 'Calculus 2',
+      description: 'Mathematics Course',
+      userId: 1,
+    },
+    {
+      id: 5,
+      name: 'Readings in Philippine History',
+      description: 'General Education Course',
+      userId: 1,
+    },
+    {
+      id: 6,
+      name: 'Mobile Computing',
+      description: 'CS Elective Course',
+      userId: 1,
+    },
+    {
+      id: 7,
+      name: 'Object-Oriented Programming',
+      description: 'CS Core Course',
+      userId: 1,
+    },
+    {
+      id: 8,
+      name: 'Physical Activities Toward Health & Fitness 3 (PATHFit 3)',
+      description: 'Physical Education',
       userId: 1,
     },
   ],
   schedules: [
-    {
-      id: 1,
-      courseId: 1,
-      day: 'MONDAY',
-      startTime: '09:00:00',
-      endTime: '10:30:00',
-    },
-    {
-      id: 2,
-      courseId: 1,
-      day: 'WEDNESDAY',
-      startTime: '09:00:00',
-      endTime: '10:30:00',
-    },
-    {
-      id: 3,
-      courseId: 2,
-      day: 'TUESDAY',
-      startTime: '10:30:00',
-      endTime: '12:00:00',
-    },
-    {
-      id: 4,
-      courseId: 2,
-      day: 'THURSDAY',
-      startTime: '10:30:00',
-      endTime: '12:00:00',
-    },
-    {
-      id: 5,
-      courseId: 3,
-      day: 'FRIDAY',
-      startTime: '13:00:00',
-      endTime: '15:00:00',
-    },
+    // Monday
+    { id: 1, courseId: 1, day: 'MONDAY', startTime: '07:30:00', endTime: '08:30:00' },
+    { id: 2, courseId: 2, day: 'MONDAY', startTime: '09:00:00', endTime: '10:30:00' },
+    { id: 3, courseId: 3, day: 'MONDAY', startTime: '10:30:00', endTime: '12:00:00' },
+    { id: 4, courseId: 4, day: 'MONDAY', startTime: '13:30:00', endTime: '15:30:00' },
+    { id: 5, courseId: 5, day: 'MONDAY', startTime: '15:30:00', endTime: '16:30:00' },
+
+    // Tuesday
+    { id: 6, courseId: 6, day: 'TUESDAY', startTime: '10:30:00', endTime: '13:30:00' },
+    { id: 7, courseId: 7, day: 'TUESDAY', startTime: '13:30:00', endTime: '16:30:00' },
+
+    // Wednesday
+    { id: 8, courseId: 1, day: 'WEDNESDAY', startTime: '07:30:00', endTime: '10:30:00' },
+    { id: 9, courseId: 1, day: 'WEDNESDAY', startTime: '11:30:00', endTime: '12:30:00' },
+    { id: 10, courseId: 4, day: 'WEDNESDAY', startTime: '13:30:00', endTime: '15:30:00' },
+    { id: 11, courseId: 5, day: 'WEDNESDAY', startTime: '15:30:00', endTime: '16:30:00' },
+
+    // Thursday
+    { id: 12, courseId: 6, day: 'THURSDAY', startTime: '10:30:00', endTime: '12:30:00' },
+    { id: 13, courseId: 7, day: 'THURSDAY', startTime: '13:30:00', endTime: '15:30:00' },
+
+    // Friday
+    { id: 14, courseId: 2, day: 'FRIDAY', startTime: '09:00:00', endTime: '10:30:00' },
+    { id: 15, courseId: 3, day: 'FRIDAY', startTime: '10:30:00', endTime: '12:00:00' },
+    { id: 16, courseId: 8, day: 'FRIDAY', startTime: '13:30:00', endTime: '15:30:00' },
+    { id: 17, courseId: 5, day: 'FRIDAY', startTime: '15:30:00', endTime: '16:30:00' },
   ],
   notes: [
     {

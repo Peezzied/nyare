@@ -57,7 +57,7 @@ watch(
     @click="emit('open', $event)"
   >
     <Bell class="h-6 w-6" :class="{ 'bell-ring': popping }" aria-hidden="true" />
-    <span class="absolute -top-0.5 -right-0.5 flex items-center" aria-hidden="true">
+    <span class="absolute top-1 -right-0.5 flex items-center" aria-hidden="true">
       <span
         v-if="running"
         data-testid="notifications-running-badge"

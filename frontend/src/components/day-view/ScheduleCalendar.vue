@@ -441,7 +441,7 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
   background: transparent !important;
   border: none !important;
   border-radius: 0 !important;
-  padding: 0 8px 0 0 !important;
+  padding: 2px 8px 2px 0 !important;
   box-sizing: border-box !important;
   box-shadow: none !important;
   overflow: visible !important;

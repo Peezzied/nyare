@@ -76,7 +76,7 @@ function layout(event: DayEvent) {
                     <div
                       v-for="event in events"
                       :key="event.id"
-                      class="absolute left-0 right-2"
+                      class="absolute left-0 right-2 py-0.5"
                       :style="layout(event)"
                     >
                       <CourseCard :event="event" embedded />

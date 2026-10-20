@@ -33,7 +33,7 @@ describe('Mock Adapter', () => {
   describe('courses', () => {
     it('lists initial courses and creates new course', async () => {
       const initialCourses = await coursesApi.list()
-      expect(initialCourses.length).toBe(3)
+      expect(initialCourses.length).toBe(8)
 
       const created = await coursesApi.create({
         name: 'CS 301 - Operating Systems',
@@ -43,14 +43,14 @@ describe('Mock Adapter', () => {
       expect(created.name).toBe('CS 301 - Operating Systems')
 
       const updatedList = await coursesApi.list()
-      expect(updatedList.length).toBe(4)
+      expect(updatedList.length).toBe(9)
 
       const fetched = await coursesApi.get(created.id)
       expect(fetched.name).toBe('CS 301 - Operating Systems')
 
       await coursesApi.delete(created.id)
       const afterDelete = await coursesApi.list()
-      expect(afterDelete.length).toBe(3)
+      expect(afterDelete.length).toBe(8)
 
       await expect(coursesApi.get(created.id)).rejects.toThrow(ApiError)
     })
@@ -291,14 +291,14 @@ describe('Mock Adapter', () => {
   describe('schedules', () => {
     it('filters schedules by courseId and day', async () => {
       const course1Schedules = await schedulesApi.list({ courseId: 1 })
-      expect(course1Schedules.length).toBe(2)
+      expect(course1Schedules.length).toBe(3)
       expect(course1Schedules.every((s) => s.courseId === 1)).toBe(true)
 
       const mondaySchedules = await schedulesApi.list({ day: 'MONDAY' })
       expect(mondaySchedules.every((s) => s.day === 'MONDAY')).toBe(true)
 
       const filtered = await schedulesApi.list({ courseId: 1, day: 'WEDNESDAY' })
-      expect(filtered.length).toBe(1)
+      expect(filtered.length).toBe(2)
       expect(filtered[0]?.day).toBe('WEDNESDAY')
       expect(filtered[0]?.courseId).toBe(1)
     })
@@ -370,7 +370,7 @@ describe('Mock Adapter', () => {
       expect(before.hasPendingNotes).toBe(true)
       expect(before.dirtyNoteCount).toBe(1)
       expect(before.dirtyDates).toEqual(['2026-10-06'])
-      expect(before.courseNames).toEqual(['MATH 204 - Linear Algebra'])
+      expect(before.courseNames).toEqual(['Principles of Programming Languages'])
       expect(before.pendingNotes[0]?.id).toBe('note-math204-eigen')
 
       await studyPlannerApi.process()
@@ -386,7 +386,7 @@ describe('Mock Adapter', () => {
 
       const status = await studyPlannerApi.status()
       expect(status.dirtyNoteCount).toBe(2)
-      expect(status.courseNames).toContain('CS 201 - Data Structures & Algorithms')
+      expect(status.courseNames).toContain('Computer Architecture and Organization')
     })
 
     it('supports image upload and deletion', async () => {
@@ -432,7 +432,7 @@ describe('Mock Adapter', () => {
       await authApi.login({ username: 'karol' })
 
       const courses = await coursesApi.list()
-      expect(courses.length).toBe(3)
+      expect(courses.length).toBe(8)
     })
   })
 
@@ -440,12 +440,12 @@ describe('Mock Adapter', () => {
     it('resets modified state back to initial state', async () => {
       await coursesApi.create({ name: 'Temporary Course' })
       const courseCountBefore = (await coursesApi.list()).length
-      expect(courseCountBefore).toBe(4)
+      expect(courseCountBefore).toBe(9)
 
       resetMockFixtures()
 
       const courseCountAfter = (await coursesApi.list()).length
-      expect(courseCountAfter).toBe(3)
+      expect(courseCountAfter).toBe(8)
     })
   })
 })

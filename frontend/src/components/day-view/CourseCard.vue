@@ -60,7 +60,7 @@ function handleClick(e: MouseEvent) {
     </h3>
 
     <!-- Time & Detail Line -->
-    <p class="font-editor font-medium opacity-80" :class="tier.description">
+    <p class="font-secondary font-medium opacity-80" :class="tier.description">
       <span>{{ formattedTime }}</span>
       <span v-if="event.detail"> · {{ event.detail }}</span>
     </p>
