@@ -2,6 +2,7 @@
 import { ref, computed, h, onMounted } from 'vue'
 import { Plus } from '@lucide/vue'
 import HamburgerMenu from '@/components/HamburgerMenu.vue'
+import SearchBar from '@/components/SearchBar.vue'
 import { Button } from '@/components/ui/button'
 import {
   Accordion,
@@ -169,6 +170,8 @@ onMounted(loadData)
 <template>
   <div class="relative flex min-h-full flex-col bg-(--color-app-bg) text-(--color-text-main)">
     <div class="flex-1 pb-6">
+      <SearchBar placeholder="Search tasks…" />
+
       <div class="px-4 pt-3 pb-2">
         <div
           class="inline-flex rounded-full border border-(--color-app-border) bg-(--color-card) p-1"
