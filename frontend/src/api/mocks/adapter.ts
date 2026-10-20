@@ -260,6 +260,7 @@ export function mockRouter(
       id: nextId,
       name: req.name,
       description: req.description ?? null,
+      color: req.color ?? null,
       userId: req.userId ?? state.currentUser?.id ?? 1,
     }
     state.courses.push(newCourse)
@@ -275,6 +276,28 @@ export function mockRouter(
         return notFound(`Course not found with ID: ${id}`)
       }
       return { status: 200, data: course }
+    }
+    if (method === 'PUT') {
+      // The backend scopes updates to the session user, like `findByIdAndUserId`.
+      const index = state.courses.findIndex(
+        (c) => c.id === id && c.userId === state.currentUser?.id,
+      )
+      if (index === -1) {
+        return notFound(`Course not found with ID: ${id}`)
+      }
+      const existing = state.courses[index]!
+      const req = body as CourseRequest | undefined
+      if (!req?.name?.trim()) {
+        return badRequest('Course name is required')
+      }
+      const updated: CourseResponse = {
+        ...existing,
+        name: req.name,
+        description: req.description ?? null,
+        color: req.color ?? null,
+      }
+      state.courses[index] = updated
+      return { status: 200, data: updated }
     }
     if (method === 'DELETE') {
       const index = state.courses.findIndex((c) => c.id === id)

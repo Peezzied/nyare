@@ -4,7 +4,7 @@ import { mount, flushPromises } from '@vue/test-utils'
 import HamburgerMenu from '../HamburgerMenu.vue'
 import { clearSessionUser, setSessionUser } from '@/composables/useAuth'
 
-const mockPush = vi.fn<(path: string) => Promise<void>>(() => Promise.resolve())
+const mockPush = vi.fn<(to: string | { name: string }) => Promise<void>>(() => Promise.resolve())
 
 vi.mock('vue-router', () => ({
   useRouter: () => ({
@@ -61,6 +61,31 @@ describe('HamburgerMenu', () => {
     expect(avatar?.alt).toBe('railey profile picture')
     expect(avatar?.src).toContain('data:image/svg+xml')
 
+    wrapper.unmount()
+  })
+
+  it('navigates to manage courses and closes the drawer', async () => {
+    const wrapper = mount(HamburgerMenu)
+    await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
+    await flushPromises()
+
+    const item = document.querySelector<HTMLElement>('[data-testid="manage-courses-item"]')
+    expect(item).not.toBeNull()
+    expect(item?.textContent).toContain('Manage courses')
+
+    const selectItem = document.querySelector<HTMLElement>('[data-testid="select-account-item"]')
+    expect(selectItem).not.toBeNull()
+    expect(
+      item!.compareDocumentPosition(selectItem!) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
+
+    item?.click()
+    await flushPromises()
+
+    expect(mockPush).toHaveBeenCalledWith({ name: 'manage-courses' })
+    await vi.waitFor(() => {
+      expect(document.querySelector('[data-testid="account-menu"]')).toBeNull()
+    })
     wrapper.unmount()
   })
 

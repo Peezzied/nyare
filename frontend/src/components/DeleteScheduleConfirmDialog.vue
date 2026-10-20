@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue'
 import { schedulesApi } from '@/api'
 import { ApiError } from '@/api/client'
-import { getCourseColor } from '@/constants/palette'
+import { useCatalog } from '@/composables/useCatalog'
 import DialogShell from '@/components/ui/DialogShell.vue'
 
 export interface DeleteScheduleTarget {
@@ -27,6 +27,8 @@ const emit = defineEmits<{
   (e: 'deleted', id: number): void
   (e: 'cancel'): void
 }>()
+
+const catalog = useCatalog()
 
 const isDeleting = ref(false)
 const errorMessage = ref('')
@@ -80,7 +82,7 @@ async function confirm() {
       <span
         v-if="schedule"
         class="h-3 w-3 rounded-full border border-white/60 shadow-sm"
-        :style="{ backgroundColor: getCourseColor(schedule.courseId).solid }"
+        :style="{ backgroundColor: catalog.courseColor(schedule.courseId).solid }"
         aria-hidden="true"
       />
       <span

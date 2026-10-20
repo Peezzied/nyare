@@ -13,20 +13,21 @@
 ### Session 2026-10-17
 
 - Q: Must course name editing be part of this feature? → A: Yes (Option A). The feature adds a course update operation. The constitution line "Courses provide create and delete endpoints only" needs an amendment.
+- Q: Reuse the Create Schedule course drawer to edit course and class times, and keep its color picker? → A: Reuse the drawer (yes). Color picker: hidden during planning, then RESTORED on user request as cosmetic parity with Create Schedule — the app derives course color from the course id and the backend stores no color, so a pick never persists (see research.md R3).
 
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - View All Courses and Their Class Times (Priority: P1)
 
-A student opens the Manage Courses page from the calendar menu. The page lists every course that the student owns. Each course shows its color, its name, and its weekly class times in day order.
+A student opens the Manage Courses page from the menu panel that the hamburger button opens. The page lists every course that the student owns. Each course shows its color, its name, and its weekly class times in day order.
 
 **Why this priority**: The student must see the current data before the student can correct it. This story alone gives a single place to check the full weekly timetable.
 
-**Independent Test**: Sign in with an account that has three courses with different class times. Open the calendar menu and select "Manage courses". Verify that the page shows all three courses with correct names, colors, and class times.
+**Independent Test**: Sign in with an account that has three courses with different class times. Open the hamburger menu panel and select "Manage courses". Verify that the page shows all three courses with correct names, colors, and class times.
 
 **Acceptance Scenarios**:
 
-1. **Given** a student with courses and class times, **When** the student selects "Manage courses" in the calendar menu, **Then** the Manage Courses page opens and lists every course of that student.
+1. **Given** a student with courses and class times, **When** the student selects "Manage courses" in the hamburger menu panel, **Then** the Manage Courses page opens and lists every course of that student.
 2. **Given** a course with class times on Monday and Thursday, **When** the page shows that course, **Then** the class times appear in weekday order with start and end times.
 3. **Given** a course with no class times, **When** the page shows that course, **Then** the course appears with a "No class times" label.
 4. **Given** a student with no courses, **When** the page opens, **Then** the page shows an empty state with an action to add a course.
@@ -74,7 +75,7 @@ Scope of this story: In scope. This story adds a course update operation to the 
 
 A student adds a new course from the Manage Courses page. The student can also delete a course that the student no longer takes.
 
-**Why this priority**: The page must be the single place for course management. The current calendar menu items "New Schedule" and "Delete Schedule" move to this page.
+**Why this priority**: The page must be the single place for course management. The page is the single place to add and delete courses and class times.
 
 **Independent Test**: Add a course from the page and verify that it appears in the list. Delete the course, confirm the warning, and verify that the course and its class times leave the list and the calendar.
 
@@ -89,8 +90,8 @@ A student adds a new course from the Manage Courses page. The student can also d
 
 ### Edge Cases
 
-- What happens when two class times of the same course overlap on the same weekday? The system allows the save. Overlap is a valid real-world case (lab and lecture blocks).
-- What happens when a class time of one course overlaps a class time of another course? The system allows the save. The calendar already shows overlaps.
+- What happens when two class times of the same course overlap on the same weekday? The drawer blocks the save. This matches Create Schedule behavior.
+- What happens when a class time overlaps a class time of another course? The drawer blocks the save and names the clashing course. This is the existing Create Schedule behavior.
 - What happens when the student removes the last class time of a course? The system keeps the course. The course shows the "No class times" label.
 - What happens when the network is slow? The save action shows a busy state and blocks a second submit.
 - What happens when the student leaves the page with unsaved edits? The system asks the student to discard or keep the edits.
@@ -101,15 +102,15 @@ A student adds a new course from the Manage Courses page. The student can also d
 ### Functional Requirements
 
 - **FR-001**: The system MUST provide a Manage Courses page that lists all courses of the signed-in student.
-- **FR-002**: The calendar menu MUST contain a "Manage courses" item that opens the Manage Courses page.
-- **FR-003**: The calendar menu MUST NOT contain the separate "Edit Schedule", "New Schedule", and "Delete Schedule" items after this feature ships. The Manage Courses page replaces them.
+- **FR-002**: The hamburger menu panel MUST contain a "Manage courses" item that opens the Manage Courses page.
+- **FR-003**: The "Manage courses" item MUST appear in the same panel as "Select Account". The panel MUST close when the item opens the page.
 - **FR-004**: The page MUST show, for each course, the course color, the course name, and all weekly class times in weekday order.
-- **FR-005**: The page MUST show the same course color that the calendar shows for that course.
-- **FR-006**: Students MUST be able to change the weekday, start time, and end time of an existing class time.
+- **FR-005**: The page MUST show the same course color that the calendar shows for that course. Color is stored on the course (a palette slug); when unset it derives from the course id. The picker edits the stored color.
+- **FR-006**: Students MUST edit a course name and class times in the same course drawer that the Create Schedule view uses. The drawer opens pre-filled with the saved values.
 - **FR-007**: Students MUST be able to add a class time to an existing course.
-- **FR-008**: Students MUST be able to remove one class time after a confirmation step.
+- **FR-008**: Students MUST be able to remove one class time in the drawer. The change applies only after the student saves the drawer. Closing with unsaved edits asks the student to discard or keep them.
 - **FR-009**: The system MUST reject a class time where the start time is not before the end time, and MUST show the reason next to the fields.
-- **FR-010**: Students MUST be able to add a new course from the page through the existing new-course form.
+- **FR-010**: Students MUST be able to add a new course from the page. The same drawer opens blank.
 - **FR-011**: Students MUST be able to delete a course after a confirmation step that states the cascade of notes, tasks, events, and class times.
 - **FR-012**: Students MUST be able to rename a course. The system MUST keep all notes, tasks, events, and class times linked to the renamed course.
 - **FR-013**: After any save, the calendar and all other views MUST show the new data without a full page reload.
@@ -118,7 +119,7 @@ A student adds a new course from the Manage Courses page. The student can also d
 
 ### Key Entities
 
-- **Course**: An academic subject that the student takes. Attributes on this page: name, color (derived, not editable). Parent of class times, notes, tasks, events, and context facts.
+- **Course**: An academic subject that the student takes. Attributes on this page: name, color (stored palette slug; falls back to a derived color when unset). Parent of class times, notes, tasks, events, and context facts.
 - **Class Time (Schedule)**: One recurring weekly meeting of a course. Attributes: weekday, start time, end time. Belongs to exactly one course.
 
 ## Success Criteria *(mandatory)*
@@ -126,7 +127,7 @@ A student adds a new course from the Manage Courses page. The student can also d
 ### Measurable Outcomes
 
 - **SC-001**: A student can change one class time and see the change on the calendar in under 30 seconds.
-- **SC-002**: A student can reach the Manage Courses page from the calendar in 2 taps or fewer.
+- **SC-002**: A student can reach the Manage Courses page from the calendar in 2 taps or fewer (open the hamburger panel, select "Manage courses").
 - **SC-003**: A student can see the full weekly timetable of all courses on one page, with no need to open each course.
 - **SC-004**: 100% of invalid time ranges are blocked before the system stores them.
 - **SC-005**: No course deletion happens without an explicit confirmation from the student.
@@ -134,10 +135,10 @@ A student adds a new course from the Manage Courses page. The student can also d
 ## Assumptions
 
 - The student is signed in. The page shows only courses of that student.
-- Course color is derived from the course identity. The student cannot choose or change color on this page.
+- Color is stored on the course as a palette slug. Courses without a stored color derive one from the course id, so older data stays valid without a migration.
 - The current data does not store a room for a class time. Room editing is out of scope.
 - Archive of courses or terms is out of scope. A separate feature will cover archive.
-- The page reuses the existing new-course form and the existing delete confirmation dialog.
+- The page reuses the Create Schedule drawer for add and edit, and the existing confirmation dialog for delete.
 - The page follows the mobile-first layout and design system in `frontend/DESIGN.md`.
 - The page does not change notes, tasks, events, or planner behavior. Only course and class-time data change.
 - Course rename depends on a new course update operation in the backend. The constitution (Frontend Data Flow and Cache Conventions) needs a MINOR amendment to allow course updates.

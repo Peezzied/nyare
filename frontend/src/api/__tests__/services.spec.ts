@@ -186,13 +186,23 @@ describe('API Services', () => {
     })
 
     it('calls create with course request', async () => {
-      const payload = { name: 'CS 102', description: 'Intro to Algorithms' }
+      const payload = { name: 'CS 102', description: 'Intro to Algorithms', color: 'flamingo' }
       const mockCourse: CourseResponse = { id: 4, ...payload }
       const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValue(mockCourse)
 
       const result = await coursesApi.create(payload)
       expect(result).toEqual(mockCourse)
       expect(postSpy).toHaveBeenCalledWith('/api/courses', payload)
+    })
+
+    it('calls update with course request', async () => {
+      const payload = { name: 'CS 102', description: 'Updated description' }
+      const mockCourse: CourseResponse = { id: 4, ...payload }
+      const putSpy = vi.spyOn(apiClient, 'put').mockResolvedValue(mockCourse)
+
+      const result = await coursesApi.update(4, payload)
+      expect(result).toEqual(mockCourse)
+      expect(putSpy).toHaveBeenCalledWith('/api/courses/4', payload)
     })
 
     it('calls delete with course id', async () => {

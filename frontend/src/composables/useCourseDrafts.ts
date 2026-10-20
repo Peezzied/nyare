@@ -65,7 +65,7 @@ export function useCourseDrafts() {
 
   /**
    * Persists every staged draft. Re-persisted drafts replace their backend
-   * course (delete then create, since courses have no update endpoint).
+   * course (delete then create; onboarding drafts have no other channel).
    * Successfully persisted drafts unstage; on failure the rest stay staged
    * for retry. Returns each created course with its draft `tempId`.
    */
@@ -86,6 +86,7 @@ export function useCourseDrafts() {
       }
       const createdCourse = await coursesApi.create({
         name: course.name,
+        color: course.colorId,
       })
       applyCourseCreated(createdCourse)
       const courseSchedules = draftSchedules.value.filter((s) => s.tempId === course.tempId)

@@ -9,15 +9,21 @@ public class CourseResponse {
     private String name;
     private String description;
     private Long userId;
+    private String color;
 
     public CourseResponse() {
     }
 
     public CourseResponse(Long id, String name, String description, Long userId) {
+        this(id, name, description, userId, null);
+    }
+
+    public CourseResponse(Long id, String name, String description, Long userId, String color) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.userId = userId;
+        this.color = color;
     }
 
     public Long getId() {
@@ -50,5 +56,13 @@ public class CourseResponse {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }

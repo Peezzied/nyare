@@ -15,12 +15,20 @@ public class CourseRequest {
     @Size(max = 1024, message = "Course description cannot exceed 1024 characters")
     private String description;
 
+    @Size(max = 64, message = "Course color cannot exceed 64 characters")
+    private String color;
+
     public CourseRequest() {
     }
 
     public CourseRequest(String name, String description) {
+        this(name, description, null);
+    }
+
+    public CourseRequest(String name, String description, String color) {
         this.name = name;
         this.description = description;
+        this.color = color;
     }
 
     public String getName() {
@@ -37,5 +45,13 @@ public class CourseRequest {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }

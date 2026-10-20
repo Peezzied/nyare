@@ -76,4 +76,35 @@ describe('useCatalog', () => {
     expect(catalog.courses.value).toEqual([])
     expect(catalog.schedules.value).toEqual([])
   })
+
+  describe('courseColor', () => {
+    it('resolves the stored color slug of a catalog course', async () => {
+      vi.spyOn(coursesApi, 'list').mockResolvedValue([{ ...course, color: 'peacock' }])
+      vi.spyOn(schedulesApi, 'list').mockResolvedValue([])
+      const catalog = useCatalog()
+      await catalog.loadCatalog()
+
+      expect(catalog.courseColor(1).id).toBe('peacock')
+      expect(catalog.courseColor(1).solid).toBe('#039BE5')
+
+      catalog.applyCourseUpdated({ ...course, color: 'grape' })
+      expect(catalog.courseColor(1).id).toBe('grape')
+    })
+
+    it('falls back to the derived color for a missing course or unknown slug', async () => {
+      vi.spyOn(coursesApi, 'list').mockResolvedValue([
+        { ...course, color: 'not-a-slug' },
+        { id: 2, name: 'MATH 204', color: null },
+      ])
+      vi.spyOn(schedulesApi, 'list').mockResolvedValue([])
+      const catalog = useCatalog()
+      await catalog.loadCatalog()
+
+      // Unknown slug and null color both derive from the course id.
+      expect(catalog.courseColor(1).id).toBe('flamingo')
+      expect(catalog.courseColor(2).id).toBe('radicchio')
+      // An absent course derives from its id too: 5 % 24 = 5 (Pumpkin).
+      expect(catalog.courseColor(5).id).toBe('pumpkin')
+    })
+  })
 })

@@ -45,6 +45,10 @@ public class Course {
     @Column(length = 1024)
     private String description;
 
+    @Size(max = 64, message = "Course color cannot exceed 64 characters")
+    @Column(length = 64)
+    private String color;
+
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Task> tasks = new ArrayList<>();
 
@@ -115,6 +119,14 @@ public class Course {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public List<Task> getTasks() {

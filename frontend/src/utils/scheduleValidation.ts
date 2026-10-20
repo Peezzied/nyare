@@ -1,5 +1,6 @@
-import type { DayOfWeek } from '@/types/api'
+import type { CourseResponse, DayOfWeek, ScheduleResponse } from '@/types/api'
 import type { DraftCourse, DraftSchedule } from '@/composables/useCourseDrafts'
+import type { CourseEditor } from '@/composables/useCourseEditor'
 
 export interface KnownCourse {
   id: number | string
@@ -176,6 +177,58 @@ export function findClash(
       }
     }
   }
+  return null
+}
+
+/**
+ * Returns the first save-blocking conflict for a course editor, or `null`.
+ * Catalog rows of the course being edited are skipped through `persistedId`
+ * and `id`. The messages match `editorConflictError` in CreateScheduleView.
+ */
+export function findEditorConflict(
+  editor: CourseEditor,
+  courses: CourseResponse[],
+  schedules: ScheduleResponse[],
+): string | null {
+  const known = buildKnownSet(courses ?? [], schedules ?? [])
+  const coursesToCheck = known.courses.filter(
+    (c) => c.id !== editor.id && c.id !== editor.persistedId,
+  )
+  const duplicate = findDuplicateName(editor.name, coursesToCheck)
+  if (duplicate) {
+    return `A course named "${editor.name.trim()}" already exists.`
+  }
+
+  const schedulesToCheck = known.schedules.filter(
+    (s) => s.courseId !== editor.id && s.courseId !== editor.persistedId,
+  )
+  const editorBlocks = editor.blocks
+
+  for (let i = 0; i < editorBlocks.length; i++) {
+    const b1 = editorBlocks[i]!
+    for (const day of b1.selectedDays) {
+      const candidate: ScheduleCandidate = {
+        day,
+        startTime: b1.startTime,
+        endTime: b1.endTime,
+      }
+      const clash = findClash(candidate, schedulesToCheck)
+      if (clash) {
+        return `A class time clashes with ${clash.courseName || 'another class'} on ${day}.`
+      }
+
+      for (let j = i + 1; j < editorBlocks.length; j++) {
+        const b2 = editorBlocks[j]!
+        if (
+          b2.selectedDays.includes(day) &&
+          rangesOverlap(b1.startTime, b1.endTime, b2.startTime, b2.endTime)
+        ) {
+          return `Two time blocks for this course overlap on ${day}.`
+        }
+      }
+    }
+  }
+
   return null
 }
 

@@ -102,7 +102,7 @@ describe('useCourseDrafts', () => {
 
     await flush()
 
-    expect(coursesApi.create).toHaveBeenCalledWith({ name: 'Math 101' })
+    expect(coursesApi.create).toHaveBeenCalledWith({ name: 'Math 101', color: 'sky' })
     expect(schedulesApi.create).toHaveBeenCalledWith({
       courseId: 42,
       day: 'FRIDAY',
@@ -159,7 +159,7 @@ describe('useCourseDrafts', () => {
     await flush()
 
     expect(coursesApi.delete).toHaveBeenCalledWith(4)
-    expect(coursesApi.create).toHaveBeenCalledWith({ name: 'Chemistry' })
+    expect(coursesApi.create).toHaveBeenCalledWith({ name: 'Chemistry', color: 'coral' })
   })
 
   it('keeps the draft staged and deletes the new course when a schedule create fails', async () => {
@@ -233,4 +233,3 @@ describe('useCourseDrafts', () => {
     expect(draftSchedules.value[1]?.day).toBe('THURSDAY')
   })
 })
-

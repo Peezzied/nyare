@@ -35,6 +35,7 @@ public class CourseServiceImpl implements CourseService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
 
         Course course = new Course(request.getName(), request.getDescription(), user);
+        course.setColor(request.getColor());
         Course savedCourse = courseRepository.save(course);
         return toResponse(savedCourse);
     }
@@ -55,6 +56,17 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional
+    public CourseResponse updateCourse(Long id, CourseRequest request, Long userId) {
+        Course course = courseRepository.findByIdAndUserId(id, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + id));
+        course.setName(request.getName());
+        course.setDescription(request.getDescription());
+        course.setColor(request.getColor());
+        return toResponse(course);
+    }
+
+    @Override
+    @Transactional
     public void deleteCourse(Long id, Long userId) {
         Course course = courseRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + id));
@@ -66,7 +78,8 @@ public class CourseServiceImpl implements CourseService {
                 course.getId(),
                 course.getName(),
                 course.getDescription(),
-                course.getUser() != null ? course.getUser().getId() : null
+                course.getUser() != null ? course.getUser().getId() : null,
+                course.getColor()
         );
     }
 }
