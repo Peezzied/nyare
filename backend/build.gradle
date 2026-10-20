@@ -18,12 +18,25 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    dev {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
+configurations {
+    devImplementation.extendsFrom implementation
+    devRuntimeOnly.extendsFrom runtimeOnly
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation platform("org.springframework.ai:spring-ai-bom:2.0.0")
     implementation platform("me.paulschwarz:spring-dotenv-bom:5.1.0")
+    developmentOnly platform("me.paulschwarz:spring-dotenv-bom:5.1.0")
     implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
     implementation 'org.springframework.ai:spring-ai-starter-model-openai'
     implementation 'org.xerial:sqlite-jdbc'
@@ -45,6 +58,14 @@ tasks.withType(Test).configureEach {
 
 tasks.withType(org.springframework.boot.gradle.tasks.run.BootRun).configureEach {
     jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+
+tasks.register('devRun', org.springframework.boot.gradle.tasks.run.BootRun) {
+    group = 'application'
+    description = 'Run the application with the nyare.dev fixtures'
+    mainClass = 'group.four.nyare.nyare.NyareApplication'
+    classpath = sourceSets.main.runtimeClasspath + configurations.developmentOnly + sourceSets.dev.output
+    dependsOn tasks.named('devClasses')
 }
 
 tasks.withType(Javadoc).configureEach {
