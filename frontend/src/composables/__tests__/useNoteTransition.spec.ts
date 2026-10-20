@@ -76,6 +76,49 @@ describe('useNoteTransition', () => {
         borderRadius: '0px',
       })
     })
+
+    it('targets the supplied frame element instead of the viewport', () => {
+      const frame = document.createElement('div')
+      vi.spyOn(frame, 'getBoundingClientRect').mockReturnValue({
+        top: 40,
+        left: 500,
+        width: 430,
+        height: 880,
+        right: 930,
+        bottom: 920,
+        x: 500,
+        y: 40,
+        toJSON: () => ({}),
+      })
+
+      expect(calculateTargetStyle(frame)).toEqual({
+        top: '40px',
+        left: '500px',
+        width: '430px',
+        height: '880px',
+        borderRadius: '0px',
+      })
+    })
+
+    it('falls back to the viewport when the frame is not laid out', () => {
+      vi.stubGlobal('innerWidth', 480)
+      vi.stubGlobal('innerHeight', 800)
+
+      const frame = document.createElement('div')
+      vi.spyOn(frame, 'getBoundingClientRect').mockReturnValue({
+        top: 0,
+        left: 0,
+        width: 0,
+        height: 0,
+        right: 0,
+        bottom: 0,
+        x: 0,
+        y: 0,
+        toJSON: () => ({}),
+      })
+
+      expect(calculateTargetStyle(frame).width).toBe('480px')
+    })
   })
 
   describe('getOriginStyle', () => {

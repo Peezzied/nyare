@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { getCourseColor, type CoursePaletteColor } from '@/constants/palette'
+import { useCatalog } from '@/composables/useCatalog'
+import type { CoursePaletteColor } from '@/constants/palette'
 import { formatEntryDateLong } from '@/utils/noteDate'
 
 const emit = defineEmits<{ open: [event: Event] }>()
@@ -14,7 +15,9 @@ const props = defineProps<{
   entryDate: string
 }>()
 
-const color = computed(() => props.badgeColor ?? getCourseColor(props.courseId))
+const catalog = useCatalog()
+
+const color = computed(() => props.badgeColor ?? catalog.courseColor(props.courseId))
 const entryLabel = computed(() => formatEntryDateLong(props.entryDate))
 </script>
 

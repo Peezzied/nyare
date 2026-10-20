@@ -15,7 +15,8 @@ import {
   prototypePreviewEnabled,
   type PictureNotePreview,
 } from '@/api/mocks/notesPrototypePreview'
-import { getCourseColor, type CoursePaletteColor } from '@/constants/palette'
+import { useCatalog } from './useCatalog'
+import type { CoursePaletteColor } from '@/constants/palette'
 
 const rawNotes = ref<NoteSummaryResponse[]>([])
 const loading = ref(false)
@@ -133,10 +134,11 @@ export function useNotes() {
   }
 
   function getBadgeColor(courseId: number): CoursePaletteColor {
+    const stored = useCatalog().courseColor(courseId)
     if (showPictureCard.value) {
-      return prototypeBadgeFor(courseId) ?? getCourseColor(courseId)
+      return prototypeBadgeFor(courseId) ?? stored
     }
-    return getCourseColor(courseId)
+    return stored
   }
 
   return {

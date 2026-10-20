@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import type { CSSProperties } from 'vue'
 import { Check, SquarePen } from '@lucide/vue'
 import TactileButton from '../TactileButton.vue'
-import { getCourseDotStyle } from '@/utils/courseColors'
+import { useCatalog } from '@/composables/useCatalog'
 import type { CalendarItemDetailView, LinkedNoteRef } from '@/types/calendarItemDetail'
 
 const props = defineProps<{
@@ -15,8 +15,10 @@ const emit = defineEmits<{
   (e: 'complete-task', taskId: string): void
 }>()
 
+const catalog = useCatalog()
+
 const dotStyle = computed<CSSProperties>(() => ({
-  backgroundColor: getCourseDotStyle(props.item.courseId).backgroundColor,
+  backgroundColor: catalog.courseColor(props.item.courseId).solid,
 }))
 const noteTitle = computed(() => props.item.note?.title ?? 'Linked note')
 const completeLabel = computed(() =>

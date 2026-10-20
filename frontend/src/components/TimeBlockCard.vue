@@ -149,7 +149,7 @@ function handleToggleDay(day: DayOfWeek) {
   >
     <!-- Card header with soft ocean surface and clock icon -->
     <CardHeader
-      class="flex flex-row items-center justify-between gap-3 rounded-xl bg-[#E8F6FA] px-3.5 py-2.5"
+      class="flex flex-row items-center justify-between gap-3 rounded-xl bg-[#E8F6FA] px-3.5 min-h-12 py-1"
     >
       <div class="flex min-w-0 flex-1 items-center gap-2">
         <Clock class="h-4 w-4 shrink-0 text-[#007B99]" aria-hidden="true" />
@@ -181,7 +181,7 @@ function handleToggleDay(day: DayOfWeek) {
           size="sm"
           aria-label="Delete time block"
           :disabled="saving"
-          class="flex h-7 items-center gap-1 rounded-lg px-2 text-xs font-semibold text-red-700 transition-colors hover:bg-red-100/70 hover:text-red-800 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:cursor-not-allowed disabled:opacity-50"
+          class="flex h-11 min-w-11 items-center gap-1 rounded-lg px-2 text-xs font-semibold text-red-700 transition-colors hover:bg-red-100/70 hover:text-red-800 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:cursor-not-allowed disabled:opacity-50"
           @click="emit('remove')"
         >
           <Trash2 class="h-3.5 w-3.5" aria-hidden="true" />
@@ -215,7 +215,7 @@ function handleToggleDay(day: DayOfWeek) {
             :aria-pressed="block.selectedDays.includes(weekday.value)"
             :aria-label="weekday.value"
             :disabled="isCardDisabled || props.unavailableDays.includes(weekday.value)"
-            class="mx-auto flex aspect-square h-9 w-9 min-w-0 items-center justify-center rounded-full border p-0 text-xs font-bold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 sm:h-10 sm:w-10"
+            class="mx-auto flex aspect-square h-11 w-11 min-w-0 items-center justify-center rounded-full border p-0 text-xs font-bold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
             :class="
               block.selectedDays.includes(weekday.value)
                 ? '!border-[#006077] !bg-[#007B99] !text-white shadow-[0_2px_0_#00556B] hover:!bg-[#006B85]'

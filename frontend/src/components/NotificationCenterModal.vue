@@ -1,11 +1,10 @@
 <script setup lang="ts">
-// Notification center for Process runs. Mirrors NoteEditorModal: the panel
-// expands from the shelf rect over 320ms, contracts back over 240ms, an
-// ephemeral history state covers device back gestures, and reduced motion
+// Notification center for Process runs. The shared useContainerMorph composable
+// owns the choreography: expand from the shelf rect over 320ms, contract back
+// over 240ms, ephemeral history state for device back gestures, reduced motion
 // falls back to an opacity crossfade.
-import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { onUnmounted, ref } from 'vue'
 import {
-  Bell,
   CircleAlert,
   CircleCheck,
   CircleSlash,
@@ -14,17 +13,8 @@ import {
   LoaderCircle,
   X,
 } from '@lucide/vue'
-import type { AnimationPhase, TapOriginRect } from '@/types/notesTransition'
-import {
-  COLLAPSE_DURATION_MS,
-  CONTENT_DELAY_MS,
-  CONTROLS_DELAY_MS,
-  EXPAND_DURATION_MS,
-  REDUCED_MOTION_DURATION_MS,
-  calculateTargetStyle,
-  getOriginStyle,
-  isReducedMotion,
-} from '@/composables/useNoteTransition'
+import type { TapOriginRect } from '@/types/notesTransition'
+import { useContainerMorph } from '@/composables/useNoteTransition'
 import { useNotifications } from '@/composables/useNotifications'
 import type { ProcessNotification, ProcessNotificationStatus } from '@/composables/useNotifications'
 import { formatEntryDate } from '@/utils/noteDate'
@@ -68,203 +58,31 @@ function onClear(): void {
   }, 3000)
 }
 
-const rootRef = ref<HTMLElement | null>(null)
-const containerRef = ref<HTMLElement | null>(null)
-const phase = ref<AnimationPhase>('idle')
-const isTransitioning = ref(false)
-const isExpanded = ref(false)
-const showContent = ref(false)
-const showControls = ref(false)
-const cardStyle = ref<Record<string, string>>({})
-const reduced = ref(false)
-
-let phaseTimer: ReturnType<typeof setTimeout> | null = null
-let contentTimer: ReturnType<typeof setTimeout> | null = null
-let controlsTimer: ReturnType<typeof setTimeout> | null = null
-let pushedHistory = false
-
-function clearAllTimers() {
-  if (phaseTimer) clearTimeout(phaseTimer)
-  if (contentTimer) clearTimeout(contentTimer)
-  if (controlsTimer) clearTimeout(controlsTimer)
-  phaseTimer = null
-  contentTimer = null
-  controlsTimer = null
-}
-
-function pushHistoryState() {
-  if (!pushedHistory && typeof window !== 'undefined') {
-    try {
-      window.history.pushState({ nyareNotificationCenter: true }, '')
-      pushedHistory = true
-    } catch {
-      // Ignore if history API is unavailable in test environment
-    }
-  }
-}
-
-function runExpansion() {
-  clearAllTimers()
-  reduced.value = isReducedMotion()
-  phase.value = 'expanding'
-  isTransitioning.value = false
-  isExpanded.value = false
-
-  cardStyle.value = reduced.value ? calculateTargetStyle() : getOriginStyle(props.originRect)
-
-  pushHistoryState()
-  void nextTick(() => rootRef.value?.focus({ preventScroll: true }))
-
-  if (reduced.value) {
-    showContent.value = true
-    showControls.value = true
-    nextTick(() => {
-      if (containerRef.value) {
-        void containerRef.value.offsetHeight
-      }
-      requestAnimationFrame(() => {
-        isExpanded.value = true
-        phaseTimer = setTimeout(() => {
-          phase.value = 'settled'
-        }, REDUCED_MOTION_DURATION_MS)
-      })
-    })
-    return
-  }
-
-  showContent.value = false
-  showControls.value = false
-
-  nextTick(() => {
-    if (containerRef.value) {
-      void containerRef.value.offsetHeight
-    }
-
-    requestAnimationFrame(() => {
-      isTransitioning.value = true
-      isExpanded.value = true
-      cardStyle.value = calculateTargetStyle()
-
-      contentTimer = setTimeout(() => {
-        showContent.value = true
-      }, CONTENT_DELAY_MS)
-
-      controlsTimer = setTimeout(() => {
-        showControls.value = true
-      }, CONTROLS_DELAY_MS)
-
-      phaseTimer = setTimeout(() => {
-        phase.value = 'settled'
-      }, EXPAND_DURATION_MS)
-    })
-  })
-}
-
-function requestClose(triggerHistoryBack = true) {
-  if (phase.value === 'collapsing' || phase.value === 'idle') {
-    return
-  }
-
-  clearAllTimers()
-  phase.value = 'collapsing'
-  isTransitioning.value = !reduced.value
-  showContent.value = false
-  showControls.value = false
-  isExpanded.value = false
-
-  if (!reduced.value) {
-    cardStyle.value = getOriginStyle(props.originRect)
-  }
-
-  if (triggerHistoryBack && pushedHistory && typeof window !== 'undefined') {
-    pushedHistory = false
-    try {
-      if (window.history.state?.nyareNotificationCenter) {
-        window.history.back()
-      }
-    } catch {
-      // Ignore in tests
-    }
-  }
-
-  phaseTimer = setTimeout(
-    () => {
-      phase.value = 'idle'
-      isTransitioning.value = false
-      if (typeof document !== 'undefined') {
-        document.body.style.overflow = ''
-      }
-      notifications.markAllRead()
-      emit('close')
-    },
-    reduced.value ? REDUCED_MOTION_DURATION_MS : COLLAPSE_DURATION_MS,
-  )
-}
+const {
+  rootRef,
+  containerRef,
+  phase,
+  isTransitioning,
+  isExpanded,
+  showContent,
+  showControls,
+  cardStyle,
+  fadeMode,
+  dismiss,
+  requestClose,
+} = useContainerMorph({
+  isOpen: () => props.isOpen,
+  originRect: () => props.originRect,
+  historyKey: 'nyareNotificationCenter',
+  onClosed: () => {
+    notifications.markAllRead()
+    emit('close')
+  },
+})
 
 defineExpose({ requestClose })
 
-function onEscape() {
-  if (phase.value === 'expanding' || phase.value === 'settled') {
-    requestClose(true)
-  }
-}
-
-function onPopState() {
-  if (phase.value === 'collapsing' || phase.value === 'idle') {
-    return
-  }
-  pushedHistory = false
-  requestClose(false)
-}
-
-function onViewportResize() {
-  if (isExpanded.value && phase.value !== 'collapsing') {
-    cardStyle.value = calculateTargetStyle()
-  }
-}
-
-watch(
-  () => props.isOpen,
-  (open) => {
-    if (open) {
-      if (typeof document !== 'undefined') {
-        document.body.style.overflow = 'hidden'
-      }
-      runExpansion()
-    } else {
-      if (typeof document !== 'undefined') {
-        document.body.style.overflow = ''
-      }
-      clearAllTimers()
-      phase.value = 'idle'
-      isTransitioning.value = false
-      isExpanded.value = false
-      showContent.value = false
-      showControls.value = false
-      pushedHistory = false
-    }
-  },
-  { immediate: true },
-)
-
-onMounted(() => {
-  if (typeof window !== 'undefined') {
-    window.addEventListener('popstate', onPopState)
-    window.addEventListener('resize', onViewportResize)
-    window.visualViewport?.addEventListener('resize', onViewportResize)
-  }
-})
-
 onUnmounted(() => {
-  if (typeof document !== 'undefined') {
-    document.body.style.overflow = ''
-  }
-  if (typeof window !== 'undefined') {
-    window.removeEventListener('popstate', onPopState)
-    window.removeEventListener('resize', onViewportResize)
-    window.visualViewport?.removeEventListener('resize', onViewportResize)
-  }
-  clearAllTimers()
   if (clearTimer) {
     clearTimeout(clearTimer)
     clearTimer = null
@@ -360,13 +178,13 @@ function stamp(record: ProcessNotification): string {
     role="dialog"
     aria-modal="true"
     aria-label="Notifications"
-    @keydown.esc="onEscape"
+    @keydown.esc="dismiss(true)"
   >
     <!-- Background layer: subtle dark scrim -->
     <div
       class="absolute inset-0 bg-black/20 transition-opacity duration-300"
       :class="isExpanded ? 'opacity-100' : 'opacity-0'"
-      @click="onEscape"
+      @click="dismiss(true)"
     />
 
     <!-- Full-screen expanding container -->
@@ -375,7 +193,7 @@ function stamp(record: ProcessNotification): string {
       data-testid="notification-center-container"
       class="fixed overflow-hidden bg-[#F5F6EE] will-change-[top,left,width,height,border-radius]"
       :class="
-        reduced
+        fadeMode
           ? ['transition-opacity duration-[150ms]', isExpanded ? 'opacity-100' : 'opacity-0']
           : isTransitioning && phase === 'expanding'
             ? 'transition-all duration-[320ms] [transition-timing-function:cubic-bezier(0.05,0.7,0.1,1.0)]'

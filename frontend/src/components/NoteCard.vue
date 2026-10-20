@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { getCourseColor, type CoursePaletteColor } from '@/constants/palette'
+import { useCatalog } from '@/composables/useCatalog'
+import type { CoursePaletteColor } from '@/constants/palette'
 import { formatEntryDate } from '@/utils/noteDate'
 import { extractFirstImageUrl, stripImageMarkdown } from '@/utils/noteImage'
 import type { NoteSummaryResponse } from '@/types/api'
@@ -13,7 +14,9 @@ const props = defineProps<{
   badgeColor?: CoursePaletteColor | null
 }>()
 
-const color = computed(() => props.badgeColor ?? getCourseColor(props.note.courseId))
+const catalog = useCatalog()
+
+const color = computed(() => props.badgeColor ?? catalog.courseColor(props.note.courseId))
 const entryLabel = computed(() => formatEntryDate(props.note.entryDate))
 const imageUrl = computed(() => extractFirstImageUrl(props.note.preview))
 const displayText = computed(() => stripImageMarkdown(props.note.preview))

@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+// In-page container-transform overlay that hosts CalendarItemDetail. The shared
+// useContainerMorph composable owns the choreography: expand from the tapped rect
+// over 320ms, contract back over 240ms, ephemeral history state for device back
+// gestures, reduced motion falls back to an opacity crossfade.
+import { computed } from 'vue'
 import { ArrowLeft } from '@lucide/vue'
-import type { AnimationPhase, TapOriginRect } from '@/types/detailModal'
+import type { TapOriginRect } from '@/types/notesTransition'
 import type { CalendarItemDetailView, LinkedNoteRef } from '@/types/calendarItemDetail'
+import { useContainerMorph } from '@/composables/useNoteTransition'
 import CalendarItemDetail from './CalendarItemDetail.vue'
 
 const props = withDefaults(
@@ -26,235 +31,24 @@ const emit = defineEmits<{
   (e: 'complete-task', taskId: string): void
 }>()
 
-/** Skips the container transform when the user asks for reduced motion. */
-function prefersReducedMotion(): boolean {
-  return (
-    typeof window !== 'undefined' &&
-    typeof window.matchMedia === 'function' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  )
-}
-
-const containerRef = ref<HTMLElement | null>(null)
-const phase = ref<AnimationPhase>('idle')
-const isTransitioning = ref(false)
-const isExpanded = ref(false)
-const showContent = ref(false)
-const cardStyle = ref<Record<string, string>>({})
-
-let phaseTimer: ReturnType<typeof setTimeout> | null = null
-let contentTimer: ReturnType<typeof setTimeout> | null = null
-let pushedHistory = false
-
-function clearAllTimers() {
-  if (phaseTimer) clearTimeout(phaseTimer)
-  if (contentTimer) clearTimeout(contentTimer)
-  phaseTimer = null
-  contentTimer = null
-}
-
-/**
- * Target geometry for the expanded container: the app frame when it is available, so the
- * detail view never outgrows the centred column the day view renders inside.
- * Falls back to the viewport when the frame is missing or not laid out yet.
- */
-function calculateTargetStyle(): Record<string, string> {
-  const frame = props.frameEl
-  if (frame) {
-    const rect = frame.getBoundingClientRect()
-    if (rect.width > 0 && rect.height > 0) {
-      return {
-        top: `${rect.top}px`,
-        left: `${rect.left}px`,
-        width: `${rect.width}px`,
-        height: `${rect.height}px`,
-        borderRadius: getComputedStyle(frame).borderRadius || '0px',
-      }
-    }
-  }
-
-  const w = typeof window !== 'undefined' && window.innerWidth > 0 ? window.innerWidth : 390
-  const h = typeof window !== 'undefined' && window.innerHeight > 0 ? window.innerHeight : 844
-  return {
-    top: '0px',
-    left: '0px',
-    width: `${w}px`,
-    height: `${h}px`,
-    borderRadius: '0px',
-  }
-}
-
-/** Re-fits the expanded panel when the viewport changes while it is open. */
-function onViewportResize() {
-  if (isExpanded.value && phase.value !== 'collapsing') {
-    cardStyle.value = calculateTargetStyle()
-  }
-}
-
-function runExpansion() {
-  clearAllTimers()
-  const reducedMotion = prefersReducedMotion()
-  phase.value = 'expanding'
-  isTransitioning.value = false
-  showContent.value = false
-  isExpanded.value = false
-
-  const origin = props.originRect
-  if (origin) {
-    cardStyle.value = {
-      top: `${origin.top}px`,
-      left: `${origin.left}px`,
-      width: `${origin.width}px`,
-      height: `${origin.height}px`,
-      borderRadius: '16px',
-    }
-  } else {
-    cardStyle.value = calculateTargetStyle()
-  }
-
-  // Push history state once per open
-  if (!pushedHistory && typeof window !== 'undefined') {
-    try {
-      window.history.pushState({ nyareDetailModal: true }, '')
-      pushedHistory = true
-    } catch {
-      // Ignore if history API is unavailable in test environment
-    }
-  }
-
-  nextTick(() => {
-    // Force browser reflow to commit initial origin geometry before transition starts
-    if (containerRef.value) {
-      void containerRef.value.offsetHeight
-    }
-
-    requestAnimationFrame(() => {
-      // Enable CSS transitions and animate to full-screen target
-      isTransitioning.value = !reducedMotion
-      isExpanded.value = true
-      cardStyle.value = calculateTargetStyle()
-
-      // Staggered entrance: inner text/details at 100ms
-      contentTimer = setTimeout(
-        () => {
-          showContent.value = true
-        },
-        reducedMotion ? 0 : 100,
-      )
-
-      // Fully settled at 320ms
-      phaseTimer = setTimeout(
-        () => {
-          phase.value = 'settled'
-        },
-        reducedMotion ? 0 : 320,
-      )
-    })
-  })
-}
-
-function requestClose(triggerHistoryBack = true) {
-  if (phase.value === 'collapsing' || phase.value === 'idle') {
-    return
-  }
-
-  clearAllTimers()
-  const reducedMotion = prefersReducedMotion()
-  phase.value = 'collapsing'
-  isTransitioning.value = !reducedMotion
-
-  // Fast content exit in first 80ms
-  showContent.value = false
-
-  const origin = props.originRect
-  if (origin) {
-    cardStyle.value = {
-      top: `${origin.top}px`,
-      left: `${origin.left}px`,
-      width: `${origin.width}px`,
-      height: `${origin.height}px`,
-      borderRadius: '16px',
-    }
-  }
-  isExpanded.value = false
-
-  if (triggerHistoryBack && pushedHistory && typeof window !== 'undefined') {
-    pushedHistory = false
-    try {
-      if (window.history.state?.nyareDetailModal) {
-        window.history.back()
-      }
-    } catch {
-      // Ignore in tests
-    }
-  }
-
-  // 240ms collapse animation finishes
-  phaseTimer = setTimeout(
-    () => {
-      phase.value = 'idle'
-      isTransitioning.value = false
-      emit('close')
-    },
-    reducedMotion ? 0 : 240,
-  )
-}
-
-function onPopState() {
-  if (props.isOpen) {
-    pushedHistory = false
-    requestClose(false)
-  }
-}
-
-function onKeyDown(e: KeyboardEvent) {
-  if (e.key === 'Escape' && props.isOpen) {
-    requestClose(true)
-  }
-}
-
-watch(
-  () => props.isOpen,
-  (open) => {
-    if (open) {
-      if (typeof document !== 'undefined') {
-        document.body.style.overflow = 'hidden'
-      }
-      runExpansion()
-    } else {
-      if (typeof document !== 'undefined') {
-        document.body.style.overflow = ''
-      }
-      clearAllTimers()
-      phase.value = 'idle'
-      isExpanded.value = false
-      showContent.value = false
-      pushedHistory = false
-    }
-  },
-  { immediate: true },
-)
-
-onMounted(() => {
-  if (typeof window !== 'undefined') {
-    window.addEventListener('popstate', onPopState)
-    window.addEventListener('keydown', onKeyDown)
-    window.addEventListener('resize', onViewportResize)
-    window.visualViewport?.addEventListener('resize', onViewportResize)
-  }
-})
-
-onUnmounted(() => {
-  if (typeof document !== 'undefined') {
-    document.body.style.overflow = ''
-  }
-  if (typeof window !== 'undefined') {
-    window.removeEventListener('popstate', onPopState)
-    window.removeEventListener('keydown', onKeyDown)
-    window.removeEventListener('resize', onViewportResize)
-    window.visualViewport?.removeEventListener('resize', onViewportResize)
-  }
-  clearAllTimers()
+const {
+  rootRef,
+  containerRef,
+  phase,
+  isTransitioning,
+  isExpanded,
+  showContent,
+  showControls,
+  cardStyle,
+  fadeMode,
+  dismiss,
+  requestClose,
+} = useContainerMorph({
+  isOpen: () => props.isOpen,
+  originRect: () => props.originRect,
+  historyKey: 'nyareDetailModal',
+  frameEl: () => props.frameEl,
+  onClosed: () => emit('close'),
 })
 
 const detailTitle = computed(() => {
@@ -274,17 +68,20 @@ const detailTitle = computed(() => {
 <template>
   <div
     v-if="isOpen || phase === 'collapsing'"
-    class="fixed inset-0 z-50 overflow-hidden"
+    ref="rootRef"
+    tabindex="-1"
+    class="fixed inset-0 z-50 overflow-hidden outline-none"
     role="dialog"
     aria-modal="true"
     aria-labelledby="detail-modal-title"
+    @keydown.esc="dismiss(true)"
   >
     <!-- Background layer: subtle dark scrim -->
     <div
       data-testid="modal-backdrop"
       class="absolute inset-0 bg-black/20 transition-opacity duration-300"
       :class="isExpanded ? 'opacity-100' : 'opacity-0'"
-      @click="requestClose(true)"
+      @click="dismiss(true)"
     />
 
     <!-- Full-screen expanding container -->
@@ -292,18 +89,21 @@ const detailTitle = computed(() => {
       ref="containerRef"
       data-testid="detail-modal-container"
       class="fixed bg-[#F5F6EE] overflow-hidden flex flex-col z-10 will-change-[top,left,width,height,border-radius]"
-      :class="[
-        isTransitioning && phase === 'expanding'
-          ? 'transition-all duration-[320ms] [transition-timing-function:cubic-bezier(0.05,0.7,0.1,1.0)]'
-          : isTransitioning && phase === 'collapsing'
-            ? 'transition-all duration-[240ms] [transition-timing-function:cubic-bezier(0.3,0.0,0.8,0.15)]'
-            : '',
-      ]"
+      :class="
+        fadeMode
+          ? ['transition-opacity duration-[150ms]', isExpanded ? 'opacity-100' : 'opacity-0']
+          : isTransitioning && phase === 'expanding'
+            ? 'transition-all duration-[320ms] [transition-timing-function:cubic-bezier(0.05,0.7,0.1,1.0)]'
+            : isTransitioning && phase === 'collapsing'
+              ? 'transition-all duration-[240ms] [transition-timing-function:cubic-bezier(0.3,0.0,0.8,0.15)]'
+              : ''
+      "
       :style="cardStyle"
     >
       <!-- Google Calendar mobile top app bar with back arrow -->
       <header
-        class="flex items-center justify-between px-4 pt-3 pb-3 border-b border-[#CBD5E1]/60 bg-[#F5F6EE] shrink-0"
+        class="flex items-center justify-between px-4 pt-3 pb-3 border-b border-[#CBD5E1]/60 bg-[#F5F6EE] shrink-0 transition-opacity duration-200"
+        :class="showControls ? 'opacity-100' : 'opacity-0'"
       >
         <button
           type="button"
@@ -314,7 +114,7 @@ const detailTitle = computed(() => {
           <ArrowLeft class="w-6 h-6 stroke-[2.2]" />
         </button>
 
-        <span class="text-sm font-semibold font-quicksand text-[#64748B]">
+        <span id="detail-modal-title" class="text-sm font-semibold font-quicksand text-[#64748B]">
           {{ detailTitle }}
         </span>
 
