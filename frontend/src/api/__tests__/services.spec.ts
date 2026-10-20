@@ -791,6 +791,42 @@ describe('API Services', () => {
       expect(onError).not.toHaveBeenCalled()
     })
 
+    it('streamProcess ignores a stream failure after a terminal error event', async () => {
+      const errorData = { status: 400, title: 'Bad Request', detail: 'Notes already processed' }
+      const chunk = new TextEncoder().encode(`event: error\ndata: ${JSON.stringify(errorData)}\n\n`)
+
+      let readIndex = 0
+      const mockReader = {
+        read: vi
+          .fn<() => Promise<{ done: boolean; value: Uint8Array | undefined }>>()
+          .mockImplementation(async () => {
+            if (readIndex === 0) {
+              readIndex++
+              return { done: false, value: chunk }
+            }
+            throw new Error('stream reset')
+          }),
+      }
+
+      globalThis.fetch = vi.fn<typeof fetch>().mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ 'content-type': 'text/event-stream' }),
+        body: {
+          getReader: () => mockReader,
+        },
+      } as unknown as Response)
+
+      const onDone = vi.fn<(summary: ProcessSummaryResponse) => void>()
+      const onError = vi.fn<(error: unknown) => void>()
+
+      await studyPlannerApi.streamProcess({ onDone, onError })
+
+      expect(onError).toHaveBeenCalledTimes(1)
+      expect(onError).toHaveBeenCalledWith(errorData)
+      expect(onDone).not.toHaveBeenCalled()
+    })
+
     it('process rejects with the AbortError when aborted', async () => {
       const controller = new AbortController()
       controller.abort()

@@ -11,7 +11,6 @@ import NavigationBar from './NavigationBar.vue'
 import NotificationBell from './NotificationBell.vue'
 import NotificationCenterModal from './NotificationCenterModal.vue'
 import ProcessDialog from './ProcessDialog.vue'
-import ToastShelf from './ToastShelf.vue'
 import duckotaImg from '@/assets/mascot/duckota_in_button.png'
 import { useAcademicEvents } from '@/composables/useAcademicEvents'
 import { useNotifications } from '@/composables/useNotifications'
@@ -247,7 +246,6 @@ onMounted(() => {
           '--dy': `${flight.dy}px`,
         }"
       />
-      <ToastShelf />
     </main>
 
     <!-- the h-16 reserve keeps the view clear of the fixed bar -->

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, h, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { academicEventsApi } from '../../api/academicEvents'
 import { tasksApi } from '../../api/tasks'
+import { useAcademicEvents } from '@/composables/useAcademicEvents'
 import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
+import { useTasks } from '@/composables/useTasks'
 import { useShellHeader } from '@/composables/useShellHeader'
-import type { AcademicEventResponse, TaskResponse } from '../../types/api'
 import type { DayEvent } from '../../types/calendar'
 import type { CalendarItemDetailView, LinkedNoteRef } from '../../types/calendarItemDetail'
 import type { TapOriginRect } from '../../types/notesTransition'
@@ -33,26 +33,27 @@ const selectedDate = ref(new Date())
 const viewMode = ref<'day' | 'week'>('day')
 const catalog = useCatalog()
 
-// Tasks + events load once per intent; swiping only refilters locally.
-const tasks = ref<TaskResponse[]>([])
-const events = ref<AcademicEventResponse[]>([])
+// Shared caches: a Process run refetches them and the calendar follows.
+const { tasks, loadTasks } = useTasks()
+const { events, loadEvents } = useAcademicEvents()
 // The shared notes cache never rejects, so a notes failure cannot hide the calendar.
 const { notes, loadNotes } = useNotes()
+const loadError = ref<string | null>(null)
 
-onMounted(async () => {
+async function loadData() {
+  loadError.value = null
   try {
     await catalog.loadCatalog()
-    const [loadedTasks, loadedEvents] = await Promise.all([
-      tasksApi.list(),
-      academicEventsApi.list(),
-    ])
-    tasks.value = loadedTasks
-    events.value = loadedEvents
+    await Promise.all([loadTasks(), loadEvents()])
   } catch (error) {
+    loadError.value =
+      error instanceof Error ? error.message : 'Calendar data failed to load'
     console.warn('[DayView] API error loading tasks/events', error)
   }
   await loadNotes()
-})
+}
+
+onMounted(loadData)
 
 const headerTitle = computed(() =>
   viewMode.value === 'day'
@@ -202,6 +203,15 @@ useShellHeader({
 <template>
   <!-- Fills the AppShell scroll area; the swiper manages its own height. -->
   <div class="relative flex h-full flex-col">
+    <div
+      v-if="loadError"
+      role="alert"
+      class="mx-4 mt-3 flex items-center justify-between gap-3 rounded-xl bg-[#DC2626] px-4 py-2 text-sm font-bold text-white"
+    >
+      <span>{{ loadError }}</span>
+      <button type="button" class="rounded-lg bg-white/20 px-3 py-1" @click="loadData">Retry</button>
+    </div>
+
     <!-- Swipe left/right anywhere on the calendar: a day in day view, a week in week view -->
     <DaySwiper
       :selected-date="selectedDate"

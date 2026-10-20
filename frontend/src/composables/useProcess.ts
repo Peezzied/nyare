@@ -3,6 +3,7 @@ import type { Ref } from 'vue'
 import { studyPlannerApi } from '@/api'
 import { createCache } from './createCache'
 import { useNotifications } from './useNotifications'
+import { useToasts } from './useToasts'
 import type { PlannerStatusResponse, ProcessProgressEvent, ProcessSummaryResponse } from '@/api'
 
 /** Callbacks that `useProcess` runs when a Process run ends. */
@@ -145,7 +146,16 @@ export function useProcess(options: UseProcessOptions = {}): UseProcess {
         },
       })
       if (summary.value) {
-        await options.onDone?.(summary.value)
+        // The run committed; a failed UI refresh is not a run error.
+        try {
+          await options.onDone?.(summary.value)
+        } catch {
+          useToasts().pushToast({
+            kind: 'info',
+            title: 'Saved, refresh failed',
+            detail: 'Reload to see the new tasks and events.',
+          })
+        }
       }
       // streamProcess resolves silently on abort. The server may still have committed, so
       // recheck in the background. A session reset bumps the run generation and skips it.

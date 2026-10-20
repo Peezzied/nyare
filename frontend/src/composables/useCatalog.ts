@@ -1,6 +1,9 @@
 import { ref } from 'vue'
 import { coursesApi, schedulesApi } from '@/api'
 import { createCache } from './createCache'
+import { useAcademicEvents } from './useAcademicEvents'
+import { usePlannerStatus } from './usePlannerStatus'
+import { useTasks } from './useTasks'
 import { COURSE_PALETTE_24, getCourseColor, type CoursePaletteColor } from '@/constants/palette'
 import type { CourseResponse, ScheduleResponse } from '@/types/api'
 
@@ -71,6 +74,13 @@ export function useCatalog() {
   function applyCourseDeleted(id: number): void {
     courses.value = courses.value.filter((course) => course.id !== id)
     schedules.value = schedules.value.filter((schedule) => schedule.courseId !== id)
+    // A deleted course invalidates its tasks, events, and planner status.
+    useTasks().resetTasks()
+    useAcademicEvents().resetEvents()
+    usePlannerStatus().reset()
+    void usePlannerStatus()
+      .refresh()
+      .catch(() => {})
   }
 
   function applyScheduleCreated(schedule: ScheduleResponse): void {

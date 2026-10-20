@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { effectScope } from 'vue'
 import { studyPlannerApi } from '@/api'
 import { useProcess } from '../useProcess'
+import { useToasts } from '../useToasts'
 import { resetAllCaches } from '../createCache'
 import type { StreamProcessCallbacks } from '@/api'
 import type { PlannerStatusResponse, ProcessProgressEvent, ProcessSummaryResponse } from '@/api'
@@ -86,12 +87,15 @@ describe('useProcess', () => {
       },
     })
 
-    await proc.start()
+    const result = await proc.start()
 
+    // The run committed, so a failed refresh is a toast, not the run error state.
     expect(runningDuringHook).toBe(true)
-    expect(proc.error.value).toBe('refresh failed')
+    expect(result).toEqual(summaryPayload)
+    expect(proc.error.value).toBeNull()
     expect(proc.summary.value).toEqual(summaryPayload)
     expect(proc.running.value).toBe(false)
+    expect(useToasts().toasts.value.some((t) => t.title === 'Saved, refresh failed')).toBe(true)
   })
 
   it('exposes the error detail on an error event', async () => {

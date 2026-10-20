@@ -104,6 +104,21 @@ export function status(): Promise<PlannerStatusResponse> {
  */
 export async function streamProcess(callbacks: StreamProcessCallbacks): Promise<void> {
   const signal = callbacks.signal
+  // A terminal done/error event ends the run. Later stream noise is ignored.
+  let finished = false
+  const streamCallbacks: StreamProcessCallbacks = {
+    ...callbacks,
+    onDone: (summary) => {
+      finished = true
+      callbacks.onDone(summary)
+    },
+    onError: callbacks.onError
+      ? (error) => {
+          finished = true
+          callbacks.onError?.(error)
+        }
+      : undefined,
+  }
   try {
     // Plain `fetch` skips the apiClient mock handler.
     // The mock adapter patches `fetch` to answer this call.
@@ -154,21 +169,21 @@ export async function streamProcess(callbacks: StreamProcessCallbacks): Promise<
         }
         // `stream: true` keeps a multi-byte character that spans two chunks intact.
         buffer += decoder.decode(value, { stream: true })
-        buffer = parseSseEvents(buffer, callbacks)
+        buffer = parseSseEvents(buffer, streamCallbacks)
       }
 
       // The last frame can arrive without a closing blank line. Add one so the parser reads it.
       if (buffer.trim()) {
-        parseSseEvents(buffer + '\n\n', callbacks)
+        parseSseEvents(buffer + '\n\n', streamCallbacks)
       }
     } else {
       // Fallback for environments without a readable body stream, such as some test mocks.
       const text = await response.text()
-      parseSseEvents(text + '\n\n', callbacks)
+      parseSseEvents(text + '\n\n', streamCallbacks)
     }
   } catch (err) {
     // An abort is a user cancel, not a failure. useProcess checks the status after a cancel.
-    if (signal?.aborted) {
+    if (signal?.aborted || finished) {
       return
     }
     handleError(err, callbacks)
