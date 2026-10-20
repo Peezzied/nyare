@@ -15,11 +15,11 @@ describe('createInitialFixtures', () => {
     const karol = fixtures.users.find((u) => u.username === 'karol' && u.id === 1)
     expect(karol).toBeDefined()
 
-    expect(fixtures.courses.length).toBeGreaterThanOrEqual(3)
+    expect(fixtures.courses.length).toBe(8)
     const courseNames = fixtures.courses.map((c) => c.name)
-    expect(courseNames).toContain('CS 201 - Data Structures & Algorithms')
-    expect(courseNames).toContain('MATH 204 - Linear Algebra')
-    expect(courseNames).toContain('PHYS 102 - General Physics II')
+    expect(courseNames).toContain('Computer Architecture and Organization')
+    expect(courseNames).toContain('Calculus 2')
+    expect(courseNames).toContain('Object-Oriented Programming')
 
     expect(fixtures.schedules.length).toBeGreaterThanOrEqual(5)
     for (const schedule of fixtures.schedules) {

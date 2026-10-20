@@ -57,7 +57,7 @@ const entryLabel = computed(() => formatEntryDateLong(props.entryDate))
         {{ title }}
       </h3>
       <p
-        class="mt-1 break-words font-editor text-sm text-text-main"
+        class="mt-1 break-words font-secondary text-sm text-text-main"
         data-testid="picture-note-text"
       >
         {{ text }}

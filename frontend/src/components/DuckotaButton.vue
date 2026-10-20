@@ -54,7 +54,7 @@ const SIZE_CLASSES = 'size-16 border-4'
 
 const variantClasses = computed(() => {
   if (props.disabled) {
-    return 'opacity-50 cursor-not-allowed shadow-none'
+    return 'grayscale cursor-not-allowed shadow-none'
   }
 
   if (props.processing) {
@@ -63,12 +63,12 @@ const variantClasses = computed(() => {
 
   switch (props.variant) {
     case 'plain':
-      return 'hover:scale-105 active:scale-95 transition-transform'
+      return 'hover:scale-105 active:scale-95'
     case 'floating':
-      return 'shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all'
+      return 'shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 active:scale-95'
     case 'tactile':
     default:
-      return 'shadow-[0_4px_0_#2B3236] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none transition-all'
+      return 'shadow-[0_4px_0_#2B3236] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none'
   }
 })
 
@@ -99,30 +99,34 @@ function handleClick(event: MouseEvent) {
     :aria-label="label"
     :aria-disabled="disabled || processing"
     :disabled="disabled || processing"
-    class="relative inline-flex items-center justify-center rounded-full bg-[#E5EDF2] border-[#616161] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#00A4C8] cursor-pointer"
+    class="relative inline-flex items-center justify-center rounded-full bg-[#E5EDF2] border-[#616161] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#00A4C8] cursor-pointer transition-all duration-200 ease-out"
     :class="[SIZE_CLASSES, variantClasses]"
     @click="handleClick"
   >
     <!-- Outer ambient glow ring during AI processing -->
-    <span
-      v-if="processing"
-      class="absolute -inset-0.5 rounded-full blur-[2px] opacity-35 animate-spin pointer-events-none"
-      :style="{ background: rainbowGradient, animationDuration: '3s' }"
-      aria-hidden="true"
-    />
+    <Transition name="duckota-ring">
+      <span
+        v-if="processing"
+        class="absolute -inset-0.5 rounded-full blur-[2px] opacity-35 motion-safe:animate-spin pointer-events-none"
+        :style="{ background: rainbowGradient, animationDuration: '3s' }"
+        aria-hidden="true"
+      />
+    </Transition>
 
     <!-- Crisp dancing stroke gradient ring (masked stroke, zero cutout gap/wobble) -->
-    <span
-      v-if="processing"
-      class="absolute -inset-[3px] rounded-full animate-spin pointer-events-none"
-      :style="{
-        background: rainbowGradient,
-        animationDuration: '3s',
-        mask: 'radial-gradient(circle, transparent calc(100% - 3px), black calc(100% - 3px))',
-        WebkitMask: 'radial-gradient(circle, transparent calc(100% - 3px), black calc(100% - 3px))',
-      }"
-      aria-hidden="true"
-    />
+    <Transition name="duckota-ring">
+      <span
+        v-if="processing"
+        class="absolute -inset-[3px] rounded-full motion-safe:animate-spin pointer-events-none"
+        :style="{
+          background: rainbowGradient,
+          animationDuration: '3s',
+          mask: 'radial-gradient(circle, transparent calc(100% - 3px), black calc(100% - 3px))',
+          WebkitMask: 'radial-gradient(circle, transparent calc(100% - 3px), black calc(100% - 3px))',
+        }"
+        aria-hidden="true"
+      />
+    </Transition>
 
     <!-- Inner shadow inside the circular button disc -->
     <span
@@ -139,15 +143,68 @@ function handleClick(event: MouseEvent) {
     />
 
     <!-- Notification badge overlay -->
-    <span
-      v-if="badge !== undefined && badge !== ''"
-      class="absolute -top-1 -right-1 z-20 flex min-w-5 h-5 items-center justify-center px-1 rounded-full text-xs font-bold leading-none shadow-sm pointer-events-none"
-      :class="badgeColorClasses"
-      aria-hidden="true"
-    >
-      {{ badge }}
-    </span>
+    <Transition name="duckota-badge">
+      <span
+        v-if="badge !== undefined && badge !== ''"
+        :key="badge"
+        class="absolute -top-1 -right-1 z-20 flex min-w-5 h-5 items-center justify-center px-1 rounded-full text-xs font-bold leading-none shadow-sm pointer-events-none"
+        :class="badgeColorClasses"
+        aria-hidden="true"
+      >
+        {{ badge }}
+      </span>
+    </Transition>
 
     <slot />
   </button>
 </template>
+
+<style scoped>
+/* Badge arrival pops with a soft overshoot; value swaps shrink out then pop in. */
+.duckota-badge-enter-active {
+  transition:
+    transform 180ms cubic-bezier(0.34, 1.4, 0.64, 1),
+    opacity 140ms ease-out;
+}
+
+.duckota-badge-leave-active {
+  transition:
+    transform 120ms ease-in,
+    opacity 100ms ease-in;
+}
+
+.duckota-badge-enter-from,
+.duckota-badge-leave-to {
+  transform: scale(0.4);
+  opacity: 0;
+}
+
+/* Processing rings fade in slowly, then exit fast. */
+.duckota-ring-enter-active {
+  transition: opacity 300ms ease-out;
+}
+
+.duckota-ring-leave-active {
+  transition: opacity 150ms ease-in;
+}
+
+.duckota-ring-enter-from,
+.duckota-ring-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .duckota-badge-enter-active,
+  .duckota-badge-leave-active,
+  .duckota-ring-enter-active,
+  .duckota-ring-leave-active {
+    transition-duration: 80ms;
+    transition-timing-function: ease-out;
+  }
+
+  .duckota-badge-enter-from,
+  .duckota-badge-leave-to {
+    transform: none;
+  }
+}
+</style>

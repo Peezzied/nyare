@@ -13,7 +13,7 @@ defineProps<{
 <template>
   <header
     data-testid="app-header"
-    class="flex h-14 w-full shrink-0 items-center justify-between border-b-[3px] border-app-border bg-app-bg px-4"
+    class="flex h-14 w-full shrink-0 items-center justify-between border-b-[3px] border-app-border bg-app-bg px-1"
   >
     <slot name="left">
       <AccountMenuButton />

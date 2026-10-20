@@ -5,6 +5,7 @@ import NoteCard from '@/components/NoteCard.vue'
 import PictureNoteCard from '@/components/PictureNoteCard.vue'
 import HeaderIconButton from '@/components/HeaderIconButton.vue'
 import NoteEditorModal from '@/components/notes/NoteEditorModal.vue'
+import AddFab from '@/components/AddFab.vue'
 import HamburgerMenu from '@/components/HamburgerMenu.vue'
 import type { NoteSummaryResponse } from '@/types/api'
 import type { NoteModalTriggerKind, TapOriginRect } from '@/types/notesTransition'
@@ -155,22 +156,7 @@ onMounted(async () => {
     </div>
 
     <Teleport :to="rootEl" :disabled="!rootEl">
-      <button
-        type="button"
-        aria-label="Add note"
-        data-testid="notes-fab"
-        @click="newNote($event)"
-        class="absolute right-4 bottom-4 z-10 flex min-h-14 min-w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-lg"
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path
-            d="M12 5v14M5 12h14"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-          />
-        </svg>
-      </button>
+      <AddFab label="Add note" data-testid="notes-fab" @click="newNote($event)" />
     </Teleport>
 
     <NoteEditorModal

@@ -6,6 +6,7 @@
 import { computed, onMounted, ref, toValue, watch } from 'vue'
 import { RouterView } from 'vue-router'
 import AppHeader from './AppHeader.vue'
+import DuckotaBubble from './DuckotaBubble.vue'
 import DuckotaButton from './DuckotaButton.vue'
 import NavigationBar from './NavigationBar.vue'
 import NotificationBell from './NotificationBell.vue'
@@ -15,12 +16,12 @@ import duckotaImg from '@/assets/mascot/duckota_in_button.png'
 import { useAcademicEvents } from '@/composables/useAcademicEvents'
 import { useNotifications } from '@/composables/useNotifications'
 import { isReducedMotion, toTapOriginRect } from '@/composables/useNoteTransition'
-import { useToasts } from '@/composables/useToasts'
 import { usePlannerStatus } from '@/composables/usePlannerStatus'
 import { useProcess } from '@/composables/useProcess'
 import { provideShellHeader } from '@/composables/useShellHeader'
 import { useTasks } from '@/composables/useTasks'
 import type { ProcessNotification } from '@/composables/useNotifications'
+import type { ToastKind } from '@/composables/useToasts'
 import type { TapOriginRect } from '@/types/notesTransition'
 
 const header = provideShellHeader()
@@ -97,51 +98,59 @@ function onCenterClose(): void {
   }
 }
 
-const toasts = useToasts()
+interface DuckotaMessage {
+  kind: ToastKind
+  title: string
+  detail?: string
+}
+
+// One speech bubble at a time above the FAB. Each new run state replaces the
+// last and the bubble dismisses itself like a toast.
+const bubble = ref<DuckotaMessage | null>(null)
+let bubbleTimer: ReturnType<typeof setTimeout> | null = null
+
+function showBubble(kind: ToastKind, title: string, detail?: string): void {
+  if (bubbleTimer) {
+    clearTimeout(bubbleTimer)
+  }
+  bubble.value = { kind, title, detail }
+  bubbleTimer = setTimeout(() => {
+    bubble.value = null
+    bubbleTimer = null
+  }, 4000)
+}
 
 watch(proc.running, (on) => {
   if (on) {
-    toasts.pushToast({
-      kind: 'info',
-      title: 'Duckota is on it',
-      detail: 'Reading your pending notes.',
-    })
+    showBubble('info', 'Duckota is on it', 'Reading your pending notes.')
   }
 })
 
 watch(proc.summary, (summary) => {
   if (summary) {
-    toasts.pushToast({
-      kind: 'success',
-      title: 'Process complete',
-      detail: `${summary.tasksCreated} tasks · ${summary.eventsCreated} events · ${summary.contextsCreated} context created.`,
-    })
+    showBubble(
+      'success',
+      'Process complete',
+      `${summary.tasksCreated} tasks · ${summary.eventsCreated} events · ${summary.contextsCreated} context created.`,
+    )
   }
 })
 
 watch(proc.error, (err) => {
   if (err) {
-    toasts.pushToast({ kind: 'error', title: 'Process failed', detail: err })
+    showBubble('error', 'Process failed', err)
   }
 })
 
 watch(proc.cancelled, (stopped) => {
   if (stopped) {
-    toasts.pushToast({
-      kind: 'info',
-      title: 'Process stopped',
-      detail: 'Pending notes stay unprocessed.',
-    })
+    showBubble('info', 'Process stopped', 'Pending notes stay unprocessed.')
   }
 })
 
 watch(proc.savedAfterCancel, (saved) => {
   if (saved) {
-    toasts.pushToast({
-      kind: 'info',
-      title: 'Run saved before stopping',
-      detail: 'The changes committed before Duckota stopped.',
-    })
+    showBubble('info', 'Run saved before stopping', 'The changes committed before Duckota stopped.')
   }
 })
 
@@ -171,11 +180,7 @@ function onKeepRunning(event: MouseEvent): void {
   } else {
     popToken.value += 1
   }
-  toasts.pushToast({
-    kind: 'info',
-    title: 'Running in the background',
-    detail: 'Tap the bell anytime to check on Duckota.',
-  })
+  showBubble('info', 'Running in the background', 'Tap the bell anytime to check on Duckota.')
 }
 
 onMounted(() => {
@@ -194,7 +199,7 @@ onMounted(() => {
         <component :is="header.center" />
       </template>
       <template #right>
-        <div class="flex items-center gap-1">
+        <div class="flex items-center">
           <component :is="header.right" v-if="header.right" />
           <NotificationBell
             :proc="proc"
@@ -208,17 +213,30 @@ onMounted(() => {
 
     <main class="relative min-h-0 flex-1">
       <RouterView />
-      <DuckotaButton
-        variant="floating"
-        label="Process pending notes"
-        data-testid="duckota-fab"
-        class="!absolute bottom-4 left-5 z-20"
-        :badge="badge"
-        badge-color="destructive"
-        :processing="proc.running.value"
-        :disabled="!planner.canProcess.value"
-        @click="openProcessDialog"
-      />
+      <div class="absolute bottom-4 left-5 z-20">
+        <div aria-live="polite">
+          <Transition name="duckota-bubble">
+            <DuckotaBubble
+              v-if="bubble"
+              :key="bubble.title"
+              :kind="bubble.kind"
+              :title="bubble.title"
+              :detail="bubble.detail"
+              @tap="openProcessDialog"
+            />
+          </Transition>
+        </div>
+        <DuckotaButton
+          variant="floating"
+          label="Process pending notes"
+          data-testid="duckota-fab"
+          :badge="badge"
+          badge-color="destructive"
+          :processing="proc.running.value"
+          :disabled="!planner.canProcess.value"
+          @click="openProcessDialog"
+        />
+      </div>
       <ProcessDialog
         v-model:open="dialogOpen"
         :proc="proc"
@@ -278,5 +296,37 @@ onMounted(() => {
   pointer-events: none;
   object-fit: contain;
   animation: duckota-flight 520ms cubic-bezier(0.5, 0, 0.8, 0.4) forwards;
+}
+
+/* The bubble springs from the mascot like the badge pop, then settles back fast. */
+.duckota-bubble-enter-active {
+  transition:
+    transform 220ms cubic-bezier(0.34, 1.4, 0.64, 1),
+    opacity 160ms ease-out;
+}
+
+.duckota-bubble-leave-active {
+  transition:
+    transform 140ms ease-in,
+    opacity 120ms ease-in;
+}
+
+.duckota-bubble-enter-from,
+.duckota-bubble-leave-to {
+  transform: translateY(8px) scale(0.6);
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .duckota-bubble-enter-active,
+  .duckota-bubble-leave-active {
+    transition-duration: 80ms;
+    transition-timing-function: ease-out;
+  }
+
+  .duckota-bubble-enter-from,
+  .duckota-bubble-leave-to {
+    transform: none;
+  }
 }
 </style>

@@ -78,7 +78,7 @@ function layout(event: DayEvent) {
                     <div
                       v-for="event in day.events"
                       :key="event.id"
-                      class="absolute left-0 right-[6%]"
+                      class="absolute left-0 right-[6%] py-0.5"
                       :style="layout(event)"
                     >
                       <WeekPill :event="event" />

@@ -39,7 +39,7 @@ const theme = computed(() => CLASS_THEME_STYLES[props.event.colorTheme])
     @keydown.enter.prevent="handleActivate"
     @keydown.space.prevent="handleActivate"
   >
-    <p class="break-words font-editor text-[10px] font-semibold leading-[13px]">
+    <p class="break-words font-secondary text-[10px] font-semibold leading-[13px]">
       {{ event.title }}
     </p>
   </div>

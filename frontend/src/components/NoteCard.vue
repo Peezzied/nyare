@@ -56,7 +56,7 @@ const displayText = computed(() => stripImageMarkdown(props.note.preview))
     </h3>
     <p
       v-if="displayText"
-      class="mt-1 break-words font-editor text-sm text-text-main"
+      class="mt-1 break-words font-secondary text-sm text-text-main"
       data-testid="note-preview"
     >
       {{ displayText }}

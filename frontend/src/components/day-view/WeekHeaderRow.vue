@@ -101,7 +101,7 @@ function dayAriaLabel(day: { date: Date; untimed: UntimedDayItem[] }) {
           <span
             v-for="item in day.untimed.slice(0, MAX_PILLS)"
             :key="item.id"
-            class="flex h-5 shrink-0 cursor-pointer items-center gap-0.5 truncate rounded-lg px-1 text-left font-editor text-[10px] font-semibold leading-[14px] transition-transform active:scale-95"
+            class="flex h-5 shrink-0 cursor-pointer items-center gap-0.5 truncate rounded-lg px-1 text-left font-secondary text-[10px] font-semibold leading-[14px] transition-transform active:scale-95"
             :class="chipClasses(item)"
             @click.stop="onUntimedClick($event, item)"
           >

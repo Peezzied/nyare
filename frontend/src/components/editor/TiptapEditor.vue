@@ -54,7 +54,7 @@ const editor = useEditor({
   editable: props.editable,
   editorProps: {
     attributes: {
-      class: 'font-editor outline-none focus:outline-none min-h-full min-h-[300px]',
+      class: 'font-secondary outline-none focus:outline-none min-h-full min-h-[300px]',
     },
   },
   extensions: [
@@ -143,7 +143,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="font-editor flex flex-col flex-1 min-h-0 w-full bg-background transition-colors overflow-hidden"
+    class="font-secondary flex flex-col flex-1 min-h-0 w-full bg-background transition-colors overflow-hidden"
     :class="{ 'opacity-60 cursor-not-allowed select-none': !editable }"
   >
     <div
@@ -179,7 +179,7 @@ onBeforeUnmount(() => {
     >
       <EditorContent
         :editor="editor"
-        class="font-editor min-h-full text-foreground focus-within:outline-none [&_.tiptap]:font-editor [&_.tiptap]:min-h-full [&_.tiptap]:outline-none [&_.tiptap]:focus:outline-none"
+        class="font-secondary min-h-full text-foreground focus-within:outline-none [&_.tiptap]:font-secondary [&_.tiptap]:min-h-full [&_.tiptap]:outline-none [&_.tiptap]:focus:outline-none"
       />
     </div>
 
@@ -199,7 +199,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 :deep(.tiptap) {
-  font-family: var(--font-editor, 'Inter', sans-serif);
+  font-family: var(--font-secondary, 'Inter', sans-serif);
 }
 
 :deep(.tiptap p.is-editor-empty:first-child::before) {
