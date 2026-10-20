@@ -21,6 +21,6 @@ printf 'Generating %s commit message(s) with opencode...\n\n' "${commit_count}" 
 
 # Execute the opencode command and capture its full output, silencing stderr
 output=$(opencode run "/caveman-commit generate ${commit_count} commits; include body messages; outline the affected files for each; ${extra_instruction}" \
-  --auto --no-replay --model opencode/muse-spark-1.3-contributor-free 2>/dev/null)
+  --auto --no-replay --model opencode/mimo-v2.6-flash-free 2>/dev/null)
 
 perl -0777 -ne 'if (/(```.*)/s) { print $1 }' <<< "$output"

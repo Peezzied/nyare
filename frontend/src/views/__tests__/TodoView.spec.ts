@@ -7,6 +7,7 @@ import TaskRow from '@/components/TaskRow.vue'
 import { coursesApi, schedulesApi, tasksApi } from '@/api'
 import { useCatalog } from '@/composables/useCatalog'
 import { useTasks } from '@/composables/useTasks'
+import { useToasts } from '@/composables/useToasts'
 import type { TaskResponse } from '@/types/api'
 
 vi.mock('vue-router', () => ({
@@ -152,6 +153,47 @@ describe('TodoView row tap', () => {
 
     expect(updateStatus).toHaveBeenCalledWith('task-row-1', 'COMPLETED')
     expect(wrapper.findComponent(TaskContainerModal).props('isOpen')).toBe(false)
+  })
+
+  it('rolls back the status and pushes a toast when the update fails', async () => {
+    vi.spyOn(tasksApi, 'updateStatus').mockRejectedValue(new Error('offline'))
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.get('[role="checkbox"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.findComponent(TaskRow).props('task').status).toBe('TODO')
+    expect(useToasts().toasts.value.some((t) => t.title === 'Could not update task')).toBe(true)
+  })
+})
+
+describe('TodoView load failure', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks()
+    useCatalog().resetCatalog()
+    useTasks().resetTasks()
+    vi.spyOn(coursesApi, 'list').mockResolvedValue([])
+    vi.spyOn(schedulesApi, 'list').mockResolvedValue([])
+    vi.spyOn(tasksApi, 'list').mockRejectedValue(new Error('Tasks failed to load'))
+  })
+
+  it('shows an alert with a retry button instead of the empty lists', async () => {
+    const wrapper = mountView()
+    await flushPromises()
+
+    expect(wrapper.get('[role="alert"]').text()).toBe('Tasks failed to load')
+    expect(wrapper.text()).not.toContain('No scheduled tasks')
+    expect(wrapper.find('ul').exists()).toBe(false)
+
+    vi.spyOn(tasksApi, 'list').mockResolvedValue([rowTask])
+    const retry = wrapper.findAll('button').find((b) => b.text() === 'Retry')
+    await retry?.trigger('click')
+    await flushPromises()
+
+    expect(tasksApi.list).toHaveBeenCalledTimes(2)
+    expect(wrapper.find('[role="alert"]').exists()).toBe(false)
+    expect(wrapper.findComponent(TaskRow).exists()).toBe(true)
   })
 })
 

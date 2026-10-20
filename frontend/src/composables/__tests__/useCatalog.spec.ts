@@ -3,6 +3,21 @@ import { coursesApi, schedulesApi } from '@/api'
 import { useCatalog } from '../useCatalog'
 import type { CourseResponse, ScheduleResponse } from '@/types/api'
 
+const mocks = vi.hoisted(() => ({
+  resetTasks: vi.fn<() => void>(),
+  resetEvents: vi.fn<() => void>(),
+  resetPlanner: vi.fn<() => void>(),
+  refreshPlanner: vi.fn<() => Promise<void>>(),
+}))
+
+vi.mock('@/composables/useTasks', () => ({ useTasks: () => ({ resetTasks: mocks.resetTasks }) }))
+vi.mock('@/composables/useAcademicEvents', () => ({
+  useAcademicEvents: () => ({ resetEvents: mocks.resetEvents }),
+}))
+vi.mock('@/composables/usePlannerStatus', () => ({
+  usePlannerStatus: () => ({ reset: mocks.resetPlanner, refresh: mocks.refreshPlanner }),
+}))
+
 const course: CourseResponse = { id: 1, name: 'CS 201', description: null, userId: 1 }
 const schedule: ScheduleResponse = {
   id: 1,
@@ -15,6 +30,10 @@ const schedule: ScheduleResponse = {
 describe('useCatalog', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
+    mocks.resetTasks.mockClear()
+    mocks.resetEvents.mockClear()
+    mocks.resetPlanner.mockClear()
+    mocks.refreshPlanner.mockReset().mockResolvedValue(undefined)
     // The cache is module-level state, so clear it to isolate each test.
     useCatalog().resetCatalog()
   })
@@ -75,6 +94,15 @@ describe('useCatalog', () => {
 
     expect(catalog.courses.value).toEqual([])
     expect(catalog.schedules.value).toEqual([])
+  })
+
+  it('applyCourseDeleted resets the task, event, and planner caches', () => {
+    useCatalog().applyCourseDeleted(course.id)
+
+    expect(mocks.resetTasks).toHaveBeenCalledTimes(1)
+    expect(mocks.resetEvents).toHaveBeenCalledTimes(1)
+    expect(mocks.resetPlanner).toHaveBeenCalledTimes(1)
+    expect(mocks.refreshPlanner).toHaveBeenCalledTimes(1)
   })
 
   describe('courseColor', () => {

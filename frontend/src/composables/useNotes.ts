@@ -97,7 +97,9 @@ export function useNotes() {
     } else {
       rawNotes.value = [...rawNotes.value, summary]
     }
-    await usePlannerStatus().refresh()
+    await usePlannerStatus()
+      .refresh()
+      .catch(() => {})
     return saved
   }
 
@@ -105,7 +107,9 @@ export function useNotes() {
   async function deleteNote(id: string): Promise<void> {
     await notesApi.delete(id)
     rawNotes.value = rawNotes.value.filter((n) => n.id !== id)
-    await usePlannerStatus().refresh()
+    await usePlannerStatus()
+      .refresh()
+      .catch(() => {})
   }
 
   function resetNotes(): void {

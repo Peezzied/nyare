@@ -178,4 +178,18 @@ describe('router session guard', () => {
     expect(pushSpy).not.toHaveBeenCalled()
     expect(router.currentRoute.value.name).toBe('start')
   })
+
+  it('pushes a session-ended toast when the unauthorized handler fires', async () => {
+    ensureSession.mockResolvedValue(null)
+    const router = await loadRouter()
+    await router.push('/')
+
+    unauthorizedHandler?.()
+
+    // Imported after loadRouter so it resolves to the same module instance.
+    const { useToasts } = await import('@/composables/useToasts')
+    expect(
+      useToasts().toasts.value.some((t) => t.title === 'Session ended'),
+    ).toBe(true)
+  })
 })

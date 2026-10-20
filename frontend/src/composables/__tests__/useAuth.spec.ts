@@ -167,6 +167,31 @@ describe('useAuth', () => {
     expect(getCurrentUser).not.toHaveBeenCalled()
   })
 
+  it('setSessionUser drops every cache when the account switches to another user', async () => {
+    const { createCache } = await import('../createCache')
+    const { useAuth } = await import('../useAuth')
+    const { setSessionUser } = useAuth()
+
+    setSessionUser(mockUser)
+    const cache = createCache()
+    cache.loaded = true
+
+    setSessionUser({ ...mockUser, id: 2, username: 'other' })
+    expect(cache.loaded).toBe(false)
+  })
+
+  it('setSessionUser keeps the caches on a first login with no prior user', async () => {
+    const { createCache } = await import('../createCache')
+    const { useAuth } = await import('../useAuth')
+    const { setSessionUser } = useAuth()
+
+    const cache = createCache()
+    cache.loaded = true
+
+    setSessionUser(mockUser)
+    expect(cache.loaded).toBe(true)
+  })
+
   it('clearSessionUser resets to no session and re-enables the check', async () => {
     getCurrentUser.mockResolvedValueOnce(mockUser)
     const { useAuth } = await import('../useAuth')

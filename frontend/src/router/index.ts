@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { clearSessionUser, ensureSession, useAuth } from '@/composables/useAuth'
 import { useCatalog } from '@/composables/useCatalog'
 import { useOnboarding } from '@/composables/useOnboarding'
+import { useToasts } from '@/composables/useToasts'
 import { setUnauthorizedHandler } from '@/api/client'
 import StartView from '../views/StartView.vue'
 import WelcomeView from '../views/WelcomeView.vue'
@@ -101,6 +102,11 @@ const GATED_WHEN_NOT_ONBOARDED = [
 // A protected 401 during use clears the session and returns to the start screen.
 setUnauthorizedHandler(() => {
   clearSessionUser()
+  useToasts().pushToast({
+    kind: 'error',
+    title: 'Session ended',
+    detail: 'Sign in again to continue.',
+  })
   if (router.currentRoute.value.name !== 'start') {
     void router.push({ name: 'start' })
   }

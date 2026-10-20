@@ -2,16 +2,19 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import { defineComponent, nextTick } from 'vue'
 import type { AcademicEventResponse, TaskResponse } from '@/types/api'
+import { toDateKey } from '@/utils/dayKey'
 import DayViewContainer from '../DayViewContainer.vue'
 
 const mocks = vi.hoisted(() => ({
   push: vi.fn<(route: unknown) => void>(),
   loadNotes: vi.fn<() => Promise<void>>(),
   loadCatalog: vi.fn<() => Promise<void>>(),
-  listTasks: vi.fn<() => Promise<TaskResponse[]>>(),
-  listEvents: vi.fn<() => Promise<AcademicEventResponse[]>>(),
+  loadTasks: vi.fn<() => Promise<void>>(),
+  loadEvents: vi.fn<() => Promise<void>>(),
   updateStatus: vi.fn<(id: string, status: string) => Promise<TaskResponse>>(),
-  // Read-only stand-ins for the refs the container touches.
+  // Shared stand-ins for the refs the container touches.
+  tasks: { value: [] as TaskResponse[] },
+  events: { value: [] as AcademicEventResponse[] },
   notes: { value: [] as { id: string; title: string | null }[] },
   courses: { value: [] as unknown[] },
   schedules: { value: [] as unknown[] },
@@ -19,9 +22,18 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('vue-router', () => ({ useRouter: () => ({ push: mocks.push }) }))
 vi.mock('@/api/tasks', () => ({
-  tasksApi: { list: mocks.listTasks, updateStatus: mocks.updateStatus },
+  tasksApi: { updateStatus: mocks.updateStatus },
 }))
-vi.mock('@/api/academicEvents', () => ({ academicEventsApi: { list: mocks.listEvents } }))
+vi.mock('@/composables/useTasks', async () => {
+  const { ref } = await import('vue')
+  mocks.tasks = ref<TaskResponse[]>([])
+  return { useTasks: () => ({ tasks: mocks.tasks, loadTasks: mocks.loadTasks }) }
+})
+vi.mock('@/composables/useAcademicEvents', async () => {
+  const { ref } = await import('vue')
+  mocks.events = ref<AcademicEventResponse[]>([])
+  return { useAcademicEvents: () => ({ events: mocks.events, loadEvents: mocks.loadEvents }) }
+})
 vi.mock('@/composables/useCatalog', () => ({
   useCatalog: () => ({
     courses: mocks.courses,
@@ -49,6 +61,7 @@ const OPEN_TASK: TaskResponse = {
 
 const ScheduleCalendarStub = defineComponent({
   name: 'ScheduleCalendar',
+  props: { untimedItems: { type: Array, default: () => [] } },
   emits: ['select-course', 'select-untimed'],
   template: '<div />',
 })
@@ -99,8 +112,10 @@ async function openTaskDetail(wrapper: Wrapper) {
 
 beforeEach(() => {
   vi.clearAllMocks()
-  mocks.listTasks.mockResolvedValue([OPEN_TASK])
-  mocks.listEvents.mockResolvedValue([])
+  mocks.tasks.value = [OPEN_TASK]
+  mocks.events.value = []
+  mocks.loadTasks.mockResolvedValue(undefined)
+  mocks.loadEvents.mockResolvedValue(undefined)
   mocks.loadNotes.mockResolvedValue(undefined)
   mocks.loadCatalog.mockResolvedValue(undefined)
   mocks.notes.value = [{ id: 'note-1', title: 'Lecture 7: Self-Balancing Trees' }]
@@ -146,7 +161,7 @@ describe('DayViewContainer detail', () => {
 
     expect(mocks.updateStatus).toHaveBeenCalledTimes(1)
     expect(mocks.updateStatus).toHaveBeenCalledWith('task-1', 'COMPLETED')
-    expect(mocks.listTasks).toHaveBeenCalledTimes(1)
+    expect(mocks.loadTasks).toHaveBeenCalledTimes(1)
     expect(wrapper.findComponent(EventDetailModalStub).props('item')).toMatchObject({
       task: { id: 'task-1', completed: true },
     })
@@ -181,5 +196,36 @@ describe('DayViewContainer detail', () => {
 
     expect(mocks.push).toHaveBeenCalledWith({ name: 'note-edit', params: { id: 'note-1' } })
     expect(wrapper.findComponent(EventDetailModalStub).props('isOpen')).toBe(false)
+  })
+
+  it('shows an alert with retry when the calendar data fails to load', async () => {
+    mocks.loadTasks.mockRejectedValue(new Error('Tasks failed to load'))
+    const wrapper = mountContainer()
+    await flushPromises()
+
+    expect(wrapper.get('[role="alert"]').text()).toContain('Tasks failed to load')
+
+    mocks.loadTasks.mockResolvedValue(undefined)
+    const retry = wrapper.findAll('button').find((b) => b.text() === 'Retry')
+    await retry?.trigger('click')
+    await flushPromises()
+
+    expect(mocks.loadTasks).toHaveBeenCalledTimes(2)
+    expect(wrapper.find('[role="alert"]').exists()).toBe(false)
+  })
+
+  it('shows a new untimed item when the shared tasks cache changes after mount', async () => {
+    const wrapper = mountContainer()
+    await flushPromises()
+
+    mocks.tasks.value = [
+      ...mocks.tasks.value,
+      { ...OPEN_TASK, id: 'task-2', title: 'Review graph proofs', scheduledDate: toDateKey(new Date()) },
+    ]
+    await nextTick()
+
+    expect(wrapper.findComponent(ScheduleCalendarStub).props('untimedItems')).toContainEqual(
+      expect.objectContaining({ id: 'task-2', title: 'Review graph proofs' }),
+    )
   })
 })

@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/accordion'
 import { useCatalog } from '@/composables/useCatalog'
 import { useTasks } from '@/composables/useTasks'
+import { useToasts } from '@/composables/useToasts'
 import { getPlanCategory } from '@/utils/planCategory'
 import { useShellHeader } from '@/composables/useShellHeader'
 import { toTapOriginRect } from '@/composables/useNoteTransition'
@@ -142,11 +143,16 @@ const flatTasks = computed(() => {
   return []
 })
 
+const loadError = ref<string | null>(null)
+
 async function loadData() {
   loading.value = true
+  loadError.value = null
   try {
     await catalog.loadCatalog()
     await loadTasks()
+  } catch (err) {
+    loadError.value = err instanceof Error ? err.message : 'Tasks failed to load'
   } finally {
     loading.value = false
   }
@@ -158,8 +164,13 @@ async function toggleTask(task: TaskResponse) {
   tasks.value = tasks.value.map((t) => (t.id === task.id ? { ...t, status: nextStatus } : t))
   try {
     await updateTaskStatus(task.id, nextStatus)
-  } catch {
+  } catch (err) {
     tasks.value = tasks.value.map((t) => (t.id === task.id ? { ...t, status: previous } : t))
+    useToasts().pushToast({
+      kind: 'error',
+      title: 'Could not update task',
+      detail: err instanceof Error ? err.message : 'Try again.',
+    })
   }
 }
 
@@ -195,6 +206,11 @@ onMounted(loadData)
       </div>
 
       <p v-if="loading" class="py-8 text-center text-(--color-text-muted)">Loading tasks…</p>
+
+      <div v-else-if="loadError" class="flex flex-col items-center gap-3 py-12">
+        <p role="alert" class="text-center text-(--color-text-muted)">{{ loadError }}</p>
+        <Button type="button" variant="outline" @click="loadData">Retry</Button>
+      </div>
 
       <template v-else-if="activeFilter !== 'ALL'">
         <p v-if="flatTasks.length === 0" class="py-12 text-center text-(--color-text-muted)">

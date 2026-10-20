@@ -76,6 +76,10 @@ async function checkSession(): Promise<UserResponse | null | undefined> {
  * @param next the authenticated user DTO from the login or register call.
  */
 export function setSessionUser(next: UserResponse): void {
+  // An account switch drops every cached list; a first login keeps them.
+  if (user.value && user.value.id !== next.id) {
+    resetAllCaches()
+  }
   user.value = next
   sessionChecked = true
   isDevUserMissing.value = false
