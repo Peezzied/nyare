@@ -7,17 +7,20 @@ import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
 import { useTasks } from '@/composables/useTasks'
 import { useShellHeader } from '@/composables/useShellHeader'
-import type { DayEvent } from '../../types/calendar'
+import type { CalendarViewMode, DayEvent } from '../../types/calendar'
 import type { CalendarItemDetailView, LinkedNoteRef } from '../../types/calendarItemDetail'
 import type { TapOriginRect } from '../../types/notesTransition'
+import type { AcademicEventResponse } from '@/types/api'
 import { buildCalendarItemDetail } from '../../utils/calendarItemDetail'
 import { toDateKey } from '../../utils/dayKey'
+import { deriveDeadlineSections } from '../../utils/deadlineSections'
 import { expandSchedulesForDate, formatDateHeader } from '../../utils/scheduleExpander'
 import { deriveUntimedItems } from '../../utils/untimedItems'
 import type { UntimedDayItem } from '../../utils/untimedItems'
 import { useNow } from '../../composables/useNow'
 import { formatWeekTitle, weekDates } from '../../utils/weekDays'
 import DateTitlePicker from './DateTitlePicker.vue'
+import DeadlinesView from './DeadlinesView.vue'
 import EventDetailModal from './EventDetailModal.vue'
 import HamburgerMenu from '../HamburgerMenu.vue'
 import DayPeek from './DayPeek.vue'
@@ -30,7 +33,7 @@ import WeekPeek from './WeekPeek.vue'
 
 // Defaults to today, in the day view
 const selectedDate = ref(new Date())
-const viewMode = ref<'day' | 'week'>('day')
+const viewMode = ref<CalendarViewMode>('day')
 const catalog = useCatalog()
 
 // Shared caches: a Process run refetches them and the calendar follows.
@@ -46,8 +49,7 @@ async function loadData() {
     await catalog.loadCatalog()
     await Promise.all([loadTasks(), loadEvents()])
   } catch (error) {
-    loadError.value =
-      error instanceof Error ? error.message : 'Calendar data failed to load'
+    loadError.value = error instanceof Error ? error.message : 'Calendar data failed to load'
     console.warn('[DayView] API error loading tasks/events', error)
   }
   await loadNotes()
@@ -55,11 +57,11 @@ async function loadData() {
 
 onMounted(loadData)
 
-const headerTitle = computed(() =>
-  viewMode.value === 'day'
-    ? formatDateHeader(selectedDate.value)
-    : formatWeekTitle(selectedDate.value),
-)
+const headerTitle = computed(() => {
+  if (viewMode.value === 'day') return formatDateHeader(selectedDate.value)
+  if (viewMode.value === 'week') return formatWeekTitle(selectedDate.value)
+  return 'Deadlines'
+})
 
 // Per-date data: used for the current view and for the swipe preview
 function eventsFor(date: Date) {
@@ -73,12 +75,20 @@ function untimedFor(date: Date) {
 const dayEvents = computed(() => eventsFor(selectedDate.value))
 const untimedItems = computed(() => untimedFor(selectedDate.value))
 
-function toggleView() {
-  viewMode.value = viewMode.value === 'day' ? 'week' : 'day'
+function setViewMode(mode: CalendarViewMode) {
+  viewMode.value = mode
 }
 
 // ---- Back-to-today pill: hidden while today is on screen ----
 const now = useNow()
+
+// The deadlines list is anchored to now; it needs no date navigation.
+const deadlineSections = computed(() => deriveDeadlineSections(events.value, now.value))
+
+function getCourseName(courseId: number): string {
+  const found = catalog.courses.value.find((c) => c.id === courseId)
+  return found?.name ?? `Course ${courseId}`
+}
 
 const isShowingToday = computed(() => {
   const todayKey = toDateKey(now.value)
@@ -149,6 +159,11 @@ function openUntimedDetail(item: UntimedDayItem, originRect: DOMRect | null) {
   }
 }
 
+/** Opens the detail view for a tapped deadline row (FR-007). */
+function openEventDetail(event: AcademicEventResponse, originRect: DOMRect | null) {
+  openDetail(buildCalendarItemDetail(event, 'event', notes.value), originRect)
+}
+
 function closeDetail() {
   isDetailOpen.value = false
 }
@@ -196,7 +211,7 @@ useShellHeader({
       hasItems: hasItemsOn,
       onSelect: jumpToDate,
     }),
-  right: () => h(ViewModeToggle, { mode: viewMode.value, onToggle: toggleView }),
+  right: () => h(ViewModeToggle, { mode: viewMode.value, onSelect: setViewMode }),
 })
 </script>
 
@@ -209,53 +224,69 @@ useShellHeader({
       class="mx-4 mt-3 flex items-center justify-between gap-3 rounded-xl bg-[#DC2626] px-4 py-2 text-sm font-bold text-white"
     >
       <span>{{ loadError }}</span>
-      <button type="button" class="rounded-lg bg-white/20 px-3 py-1" @click="loadData">Retry</button>
+      <button type="button" class="rounded-lg bg-white/20 px-3 py-1" @click="loadData">
+        Retry
+      </button>
     </div>
 
-    <!-- Swipe left/right anywhere on the calendar: a day in day view, a week in week view -->
-    <DaySwiper
-      :selected-date="selectedDate"
-      :step-days="viewMode === 'day' ? 1 : 7"
-      @change-date="selectedDate = $event"
-    >
-      <ScheduleCalendar
-        v-if="viewMode === 'day'"
-        :events="dayEvents"
-        :untimed-items="untimedItems"
+    <!-- Swipe left/right anywhere on the calendar: a day in day view, a week in week view.
+         The deadlines list is now-anchored and sits outside the swiper. -->
+    <Transition name="view-slide">
+      <DaySwiper
+        v-if="viewMode !== 'deadlines'"
+        :key="viewMode"
         :selected-date="selectedDate"
-        @select-course="openClassDetail"
-        @select-untimed="openUntimedDetail"
-      />
-      <WeekCalendar
-        v-else
-        :selected-date="selectedDate"
-        :events-for="eventsFor"
-        :untimed-for="untimedFor"
-        @select-day="openDay"
-        @select-course="openClassDetail"
-        @select-untimed="openUntimedDetail"
-      />
-
-      <template #peek="{ date, scrollTop, gutterLeft }">
-        <DayPeek
+        :step-days="viewMode === 'day' ? 1 : 7"
+        @change-date="selectedDate = $event"
+      >
+        <ScheduleCalendar
           v-if="viewMode === 'day'"
-          :events="eventsFor(date)"
-          :untimed-items="untimedFor(date)"
-          :scroll-top="scrollTop"
-          :gutter-left="gutterLeft"
+          :events="dayEvents"
+          :untimed-items="untimedItems"
+          :selected-date="selectedDate"
+          @select-course="openClassDetail"
+          @select-untimed="openUntimedDetail"
         />
-        <WeekPeek
+        <WeekCalendar
           v-else
-          :date="date"
+          :selected-date="selectedDate"
           :events-for="eventsFor"
           :untimed-for="untimedFor"
-          :scroll-top="scrollTop"
-          :gutter-left="gutterLeft"
+          @select-day="openDay"
+          @select-course="openClassDetail"
+          @select-untimed="openUntimedDetail"
         />
-      </template>
-    </DaySwiper>
 
-    <TodayButton v-if="!isShowingToday" @jump="goToday" />
+        <template #peek="{ date, scrollTop, gutterLeft }">
+          <DayPeek
+            v-if="viewMode === 'day'"
+            :events="eventsFor(date)"
+            :untimed-items="untimedFor(date)"
+            :scroll-top="scrollTop"
+            :gutter-left="gutterLeft"
+          />
+          <WeekPeek
+            v-else
+            :date="date"
+            :events-for="eventsFor"
+            :untimed-for="untimedFor"
+            :scroll-top="scrollTop"
+            :gutter-left="gutterLeft"
+          />
+        </template>
+      </DaySwiper>
+
+      <DeadlinesView
+        v-else
+        key="deadlines"
+        :sections="deadlineSections"
+        :course-name="getCourseName"
+        @select="openEventDetail"
+        @select-day="openDay"
+      />
+    </Transition>
+
+    <TodayButton v-if="viewMode !== 'deadlines' && !isShowingToday" @jump="goToday" />
 
     <!-- One detail modal for both views; the container owns it.
          No frame element: the shell fills the viewport, so the modal fits it. -->
@@ -279,3 +310,50 @@ useShellHeader({
     </p>
   </div>
 </template>
+
+<style scoped>
+/* Mode switches: the incoming view slides up over the leaving one. */
+.view-slide-enter-active {
+  transition:
+    transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 200ms ease-out;
+}
+
+.view-slide-leave-active {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  transition:
+    transform 180ms ease-in,
+    opacity 160ms ease-in;
+}
+
+.view-slide-enter-active {
+  position: relative;
+  z-index: 1;
+}
+
+.view-slide-enter-from {
+  transform: translateY(14px);
+  opacity: 0;
+}
+
+.view-slide-leave-to {
+  transform: translateY(-10px);
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view-slide-enter-active,
+  .view-slide-leave-active {
+    transition-duration: 90ms;
+    transition-timing-function: ease-out;
+  }
+
+  .view-slide-enter-from,
+  .view-slide-leave-to {
+    transform: none;
+  }
+}
+</style>
