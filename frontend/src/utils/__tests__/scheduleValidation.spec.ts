@@ -5,8 +5,12 @@ import {
   buildKnownSet,
   findDuplicateName,
   findClash,
+  findEditorConflict,
   unavailableDaysFor,
 } from '../scheduleValidation'
+import type { CourseResponse, ScheduleResponse } from '@/types/api'
+import type { CourseEditor } from '@/composables/useCourseEditor'
+import type { TimeBlockDraft } from '@/components/TimeBlockCard.vue'
 
 describe('timeToMinutes', () => {
   it('parses HH:MM into minutes since midnight', () => {
@@ -260,5 +264,123 @@ describe('unavailableDaysFor', () => {
     expect(
       unavailableDaysFor({ startTime: '10:00', endTime: '10:00' }, knownSchedules, []),
     ).toEqual([])
+  })
+})
+
+describe('findEditorConflict', () => {
+  function makeBlock(overrides: Partial<TimeBlockDraft> = {}): TimeBlockDraft {
+    return {
+      id: 'block-1',
+      selectedDays: [],
+      startTime: '',
+      endTime: '',
+      room: '',
+      state: 'draft',
+      schedules: [],
+      error: '',
+      ...overrides,
+    }
+  }
+
+  function makeEditor(overrides: Partial<CourseEditor> = {}): CourseEditor {
+    return {
+      id: 'editor-1',
+      name: '',
+      colorId: 'emerald',
+      colorOpen: false,
+      blocks: [],
+      pendingSlot: null,
+      pendingBlockId: null,
+      isSaved: false,
+      lastSavedSnapshot: '',
+      ...overrides,
+    }
+  }
+
+  const catalogCourses: CourseResponse[] = [
+    { id: 1, name: 'CS 101' },
+    { id: 2, name: 'Physics' },
+  ]
+  const catalogSchedules: ScheduleResponse[] = [
+    {
+      id: 10,
+      courseId: 1,
+      day: 'MONDAY',
+      startTime: '09:00',
+      endTime: '10:00',
+    },
+  ]
+
+  it('detects a duplicate course name from the catalog', () => {
+    const editor = makeEditor({
+      name: 'cs 101',
+      blocks: [
+        makeBlock({ selectedDays: ['TUESDAY'], startTime: '13:00', endTime: '14:00' }),
+      ],
+    })
+
+    expect(findEditorConflict(editor, catalogCourses, catalogSchedules)).toBe(
+      'A course named "cs 101" already exists.',
+    )
+  })
+
+  it('detects a clash with another course schedule', () => {
+    const editor = makeEditor({
+      name: 'New Course',
+      blocks: [
+        makeBlock({ selectedDays: ['MONDAY'], startTime: '09:30', endTime: '10:30' }),
+      ],
+    })
+
+    expect(findEditorConflict(editor, catalogCourses, catalogSchedules)).toBe(
+      'A class time clashes with CS 101 on MONDAY.',
+    )
+  })
+
+  it('ignores rows of the course being edited through persistedId', () => {
+    const editor = makeEditor({
+      name: 'CS 101',
+      persistedId: 1,
+      blocks: [
+        makeBlock({ selectedDays: ['MONDAY'], startTime: '09:30', endTime: '10:30' }),
+      ],
+    })
+
+    expect(findEditorConflict(editor, catalogCourses, catalogSchedules)).toBeNull()
+  })
+
+  it('detects overlapping sibling blocks of the same editor', () => {
+    const editor = makeEditor({
+      name: 'New Course',
+      blocks: [
+        makeBlock({
+          id: 'block-1',
+          selectedDays: ['WEDNESDAY'],
+          startTime: '13:00',
+          endTime: '14:00',
+        }),
+        makeBlock({
+          id: 'block-2',
+          selectedDays: ['WEDNESDAY'],
+          startTime: '13:30',
+          endTime: '14:30',
+        }),
+      ],
+    })
+
+    expect(findEditorConflict(editor, catalogCourses, catalogSchedules)).toBe(
+      'Two time blocks for this course overlap on WEDNESDAY.',
+    )
+  })
+
+  it('returns null when the editor has no conflict', () => {
+    const editor = makeEditor({
+      name: 'New Course',
+      blocks: [
+        makeBlock({ selectedDays: ['MONDAY'], startTime: '11:00', endTime: '12:00' }),
+      ],
+    })
+
+    expect(findEditorConflict(editor, catalogCourses, catalogSchedules)).toBeNull()
   })
 })

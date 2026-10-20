@@ -269,13 +269,18 @@ describe('CreateScheduleView', () => {
     await submitAll(wrapper)
     await flushPromises()
 
-    expect(coursesApi.create).toHaveBeenCalledWith({ name: 'Math' })
+    expect(coursesApi.create).toHaveBeenCalledWith({ name: 'Math', color: 'tomato' })
     expect(schedulesApi.create).toHaveBeenCalledTimes(2)
     expect(schedulesApi.create).toHaveBeenCalledWith(
       expect.objectContaining({ courseId: 1, day: 'MONDAY', startTime: '09:00', endTime: '10:00' }),
     )
     expect(schedulesApi.create).toHaveBeenCalledWith(
-      expect.objectContaining({ courseId: 1, day: 'WEDNESDAY', startTime: '09:00', endTime: '10:00' }),
+      expect.objectContaining({
+        courseId: 1,
+        day: 'WEDNESDAY',
+        startTime: '09:00',
+        endTime: '10:00',
+      }),
     )
 
     // Persisted drafts unstage after a successful flush
@@ -308,7 +313,7 @@ describe('CreateScheduleView', () => {
     // Registration is deferred to Submit: the welcome name becomes the username.
     expect(authApi.register).toHaveBeenCalledWith({ username: 'Alice' })
     expect(authApi.login).toHaveBeenCalledWith({ username: 'existing_student' })
-    expect(coursesApi.create).toHaveBeenCalledWith({ name: 'Math' })
+    expect(coursesApi.create).toHaveBeenCalledWith({ name: 'Math', color: 'tomato' })
     expect(replace).toHaveBeenCalledWith('/calendar')
   })
 
@@ -365,7 +370,7 @@ describe('CreateScheduleView', () => {
     await flushPromises()
 
     expect(useCourseDrafts().draftCourses.value).toHaveLength(0)
-    expect(coursesApi.create).toHaveBeenCalledWith({ name: 'Physics 101' })
+    expect(coursesApi.create).toHaveBeenCalledWith({ name: 'Physics 101', color: 'tomato' })
 
     // Re-saving the same form instance does not flag duplicate against itself
     await submitAll(wrapper)
@@ -407,7 +412,7 @@ describe('CreateScheduleView', () => {
     await submitAll(wrapper)
     await flushPromises()
 
-    expect(coursesApi.create).toHaveBeenCalledWith({ name: 'cs 101' })
+    expect(coursesApi.create).toHaveBeenCalledWith({ name: 'cs 101', color: 'tomato' })
     expect(useCourseDrafts().draftCourses.value).toHaveLength(0)
   })
 
@@ -1001,8 +1006,8 @@ describe('CreateScheduleView', () => {
     await flushPromises()
 
     expect(coursesApi.create).toHaveBeenCalledTimes(2)
-    expect(coursesApi.create).toHaveBeenCalledWith({ name: 'Math' })
-    expect(coursesApi.create).toHaveBeenCalledWith({ name: 'History' })
+    expect(coursesApi.create).toHaveBeenCalledWith({ name: 'Math', color: 'tomato' })
+    expect(coursesApi.create).toHaveBeenCalledWith({ name: 'History', color: 'tomato' })
     expect(schedulesApi.create).toHaveBeenCalledWith(
       expect.objectContaining({ day: 'MONDAY', startTime: '09:00', endTime: '10:00' }),
     )
@@ -1134,7 +1139,7 @@ describe('CreateScheduleView', () => {
     // Math was reverted to an untouched editor; Submit flushes only History
     await submitAll(wrapper)
     await flushPromises()
-    expect(coursesApi.create).toHaveBeenCalledWith({ name: 'History' })
+    expect(coursesApi.create).toHaveBeenCalledWith({ name: 'History', color: 'tomato' })
     expect(coursesApi.create).toHaveBeenCalledTimes(1)
     expect(draftCourses.value).toHaveLength(0)
   })

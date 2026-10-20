@@ -3,7 +3,7 @@
 import { computed, ref } from 'vue'
 import { ChevronDown } from '@lucide/vue'
 import CoursePickerDialog from '@/components/CoursePickerDialog.vue'
-import { getCourseBadgeStyle } from '@/utils/courseColors'
+import { useCatalog } from '@/composables/useCatalog'
 import type { CourseResponse, ScheduleResponse } from '@/types/api'
 
 interface Props {
@@ -30,6 +30,7 @@ const emit = defineEmits<{
 defineOptions({ inheritAttrs: false })
 
 const isOpen = ref(false)
+const catalog = useCatalog()
 
 const selectedCourse = computed(() => {
   if (props.modelValue === null) {
@@ -42,11 +43,11 @@ const badgeStyle = computed(() => {
   if (props.modelValue === null) {
     return undefined
   }
-  const badge = getCourseBadgeStyle(props.modelValue)
+  const badge = catalog.courseColor(props.modelValue)
   return {
-    backgroundColor: badge.backgroundColor,
-    color: badge.color,
-    borderColor: badge.borderColor,
+    backgroundColor: badge.bg,
+    color: badge.text,
+    borderColor: badge.border,
   }
 })
 </script>

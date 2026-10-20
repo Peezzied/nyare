@@ -73,6 +73,11 @@ const router = createRouter({
           name: 'notes',
           component: () => import('../views/NotesView.vue'),
         },
+        {
+          path: '/manage-courses',
+          name: 'manage-courses',
+          component: () => import('@/views/ManageCoursesView.vue'),
+        },
       ],
     },
     {

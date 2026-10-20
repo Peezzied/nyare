@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { coursesApi, schedulesApi } from '@/api'
 import { createCache } from './createCache'
+import { COURSE_PALETTE_24, getCourseColor, type CoursePaletteColor } from '@/constants/palette'
 import type { CourseResponse, ScheduleResponse } from '@/types/api'
 
 // Module-level state, so every useCatalog() caller shares one cache.
@@ -56,6 +57,10 @@ export function useCatalog() {
     courses.value = [...courses.value, course]
   }
 
+  function applyCourseUpdated(course: CourseResponse): void {
+    courses.value = courses.value.map((current) => (current.id === course.id ? course : current))
+  }
+
   /** Deletes the course via the API and drops it from the cache. */
   async function deleteCourse(id: number): Promise<void> {
     await coursesApi.delete(id)
@@ -87,13 +92,26 @@ export function useCatalog() {
     cache.reset()
   }
 
+  /**
+   * Resolves the color of a course for presentation. A stored `color` slug
+   * that matches `COURSE_PALETTE_24` wins; an absent course or a missing or
+   * unknown slug falls back to the derived `getCourseColor(courseId)`.
+   */
+  function courseColor(courseId: number | undefined | null): CoursePaletteColor {
+    const slug = courses.value.find((course) => course.id === courseId)?.color
+    const stored = slug ? COURSE_PALETTE_24.find((color) => color.id === slug) : undefined
+    return stored ?? getCourseColor(courseId ?? 0)
+  }
+
   return {
     courses,
     schedules,
     loaded,
     loadCatalog,
+    courseColor,
     deleteCourse,
     applyCourseCreated,
+    applyCourseUpdated,
     applyCourseDeleted,
     applyScheduleCreated,
     applyScheduleUpdated,

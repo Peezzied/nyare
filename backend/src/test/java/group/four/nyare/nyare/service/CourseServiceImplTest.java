@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -85,6 +86,42 @@ class CourseServiceImplTest {
     }
 
     @Test
+    @DisplayName("createCourse stores and returns the request color")
+    void createCourse_withColor_storesAndReturnsColor() {
+        // given
+        CourseRequest request = new CourseRequest("CS101", "Intro to CS", "flamingo");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(sampleUser));
+        when(courseRepository.save(any(Course.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        CourseResponse response = courseService.createCourse(request, 1L);
+
+        // then
+        ArgumentCaptor<Course> captor = ArgumentCaptor.forClass(Course.class);
+        verify(courseRepository).save(captor.capture());
+        assertThat(captor.getValue().getColor()).isEqualTo("flamingo");
+        assertThat(response.getColor()).isEqualTo("flamingo");
+    }
+
+    @Test
+    @DisplayName("createCourse accepts a null color and stores null")
+    void createCourse_withNullColor_storesNull() {
+        // given
+        CourseRequest request = new CourseRequest("CS101", "Intro to CS");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(sampleUser));
+        when(courseRepository.save(any(Course.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        CourseResponse response = courseService.createCourse(request, 1L);
+
+        // then
+        ArgumentCaptor<Course> captor = ArgumentCaptor.forClass(Course.class);
+        verify(courseRepository).save(captor.capture());
+        assertThat(captor.getValue().getColor()).isNull();
+        assertThat(response.getColor()).isNull();
+    }
+
+    @Test
     @DisplayName("createCourse throws ResourceNotFoundException when user is not found")
     void createCourse_withUnknownUser_throwsResourceNotFoundException() {
         // given
@@ -148,6 +185,95 @@ class CourseServiceImplTest {
 
         // when & then
         assertThatThrownBy(() -> courseService.getCourse(10L, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("updateCourse updates name and description when the course exists")
+    void updateCourse_withValidRequest_updatesAndReturnsCourse() {
+        // given
+        CourseRequest request = new CourseRequest("CS201", "Data Structures");
+        when(courseRepository.findByIdAndUserId(10L, 1L)).thenReturn(Optional.of(sampleCourse));
+
+        // when
+        CourseResponse response = courseService.updateCourse(10L, request, 1L);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getId()).isEqualTo(10L);
+        assertThat(response.getName()).isEqualTo("CS201");
+        assertThat(response.getDescription()).isEqualTo("Data Structures");
+        assertThat(response.getUserId()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("updateCourse changes the course color")
+    void updateCourse_withColor_updatesColor() {
+        // given
+        CourseRequest request = new CourseRequest("CS201", "Data Structures", "flamingo");
+        when(courseRepository.findByIdAndUserId(10L, 1L)).thenReturn(Optional.of(sampleCourse));
+
+        // when
+        CourseResponse response = courseService.updateCourse(10L, request, 1L);
+
+        // then
+        assertThat(sampleCourse.getColor()).isEqualTo("flamingo");
+        assertThat(response.getColor()).isEqualTo("flamingo");
+    }
+
+    @Test
+    @DisplayName("updateCourse accepts a null color and clears the stored value")
+    void updateCourse_withNullColor_clearsColor() {
+        // given
+        sampleCourse.setColor("flamingo");
+        CourseRequest request = new CourseRequest("CS201", "Data Structures");
+        when(courseRepository.findByIdAndUserId(10L, 1L)).thenReturn(Optional.of(sampleCourse));
+
+        // when
+        CourseResponse response = courseService.updateCourse(10L, request, 1L);
+
+        // then
+        assertThat(sampleCourse.getColor()).isNull();
+        assertThat(response.getColor()).isNull();
+    }
+
+    @Test
+    @DisplayName("updateCourse accepts a null description")
+    void updateCourse_withNullDescription_clearsDescription() {
+        // given
+        CourseRequest request = new CourseRequest("CS201", null);
+        when(courseRepository.findByIdAndUserId(10L, 1L)).thenReturn(Optional.of(sampleCourse));
+
+        // when
+        CourseResponse response = courseService.updateCourse(10L, request, 1L);
+
+        // then
+        assertThat(response.getName()).isEqualTo("CS201");
+        assertThat(response.getDescription()).isNull();
+    }
+
+    @Test
+    @DisplayName("updateCourse throws ResourceNotFoundException when ID is unknown")
+    void updateCourse_withUnknownId_throwsResourceNotFoundException() {
+        // given
+        CourseRequest request = new CourseRequest("CS201", "Data Structures");
+        when(courseRepository.findByIdAndUserId(99L, 1L)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> courseService.updateCourse(99L, request, 1L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Course not found with ID: 99");
+    }
+
+    @Test
+    @DisplayName("updateCourse throws ResourceNotFoundException when the course belongs to another user")
+    void updateCourse_otherUser_throwsResourceNotFound() {
+        // given
+        CourseRequest request = new CourseRequest("CS201", "Data Structures");
+        when(courseRepository.findByIdAndUserId(10L, 2L)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> courseService.updateCourse(10L, request, 2L))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 

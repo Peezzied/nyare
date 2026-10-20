@@ -73,7 +73,7 @@ Do not install Axios.
 
 Reduce HTTP roundtrips. Load each list once per intent.
 
-- Trust mutation responses. `POST`/`PUT`/`PATCH` return the saved DTO. Update local `ref` state from that response. Do not call `list()` again after `create()`, `update()`, `updateStatus()`, or `delete()` (remove deleted IDs locally). Courses expose `create()` and `delete()` only (no `update` endpoint); apply those responses to the catalog cache.
+- Trust mutation responses. `POST`/`PUT`/`PATCH` return the saved DTO. Update local `ref` state from that response. Do not call `list()` again after `create()`, `update()`, `updateStatus()`, or `delete()` (remove deleted IDs locally). Courses expose `create()`, `update()`, and `delete()`. Apply those responses to the catalog cache.
 - Filter on the server. Use `TaskListParams`, `ScheduleListParams`, `AcademicEventListParams`, `courseId`, `userId`, and `upcoming` query params. Never fetch the full list and filter in code when a param exists. The backend exposes no date-range params, so filter dates (calendar day, deadline windows) locally on the once-fetched cached list.
 - No N+1 reads. Never call `get(id)` in a loop to build a list. Fetch the parent `list()` once. Use `Promise.all()` only for user-selected IDs, not to reconstruct a list.
 - Derive locally. Compute tri-state (`SCHEDULED`/`LATER`/`BACKLOG`) with `getPlanCategory()` in `src/utils/planCategory.ts` and virtual `StudyPlan` views from cached tasks. Never add a backend endpoint for derived state.

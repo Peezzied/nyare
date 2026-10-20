@@ -51,6 +51,8 @@ export interface CourseResponse {
   readonly id: number
   readonly name: string
   readonly description?: string | null
+  /** Palette slug from `COURSE_PALETTE_24`, such as `flamingo`. `null` means unset. */
+  readonly color?: string | null
   /** ID of the user that owns the course. */
   readonly userId?: number | null
 }
@@ -59,6 +61,8 @@ export interface CourseResponse {
 export interface CourseRequest {
   readonly name: string
   readonly description?: string | null
+  /** Palette slug from `COURSE_PALETTE_24`, such as `flamingo`. `null` clears the color. */
+  readonly color?: string | null
   /** Owner user ID. The backend uses it only when no session user exists. */
   readonly userId?: number | null
 }

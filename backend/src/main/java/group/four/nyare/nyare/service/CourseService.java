@@ -40,6 +40,17 @@ public interface CourseService {
     CourseResponse getCourse(Long id, Long userId);
 
     /**
+     * Updates a course owned by the session user with replacement payload data.
+     *
+     * @param id      the course identifier
+     * @param request the replacement course payload
+     * @param userId  the owner user identifier from the active session
+     * @return the updated course response
+     * @throws ResourceNotFoundException if the course does not exist or belongs to another user
+     */
+    CourseResponse updateCourse(Long id, CourseRequest request, Long userId);
+
+    /**
      * Deletes a course owned by the session user.
      *
      * @param id     the course identifier

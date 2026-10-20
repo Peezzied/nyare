@@ -54,6 +54,51 @@ describe('Mock Adapter', () => {
 
       await expect(coursesApi.get(created.id)).rejects.toThrow(ApiError)
     })
+
+    it('updates a course and rejects missing courses', async () => {
+      const updated = await coursesApi.update(1, {
+        name: 'CS 201 - Renamed',
+        description: 'New description',
+      })
+      expect(updated.id).toBe(1)
+      expect(updated.name).toBe('CS 201 - Renamed')
+      expect(updated.description).toBe('New description')
+
+      const fetched = await coursesApi.get(1)
+      expect(fetched.name).toBe('CS 201 - Renamed')
+
+      await expect(coursesApi.update(999, { name: 'Ghost' })).rejects.toThrow(ApiError)
+    })
+
+    it('stores and returns the submitted course color', async () => {
+      const created = await coursesApi.create({
+        name: 'CS 301 - Operating Systems',
+        color: 'flamingo',
+      })
+      expect(created.color).toBe('flamingo')
+
+      const fetched = await coursesApi.get(created.id)
+      expect(fetched.color).toBe('flamingo')
+    })
+
+    it('updates the course color on PUT', async () => {
+      const updated = await coursesApi.update(1, {
+        name: 'CS 201 - Data Structures & Algorithms',
+        color: 'basil',
+      })
+      expect(updated.color).toBe('basil')
+
+      const fetched = await coursesApi.get(1)
+      expect(fetched.color).toBe('basil')
+    })
+
+    it('leaves color unset when the request omits it', async () => {
+      const created = await coursesApi.create({ name: 'No Color Course' })
+      expect(created.color).toBeNull()
+
+      const seeded = await coursesApi.get(1)
+      expect(seeded.color).toBeUndefined()
+    })
   })
 
   describe('tasks and tri-state planCategory', () => {

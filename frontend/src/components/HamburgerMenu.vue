@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, type CSSProperties } from 'vue'
-import { ArrowRightLeft, ChevronRight, Menu, X } from '@lucide/vue'
+import { ArrowRightLeft, ChevronRight, GraduationCap, Menu, X } from '@lucide/vue'
 import { onKeyStroke } from '@vueuse/core'
 import { minidenticon } from 'minidenticons'
 import { useRouter } from 'vue-router'
@@ -244,6 +244,11 @@ onKeyStroke('Escape', () => {
   if (mounted.value) closeMenu()
 })
 
+function goToManageCourses(): void {
+  closeMenu()
+  void router.push({ name: 'manage-courses' })
+}
+
 function goToSelectAccount(): void {
   closeMenu()
   void router.push('/select-account')
@@ -344,6 +349,17 @@ onUnmounted(() => {
                 </div>
               </div>
             </section>
+
+            <button
+              type="button"
+              data-testid="manage-courses-item"
+              class="flex min-h-12 w-full items-center gap-3 rounded-xl border border-app-border bg-card px-4 py-3 text-left font-semibold text-text-main transition-colors hover:bg-black/5 active:bg-black/10 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
+              @click="goToManageCourses"
+            >
+              <GraduationCap class="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+              <span class="flex-1">Manage courses</span>
+              <ChevronRight class="h-4 w-4 shrink-0 text-text-muted" aria-hidden="true" />
+            </button>
 
             <button
               type="button"

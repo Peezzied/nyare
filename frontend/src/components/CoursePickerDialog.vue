@@ -2,14 +2,8 @@
 // Modal course list that sets the course of an academic item. CoursePicker opens it from a pill trigger.
 import { computed } from 'vue'
 import { Check } from '@lucide/vue'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog'
-import { getCourseBadgeStyle } from '@/utils/courseColors'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { useCatalog } from '@/composables/useCatalog'
 import { formatCourseSchedule } from '@/utils/scheduleFormat'
 import type { CourseResponse, ScheduleResponse } from '@/types/api'
 
@@ -44,9 +38,11 @@ function handleSelect(courseId: number) {
   emit('update:open', false)
 }
 
+const catalog = useCatalog()
+
 const courseOptions = computed(() => {
   return props.courses.map((course) => {
-    const badgeStyle = getCourseBadgeStyle(course.id)
+    const badgeStyle = catalog.courseColor(course.id)
     const schedulesForCourse = getSchedulesForCourse(course.id)
     const scheduleSummary = formatCourseSchedule(schedulesForCourse)
     const isSelected = props.selectedCourseId === course.id
@@ -107,7 +103,7 @@ const courseOptions = computed(() => {
             <!-- Color Dot -->
             <span
               class="size-3 shrink-0 rounded-full border border-black/10"
-              :style="{ backgroundColor: badgeStyle.color }"
+              :style="{ backgroundColor: badgeStyle.text }"
               aria-hidden="true"
             />
 
