@@ -11,16 +11,26 @@ export const URGENCY_COLORS: Record<TaskUrgency, string> = {
   NONE: 'var(--color-text-muted)',
 }
 
+/** Whole-day difference between a due date and local today. Negative means past. */
+function dayDiffFromToday(dueDate: string): number {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const due = new Date(dueDate + 'T00:00:00')
+  return Math.round((due.getTime() - today.getTime()) / 86_400_000)
+}
+
+/** True when dueDate is a whole day before local today. */
+export function isOverdue(dueDate: string | null | undefined): boolean {
+  return !!dueDate && dayDiffFromToday(dueDate) < 0
+}
+
 /**
  * Computes urgency from a due-date string (yyyy-MM-dd) relative to local today.
  * Returns NONE when dueDate is absent.
  */
 export function getTaskUrgency(dueDate: string | null | undefined): TaskUrgency {
   if (!dueDate) return 'NONE'
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const due = new Date(dueDate + 'T00:00:00')
-  const diffDays = Math.round((due.getTime() - today.getTime()) / 86_400_000)
+  const diffDays = dayDiffFromToday(dueDate)
   if (diffDays <= 0) return 'OVERDUE_OR_TODAY'
   if (diffDays <= 2) return 'APPROACHING'
   return 'FUTURE'
@@ -32,11 +42,9 @@ export function getTaskUrgency(dueDate: string | null | undefined): TaskUrgency 
  */
 export function formatDueLabel(dueDate: string | null | undefined): string {
   if (!dueDate) return ''
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  const diffDays = dayDiffFromToday(dueDate)
+  if (diffDays === 0) return 'Today'
   const due = new Date(dueDate + 'T00:00:00')
-  const diffDays = Math.round((due.getTime() - today.getTime()) / 86_400_000)
-  if (diffDays === 0) return 'TODAY'
   const mm = String(due.getMonth() + 1).padStart(2, '0')
   const dd = String(due.getDate()).padStart(2, '0')
   return `${mm}/${dd}`

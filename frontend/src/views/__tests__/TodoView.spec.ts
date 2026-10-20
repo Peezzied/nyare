@@ -28,7 +28,17 @@ const rowTask: TaskResponse = {
 }
 
 function mountView() {
-  return mount(TodoView)
+  return mount(TodoView, { global: { stubs: { 'transition-group': false } } })
+}
+
+/** ISO `YYYY-MM-DD` for the local day `offsetDays` from today. */
+function isoDate(offsetDays: number): string {
+  const d = new Date()
+  d.setDate(d.getDate() + offsetDays)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
 }
 
 describe('TodoView FAB', () => {
@@ -49,10 +59,9 @@ describe('TodoView FAB', () => {
 
     const fab = wrapper.get('[data-testid="tasks-fab"]')
     expect(fab.attributes('aria-label')).toBe('Add task')
-    expect(fab.classes()).toContain('bg-primary')
+    expect(fab.classes()).toContain('bg-[#00A4C8]')
     expect(fab.classes()).toContain('rounded-2xl')
-    expect(fab.classes()).toContain('h-14')
-    expect(fab.classes()).toContain('w-14')
+    expect(fab.classes()).toContain('size-14')
     expect(fab.classes()).toContain('right-4')
     expect(fab.classes()).toContain('bottom-4')
     expect(fab.find('svg').exists()).toBe(true)
@@ -231,5 +240,55 @@ describe('TodoView dismissal', () => {
     expect(wrapper.findComponent(TaskContainerModal).props('isOpen')).toBe(false)
     expect(scrollEl.scrollTop).toBe(240)
     expect(wrapper.get('[role="tab"][aria-selected="true"]').text()).toBe('Scheduled')
+  })
+})
+
+describe('TodoView Overdue filter', () => {
+  const pastDue = (
+    id: string,
+    offsetDays: number,
+    status: TaskResponse['status'] = 'TODO',
+  ): TaskResponse => ({ ...rowTask, id, scheduledDate: isoDate(offsetDays), status })
+
+  beforeEach(() => {
+    vi.restoreAllMocks()
+    useCatalog().resetCatalog()
+    useTasks().resetTasks()
+    vi.spyOn(coursesApi, 'list').mockResolvedValue([
+      { id: 1, name: 'CS 201', description: null, userId: 1 },
+    ])
+    vi.spyOn(schedulesApi, 'list').mockResolvedValue([])
+    vi.spyOn(tasksApi, 'list').mockResolvedValue([
+      pastDue('recent', -3),
+      pastDue('today', 0),
+      pastDue('done-past', -5, 'COMPLETED'),
+      pastDue('future', 4),
+      pastDue('oldest', -10),
+    ])
+  })
+
+  it('lists past-due incomplete tasks oldest first', async () => {
+    const wrapper = mountView()
+    await flushPromises()
+
+    const overdueTab = wrapper.findAll('[role="tab"]').find((tab) => tab.text() === 'Overdue')
+    await overdueTab?.trigger('click')
+    await nextTick()
+
+    const ids = wrapper.findAllComponents(TaskRow).map((row) => row.props('task').id)
+    expect(ids).toEqual(['oldest', 'recent'])
+  })
+
+  it('shows the empty state when nothing is past due', async () => {
+    vi.spyOn(tasksApi, 'list').mockResolvedValue([pastDue('today', 0), pastDue('future', 4)])
+    const wrapper = mountView()
+    await flushPromises()
+
+    const overdueTab = wrapper.findAll('[role="tab"]').find((tab) => tab.text() === 'Overdue')
+    await overdueTab?.trigger('click')
+    await nextTick()
+
+    expect(wrapper.text()).toContain('No overdue tasks')
+    expect(wrapper.findComponent(TaskRow).exists()).toBe(false)
   })
 })

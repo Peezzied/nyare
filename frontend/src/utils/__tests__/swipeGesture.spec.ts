@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { resolveSwipe } from '../swipeGesture'
+import { resolveRowSwipe, resolveSwipe } from '../swipeGesture'
 
 describe('resolveSwipe', () => {
   it('maps a fast left swipe to the next day (+1) per spec acceptance scenario 1', () => {
@@ -27,5 +27,22 @@ describe('resolveSwipe', () => {
   it('commits exactly at the 30px threshold inside the time window', () => {
     expect(resolveSwipe(-30, 0, 300)).toBe(1)
     expect(resolveSwipe(30, 0, 300)).toBe(-1)
+  })
+})
+
+describe('resolveRowSwipe', () => {
+  it('opens quick actions at the 64px leftward threshold', () => {
+    expect(resolveRowSwipe(-64, 0)).toBe(true)
+    expect(resolveRowSwipe(-96, 10)).toBe(true)
+  })
+
+  it('snaps back for sub-threshold or rightward drags', () => {
+    expect(resolveRowSwipe(-63, 0)).toBe(false)
+    expect(resolveRowSwipe(80, 0)).toBe(false)
+  })
+
+  it('yields to vertical scrolling when |dy| exceeds |dx|', () => {
+    expect(resolveRowSwipe(-80, 100)).toBe(false)
+    expect(resolveRowSwipe(-70, -71)).toBe(false)
   })
 })
