@@ -1,3 +1,6 @@
+/** The calendar home's three view modes. */
+export type CalendarViewMode = 'day' | 'week' | 'deadlines'
+
 /** Frontend-only calendar view model for the day view schedule grid. */
 export interface DayEvent {
   readonly id: string
