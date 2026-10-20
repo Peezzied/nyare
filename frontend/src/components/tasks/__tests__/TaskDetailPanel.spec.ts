@@ -20,7 +20,7 @@ const tasksMock = vi.hoisted(() => ({
 }))
 
 const catalogState = vi.hoisted(() => ({
-  courses: [{ id: 1, name: 'CS 201' }] as { id: number; name: string }[],
+  courses: [{ id: 1, name: 'CS 201' }] as { id: number; name: string; color?: string | null }[],
 }))
 
 vi.mock('@/composables/useTasks', () => ({
@@ -45,12 +45,20 @@ vi.mock('@/composables/useTasks', () => ({
 
 vi.mock('@/composables/useCatalog', async () => {
   const { ref } = await import('vue')
+  const { COURSE_PALETTE_24, getCourseColor } = await import('@/constants/palette')
   return {
     useCatalog: () => ({
       courses: ref(catalogState.courses),
       schedules: ref([]),
       loaded: ref(true),
       loadCatalog: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),
+      courseColor: (courseId: number | null) => {
+        const slug = catalogState.courses.find((c) => c.id === courseId)?.color
+        return (
+          (slug ? COURSE_PALETTE_24.find((c) => c.id === slug) : undefined) ??
+          getCourseColor(courseId ?? 0)
+        )
+      },
       applyCourseCreated: vi.fn<() => void>(),
       applyCourseDeleted: vi.fn<() => void>(),
       applyScheduleCreated: vi.fn<() => void>(),

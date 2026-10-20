@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Calendar } from '@lucide/vue'
-import { getCourseColor } from '@/constants/palette'
+import { useCatalog } from '@/composables/useCatalog'
 import { formatDuration, formatDueLabel, getTaskUrgency, URGENCY_COLORS } from '@/utils/taskUrgency'
 import { Checkbox } from '@/components/ui/checkbox'
 import type { TaskResponse } from '@/types/api'
@@ -14,6 +14,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{ open: []; toggle: [] }>()
+
+const catalog = useCatalog()
 
 const done = computed(() => props.task.status === 'COMPLETED')
 const iconColor = computed(() => URGENCY_COLORS[getTaskUrgency(props.dueDate)])
@@ -39,7 +41,7 @@ const iconColor = computed(() => URGENCY_COLORS[getTaskUrgency(props.dueDate)])
     <div class="flex min-w-0 flex-1 flex-col">
       <span
         class="text-base leading-snug font-bold break-words"
-        :style="{ color: getCourseColor(task.courseId).text }"
+        :style="{ color: catalog.courseColor(task.courseId).text }"
       >
         {{ courseName }}
       </span>

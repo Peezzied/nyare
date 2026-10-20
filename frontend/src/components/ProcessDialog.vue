@@ -10,7 +10,7 @@ import type { UseProcess } from '@/composables/useProcess'
 import { useAcademicEvents } from '@/composables/useAcademicEvents'
 import { usePlannerStatus } from '@/composables/usePlannerStatus'
 import { useTasks } from '@/composables/useTasks'
-import { getCourseColor } from '@/constants/palette'
+import { useCatalog } from '@/composables/useCatalog'
 import { formatEntryDate } from '@/utils/noteDate'
 import { formatDuration } from '@/utils/taskUrgency'
 import type { TaskResponse } from '@/types/api'
@@ -35,6 +35,7 @@ const emit = defineEmits<{
 const planner = usePlannerStatus()
 const taskStore = useTasks()
 const eventStore = useAcademicEvents()
+const catalog = useCatalog()
 
 const {
   running,
@@ -277,7 +278,7 @@ watch(
             >
               <span
                 class="h-3 w-3 shrink-0 rounded-full border border-white/60 shadow-sm"
-                :style="{ backgroundColor: getCourseColor(task.courseId).solid }"
+                :style="{ backgroundColor: catalog.courseColor(task.courseId).solid }"
                 aria-hidden="true"
               />
               <span>{{ task.title }}</span>
@@ -309,7 +310,7 @@ watch(
             >
               <span
                 class="h-3 w-3 shrink-0 rounded-full border border-white/60 shadow-sm"
-                :style="{ backgroundColor: getCourseColor(event.courseId).solid }"
+                :style="{ backgroundColor: catalog.courseColor(event.courseId).solid }"
                 aria-hidden="true"
               />
               <span>{{ event.title }}</span>

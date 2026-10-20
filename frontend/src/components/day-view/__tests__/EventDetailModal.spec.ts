@@ -2,9 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import EventDetailModal from '../EventDetailModal.vue'
-import type { TapOriginRect } from '@/types/detailModal'
+import type { TapOriginRect } from '@/types/notesTransition'
 
-const origin: TapOriginRect = { top: 100, left: 20, width: 160, height: 90 }
+const origin: TapOriginRect = { top: 100, left: 20, width: 160, height: 90, borderRadius: '16px' }
 const frames: HTMLElement[] = []
 
 function toRect(rect: Partial<DOMRect>): DOMRect {
@@ -208,7 +208,7 @@ describe('EventDetailModal', () => {
     expect(wrapper.emitted('close')).toHaveLength(1)
   })
 
-  it('skips the transform transition under reduced motion', async () => {
+  it('uses a 150ms opacity crossfade with no spatial scaling under reduced motion', async () => {
     mockReducedMotion(true)
     const frame = makeFrame()
     const wrapper = mountModal({ frameEl: frame })
@@ -217,12 +217,14 @@ describe('EventDetailModal', () => {
 
     const container = wrapper.get('[data-testid="detail-modal-container"]')
     expect(container.attributes('style')).toContain('width: 430px')
+    expect(container.classes()).toContain('transition-opacity')
+    expect(container.classes()).toContain('duration-[150ms]')
     expect(container.classes()).not.toContain('duration-[320ms]')
     expect(container.classes()).not.toContain('duration-[240ms]')
 
     await wrapper.get('[data-testid="modal-backdrop"]').trigger('click')
     await nextTick()
-    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(150)
 
     expect(wrapper.emitted('close')).toHaveLength(1)
   })

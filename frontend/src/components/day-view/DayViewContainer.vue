@@ -9,7 +9,7 @@ import { useShellHeader } from '@/composables/useShellHeader'
 import type { AcademicEventResponse, TaskResponse } from '../../types/api'
 import type { DayEvent } from '../../types/calendar'
 import type { CalendarItemDetailView, LinkedNoteRef } from '../../types/calendarItemDetail'
-import type { TapOriginRect } from '../../types/detailModal'
+import type { TapOriginRect } from '../../types/notesTransition'
 import { buildCalendarItemDetail } from '../../utils/calendarItemDetail'
 import { toDateKey } from '../../utils/dayKey'
 import { expandSchedulesForDate, formatDateHeader } from '../../utils/scheduleExpander'
@@ -123,6 +123,8 @@ function openDetail(item: CalendarItemDetailView, originRect: DOMRect | null) {
         left: originRect.left,
         width: originRect.width,
         height: originRect.height,
+        // DOMRect carries no corner radius; the calendar cards all use 16px.
+        borderRadius: '16px',
       }
     : null
   isDetailOpen.value = true

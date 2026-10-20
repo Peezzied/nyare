@@ -1,4 +1,4 @@
-import type { TapOriginRect } from './detailModal'
+import type { TapOriginRect } from './notesTransition'
 
 /** Classifies a calendar item for the marker and the detail view. */
 export type CalendarItemKind = 'class' | 'task' | 'event'
