@@ -35,9 +35,10 @@ public interface AcademicEventService {
      * @param courseId optional course ID filter; {@code null} matches all courses
      * @param upcoming optional filter: {@code true} for events with deadlines in the future,
      *                 or {@code null} for all events
+     * @param archived {@code true} to list events of archived courses, {@code false} for active courses
      * @return list of matching academic events ordered by deadline ascending
      */
-    List<AcademicEventResponse> listEvents(Long userId, Long courseId, Boolean upcoming);
+    List<AcademicEventResponse> listEvents(Long userId, Long courseId, Boolean upcoming, Boolean archived);
 
     /**
      * Retrieves a single academic event owned by the session user.

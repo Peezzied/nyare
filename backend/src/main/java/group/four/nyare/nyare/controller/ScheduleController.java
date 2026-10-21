@@ -28,9 +28,10 @@ public class ScheduleController {
     @GetMapping
     public ResponseEntity<List<ScheduleResponse>> listSchedules(
             @RequestParam(required = false) Long courseId,
-            @RequestParam(required = false) DayOfWeek day) {
+            @RequestParam(required = false) DayOfWeek day,
+            @RequestParam(defaultValue = "false") Boolean archived) {
         Long userId = sessionContext.requireUserId();
-        return ResponseEntity.ok(scheduleService.listSchedules(userId, courseId, day));
+        return ResponseEntity.ok(scheduleService.listSchedules(userId, courseId, day, archived));
     }
 
     @GetMapping("/{id}")

@@ -27,16 +27,20 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
      *
      * @param userId   mandatory user identifier
      * @param courseId optional course identifier
+     * @param archived course archive filter: {@code true} for archived courses, {@code false} for active courses
      * @return matching schedules ordered chronologically
      */
     @Query("""
             SELECT s FROM Schedule s
             WHERE s.course.user.id = :userId
               AND (:courseId IS NULL OR s.course.id = :courseId)
+              AND ((:archived = true AND s.course.archivedAt IS NOT NULL)
+                   OR (:archived = false AND s.course.archivedAt IS NULL))
             ORDER BY s.day ASC, s.startTime ASC
             """)
     List<Schedule> findAllFiltered(
             @Param("userId") Long userId,
-            @Param("courseId") Long courseId
+            @Param("courseId") Long courseId,
+            @Param("archived") Boolean archived
     );
 }

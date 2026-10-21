@@ -2,6 +2,7 @@ package group.four.nyare.nyare.service;
 
 import group.four.nyare.nyare.dto.CourseRequest;
 import group.four.nyare.nyare.dto.CourseResponse;
+import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 
 import java.util.List;
@@ -22,12 +23,20 @@ public interface CourseService {
     CourseResponse createCourse(CourseRequest request, Long userId);
 
     /**
-     * Lists courses owned by the session user.
+     * Lists active (non-archived) courses owned by the session user.
      *
      * @param userId the owner user identifier from the active session
-     * @return list of course responses
+     * @return list of active course responses
      */
     List<CourseResponse> listCourses(Long userId);
+
+    /**
+     * Lists archived courses owned by the session user.
+     *
+     * @param userId the owner user identifier from the active session
+     * @return list of archived course responses
+     */
+    List<CourseResponse> listArchivedCourses(Long userId);
 
     /**
      * Retrieves a single course owned by the session user.
@@ -47,6 +56,7 @@ public interface CourseService {
      * @param userId  the owner user identifier from the active session
      * @return the updated course response
      * @throws ResourceNotFoundException if the course does not exist or belongs to another user
+     * @throws BadRequestException       if the course is archived
      */
     CourseResponse updateCourse(Long id, CourseRequest request, Long userId);
 
@@ -58,4 +68,46 @@ public interface CourseService {
      * @throws ResourceNotFoundException if the course does not exist or belongs to another user
      */
     void deleteCourse(Long id, Long userId);
+
+    /**
+     * Archives a course owned by the session user.
+     * The call is an idempotent no-op when the course is already archived.
+     *
+     * @param id     the course identifier
+     * @param userId the owner user identifier from the active session
+     * @return the course response
+     * @throws ResourceNotFoundException if the course does not exist or belongs to another user
+     */
+    CourseResponse archiveCourse(Long id, Long userId);
+
+    /**
+     * Restores an archived course owned by the session user.
+     * The call is an idempotent no-op when the course is already active.
+     *
+     * @param id     the course identifier
+     * @param userId the owner user identifier from the active session
+     * @return the course response
+     * @throws ResourceNotFoundException if the course does not exist or belongs to another user
+     */
+    CourseResponse unarchiveCourse(Long id, Long userId);
+
+    /**
+     * Archives all active courses owned by the session user in one transaction.
+     * Every course receives the same archive timestamp.
+     *
+     * @param userId the owner user identifier from the active session
+     * @return list of archived course responses, empty when no active courses exist
+     */
+    List<CourseResponse> archiveAllCourses(Long userId);
+
+    /**
+     * Restores archived courses owned by the session user in one transaction.
+     * The batch is all-or-nothing: one unknown or foreign identifier rolls back every change.
+     *
+     * @param courseIds the course identifiers to restore
+     * @param userId    the owner user identifier from the active session
+     * @return list of restored course responses
+     * @throws ResourceNotFoundException if any course does not exist or belongs to another user
+     */
+    List<CourseResponse> unarchiveCourses(List<Long> courseIds, Long userId);
 }

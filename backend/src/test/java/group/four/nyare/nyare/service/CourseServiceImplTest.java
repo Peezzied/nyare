@@ -2,6 +2,7 @@ package group.four.nyare.nyare.service;
 
 import group.four.nyare.nyare.dto.CourseRequest;
 import group.four.nyare.nyare.dto.CourseResponse;
+import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.User;
@@ -18,12 +19,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -140,7 +143,8 @@ class CourseServiceImplTest {
         // given
         Course otherCourse = new Course("CS102", "Data Structures", sampleUser);
         ReflectionTestUtils.setField(otherCourse, "id", 11L);
-        when(courseRepository.findByUserId(1L)).thenReturn(List.of(sampleCourse, otherCourse));
+        when(courseRepository.findByUserIdAndArchivedAtIsNull(1L))
+                .thenReturn(List.of(sampleCourse, otherCourse));
 
         // when
         List<CourseResponse> courses = courseService.listCourses(1L);
@@ -148,7 +152,7 @@ class CourseServiceImplTest {
         // then
         assertThat(courses).hasSize(2);
         assertThat(courses).allSatisfy(course -> assertThat(course.getUserId()).isEqualTo(1L));
-        verify(courseRepository).findByUserId(1L);
+        verify(courseRepository).findByUserIdAndArchivedAtIsNull(1L);
     }
 
     @Test
@@ -311,5 +315,195 @@ class CourseServiceImplTest {
         // when & then
         assertThatThrownBy(() -> courseService.deleteCourse(10L, 2L))
                 .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("archiveCourse sets the archive timestamp on an active course")
+    void archiveCourse_withActiveCourse_setsArchivedAt() {
+        // given
+        when(courseRepository.findByIdAndUserId(10L, 1L)).thenReturn(Optional.of(sampleCourse));
+
+        // when
+        CourseResponse response = courseService.archiveCourse(10L, 1L);
+
+        // then
+        assertThat(sampleCourse.getArchivedAt()).isNotNull();
+        assertThat(response.getArchivedAt()).isEqualTo(sampleCourse.getArchivedAt());
+    }
+
+    @Test
+    @DisplayName("archiveCourse keeps the original timestamp on an already archived course")
+    void archiveCourse_alreadyArchived_isNoOp() {
+        // given
+        LocalDateTime archivedAt = LocalDateTime.of(2026, 1, 10, 9, 0);
+        sampleCourse.setArchivedAt(archivedAt);
+        when(courseRepository.findByIdAndUserId(10L, 1L)).thenReturn(Optional.of(sampleCourse));
+
+        // when
+        CourseResponse response = courseService.archiveCourse(10L, 1L);
+
+        // then
+        assertThat(sampleCourse.getArchivedAt()).isEqualTo(archivedAt);
+        assertThat(response.getArchivedAt()).isEqualTo(archivedAt);
+        verify(courseRepository, never()).save(any(Course.class));
+    }
+
+    @Test
+    @DisplayName("updateCourse throws BadRequestException when the course is archived")
+    void updateCourse_withArchivedCourse_throwsBadRequestException() {
+        // given
+        sampleCourse.setArchivedAt(LocalDateTime.of(2026, 1, 10, 9, 0));
+        CourseRequest request = new CourseRequest("CS201", "Data Structures");
+        when(courseRepository.findByIdAndUserId(10L, 1L)).thenReturn(Optional.of(sampleCourse));
+
+        // when & then
+        assertThatThrownBy(() -> courseService.updateCourse(10L, request, 1L))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("Course is archived");
+    }
+
+    @Test
+    @DisplayName("listCourses queries active courses only and excludes archived ones")
+    void listCourses_excludesArchivedCourses() {
+        // given
+        when(courseRepository.findByUserIdAndArchivedAtIsNull(1L))
+                .thenReturn(List.of(sampleCourse));
+
+        // when
+        List<CourseResponse> courses = courseService.listCourses(1L);
+
+        // then
+        assertThat(courses).extracting(CourseResponse::getId).containsExactly(10L);
+        verify(courseRepository).findByUserIdAndArchivedAtIsNull(1L);
+        verify(courseRepository, never()).findByUserIdAndArchivedAtIsNotNull(any());
+    }
+
+    @Test
+    @DisplayName("unarchiveCourse clears the archive timestamp on an archived course")
+    void unarchiveCourse_withArchivedCourse_clearsArchivedAt() {
+        // given
+        sampleCourse.setArchivedAt(LocalDateTime.of(2026, 1, 10, 9, 0));
+        when(courseRepository.findByIdAndUserId(10L, 1L)).thenReturn(Optional.of(sampleCourse));
+
+        // when
+        CourseResponse response = courseService.unarchiveCourse(10L, 1L);
+
+        // then
+        assertThat(sampleCourse.getArchivedAt()).isNull();
+        assertThat(response.getArchivedAt()).isNull();
+    }
+
+    @Test
+    @DisplayName("unarchiveCourse throws ResourceNotFoundException when ID is unknown")
+    void unarchiveCourse_withUnknownId_throwsResourceNotFoundException() {
+        // given
+        when(courseRepository.findByIdAndUserId(99L, 1L)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> courseService.unarchiveCourse(99L, 1L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Course not found with ID: 99");
+    }
+
+    @Test
+    @DisplayName("unarchiveCourses clears the archive timestamps and returns the restored DTOs")
+    void unarchiveCourses_withValidIds_clearsArchivedAtAndReturnsDtos() {
+        // given
+        Course otherCourse = new Course("CS102", "Data Structures", sampleUser);
+        ReflectionTestUtils.setField(otherCourse, "id", 11L);
+        sampleCourse.setArchivedAt(LocalDateTime.of(2026, 1, 10, 9, 0));
+        otherCourse.setArchivedAt(LocalDateTime.of(2026, 1, 11, 9, 0));
+        when(courseRepository.findByIdAndUserId(10L, 1L)).thenReturn(Optional.of(sampleCourse));
+        when(courseRepository.findByIdAndUserId(11L, 1L)).thenReturn(Optional.of(otherCourse));
+
+        // when
+        List<CourseResponse> responses = courseService.unarchiveCourses(List.of(10L, 11L), 1L);
+
+        // then
+        assertThat(responses).hasSize(2);
+        assertThat(responses).extracting(CourseResponse::getId).containsExactly(10L, 11L);
+        assertThat(responses).allSatisfy(response -> assertThat(response.getArchivedAt()).isNull());
+        assertThat(sampleCourse.getArchivedAt()).isNull();
+        assertThat(otherCourse.getArchivedAt()).isNull();
+    }
+
+    @Test
+    @DisplayName("unarchiveCourses throws ResourceNotFoundException and changes nothing when an ID is unknown")
+    void unarchiveCourses_withUnknownId_throwsAndChangesNothing() {
+        // given
+        LocalDateTime archivedAt = LocalDateTime.of(2026, 1, 10, 9, 0);
+        sampleCourse.setArchivedAt(archivedAt);
+        when(courseRepository.findByIdAndUserId(10L, 1L)).thenReturn(Optional.of(sampleCourse));
+        when(courseRepository.findByIdAndUserId(99L, 1L)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> courseService.unarchiveCourses(List.of(10L, 99L), 1L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Course not found with ID: 99");
+        assertThat(sampleCourse.getArchivedAt()).isEqualTo(archivedAt);
+    }
+
+    @Test
+    @DisplayName("unarchiveCourses throws ResourceNotFoundException when a course belongs to another user")
+    void unarchiveCourses_withForeignCourse_throwsAndChangesNothing() {
+        // given
+        LocalDateTime archivedAt = LocalDateTime.of(2026, 1, 10, 9, 0);
+        sampleCourse.setArchivedAt(archivedAt);
+        when(courseRepository.findByIdAndUserId(10L, 2L)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> courseService.unarchiveCourses(List.of(10L), 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
+        assertThat(sampleCourse.getArchivedAt()).isEqualTo(archivedAt);
+    }
+
+    @Test
+    @DisplayName("archiveAllCourses stamps every active course with one shared timestamp and returns the DTOs")
+    void archiveAllCourses_withActiveCourses_setsSharedArchivedAtAndReturnsDtos() {
+        // given
+        Course otherCourse = new Course("CS102", "Data Structures", sampleUser);
+        ReflectionTestUtils.setField(otherCourse, "id", 11L);
+        when(courseRepository.findByUserIdAndArchivedAtIsNull(1L))
+                .thenReturn(List.of(sampleCourse, otherCourse));
+
+        // when
+        List<CourseResponse> responses = courseService.archiveAllCourses(1L);
+
+        // then
+        assertThat(sampleCourse.getArchivedAt()).isNotNull();
+        assertThat(otherCourse.getArchivedAt()).isEqualTo(sampleCourse.getArchivedAt());
+        assertThat(responses).extracting(CourseResponse::getId).containsExactly(10L, 11L);
+        assertThat(responses)
+                .allSatisfy(
+                        response ->
+                                assertThat(response.getArchivedAt())
+                                        .isEqualTo(sampleCourse.getArchivedAt()));
+    }
+
+    @Test
+    @DisplayName("archiveAllCourses returns an empty list when no active courses exist")
+    void archiveAllCourses_withNoActiveCourses_returnsEmptyList() {
+        // given
+        when(courseRepository.findByUserIdAndArchivedAtIsNull(1L)).thenReturn(List.of());
+
+        // when
+        List<CourseResponse> responses = courseService.archiveAllCourses(1L);
+
+        // then
+        assertThat(responses).isEmpty();
+    }
+
+    @Test
+    @DisplayName("archiveAllCourses propagates a repository failure so the transaction rolls back")
+    void archiveAllCourses_whenRepositoryThrows_propagatesAndChangesNothing() {
+        // given
+        when(courseRepository.findByUserIdAndArchivedAtIsNull(1L))
+                .thenThrow(new RuntimeException("DB read failed"));
+
+        // when & then
+        assertThatThrownBy(() -> courseService.archiveAllCourses(1L))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("DB read failed");
+        assertThat(sampleCourse.getArchivedAt()).isNull();
     }
 }

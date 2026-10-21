@@ -45,9 +45,10 @@ public class NoteController {
 
     @GetMapping
     public ResponseEntity<List<NoteSummaryResponse>> listNotes(
-            @RequestParam(required = false) Long courseId) {
+            @RequestParam(required = false) Long courseId,
+            @RequestParam(defaultValue = "false") Boolean archived) {
         Long userId = sessionContext.requireUserId();
-        List<NoteSummaryResponse> notes = noteService.listNotes(userId, courseId);
+        List<NoteSummaryResponse> notes = noteService.listNotes(userId, courseId, archived);
         return ResponseEntity.ok(notes);
     }
 

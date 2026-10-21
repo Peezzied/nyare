@@ -74,7 +74,7 @@ describe('NoteEditor.vue', () => {
 
     const prompt = wrapper.find('[data-testid="course-gating-prompt"]')
     expect(prompt.exists()).toBe(true)
-    expect(prompt.text()).toContain('Select a course first to start typing')
+    expect(prompt.text()).toContain('Select a course to start writing')
 
     const tiptap = wrapper.findComponent(TiptapEditor)
     expect(tiptap.props('editable')).toBe(false)
@@ -231,7 +231,7 @@ describe('NoteEditor.vue', () => {
   it('shows unsaved changes dialog when navigating back with unsaved content', async () => {
     const confirmSpy = vi.spyOn(window, 'confirm')
 
-    // Attach to document.body because the dialog content teleports there.
+    // Attach to document.body because the tests query it for the dialog.
     const wrapper = mount(NoteEditor, {
       props: {
         initialCourseId: 1,
@@ -244,7 +244,7 @@ describe('NoteEditor.vue', () => {
     await titleInput.setValue('Drafting a thought...')
     await flushPromises()
 
-    // Clicking back triggers the styled shadcn unsaved changes dialog
+    // Clicking back triggers the unsaved changes dialog
     const backButton = wrapper.find('[data-testid="back-button"]')
     await backButton.trigger('click')
     await flushPromises()

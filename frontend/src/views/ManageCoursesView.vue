@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, h, nextTick, onMounted, ref, watch } from 'vue'
-import { ArrowLeft, BookOpen, Pencil, Plus, Trash2 } from '@lucide/vue'
+import { Archive, ArrowLeft, BookOpen, Pencil, Plus, Trash2 } from '@lucide/vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
 import type { DrawerOpenChangeDetails } from 'reka-ui'
@@ -9,6 +9,8 @@ import CourseEditorDrawer from '@/components/CourseEditorDrawer.vue'
 import DiscardDraftConfirmDialog from '@/components/DiscardDraftConfirmDialog.vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import DialogShell from '@/components/ui/DialogShell.vue'
+import { Toaster } from '@/components/ui/sonner'
 import {
   createBlock,
   syncScheduleDrafts,
@@ -71,6 +73,10 @@ const loadFailed = ref(false)
 const addingCourse = ref(false)
 const editingCourse = ref<CourseResponse | null>(null)
 const deletingCourse = ref<CourseResponse | null>(null)
+const archivingCourse = ref<CourseResponse | null>(null)
+const archiveAllOpen = ref(false)
+// Sonner id of the bulk-Undo toast, so route leave dismisses only that toast.
+const undoToastId = ref<string | number | null>(null)
 
 const editingEditor = ref<CourseEditor | null>(null)
 // The drawer needs a live editor prop to stay mounted while `open` flips
@@ -153,6 +159,14 @@ function startEdit(course: CourseResponse): void {
 
 function startDelete(course: CourseResponse): void {
   deletingCourse.value = course
+}
+
+function startArchive(course: CourseResponse): void {
+  archivingCourse.value = course
+}
+
+function startArchiveAll(): void {
+  archiveAllOpen.value = true
 }
 
 // The drawer edits one course at a time. `addingCourse` opens a blank editor;
@@ -463,6 +477,68 @@ async function confirmDelete() {
   }
 }
 
+const archiveMessage = computed(() =>
+  archivingCourse.value
+    ? `Archive ${archivingCourse.value.name}? Its notes, tasks, events, and class times leave your active views.`
+    : '',
+)
+
+async function confirmArchive() {
+  const course = archivingCourse.value
+  if (!course) {
+    return
+  }
+  archivingCourse.value = null
+  try {
+    await catalog.archiveCourse(course.id)
+    // Close the editor when the student archived the course it was editing.
+    if (editingCourse.value?.id === course.id) {
+      editingCourse.value = null
+    }
+    toast.success('Course archived.')
+  } catch (error) {
+    toast.error(errorMessage(error))
+  }
+}
+
+const archiveAllMessage = computed(() => {
+  const count = catalog.courses.value.length
+  const noun = count === 1 ? 'course' : 'courses'
+  return `Archive all ${count} ${noun}? Notes, tasks, events, and class times leave your active views.`
+})
+
+async function confirmArchiveAll() {
+  archiveAllOpen.value = false
+  try {
+    const ids = await catalog.archiveAllCourses()
+    if (ids.length === 0) {
+      return
+    }
+    // A bulk archive removes every course, so any open editor is stale.
+    editingCourse.value = null
+    const noun = ids.length === 1 ? 'course' : 'courses'
+    undoToastId.value = toast(`Archived ${ids.length} ${noun}`, {
+      action: {
+        label: 'Undo',
+        onClick: () => void undoArchiveAll(ids),
+      },
+      duration: 8000,
+    })
+  } catch (error) {
+    toast.error(errorMessage(error))
+  }
+}
+
+/** Restores exactly the courses the last bulk archive archived (FR-019). */
+async function undoArchiveAll(ids: number[]) {
+  try {
+    await catalog.unarchiveCourses(ids)
+    toast.success('Courses restored.')
+  } catch (error) {
+    toast.error(errorMessage(error))
+  }
+}
+
 function requestEditorClose() {
   if (editorSaving.value) {
     return
@@ -531,6 +607,11 @@ function goBack(): void {
 // Direct navigation (nav bar, browser back) asks through the same dialog.
 onBeforeRouteLeave((to) => {
   if (!editorHasUnsavedChanges()) {
+    // The Undo toast belongs to this page; close it when the student leaves.
+    if (undoToastId.value !== null) {
+      toast.dismiss(undoToastId.value)
+      undoToastId.value = null
+    }
     return true
   }
   pendingExit = () => void router.push(to.fullPath)
@@ -539,7 +620,15 @@ onBeforeRouteLeave((to) => {
   return false
 })
 
-defineExpose({ addingCourse, editingCourse, deletingCourse, editingEditor, editorOpen })
+defineExpose({
+  addingCourse,
+  editingCourse,
+  deletingCourse,
+  archivingCourse,
+  archiveAllOpen,
+  editingEditor,
+  editorOpen,
+})
 
 onMounted(load)
 </script>
@@ -584,62 +673,84 @@ onMounted(load)
       </Button>
     </div>
 
-    <ul v-else class="flex flex-col gap-4">
-      <li v-for="course in catalog.courses.value" :key="course.id">
-        <Card
-          as="article"
-          data-testid="manage-course-card"
-          class="gap-0 rounded-2xl border-[#D5EBF1] bg-[#FDFEF7] px-4 py-4 shadow-[0_4px_0_#D5EBF1]"
-        >
-          <div class="flex items-start gap-3">
-            <span
-              class="mt-1 h-4 w-4 shrink-0 rounded-full"
-              :style="{ backgroundColor: catalog.courseColor(course.id).solid }"
-              aria-hidden="true"
-            />
-            <div class="min-w-0 flex-1">
-              <h2 class="truncate text-base font-bold text-text-main">{{ course.name }}</h2>
-              <ul v-if="schedulesFor(course.id).length > 0" class="mt-2 flex flex-col gap-1">
-                <li
-                  v-for="schedule in schedulesFor(course.id)"
-                  :key="schedule.id"
-                  data-testid="manage-course-time"
-                  class="flex items-center gap-2 text-sm"
+    <div v-else class="flex flex-col gap-4">
+      <button
+        type="button"
+        data-testid="manage-archive-all"
+        class="flex min-h-[44px] items-center justify-center gap-2 self-end rounded-xl border border-[#BCE3ED] bg-[#E8F6FA] px-4 text-sm font-bold text-[#007B99] shadow-[0_3px_0_#B0DBE5] transition-all duration-75 hover:bg-[#DDEFF6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:translate-y-0.5 active:shadow-[0_1px_0_#B0DBE5]"
+        style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+        @click="guardEditorExit(startArchiveAll)"
+      >
+        <Archive class="h-5 w-5" aria-hidden="true" />
+        Archive all
+      </button>
+
+      <ul class="flex flex-col gap-4">
+        <li v-for="course in catalog.courses.value" :key="course.id">
+          <Card
+            as="article"
+            data-testid="manage-course-card"
+            class="gap-0 rounded-2xl border-[#D5EBF1] bg-[#FDFEF7] px-4 py-4 shadow-[0_4px_0_#D5EBF1]"
+          >
+            <div class="flex items-start gap-3">
+              <span
+                class="mt-1 h-4 w-4 shrink-0 rounded-full"
+                :style="{ backgroundColor: catalog.courseColor(course.id).solid }"
+                aria-hidden="true"
+              />
+              <div class="min-w-0 flex-1">
+                <h2 class="truncate text-base font-bold text-text-main">{{ course.name }}</h2>
+                <ul v-if="schedulesFor(course.id).length > 0" class="mt-2 flex flex-col gap-1">
+                  <li
+                    v-for="schedule in schedulesFor(course.id)"
+                    :key="schedule.id"
+                    data-testid="manage-course-time"
+                    class="flex items-center gap-2 text-sm"
+                  >
+                    <span class="w-9 font-semibold text-text-main">{{
+                      DAY_LABELS[schedule.day]
+                    }}</span>
+                    <span class="text-text-muted">
+                      {{ formatTime(schedule.startTime) }}–{{ formatTime(schedule.endTime) }}
+                    </span>
+                  </li>
+                </ul>
+                <p v-else class="mt-2 text-sm italic text-text-muted">No class times</p>
+              </div>
+              <div class="flex shrink-0 items-center">
+                <button
+                  type="button"
+                  data-testid="manage-course-edit"
+                  :aria-label="`Edit ${course.name}`"
+                  class="flex h-11 w-11 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-black/5 hover:text-text-main focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
+                  @click="guardEditorExit(() => startEdit(course))"
                 >
-                  <span class="w-9 font-semibold text-text-main">{{
-                    DAY_LABELS[schedule.day]
-                  }}</span>
-                  <span class="text-text-muted">
-                    {{ formatTime(schedule.startTime) }}–{{ formatTime(schedule.endTime) }}
-                  </span>
-                </li>
-              </ul>
-              <p v-else class="mt-2 text-sm italic text-text-muted">No class times</p>
+                  <Pencil class="h-5 w-5" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  data-testid="manage-course-archive"
+                  :aria-label="`Archive ${course.name}`"
+                  class="flex h-11 w-11 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-black/5 hover:text-text-main focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
+                  @click="guardEditorExit(() => startArchive(course))"
+                >
+                  <Archive class="h-5 w-5" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  data-testid="manage-course-delete"
+                  :aria-label="`Delete ${course.name}`"
+                  class="flex h-11 w-11 items-center justify-center rounded-lg text-[#B91C1C] transition-colors hover:bg-black/5 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
+                  @click="guardEditorExit(() => startDelete(course))"
+                >
+                  <Trash2 class="h-5 w-5" aria-hidden="true" />
+                </button>
+              </div>
             </div>
-            <div class="flex shrink-0 items-center">
-              <button
-                type="button"
-                data-testid="manage-course-edit"
-                :aria-label="`Edit ${course.name}`"
-                class="flex h-11 w-11 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-black/5 hover:text-text-main focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
-                @click="guardEditorExit(() => startEdit(course))"
-              >
-                <Pencil class="h-5 w-5" aria-hidden="true" />
-              </button>
-              <button
-                type="button"
-                data-testid="manage-course-delete"
-                :aria-label="`Delete ${course.name}`"
-                class="flex h-11 w-11 items-center justify-center rounded-lg text-[#B91C1C] transition-colors hover:bg-black/5 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
-                @click="guardEditorExit(() => startDelete(course))"
-              >
-                <Trash2 class="h-5 w-5" aria-hidden="true" />
-              </button>
-            </div>
-          </div>
-        </Card>
-      </li>
-    </ul>
+          </Card>
+        </li>
+      </ul>
+    </div>
 
     <CourseEditorDrawer
       v-if="drawerEditor"
@@ -680,5 +791,77 @@ onMounted(load)
       @keep-editing="deletingCourse = null"
       @discard="confirmDelete"
     />
+
+    <DialogShell
+      :open="archivingCourse !== null"
+      title="Archive course?"
+      @update:open="archivingCourse = null"
+    >
+      <p
+        class="mt-2 text-sm text-[#7B8B97]"
+        style="font-family: 'Inter', sans-serif; font-weight: 400"
+      >
+        {{ archiveMessage }}
+      </p>
+
+      <template #actions="{ dismiss }">
+        <button
+          type="button"
+          data-testid="manage-archive-cancel"
+          class="min-h-[44px] rounded-xl border-b-4 border-[#CBD5E1] bg-[#E2E8F0] px-4 py-2.5 text-sm font-semibold text-[#334155] transition-all duration-75 hover:bg-[#D7DEE8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
+          @click="dismiss"
+        >
+          Keep course
+        </button>
+
+        <button
+          type="button"
+          data-testid="manage-archive-confirm"
+          class="min-h-[44px] rounded-xl border-b-4 border-[#991B1B] bg-[#DC2626] px-5 py-2.5 text-sm font-bold text-white transition-all duration-75 hover:bg-[#B91C1C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          @click="confirmArchive"
+        >
+          Archive
+        </button>
+      </template>
+    </DialogShell>
+
+    <DialogShell
+      :open="archiveAllOpen"
+      title="Archive all courses?"
+      @update:open="archiveAllOpen = $event"
+    >
+      <p
+        class="mt-2 text-sm text-[#7B8B97]"
+        style="font-family: 'Inter', sans-serif; font-weight: 400"
+      >
+        {{ archiveAllMessage }}
+      </p>
+
+      <template #actions="{ dismiss }">
+        <button
+          type="button"
+          data-testid="manage-archive-all-cancel"
+          class="min-h-[44px] rounded-xl border-b-4 border-[#CBD5E1] bg-[#E2E8F0] px-4 py-2.5 text-sm font-semibold text-[#334155] transition-all duration-75 hover:bg-[#D7DEE8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
+          @click="dismiss"
+        >
+          Keep courses
+        </button>
+
+        <button
+          type="button"
+          data-testid="manage-archive-all-confirm"
+          class="min-h-[44px] rounded-xl border-b-4 border-[#991B1B] bg-[#DC2626] px-5 py-2.5 text-sm font-bold text-white transition-all duration-75 hover:bg-[#B91C1C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          @click="confirmArchiveAll"
+        >
+          Archive all
+        </button>
+      </template>
+    </DialogShell>
+
+    <Toaster />
   </div>
 </template>

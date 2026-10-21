@@ -13,14 +13,6 @@ import java.util.Optional;
 public interface CourseRepository extends JpaRepository<Course, Long> {
 
     /**
-     * Finds all courses owned by a specific user.
-     *
-     * @param userId the owner user identifier
-     * @return list of courses for the given user
-     */
-    List<Course> findByUserId(Long userId);
-
-    /**
      * Finds a course by identifier only when it belongs to the given user.
      *
      * @param id     the course identifier
@@ -28,4 +20,20 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
      * @return the course when owned by the user, otherwise empty
      */
     Optional<Course> findByIdAndUserId(Long id, Long userId);
+
+    /**
+     * Finds all active (non-archived) courses owned by a specific user.
+     *
+     * @param userId the owner user identifier
+     * @return list of active courses for the given user
+     */
+    List<Course> findByUserIdAndArchivedAtIsNull(Long userId);
+
+    /**
+     * Finds all archived courses owned by a specific user.
+     *
+     * @param userId the owner user identifier
+     * @return list of archived courses for the given user
+     */
+    List<Course> findByUserIdAndArchivedAtIsNotNull(Long userId);
 }

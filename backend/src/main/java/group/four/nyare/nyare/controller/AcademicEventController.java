@@ -49,10 +49,11 @@ public class AcademicEventController {
     @GetMapping
     public ResponseEntity<List<AcademicEventResponse>> listEvents(
             @RequestParam(required = false) Long courseId,
-            @RequestParam(required = false) Boolean upcoming
+            @RequestParam(required = false) Boolean upcoming,
+            @RequestParam(defaultValue = "false") Boolean archived
     ) {
         Long userId = sessionContext.requireUserId();
-        return ResponseEntity.ok(academicEventService.listEvents(userId, courseId, upcoming));
+        return ResponseEntity.ok(academicEventService.listEvents(userId, courseId, upcoming, archived));
     }
 
 

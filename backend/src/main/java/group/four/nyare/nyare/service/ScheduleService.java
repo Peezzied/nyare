@@ -32,9 +32,10 @@ public interface ScheduleService {
      *
      * @param courseId optional course ID filter; {@code null} to match all courses
      * @param day      optional day of week filter; {@code null} to match all days
+     * @param archived {@code true} to list schedules of archived courses, {@code false} for active courses
      * @return list of matching schedule responses ordered chronologically
      */
-    List<ScheduleResponse> listSchedules(Long userId, Long courseId, DayOfWeek day);
+    List<ScheduleResponse> listSchedules(Long userId, Long courseId, DayOfWeek day, Boolean archived);
 
     /**
      * Retrieves a single class schedule owned by the session user.
