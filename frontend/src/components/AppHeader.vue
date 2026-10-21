@@ -3,15 +3,21 @@
 // border, left action, centered title, right action.
 // Slots: `left` defaults to the account menu, `right` defaults to a 44px
 // spacer so the title stays optically centered.
+import { ref } from 'vue'
 import AccountMenuButton from './AccountMenuButton.vue'
+import { useTopBarInset } from '@/composables/useTopBarInset'
 
 defineProps<{
   title: string
 }>()
+
+const headerEl = ref<HTMLElement | null>(null)
+useTopBarInset(headerEl)
 </script>
 
 <template>
   <header
+    ref="headerEl"
     data-testid="app-header"
     class="flex h-14 w-full shrink-0 items-center justify-between border-b-[3px] border-app-border bg-app-bg px-1"
   >

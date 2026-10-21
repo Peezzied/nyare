@@ -2,7 +2,6 @@
 import { computed, h, nextTick, onMounted, ref, watch } from 'vue'
 import { Archive, ArrowLeft, BookOpen, Pencil, Plus, Trash2 } from '@lucide/vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
-import { toast } from 'vue-sonner'
 import type { DrawerOpenChangeDetails } from 'reka-ui'
 import HeaderIconButton from '@/components/HeaderIconButton.vue'
 import CourseEditorDrawer from '@/components/CourseEditorDrawer.vue'
@@ -10,7 +9,6 @@ import DiscardDraftConfirmDialog from '@/components/DiscardDraftConfirmDialog.vu
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import DialogShell from '@/components/ui/DialogShell.vue'
-import { Toaster } from '@/components/ui/sonner'
 import {
   createBlock,
   syncScheduleDrafts,
@@ -18,6 +16,7 @@ import {
 } from '@/components/TimeBlockCard.vue'
 import { useCatalog } from '@/composables/useCatalog'
 import { useShellHeader } from '@/composables/useShellHeader'
+import { useToasts } from '@/composables/useToasts'
 import {
   captureSnapshot,
   createCourseEditor,
@@ -40,6 +39,15 @@ import type { CourseResponse, DayOfWeek, ScheduleResponse } from '@/types/api'
 
 const router = useRouter()
 const catalog = useCatalog()
+const { pushToast, dismissToast } = useToasts()
+
+function toastSuccess(title: string): void {
+  pushToast({ kind: 'success', title })
+}
+
+function toastError(title: string): void {
+  pushToast({ kind: 'error', title })
+}
 
 useShellHeader({
   title: 'Manage courses',
@@ -75,8 +83,8 @@ const editingCourse = ref<CourseResponse | null>(null)
 const deletingCourse = ref<CourseResponse | null>(null)
 const archivingCourse = ref<CourseResponse | null>(null)
 const archiveAllOpen = ref(false)
-// Sonner id of the bulk-Undo toast, so route leave dismisses only that toast.
-const undoToastId = ref<string | number | null>(null)
+// Id of the bulk-Undo toast, so route leave dismisses only that toast.
+const undoToastId = ref<string | null>(null)
 
 const editingEditor = ref<CourseEditor | null>(null)
 // The drawer needs a live editor prop to stay mounted while `open` flips
@@ -141,7 +149,7 @@ async function load(): Promise<void> {
     await catalog.loadCatalog()
   } catch {
     loadFailed.value = true
-    toast.error('Courses failed to load.')
+    toastError('Courses failed to load.')
   } finally {
     loading.value = false
   }
@@ -241,7 +249,7 @@ function syncUnavailableDays(block: TimeBlockDraft) {
   for (const day of removedDays) {
     const clash = findClash({ day, startTime: block.startTime, endTime: block.endTime }, others)
     if (clash) {
-      toast.error(`A class time clashes with ${clash.courseName || 'another class'} on ${day}.`)
+      toastError(`A class time clashes with ${clash.courseName || 'another class'} on ${day}.`)
       return
     }
     const siblingOverlap = siblings.find(
@@ -250,7 +258,7 @@ function syncUnavailableDays(block: TimeBlockDraft) {
         rangesOverlap(block.startTime, block.endTime, sib.startTime, sib.endTime),
     )
     if (siblingOverlap) {
-      toast.error(`Two time blocks for this course overlap on ${day}.`)
+      toastError(`Two time blocks for this course overlap on ${day}.`)
       return
     }
   }
@@ -366,14 +374,14 @@ async function saveCourseEdit() {
 
   const conflict = findEditorConflict(ed, catalog.courses.value, catalog.schedules.value)
   if (conflict) {
-    toast.error(conflict)
+    toastError(conflict)
     return
   }
 
   const basicsError = editorBasicsError(ed)
   if (basicsError) {
     markBlockErrors(ed)
-    toast.error(basicsError)
+    toastError(basicsError)
     return
   }
 
@@ -391,7 +399,7 @@ async function saveCourseEdit() {
       catalog.applyCourseDeleted(course.id)
       editingCourse.value = null
     }
-    toast.error(errorMessage(error))
+    toastError(errorMessage(error))
   } finally {
     editorSaving.value = false
   }
@@ -407,7 +415,7 @@ async function createCourseFromEditor(ed: CourseEditor) {
     catalog.applyScheduleCreated(await schedulesApi.create({ ...schedule, courseId: course.id }))
   }
   addingCourse.value = false
-  toast.success('Course added.')
+  toastSuccess('Course added.')
 }
 
 /** Persists name, color, and class-time changes of a persisted course. */
@@ -427,7 +435,7 @@ async function updateCourseFromEditor(ed: CourseEditor, course: CourseResponse) 
         // The course was deleted in another session; drop it from the list.
         catalog.applyCourseDeleted(course.id)
         editingCourse.value = null
-        toast.error('This course no longer exists.')
+        toastError('This course no longer exists.')
         return
       }
       throw error
@@ -450,7 +458,7 @@ async function updateCourseFromEditor(ed: CourseEditor, course: CourseResponse) 
 
   captureSnapshot(ed)
   editingCourse.value = null
-  toast.success('Course updated.')
+  toastSuccess('Course updated.')
 }
 
 const deleteMessage = computed(() =>
@@ -471,9 +479,9 @@ async function confirmDelete() {
     if (editingCourse.value?.id === course.id) {
       editingCourse.value = null
     }
-    toast.success('Course deleted.')
+    toastSuccess('Course deleted.')
   } catch (error) {
-    toast.error(errorMessage(error))
+    toastError(errorMessage(error))
   }
 }
 
@@ -495,9 +503,9 @@ async function confirmArchive() {
     if (editingCourse.value?.id === course.id) {
       editingCourse.value = null
     }
-    toast.success('Course archived.')
+    toastSuccess('Course archived.')
   } catch (error) {
-    toast.error(errorMessage(error))
+    toastError(errorMessage(error))
   }
 }
 
@@ -517,15 +525,19 @@ async function confirmArchiveAll() {
     // A bulk archive removes every course, so any open editor is stale.
     editingCourse.value = null
     const noun = ids.length === 1 ? 'course' : 'courses'
-    undoToastId.value = toast(`Archived ${ids.length} ${noun}`, {
-      action: {
-        label: 'Undo',
-        onClick: () => void undoArchiveAll(ids),
+    undoToastId.value = pushToast(
+      {
+        kind: 'info',
+        title: `Archived ${ids.length} ${noun}`,
+        action: {
+          label: 'Undo',
+          onClick: () => void undoArchiveAll(ids),
+        },
       },
-      duration: 8000,
-    })
+      8000,
+    )
   } catch (error) {
-    toast.error(errorMessage(error))
+    toastError(errorMessage(error))
   }
 }
 
@@ -533,9 +545,9 @@ async function confirmArchiveAll() {
 async function undoArchiveAll(ids: number[]) {
   try {
     await catalog.unarchiveCourses(ids)
-    toast.success('Courses restored.')
+    toastSuccess('Courses restored.')
   } catch (error) {
-    toast.error(errorMessage(error))
+    toastError(errorMessage(error))
   }
 }
 
@@ -609,7 +621,7 @@ onBeforeRouteLeave((to) => {
   if (!editorHasUnsavedChanges()) {
     // The Undo toast belongs to this page; close it when the student leaves.
     if (undoToastId.value !== null) {
-      toast.dismiss(undoToastId.value)
+      dismissToast(undoToastId.value)
       undoToastId.value = null
     }
     return true
@@ -861,7 +873,5 @@ onMounted(load)
         </button>
       </template>
     </DialogShell>
-
-    <Toaster />
   </div>
 </template>

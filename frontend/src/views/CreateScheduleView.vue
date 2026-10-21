@@ -36,8 +36,8 @@ import DiscardDraftConfirmDialog from '@/components/DiscardDraftConfirmDialog.vu
 import StepProgress from '@/components/StepProgress.vue'
 import DialogShell from '@/components/ui/DialogShell.vue'
 import { ArrowLeft, Check, Plus, X } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
-import { Toaster } from '@/components/ui/sonner'
+import { useToasts } from '@/composables/useToasts'
+import { useTopBarInset } from '@/composables/useTopBarInset'
 import type { DrawerOpenChangeDetails } from 'reka-ui'
 import {
   createBlock,
@@ -67,6 +67,18 @@ const emit = defineEmits<{
   (e: 'created', courseId: number): void
   (e: 'close'): void
 }>()
+
+const { pushToast } = useToasts()
+const topBarEl = ref<HTMLElement | null>(null)
+useTopBarInset(topBarEl)
+
+function toastSuccess(title: string): void {
+  pushToast({ kind: 'success', title })
+}
+
+function toastError(title: string): void {
+  pushToast({ kind: 'error', title })
+}
 
 const router = useRouter()
 const {
@@ -379,7 +391,7 @@ async function removeEditor(id: string) {
     try {
       await deleteCourse(editor.persistedId)
     } catch (error) {
-      toast.error(errorMessage(error))
+      toastError(errorMessage(error))
     }
   }
 
@@ -546,7 +558,7 @@ function syncUnavailableDays(block: TimeBlockDraft) {
         knownSet.value.schedules.filter((s) => s.courseId !== activeEditor.value.id),
       )
       if (clash) {
-        toast.error(`A class time clashes with ${clash.courseName || 'another class'} on ${day}.`)
+        toastError(`A class time clashes with ${clash.courseName || 'another class'} on ${day}.`)
         break
       }
       const siblings = blocks.value.filter((b) => b.id !== block.id)
@@ -556,7 +568,7 @@ function syncUnavailableDays(block: TimeBlockDraft) {
           rangesOverlap(block.startTime, block.endTime, sib.startTime, sib.endTime),
       )
       if (siblingOverlap) {
-        toast.error(`Two time blocks for this course overlap on ${day}.`)
+        toastError(`Two time blocks for this course overlap on ${day}.`)
         break
       }
     }
@@ -733,7 +745,9 @@ function editorConflictError(editor: CourseEditor): string | null {
 
 /** Error toast with an action button that jumps to the offending course drawer. */
 function toastCourseError(message: string, editor: CourseEditor) {
-  toast.error(message, {
+  pushToast({
+    kind: 'error',
+    title: message,
     action: {
       label: 'Open course',
       onClick: () => {
@@ -778,14 +792,14 @@ function stageEditor(editor: CourseEditor): void {
 async function saveCourse() {
   const editor = activeEditor.value
   if (!isEditorTouched(editor)) {
-    toast.error('Add a course name and class time before saving.')
+    toastError('Add a course name and class time before saving.')
     return
   }
 
   const basicsError = editorBasicsError(editor)
   if (basicsError) {
     setStage('full')
-    toast.error(basicsError)
+    toastError(basicsError)
     return
   }
 
@@ -809,9 +823,9 @@ async function saveCourse() {
 
   try {
     stageEditor(editor)
-    toast.success('Course kept for this session. Use Submit to save it to your account.')
+    toastSuccess('Course kept for this session. Use Submit to save it to your account.')
   } catch (error) {
-    toast.error(errorMessage(error))
+    toastError(errorMessage(error))
   } finally {
     saving.value = false
   }
@@ -830,7 +844,7 @@ function requestSubmit() {
 
   const touched = touchedEditors.value
   if (touched.length === 0) {
-    toast.error('Add a course before submitting.')
+    toastError('Add a course before submitting.')
     return
   }
 
@@ -859,7 +873,7 @@ async function saveAll() {
 
   const touched = touchedEditors.value
   if (touched.length === 0) {
-    toast.error('Add a course before submitting.')
+    toastError('Add a course before submitting.')
     return
   }
 
@@ -907,13 +921,13 @@ async function saveAll() {
       emit('created', course.id)
     }
 
-    toast.success(
+    toastSuccess(
       touched.length > 1
         ? 'All courses and schedules saved successfully.'
         : 'Course and schedule saved successfully.',
     )
   } catch (error) {
-    toast.error(errorMessage(error))
+    toastError(errorMessage(error))
     return
   } finally {
     saving.value = false
@@ -965,7 +979,7 @@ defineExpose({
     </div>
 
     <!-- Top navigation: onboarding steps centered above the title row -->
-    <header class="absolute inset-x-0 top-0 z-40 px-3 pt-2">
+    <header ref="topBarEl" class="absolute inset-x-0 top-0 z-40 px-3 pt-2">
       <div class="flex justify-center">
         <StepProgress
           :active-step="3"
@@ -1228,6 +1242,5 @@ defineExpose({
       @keep-editing="cancelRemoveEditor"
       @discard="confirmRemoveEditor"
     />
-    <Toaster />
   </div>
 </template>

@@ -201,6 +201,17 @@ The logged-in tab routes (`/tasks`, `/calendar`, `/notes`) render inside one sha
 - Default left action: `AccountMenuButton` (burger → Select Account). Default right action: a 44px spacer.
 - `HeaderIconButton` is the shared 44px icon-button chrome for both side regions.
 
+### 7.6 Toast Shelf (`ToastShelf.vue` + `ToastItem.vue`)
+One transient notification system for the whole app, mounted once in `App.vue`:
+
+- **Position**: fixed, top-center, `z-60`. The shelf always sits 8px under the visible top bar — every top bar (`AppHeader`, `DetailTopBar`, the onboarding header) registers its element through `useTopBarInset()`, and the shelf anchors to the deepest bar's bottom edge. With no top bar, the shelf sits at `top: 8px`.
+- **Card**: `max-w-[340px]`, `rounded-2xl`, 1px `border-app-border`, `bg-card`, `p-3.5`, soft drop shadow `shadow-[0_8px_24px_rgba(0,0,0,0.12)]` (no bevel — toasts are ephemeral, not stationery).
+- **Contents**: 20px kind icon, Quicksand 600 title (`text-sm`, `text-main`), optional Inter 400 detail (`text-xs`, `text-muted`).
+- **Kind icons**: `success` → `CircleCheck` `#0B8043`; `error` → `CircleX` `#DC2626`; `info` → `Info` `#00A4C8`; `loading` → `LoaderCircle` `#00A4C8`, spinning.
+- **Dismissal**: tap or horizontal swipe (fly-out ±480px, sub-threshold springs back); auto-dismiss after `durationMs` (default 4s). Hover or keyboard focus pauses the timer.
+- **Action toasts**: an optional trailing action button (Quicksand 700, `#007B99`, 44px target) plus an `X` close button. Selecting the action runs it and dismisses the toast. `onDismiss` / `onAutoClose` callbacks let callers commit deferred work (e.g. the undo-delete pattern).
+- **API**: `useToasts().pushToast({ kind, title, detail?, action?, onDismiss?, onAutoClose? }, durationMs?) → id`; `dismissToast(id)`, `pauseToast(id)`, `resumeToast(id)`.
+
 ---
 
 ## 8. Modal Dialogs & Form Sheets
