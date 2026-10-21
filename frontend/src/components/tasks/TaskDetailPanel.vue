@@ -49,13 +49,13 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'deleted'): void
+  (e: 'deleted', task: TaskResponse): void
   (e: 'missing'): void
 }>()
 
 const { courses, schedules, loadCatalog } = useCatalog()
 const archive = useArchive()
-const { getTask, createTask, updateTask, updateTaskStatus, deleteTask, resetTasks } = useTasks()
+const { getTask, createTask, updateTask, updateTaskStatus, resetTasks } = useTasks()
 
 const DURATION_PRESETS = [15, 30, 45, 60, 90, 120, 180] as const
 
@@ -69,10 +69,8 @@ const form = reactive<TaskFormState>({
 
 const loadedTask = ref<TaskResponse | null>(null)
 const saving = ref(false)
-const deleting = ref(false)
 const deleteOpen = ref(false)
 const errorMessage = ref<string | null>(null)
-const lastErrorAction = ref<'save' | 'delete'>('save')
 
 const isViewMode = computed(() => props.taskId !== null)
 const done = computed(() => loadedTask.value?.status === 'COMPLETED')
@@ -215,7 +213,6 @@ async function handleSave() {
 
   saving.value = true
   errorMessage.value = null
-  lastErrorAction.value = 'save'
   try {
     if (props.taskId === null) {
       await createTask(toTaskRequest(form, 'TODO'))
@@ -234,30 +231,17 @@ async function handleSave() {
   }
 }
 
-async function confirmDelete() {
-  if (!props.taskId || deleting.value || isArchivedCourse.value) {
+/** Emits the task so the caller can defer the API delete behind an undo toast. */
+function confirmDelete() {
+  const task = loadedTask.value
+  if (!props.taskId || !task || isArchivedCourse.value) {
     return
   }
-  deleting.value = true
-  errorMessage.value = null
-  lastErrorAction.value = 'delete'
-  try {
-    await deleteTask(props.taskId)
-    deleteOpen.value = false
-    emit('deleted')
-  } catch (err) {
-    deleteOpen.value = false
-    errorMessage.value = err instanceof Error ? err.message : 'Failed to delete task'
-  } finally {
-    deleting.value = false
-  }
+  deleteOpen.value = false
+  emit('deleted', task)
 }
 
 function handleRetry() {
-  if (lastErrorAction.value === 'delete') {
-    void confirmDelete()
-    return
-  }
   void handleSave()
 }
 
@@ -451,7 +435,14 @@ onMounted(() => {
 
       <!-- Description zone -->
       <section class="mt-4 rounded-2xl bg-white p-3" :class="controlsStaggerClass">
+        <label
+          for="task-description"
+          class="mb-2 block text-xs font-bold uppercase tracking-wider text-(--color-text-muted)"
+        >
+          Description
+        </label>
         <Textarea
+          id="task-description"
           v-model="form.description"
           data-testid="task-description"
           aria-label="Task description"
@@ -514,7 +505,7 @@ onMounted(() => {
       </Alert>
     </main>
 
-    <DialogShell v-model:open="deleteOpen" title="Delete Task" :busy="deleting">
+    <DialogShell v-model:open="deleteOpen" title="Delete Task">
       <p
         class="mt-2 text-sm text-[#7B8B97]"
         style="font-family: 'Inter', sans-serif; font-weight: 400"
@@ -547,7 +538,6 @@ onMounted(() => {
           size="touch"
           data-testid="task-delete-confirm"
           :disabled="disabled"
-          :aria-busy="deleting"
           style="font-family: 'Quicksand', sans-serif; font-weight: 700"
           @click="confirmDelete"
         >

@@ -155,7 +155,10 @@ onMounted(load)
 </script>
 
 <template>
-  <div data-testid="archive-page" class="h-full overflow-y-auto bg-app-bg px-4 pb-8 pt-4">
+  <div
+    data-testid="archive-page"
+    class="relative h-full overflow-y-auto bg-app-bg px-4 pb-8 pt-4"
+  >
     <p
       v-if="loading"
       data-testid="archive-loading"
@@ -176,22 +179,12 @@ onMounted(load)
       </Button>
     </div>
 
-    <div
-      v-else-if="archive.archivedCourses.value.length === 0"
-      data-testid="archive-empty-state"
-      class="flex flex-col items-center px-6 py-16 text-center"
+    <TransitionGroup
+      v-else
+      tag="ul"
+      name="archive-row"
+      class="relative flex flex-col gap-4"
     >
-      <div class="flex h-16 w-16 items-center justify-center rounded-full bg-[#E8F6FA]">
-        <Archive class="h-8 w-8 text-[#007B99]" aria-hidden="true" />
-      </div>
-      <p class="mt-4 text-lg font-bold text-text-main">No archived courses</p>
-      <p class="mt-1 text-sm text-text-muted">
-        Archive a course from Manage Courses. Its notes, tasks, events, and class times stay
-        readable here.
-      </p>
-    </div>
-
-    <ul v-else class="flex flex-col gap-4">
       <li v-for="course in archive.archivedCourses.value" :key="course.id">
         <Card
           as="article"
@@ -240,7 +233,24 @@ onMounted(load)
           </div>
         </Card>
       </li>
-    </ul>
+    </TransitionGroup>
+
+    <Transition name="empty-fade">
+      <div
+        v-if="!loading && !loadFailed && archive.archivedCourses.value.length === 0"
+        data-testid="archive-empty-state"
+        class="flex flex-col items-center px-6 py-16 text-center"
+      >
+        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-[#E8F6FA]">
+          <Archive class="h-8 w-8 text-[#007B99]" aria-hidden="true" />
+        </div>
+        <p class="mt-4 text-lg font-bold text-text-main">No archived courses</p>
+        <p class="mt-1 text-sm text-text-muted">
+          Archive a course from Manage Courses. Its notes, tasks, events, and class times stay
+          readable here.
+        </p>
+      </div>
+    </Transition>
 
     <DialogShell
       :open="deletingCourse !== null || deletingAll"
@@ -278,3 +288,64 @@ onMounted(load)
     </DialogShell>
   </div>
 </template>
+
+<style scoped>
+.archive-row-enter-active,
+.archive-row-leave-active,
+.archive-row-move {
+  transition:
+    opacity 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.archive-row-leave-active {
+  position: absolute;
+  right: 0;
+  left: 0;
+  z-index: 0;
+  transition-duration: 160ms;
+}
+
+.archive-row-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.archive-row-leave-to {
+  opacity: 0;
+  transform: translateX(-16px);
+}
+
+.empty-fade-enter-active {
+  transition: opacity 200ms ease-out 140ms;
+}
+
+.empty-fade-leave-active {
+  position: absolute;
+  right: 16px;
+  left: 16px;
+  transition: opacity 150ms ease-in;
+}
+
+.empty-fade-enter-from,
+.empty-fade-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .archive-row-enter-active,
+  .archive-row-leave-active,
+  .archive-row-move {
+    transition-duration: 120ms;
+  }
+
+  .archive-row-enter-from,
+  .archive-row-leave-to {
+    transform: none;
+  }
+
+  .empty-fade-enter-active {
+    transition-delay: 0ms;
+  }
+}
+</style>

@@ -6,6 +6,8 @@ import CoursePickerDialog from '@/components/CoursePickerDialog.vue'
 import { notesApi } from '@/api/notes'
 import { coursesApi, schedulesApi, studyPlannerApi } from '@/api'
 import { useCatalog } from '@/composables/useCatalog'
+import { useNotes } from '@/composables/useNotes'
+import { useToasts } from '@/composables/useToasts'
 import type {
   NoteRequest,
   NoteResponse,
@@ -913,6 +915,109 @@ describe('NoteEditor.vue', () => {
     await flushPromises()
 
     expect(wrapper.find('section').classes()).toContain('opacity-0')
+    wrapper.unmount()
+  })
+
+  const deletedSummary: NoteSummaryResponse = {
+    id: 'note-del-1',
+    courseId: 1,
+    title: 'Note To Delete',
+    preview: 'Removable content',
+    truncated: false,
+    contentLength: 17,
+    entryDate: '2026-10-13',
+    createdAt: '2026-10-13T00:00:00Z',
+    updatedAt: '2026-10-13T00:00:00Z',
+  }
+
+  const deletedNote: NoteResponse = {
+    ...deletedSummary,
+    content: 'Removable content',
+  }
+
+  async function seedAndMountDeletable() {
+    useNotes().resetNotes()
+    vi.mocked(notesApi.list).mockResolvedValueOnce([deletedSummary])
+    await useNotes().loadNotes()
+    vi.mocked(notesApi.get).mockResolvedValueOnce(deletedNote)
+
+    const wrapper = mount(NoteEditor, {
+      props: { embedded: true, noteId: 'note-del-1' },
+      attachTo: document.body,
+    })
+    await flushPromises()
+
+    await wrapper.find('[data-testid="note-actions-trigger"]').trigger('click')
+    await flushPromises()
+
+    const action = document.body.querySelector<HTMLButtonElement>(
+      '[data-testid="delete-note-action"]',
+    )
+    expect(action).not.toBeNull()
+    action!.click()
+    await flushPromises()
+
+    return wrapper
+  }
+
+  it('hides the actions menu on a new note and shows it in edit mode', async () => {
+    const newWrapper = mount(NoteEditor)
+    await flushPromises()
+    expect(newWrapper.find('[data-testid="note-actions-trigger"]').exists()).toBe(false)
+    newWrapper.unmount()
+
+    vi.mocked(notesApi.get).mockResolvedValueOnce(deletedNote)
+    const editWrapper = mount(NoteEditor, {
+      props: { embedded: true, noteId: 'note-del-1' },
+    })
+    await flushPromises()
+    expect(editWrapper.find('[data-testid="note-actions-trigger"]').exists()).toBe(true)
+    editWrapper.unmount()
+  })
+
+  it('stages the delete on confirm and restores the note when the toast dismisses', async () => {
+    const wrapper = await seedAndMountDeletable()
+
+    const dialog = document.body.querySelector('[data-testid="delete-note-dialog"]')
+    expect(dialog).not.toBeNull()
+
+    const confirm = document.body.querySelector<HTMLButtonElement>(
+      '[data-testid="confirm-delete-button"]',
+    )
+    expect(confirm).not.toBeNull()
+    confirm!.click()
+    await flushPromises()
+
+    expect(wrapper.emitted('close')).toHaveLength(1)
+    expect(useNotes().notes.value.some((n) => n.id === 'note-del-1')).toBe(false)
+    expect(notesApi.delete).not.toHaveBeenCalled()
+
+    const toast = useToasts().toasts.value.find((t) => t.title === 'Note deleted')
+    expect(toast).toBeDefined()
+    useToasts().dismissToast(toast!.id)
+    expect(useNotes().notes.value[0]?.id).toBe('note-del-1')
+    expect(notesApi.delete).not.toHaveBeenCalled()
+
+    wrapper.unmount()
+  })
+
+  it('commits the delete when the undo toast expires', async () => {
+    const wrapper = await seedAndMountDeletable()
+
+    vi.useFakeTimers()
+    const confirm = document.body.querySelector<HTMLButtonElement>(
+      '[data-testid="confirm-delete-button"]',
+    )!
+    confirm.click()
+    await flushPromises()
+
+    vi.advanceTimersByTime(4000)
+    await flushPromises()
+    vi.useRealTimers()
+
+    expect(notesApi.delete).toHaveBeenCalledWith('note-del-1')
+    expect(useNotes().notes.value.some((n) => n.id === 'note-del-1')).toBe(false)
+
     wrapper.unmount()
   })
 })

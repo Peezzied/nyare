@@ -5,6 +5,7 @@
 // gestures, reduced motion falls back to an opacity crossfade.
 import TaskDetailPanel from './TaskDetailPanel.vue'
 import type { TapOriginRect } from '@/types/notesTransition'
+import type { TaskResponse } from '@/types/api'
 import { useContainerMorph } from '@/composables/useNoteTransition'
 
 const props = withDefaults(
@@ -20,6 +21,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (e: 'close'): void
+  (e: 'deleted', task: TaskResponse): void
 }>()
 
 const {
@@ -41,6 +43,11 @@ const {
   historyKey: 'nyareTaskModal',
   onClosed: () => emit('close'),
 })
+
+function onDeleted(task: TaskResponse) {
+  emit('deleted', task)
+  requestClose(true, true)
+}
 </script>
 
 <template>
@@ -87,7 +94,7 @@ const {
         :show-controls="showControls"
         embedded
         @close="requestClose(true)"
-        @deleted="requestClose(true, true)"
+        @deleted="onDeleted"
         @missing="requestClose(true)"
       />
     </div>

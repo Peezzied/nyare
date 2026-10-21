@@ -42,6 +42,12 @@ function toSummary(note: NoteResponse): NoteSummaryResponse {
   }
 }
 
+/** A locally removed note plus its list index, so undo can restore it in place. */
+export interface StagedNote {
+  summary: NoteSummaryResponse
+  index: number
+}
+
 // ponytail: note list cache with isolated dev/prototype fallback.
 export function useNotes() {
   async function loadNotes(force = false): Promise<void> {
@@ -103,10 +109,27 @@ export function useNotes() {
     return saved
   }
 
-  /** Deletes a note, removes it from the local list, and refreshes the planner status. */
-  async function deleteNote(id: string): Promise<void> {
-    await notesApi.delete(id)
+  /** Removes a note from the local list and returns it with its index. Null when absent. */
+  function stageNoteDeletion(id: string): StagedNote | null {
+    const index = rawNotes.value.findIndex((n) => n.id === id)
+    const summary = index === -1 ? undefined : rawNotes.value[index]
+    if (!summary) {
+      return null
+    }
     rawNotes.value = rawNotes.value.filter((n) => n.id !== id)
+    return { summary, index }
+  }
+
+  /** Reinserts a staged note at its original position. The undo path of stageNoteDeletion. */
+  function restoreStagedNote(staged: StagedNote): void {
+    const next = [...rawNotes.value]
+    next.splice(Math.min(staged.index, next.length), 0, staged.summary)
+    rawNotes.value = next
+  }
+
+  /** Commits a staged note deletion to the server and refreshes the planner status. */
+  async function commitNoteDeletion(id: string): Promise<void> {
+    await notesApi.delete(id)
     await usePlannerStatus()
       .refresh()
       .catch(() => {})
@@ -153,7 +176,9 @@ export function useNotes() {
     loadNotes,
     getNote,
     saveNote,
-    deleteNote,
+    stageNoteDeletion,
+    restoreStagedNote,
+    commitNoteDeletion,
     resetNotes,
     getCourseName,
     getBadgeColor,

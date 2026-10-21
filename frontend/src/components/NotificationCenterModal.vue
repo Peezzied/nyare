@@ -238,21 +238,14 @@ function stamp(record: ProcessNotification): string {
         </header>
 
         <div
-          class="min-h-0 flex-1 overflow-y-auto px-4 py-4 transition-opacity duration-200"
+          class="relative min-h-0 flex-1 overflow-y-auto px-4 py-4 transition-opacity duration-200"
           :class="showContent ? 'opacity-100' : 'opacity-0'"
         >
-          <div
-            v-if="notifications.records.value.length === 0"
-            data-testid="notification-empty"
-            class="mt-16 flex flex-col items-center gap-3 text-text-muted"
+          <TransitionGroup
+            tag="ul"
+            name="notification-item"
+            class="relative flex flex-col gap-3"
           >
-            <Inbox class="h-10 w-10" aria-hidden="true" />
-            <p class="text-sm" style="font-family: 'Inter', sans-serif; font-weight: 400">
-              No activity yet.
-            </p>
-          </div>
-
-          <ul v-else class="space-y-3">
             <li v-for="record in notifications.records.value" :key="record.id">
               <button
                 type="button"
@@ -303,9 +296,83 @@ function stamp(record: ProcessNotification): string {
                 </span>
               </button>
             </li>
-          </ul>
+          </TransitionGroup>
+
+          <Transition name="empty-fade">
+            <div
+              v-if="notifications.records.value.length === 0"
+              data-testid="notification-empty"
+              class="mt-16 flex flex-col items-center gap-3 text-text-muted"
+            >
+              <Inbox class="h-10 w-10" aria-hidden="true" />
+              <p class="text-sm" style="font-family: 'Inter', sans-serif; font-weight: 400">
+                No activity yet.
+              </p>
+            </div>
+          </Transition>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.notification-item-enter-active,
+.notification-item-leave-active,
+.notification-item-move {
+  transition:
+    opacity 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.notification-item-leave-active {
+  position: absolute;
+  right: 0;
+  left: 0;
+  z-index: 0;
+  transition-duration: 160ms;
+}
+
+.notification-item-enter-from {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.notification-item-leave-to {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.98);
+}
+
+.empty-fade-enter-active {
+  transition: opacity 200ms ease-out 140ms;
+}
+
+.empty-fade-leave-active {
+  position: absolute;
+  right: 16px;
+  left: 16px;
+  transition: opacity 150ms ease-in;
+}
+
+.empty-fade-enter-from,
+.empty-fade-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notification-item-enter-active,
+  .notification-item-leave-active,
+  .notification-item-move {
+    transition-duration: 120ms;
+  }
+
+  .notification-item-enter-from,
+  .notification-item-leave-to {
+    transform: none;
+  }
+
+  .empty-fade-enter-active {
+    transition-delay: 0ms;
+  }
+}
+</style>

@@ -12,6 +12,7 @@ import {
 import { useCatalog } from '@/composables/useCatalog'
 import { useTasks } from '@/composables/useTasks'
 import { useToasts } from '@/composables/useToasts'
+import { useUndoableTaskDelete } from '@/composables/useUndoableTaskDelete'
 import { getPlanCategory } from '@/utils/planCategory'
 import { useShellHeader } from '@/composables/useShellHeader'
 import { toTapOriginRect } from '@/composables/useNoteTransition'
@@ -29,7 +30,8 @@ type ActiveFilter = 'ALL' | 'OVERDUE' | PlanCategory
 useShellHeader({ title: 'To-do', left: () => h(HamburgerMenu) })
 
 const catalog = useCatalog()
-const { tasks, loadTasks, updateTask, updateTaskStatus, deleteTask } = useTasks()
+const { tasks, loadTasks, updateTask, updateTaskStatus } = useTasks()
+const { deleteTaskWithUndo } = useUndoableTaskDelete()
 const loading = ref(true)
 const activeFilter = ref<ActiveFilter>('ALL')
 
@@ -92,6 +94,10 @@ function closeTaskModal() {
   taskModal.value = { ...taskModal.value, open: false }
 }
 
+function onTaskDeleted(task: TaskResponse) {
+  deleteTaskWithUndo(task)
+}
+
 const quickSheet = ref<{ open: boolean; task: TaskResponse | null }>({
   open: false,
   task: null,
@@ -130,45 +136,13 @@ function applyDuration(minutes: number | null) {
   void patchTask({ durationMinutes: minutes }, label)
 }
 
-/** Removes the row now and commits the API delete when the undo toast lapses. */
 function quickDelete() {
   const task = quickSheet.value.task
   if (!task) {
     return
   }
   quickSheet.value = { open: false, task: null }
-  const index = tasks.value.findIndex((t) => t.id === task.id)
-  tasks.value = tasks.value.filter((t) => t.id !== task.id)
-
-  let cancelled = false
-  const restore = () => {
-    cancelled = true
-    const next = [...tasks.value]
-    next.splice(Math.min(Math.max(index, 0), next.length), 0, task)
-    tasks.value = next
-  }
-  const commit = () => {
-    if (cancelled) {
-      return
-    }
-    deleteTask(task.id).catch((err) => {
-      restore()
-      useToasts().pushToast({
-        kind: 'error',
-        title: err instanceof Error ? err.message : 'Could not delete task',
-      })
-    })
-  }
-  useToasts().pushToast(
-    {
-      kind: 'info',
-      title: 'Task deleted',
-      action: { label: 'Undo', onClick: restore },
-      onAutoClose: commit,
-      onDismiss: commit,
-    },
-    5000,
-  )
+  deleteTaskWithUndo(task)
 }
 
 const filters: { key: ActiveFilter; label: string }[] = [
@@ -365,6 +339,7 @@ onMounted(loadData)
       :task-id="taskModal.taskId"
       :origin-rect="taskModal.originRect"
       @close="closeTaskModal"
+      @deleted="onTaskDeleted"
     />
 
     <TaskQuickActionsSheet

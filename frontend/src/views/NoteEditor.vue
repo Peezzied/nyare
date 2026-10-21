@@ -11,6 +11,8 @@ import {
   CheckCircle2,
   GraduationCap,
   ArrowRight,
+  EllipsisVertical,
+  Trash2,
 } from '@lucide/vue'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -21,6 +23,7 @@ import SaveButton from '@/components/SaveButton.vue'
 import { Button } from '@/components/ui/button'
 import TiptapEditor from '@/components/editor/TiptapEditor.vue'
 import { useNotes } from '@/composables/useNotes'
+import { useToasts } from '@/composables/useToasts'
 import { useCatalog } from '@/composables/useCatalog'
 import { useArchive } from '@/composables/useArchive'
 import CoursePicker from '@/components/CoursePicker.vue'
@@ -83,7 +86,14 @@ const route = useRoute()
 const router = useRouter()
 const { courses, schedules, loadCatalog } = useCatalog()
 const archive = useArchive()
-const { saveNote: persistNote, getNote } = useNotes()
+const {
+  saveNote: persistNote,
+  getNote,
+  stageNoteDeletion,
+  restoreStagedNote,
+  commitNoteDeletion,
+} = useNotes()
+const { pushToast } = useToasts()
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -419,6 +429,13 @@ function openCoursePicker() {
 
 const isUnsavedDialogOpen = ref(false)
 const pendingNavigation = ref<(() => void) | null>(null)
+const isActionsMenuOpen = ref(false)
+const isDeleteDialogOpen = ref(false)
+
+function openDeleteDialog() {
+  isActionsMenuOpen.value = false
+  isDeleteDialogOpen.value = true
+}
 
 function hasMeaningfulContent(): boolean {
   return (
@@ -461,6 +478,52 @@ function confirmDiscard() {
 function cancelDiscard() {
   isUnsavedDialogOpen.value = false
   pendingNavigation.value = null
+}
+
+/**
+ * Deletes the open note. The confirm dialog gates intent; the undo toast gates
+ * the server commit. Dismissing the toast (Undo, tap, swipe, close) restores
+ * the staged summary. When the toast expires, the delete commits; a failed
+ * commit restores the summary and reports an error.
+ */
+function confirmDelete() {
+  const id = activeNoteId.value
+  if (!id) {
+    return
+  }
+  isDeleteDialogOpen.value = false
+  const staged = stageNoteDeletion(id)
+  navigateBack()
+  if (!staged) {
+    void commitNoteDeletion(id).catch(() => {
+      pushToast({ kind: 'error', title: 'Could not delete the note' })
+    })
+    return
+  }
+  let restored = false
+  const restore = () => {
+    if (restored) {
+      return
+    }
+    restored = true
+    restoreStagedNote(staged)
+  }
+  pushToast({
+    kind: 'success',
+    title: 'Note deleted',
+    action: { label: 'Undo', onClick: restore },
+    onDismiss: restore,
+    onAutoClose: () => {
+      void commitNoteDeletion(id).catch(() => {
+        restore()
+        pushToast({
+          kind: 'error',
+          title: 'Delete failed',
+          detail: 'The note was restored.',
+        })
+      })
+    },
+  })
 }
 
 if (!props.embedded) {
@@ -688,13 +751,37 @@ defineExpose({ requestBack: handleBack })
         >
           Archived course
         </span>
-        <SaveButton
-          v-else
-          data-testid="save-button"
-          :saving="isSaving"
-          :disabled="isSaveDisabled"
-          @click="saveNote"
-        />
+        <div v-else class="flex items-center">
+          <Popover v-if="isEditMode" v-model:open="isActionsMenuOpen">
+            <PopoverTrigger as-child>
+              <button
+                type="button"
+                data-testid="note-actions-trigger"
+                aria-label="Note actions"
+                class="flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-full p-2.5 text-[#334155] transition-all hover:bg-slate-200/70 active:scale-95"
+              >
+                <EllipsisVertical class="h-6 w-6 stroke-[2.2]" aria-hidden="true" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="end" :side-offset="8" class="w-44 rounded-2xl p-1.5">
+              <button
+                type="button"
+                data-testid="delete-note-action"
+                class="flex h-11 w-full cursor-pointer items-center gap-2 rounded-xl px-3 text-left font-semibold text-[#B91C1C] transition-colors hover:bg-black/5"
+                @click="openDeleteDialog"
+              >
+                <Trash2 class="h-4 w-4 shrink-0" aria-hidden="true" />
+                <span class="min-w-0 flex-1 truncate">Delete note</span>
+              </button>
+            </PopoverContent>
+          </Popover>
+          <SaveButton
+            data-testid="save-button"
+            :saving="isSaving"
+            :disabled="isSaveDisabled"
+            @click="saveNote"
+          />
+        </div>
       </template>
     </DetailTopBar>
 
@@ -722,13 +809,14 @@ defineExpose({ requestBack: handleBack })
     <section class="shrink-0 space-y-4 px-4 pt-3 pb-2" :class="contentStaggerClass">
       <!-- Title Input -->
       <div>
-        <input
+        <textarea
           v-model="title"
           data-testid="title-input"
-          type="text"
+          rows="1"
           placeholder="Untitled Note..."
           :readonly="isArchivedCourse"
-          class="w-full bg-transparent !font-sans text-2xl font-bold text-text-main placeholder:text-text-muted outline-none"
+          class="field-sizing-content max-h-24 w-full resize-none bg-transparent !font-sans text-2xl font-bold leading-tight text-text-main placeholder:text-text-muted outline-none"
+          @keydown.enter.prevent
         />
       </div>
 
@@ -896,6 +984,42 @@ defineExpose({ requestBack: handleBack })
           @click="confirmDiscard"
         >
           Discard
+        </Button>
+      </template>
+    </DialogShell>
+
+    <!-- Delete Note Dialog -->
+    <DialogShell v-model:open="isDeleteDialogOpen" title="Delete Note">
+      <p
+        data-testid="delete-note-dialog"
+        class="mt-2 text-sm text-[#7B8B97]"
+        style="font-family: 'Inter', sans-serif; font-weight: 400"
+      >
+        Delete this note? You can undo the delete for a few seconds.
+      </p>
+
+      <template #actions="{ disabled, dismiss }">
+        <Button
+          type="button"
+          variant="secondary"
+          size="touch"
+          data-testid="cancel-delete-button"
+          :disabled="disabled"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
+          @click="dismiss"
+        >
+          Back
+        </Button>
+        <Button
+          type="button"
+          variant="tactile-destructive"
+          size="touch"
+          data-testid="confirm-delete-button"
+          :disabled="disabled"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          @click="confirmDelete"
+        >
+          Delete
         </Button>
       </template>
     </DialogShell>
