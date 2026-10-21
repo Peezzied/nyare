@@ -2,14 +2,15 @@
 // One toast card. Tap or a horizontal swipe past the threshold dismisses it.
 // The card tracks the finger, fades as it travels, then flies out in the
 // swipe direction; sub-threshold drags spring back to center.
+// Hover or keyboard focus pauses its expiry timer so actions stay reachable.
 import { computed, ref } from 'vue'
-import { CircleCheck, CircleX, LoaderCircle } from '@lucide/vue'
+import { CircleCheck, CircleX, Info, LoaderCircle, X } from '@lucide/vue'
 import { resolveDismissSwipe } from '@/utils/swipeGesture'
 import type { Toast, ToastKind } from '@/composables/useToasts'
 
-defineProps<{ toast: Toast }>()
+const props = defineProps<{ toast: Toast }>()
 
-const emit = defineEmits<{ dismiss: [] }>()
+const emit = defineEmits<{ dismiss: []; pause: []; resume: [] }>()
 
 function icon(kind: ToastKind) {
   switch (kind) {
@@ -17,8 +18,10 @@ function icon(kind: ToastKind) {
       return CircleCheck
     case 'error':
       return CircleX
-    default:
+    case 'loading':
       return LoaderCircle
+    default:
+      return Info
   }
 }
 
@@ -110,42 +113,70 @@ function onClick() {
   }
   emit('dismiss')
 }
+
+function onActionClick() {
+  props.toast.action?.onClick()
+  emit('dismiss')
+}
 </script>
 
 <template>
-  <button
-    type="button"
+  <div
     data-testid="toast"
-    class="pointer-events-auto flex w-full max-w-[340px] items-start gap-3 rounded-2xl border border-[#CBD5E1] bg-white p-3.5 text-left shadow-[0_8px_24px_rgba(0,0,0,0.12)] select-none"
-    :class="dragging ? '' : 'transition-[transform,opacity] duration-200 ease-out'"
+    class="pointer-events-auto flex w-full max-w-[340px] cursor-pointer gap-3 rounded-2xl border border-(--color-app-border) bg-(--color-card) p-3.5 text-left shadow-[0_8px_24px_rgba(0,0,0,0.12)] select-none"
+    :class="[
+      toast.detail ? 'items-start' : 'items-center',
+      dragging ? '' : 'transition-[transform,opacity] duration-200 ease-out',
+    ]"
     :style="cardStyle"
     @click="onClick"
     @pointerdown="onPointerDown"
     @pointermove="onPointerMove"
     @pointerup="onPointerEnd"
     @pointercancel="onPointerCancel"
+    @mouseenter="emit('pause')"
+    @mouseleave="emit('resume')"
+    @focusin="emit('pause')"
+    @focusout="emit('resume')"
   >
     <component
       :is="icon(toast.kind)"
-      class="mt-0.5 h-5 w-5 shrink-0"
-      :class="{ 'animate-spin': toast.kind === 'info' }"
+      class="h-5 w-5 shrink-0"
+      :class="{ 'mt-0.5': toast.detail, 'animate-spin': toast.kind === 'loading' }"
       :style="{ color: iconColor(toast.kind) }"
       aria-hidden="true"
     />
     <span class="min-w-0 flex-1">
-      <span
-        class="block text-sm font-semibold text-[#334155]"
-        style="font-family: 'Quicksand', sans-serif; font-weight: 600"
-      >
+      <span class="block font-sans text-sm font-semibold text-(--color-text-main)">
         {{ toast.title }}
       </span>
       <span
         v-if="toast.detail"
-        class="mt-0.5 block text-xs text-[#7B8B97]"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
+        class="mt-0.5 block font-secondary text-xs text-(--color-text-muted)"
       >
         {{ toast.detail }}
       </span>
     </span>
-  </button>
+    <span v-if="toast.action" class="-my-2 -mr-1.5 flex shrink-0 items-center self-center">
+      <button
+        type="button"
+        data-testid="toast-action"
+        class="min-h-11 cursor-pointer rounded-lg px-3 font-sans text-sm font-bold text-[#007B99] transition-colors hover:bg-[#E8F6FA] focus-visible:ring-2 focus-visible:ring-[#00A4C8]/60 focus-visible:outline-none"
+        @click.stop="onActionClick"
+        @pointerdown.stop
+      >
+        {{ toast.action.label }}
+      </button>
+      <button
+        type="button"
+        aria-label="Dismiss"
+        data-testid="toast-dismiss"
+        class="flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-full text-(--color-text-muted) transition-colors hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-[#00A4C8]/60 focus-visible:outline-none"
+        @click.stop="emit('dismiss')"
+        @pointerdown.stop
+      >
+        <X class="h-4 w-4" aria-hidden="true" />
+      </button>
+    </span>
+  </div>
 </template>

@@ -122,7 +122,7 @@ function showBubble(kind: ToastKind, title: string, detail?: string): void {
 
 watch(proc.running, (on) => {
   if (on) {
-    showBubble('info', 'Duckota is on it', 'Reading your pending notes.')
+    showBubble('loading', 'Duckota is on it', 'Reading your pending notes.')
   }
 })
 

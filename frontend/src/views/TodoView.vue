@@ -18,8 +18,6 @@ import { toTapOriginRect } from '@/composables/useNoteTransition'
 import TaskRow from '@/components/TaskRow.vue'
 import TaskContainerModal from '@/components/tasks/TaskContainerModal.vue'
 import TaskQuickActionsSheet from '@/components/tasks/TaskQuickActionsSheet.vue'
-import { Toaster } from '@/components/ui/sonner'
-import { toast } from 'vue-sonner'
 import { formatDueLabel, formatDuration, isOverdue } from '@/utils/taskUrgency'
 import { minutesToDuration } from '@/utils/duration'
 import { fromTask, toTaskRequest, type TaskFormState } from '@/utils/taskForm'
@@ -112,9 +110,12 @@ async function patchTask(patch: Partial<TaskFormState>, successLabel: string) {
   try {
     await updateTask(task.id, toTaskRequest({ ...fromTask(task), ...patch }, task.status))
     quickSheet.value = { ...quickSheet.value, open: false }
-    toast.success(successLabel)
+    useToasts().pushToast({ kind: 'success', title: successLabel })
   } catch (err) {
-    toast.error(err instanceof Error ? err.message : 'Could not update task')
+    useToasts().pushToast({
+      kind: 'error',
+      title: err instanceof Error ? err.message : 'Could not update task',
+    })
   }
 }
 
@@ -152,15 +153,22 @@ function quickDelete() {
     }
     deleteTask(task.id).catch((err) => {
       restore()
-      toast.error(err instanceof Error ? err.message : 'Could not delete task')
+      useToasts().pushToast({
+        kind: 'error',
+        title: err instanceof Error ? err.message : 'Could not delete task',
+      })
     })
   }
-  toast('Task deleted', {
-    duration: 5000,
-    action: { label: 'Undo', onClick: restore },
-    onAutoClose: commit,
-    onDismiss: commit,
-  })
+  useToasts().pushToast(
+    {
+      kind: 'info',
+      title: 'Task deleted',
+      action: { label: 'Undo', onClick: restore },
+      onAutoClose: commit,
+      onDismiss: commit,
+    },
+    5000,
+  )
 }
 
 const filters: { key: ActiveFilter; label: string }[] = [
@@ -367,8 +375,6 @@ onMounted(loadData)
       @duration="applyDuration"
       @delete="quickDelete"
     />
-
-    <Toaster />
   </div>
 </template>
 

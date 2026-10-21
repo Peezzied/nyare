@@ -12,18 +12,15 @@ import { useCourseDrafts } from '@/composables/useCourseDrafts'
 import { createCourseEditor, type CourseEditor } from '@/composables/useCourseEditor'
 import type { TimeBlockDraft } from '@/components/TimeBlockCard.vue'
 import type { PendingSlot } from '@/utils/weekPreview'
-import { toast } from 'vue-sonner'
+import { useToasts } from '@/composables/useToasts'
+import type { ToastKind } from '@/composables/useToasts'
 
-vi.mock('vue-sonner', () => ({
-  Toaster: {
-    name: 'Toaster',
-    template: '<div data-testid="sonner-toaster" />',
-  },
-  toast: {
-    success: vi.fn<(message: string) => void>(),
-    error: vi.fn<(message: string, options?: unknown) => void>(),
-  },
-}))
+/** Titles of the toasts currently on the shared shelf, optionally one kind. */
+function toastTitles(kind?: ToastKind): string[] {
+  return useToasts()
+    .toasts.value.filter((t) => !kind || t.kind === kind)
+    .map((t) => t.title)
+}
 
 interface ExposedScheduleView {
   courseName: string
@@ -97,6 +94,7 @@ describe('CreateScheduleView', () => {
   beforeEach(() => {
     router = makeRouter()
     vi.clearAllMocks()
+    useToasts().toasts.value.splice(0)
     mockCourses.value = []
     mockSchedules.value = []
     mockLoadCatalog.mockResolvedValue(undefined)
@@ -287,8 +285,7 @@ describe('CreateScheduleView', () => {
     const { draftCourses, draftSchedules } = useCourseDrafts()
     expect(draftCourses.value).toHaveLength(0)
     expect(draftSchedules.value).toHaveLength(0)
-    expect(wrapper.find('[data-testid="sonner-toaster"]').exists()).toBe(true)
-    expect(toast.success).toHaveBeenCalledWith('Course and schedule saved successfully.')
+    expect(toastTitles('success')).toContain('Course and schedule saved successfully.')
     expect(wrapper.find('[role="status"]').exists()).toBe(false)
 
     // A sessioned account never registers; it already exists.
@@ -349,10 +346,10 @@ describe('CreateScheduleView', () => {
     await submitAll(wrapper)
     await flushPromises()
 
-    expect(toast.error).toHaveBeenCalledWith(
-      'A course named "cs 101" already exists.',
-      expect.objectContaining({ action: expect.objectContaining({ label: 'Open course' }) }),
+    const dupToast = useToasts().toasts.value.find(
+      (t) => t.kind === 'error' && t.title === 'A course named "cs 101" already exists.',
     )
+    expect(dupToast?.action?.label).toBe('Open course')
     expect(wrapper.find('[role="alert"]').exists()).toBe(false)
     expect(useCourseDrafts().draftCourses.value).toHaveLength(0)
   })
@@ -375,7 +372,7 @@ describe('CreateScheduleView', () => {
     // Re-saving the same form instance does not flag duplicate against itself
     await submitAll(wrapper)
     await flushPromises()
-    expect(toast.success).toHaveBeenCalledTimes(2)
+    expect(toastTitles('success')).toHaveLength(2)
     expect(wrapper.find('[role="status"]').exists()).toBe(false)
 
     // But a new attempt with the same name is blocked; the persisted course
@@ -390,10 +387,10 @@ describe('CreateScheduleView', () => {
 
     await submitAll(wrapper2)
     await flushPromises()
-    expect(toast.error).toHaveBeenCalledWith(
-      'A course named "physics 101" already exists.',
-      expect.objectContaining({ action: expect.objectContaining({ label: 'Open course' }) }),
+    const dupToast2 = useToasts().toasts.value.find(
+      (t) => t.kind === 'error' && t.title === 'A course named "physics 101" already exists.',
     )
+    expect(dupToast2?.action?.label).toBe('Open course')
     expect(wrapper2.find('[role="alert"]').exists()).toBe(false)
   })
 
@@ -435,7 +432,7 @@ describe('CreateScheduleView', () => {
     await wrapper.find('[aria-label="Submit schedule"]').trigger('click')
     await flushPromises()
 
-    expect(toast.error).toHaveBeenCalledWith('A class time clashes with CS 101 on MONDAY.')
+    expect(toastTitles('error')).toContain('A class time clashes with CS 101 on MONDAY.')
     expect(wrapper.find('[role="alert"]').exists()).toBe(false)
     expect(useCourseDrafts().draftCourses.value).toHaveLength(0)
   })
@@ -462,7 +459,7 @@ describe('CreateScheduleView', () => {
     await wrapper.find('[aria-label="Submit schedule"]').trigger('click')
     await flushPromises()
 
-    expect(toast.error).toHaveBeenCalledWith('Two time blocks for this course overlap on MONDAY.')
+    expect(toastTitles('error')).toContain('Two time blocks for this course overlap on MONDAY.')
     expect(wrapper.find('[role="alert"]').exists()).toBe(false)
   })
 
@@ -1018,7 +1015,7 @@ describe('CreateScheduleView', () => {
     const { draftCourses, draftSchedules } = useCourseDrafts()
     expect(draftCourses.value).toHaveLength(0)
     expect(draftSchedules.value).toHaveLength(0)
-    expect(toast.success).toHaveBeenCalledWith('All courses and schedules saved successfully.')
+    expect(toastTitles('success')).toContain('All courses and schedules saved successfully.')
   })
 
   it('swaps the drawer form when a different course chip is tapped', async () => {
@@ -1132,7 +1129,7 @@ describe('CreateScheduleView', () => {
     const { draftCourses } = useCourseDrafts()
     expect(draftCourses.value).toHaveLength(1)
     expect(draftCourses.value[0]?.name).toBe('History')
-    expect(toast.success).toHaveBeenCalledWith(
+    expect(toastTitles('success')).toContain(
       'Course kept for this session. Use Submit to save it to your account.',
     )
 
@@ -1281,9 +1278,9 @@ describe('CreateScheduleView', () => {
     await flushPromises()
 
     // The conflict check reports the first clashing editor (Math)
-    const call = vi.mocked(toast.error).mock.calls[0]!
-    const action = (call[1] as { action: { onClick: () => void } }).action
-    action.onClick()
+    const errToast = useToasts().toasts.value.find((t) => t.kind === 'error')
+    expect(errToast?.action?.label).toBe('Open course')
+    errToast?.action?.onClick()
     await flushPromises()
 
     expect((wrapper.vm as unknown as ExposedScheduleView).activeEditorId).toBe(firstEditorId)

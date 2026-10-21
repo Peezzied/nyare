@@ -1,11 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { defineComponent, h, ref, toValue } from 'vue'
 import { DOMWrapper, enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
-import { toast } from 'vue-sonner'
 import ManageCoursesView from '../ManageCoursesView.vue'
 import AppHeader from '@/components/AppHeader.vue'
 import CourseEditorDrawer from '@/components/CourseEditorDrawer.vue'
 import { provideShellHeader } from '@/composables/useShellHeader'
+import { useToasts } from '@/composables/useToasts'
+import type { ToastKind } from '@/composables/useToasts'
 import { COURSE_PALETTE_24, getCourseColor } from '@/constants/palette'
 import { coursesApi, schedulesApi } from '@/api'
 import { ApiError } from '@/api/client'
@@ -21,23 +22,6 @@ vi.mock('vue-router', () => ({
     routeLeaveGuard = cb
   },
 }))
-
-vi.mock('vue-sonner', () => {
-  // The Undo toast calls `toast(message, options)` directly, so the mock is
-  // callable and carries the error, success, and dismiss methods too.
-  const toastMock = vi.fn<(message: string, options?: unknown) => string | number>(() => 0)
-  Object.assign(toastMock, {
-    error: vi.fn<(message: string) => void>(),
-    success: vi.fn<(message: string) => void>(),
-    dismiss: vi.fn<(id?: number | string) => void>(),
-  })
-  return {
-    toast: toastMock,
-    // `@/components/ui/sonner` re-exports this vue-sonner component. The stub
-    // renders nothing and swallows the Toaster props it cannot inherit.
-    Toaster: { name: 'SonnerStub', inheritAttrs: false, render: () => null },
-  }
-})
 
 vi.mock('@/api', () => ({
   coursesApi: {
@@ -161,15 +145,11 @@ interface ExposedManageCoursesView {
   editorOpen: boolean
 }
 
-/** Options of one plain `toast(message, options)` call in the mocked vue-sonner. */
-interface UndoToastOptions {
-  action?: { label: string; onClick: () => void }
-  duration?: number
-}
-
-/** Reads the captured calls of the callable `toast` mock. */
-function toastCalls(): [string, UndoToastOptions?][] {
-  return (toast as unknown as { mock: { calls: [string, UndoToastOptions?][] } }).mock.calls
+/** Titles of the toasts currently on the shared shelf, optionally one kind. */
+function toastTitles(kind?: ToastKind): string[] {
+  return useToasts()
+    .toasts.value.filter((t) => !kind || t.kind === kind)
+    .map((t) => t.title)
 }
 
 const algebra: CourseResponse = { id: 1, name: 'Algebra', description: null, userId: 1 }
@@ -213,6 +193,7 @@ describe('ManageCoursesView', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    useToasts().toasts.value.splice(0)
     mockCourses.value = []
     mockSchedules.value = []
     routeLeaveGuard = null
@@ -350,7 +331,7 @@ describe('ManageCoursesView', () => {
     const wrapper = mountView()
     await flushPromises()
 
-    expect(toast.error).toHaveBeenCalledWith('Courses failed to load.')
+    expect(toastTitles('error')).toContain('Courses failed to load.')
     const errorBox = wrapper.get('[data-testid="manage-courses-error"]')
 
     mockCourses.value = [algebra]
@@ -421,7 +402,7 @@ describe('ManageCoursesView', () => {
     expect(mockSchedules.value).toEqual([
       { id: 11, courseId: 1, day: 'TUESDAY', startTime: '13:00', endTime: '14:30' },
     ])
-    expect(toast.success).toHaveBeenCalledWith('Course updated.')
+    expect(toastTitles('success')).toContain('Course updated.')
     expect(viewVm(wrapper).editingCourse).toBeNull()
     expect(drawerBody().find('#course-name-input').exists()).toBe(false)
   })
@@ -464,7 +445,7 @@ describe('ManageCoursesView', () => {
     expect(schedulesApi.update).not.toHaveBeenCalled()
     expect(schedulesApi.delete).not.toHaveBeenCalled()
     expect(mockSchedules.value.some((s) => s.id === 12)).toBe(true)
-    expect(toast.success).toHaveBeenCalledWith('Course updated.')
+    expect(toastTitles('success')).toContain('Course updated.')
   })
 
   it('deletes removed class times through schedulesApi.delete on save', async () => {
@@ -489,7 +470,7 @@ describe('ManageCoursesView', () => {
     expect(schedulesApi.update).not.toHaveBeenCalled()
     expect(schedulesApi.create).not.toHaveBeenCalled()
     expect(mockSchedules.value).toEqual([algebraMonday])
-    expect(toast.success).toHaveBeenCalledWith('Course updated.')
+    expect(toastTitles('success')).toContain('Course updated.')
   })
 
   it('saves a course after its last class time is removed', async () => {
@@ -532,9 +513,9 @@ describe('ManageCoursesView', () => {
     wrapper.findComponent(CourseEditorDrawer).vm.$emit('save')
     await flushPromises()
 
-    expect(toast.error).toHaveBeenCalledWith(
-      expect.stringContaining('end time after its start time'),
-    )
+    expect(
+      toastTitles('error').some((t) => t.includes('end time after its start time')),
+    ).toBe(true)
     expect(drawer.get('[role="alert"]').text()).toBe('End time must be after start time.')
     expect(schedulesApi.update).not.toHaveBeenCalled()
     expect(schedulesApi.create).not.toHaveBeenCalled()
@@ -556,7 +537,7 @@ describe('ManageCoursesView', () => {
     await drawerBody().get('[data-testid="save-course"]').trigger('click')
     await flushPromises()
 
-    expect(toast.error).toHaveBeenCalledWith('A class time clashes with Biology on MONDAY.')
+    expect(toastTitles('error')).toContain('A class time clashes with Biology on MONDAY.')
     expect(coursesApi.update).not.toHaveBeenCalled()
     expect(schedulesApi.update).not.toHaveBeenCalled()
     expect(viewVm(wrapper).editingCourse?.id).toBe(1)
@@ -577,7 +558,7 @@ describe('ManageCoursesView', () => {
     await drawer.get('[data-testid="save-course"]').trigger('click')
     await flushPromises()
 
-    expect(toast.error).toHaveBeenCalledWith('Server exploded')
+    expect(toastTitles('error')).toContain('Server exploded')
     expect(viewVm(wrapper).editingCourse?.id).toBe(1)
     expect(viewVm(wrapper).editorOpen).toBe(true)
     expect(viewVm(wrapper).editingEditor?.blocks[0]?.endTime).toBe('11:00')
@@ -670,7 +651,7 @@ describe('ManageCoursesView', () => {
       expect.objectContaining({ name: 'Algebra', color: 'grape' }),
     )
     expect(mockCourses.value[0]?.color).toBe('grape')
-    expect(toast.success).toHaveBeenCalledWith('Course updated.')
+    expect(toastTitles('success')).toContain('Course updated.')
   })
 
   it('sends the picked color when a new course is created', async () => {
@@ -689,7 +670,7 @@ describe('ManageCoursesView', () => {
 
     expect(coursesApi.create).toHaveBeenCalledWith({ name: 'Music', color: 'peacock' })
     expect(mockCourses.value[0]?.color).toBe('peacock')
-    expect(toast.success).toHaveBeenCalledWith('Course added.')
+    expect(toastTitles('success')).toContain('Course added.')
   })
 
   it('blocks the save when the course name is blank', async () => {
@@ -710,7 +691,7 @@ describe('ManageCoursesView', () => {
     wrapper.findComponent(CourseEditorDrawer).vm.$emit('save')
     await flushPromises()
 
-    expect(toast.error).toHaveBeenCalledWith('Enter a course name before saving.')
+    expect(toastTitles('error')).toContain('Enter a course name before saving.')
     expect(coursesApi.update).not.toHaveBeenCalled()
     expect(schedulesApi.update).not.toHaveBeenCalled()
     expect(schedulesApi.create).not.toHaveBeenCalled()
@@ -816,7 +797,7 @@ describe('ManageCoursesView', () => {
     await drawerBody().get('[data-testid="save-course"]').trigger('click')
     await flushPromises()
 
-    expect(toast.error).toHaveBeenCalledWith('This course no longer exists.')
+    expect(toastTitles('error')).toContain('This course no longer exists.')
     expect(mockCourses.value).toEqual([])
     expect(mockSchedules.value).toEqual([])
     expect(viewVm(wrapper).editingCourse).toBeNull()
@@ -837,7 +818,7 @@ describe('ManageCoursesView', () => {
     await drawer.get('[data-testid="save-course"]').trigger('click')
     await flushPromises()
 
-    expect(toast.error).toHaveBeenCalledWith('Schedule not found')
+    expect(toastTitles('error')).toContain('Schedule not found')
     expect(mockCourses.value).toEqual([])
     expect(mockSchedules.value).toEqual([])
     expect(viewVm(wrapper).editingCourse).toBeNull()
@@ -1042,7 +1023,7 @@ describe('ManageCoursesView', () => {
     expect(viewVm(wrapper).addingCourse).toBe(false)
     expect(viewVm(wrapper).editorOpen).toBe(false)
     expect(drawerBody().find('#course-name-input').exists()).toBe(false)
-    expect(toast.success).toHaveBeenCalledWith('Course added.')
+    expect(toastTitles('success')).toContain('Course added.')
   })
 
   it('creates a course without class times when the block stays blank', async () => {
@@ -1059,7 +1040,7 @@ describe('ManageCoursesView', () => {
     expect(coursesApi.create).toHaveBeenCalledWith({ name: 'Art', color: 'tomato' })
     expect(schedulesApi.create).not.toHaveBeenCalled()
     expect(wrapper.get('[data-testid="manage-course-card"]').text()).toContain('No class times')
-    expect(toast.success).toHaveBeenCalledWith('Course added.')
+    expect(toastTitles('success')).toContain('Course added.')
   })
 
   it('keeps the drawer open with the entered values when the create fails', async () => {
@@ -1075,7 +1056,7 @@ describe('ManageCoursesView', () => {
     await drawer.get('[data-testid="save-course"]').trigger('click')
     await flushPromises()
 
-    expect(toast.error).toHaveBeenCalledWith('Create failed')
+    expect(toastTitles('error')).toContain('Create failed')
     expect(viewVm(wrapper).addingCourse).toBe(true)
     expect(viewVm(wrapper).editorOpen).toBe(true)
     expect(viewVm(wrapper).editingEditor?.name).toBe('Art')
@@ -1106,7 +1087,7 @@ describe('ManageCoursesView', () => {
     expect(mockSchedules.value).toEqual([])
     expect(viewVm(wrapper).deletingCourse).toBeNull()
     expect(wrapper.findAll('[data-testid="manage-course-card"]')).toHaveLength(1)
-    expect(toast.success).toHaveBeenCalledWith('Course deleted.')
+    expect(toastTitles('success')).toContain('Course deleted.')
   })
 
   it('keeps the course when the student cancels the delete', async () => {
@@ -1139,7 +1120,7 @@ describe('ManageCoursesView', () => {
     await viewButton(wrapper, 'Delete')!.trigger('click')
     await flushPromises()
 
-    expect(toast.error).toHaveBeenCalledWith('Delete failed')
+    expect(toastTitles('error')).toContain('Delete failed')
     expect(viewVm(wrapper).deletingCourse).toBeNull()
     expect(wrapper.get('[data-testid="manage-course-card"]').text()).toContain('Algebra')
     expect(mockCourses.value).toEqual([algebra])
@@ -1200,7 +1181,7 @@ describe('ManageCoursesView', () => {
     expect(mockSchedules.value).toEqual([])
     expect(viewVm(wrapper).archivingCourse).toBeNull()
     expect(wrapper.findAll('[data-testid="manage-course-card"]')).toHaveLength(1)
-    expect(toast.success).toHaveBeenCalledWith('Course archived.')
+    expect(toastTitles('success')).toContain('Course archived.')
   })
 
   it('keeps the course and calls nothing when the student cancels the archive', async () => {
@@ -1275,6 +1256,7 @@ describe('ManageCoursesView', () => {
       { ...biology, archivedAt },
     ])
 
+    const timeoutSpy = vi.spyOn(globalThis, 'setTimeout')
     const wrapper = mountView()
     await flushPromises()
 
@@ -1289,13 +1271,11 @@ describe('ManageCoursesView', () => {
     expect(viewVm(wrapper).archiveAllOpen).toBe(false)
     expect(wrapper.findAll('[data-testid="manage-course-card"]')).toHaveLength(0)
     expect(wrapper.get('[data-testid="manage-empty-state"]').text()).toContain('No courses yet')
-    expect(toast).toHaveBeenCalledWith(
-      'Archived 2 courses',
-      expect.objectContaining({
-        duration: 8000,
-        action: expect.objectContaining({ label: 'Undo' }),
-      }),
-    )
+    const undoToast = useToasts().toasts.value.find((t) => t.title === 'Archived 2 courses')
+    expect(undoToast?.kind).toBe('info')
+    expect(undoToast?.action?.label).toBe('Undo')
+    expect(timeoutSpy).toHaveBeenCalledWith(expect.any(Function), 8000)
+    timeoutSpy.mockRestore()
   })
 
   it('unarchives exactly the bulk-archived courses when the student selects Undo', async () => {
@@ -1320,9 +1300,9 @@ describe('ManageCoursesView', () => {
 
     expect(mockCourses.value).toEqual([chemistry])
 
-    const undoToast = toastCalls().find(([message]) => message === 'Archived 2 courses')
-    expect(undoToast?.[1]?.action?.label).toBe('Undo')
-    undoToast![1]!.action!.onClick()
+    const undoToast = useToasts().toasts.value.find((t) => t.title === 'Archived 2 courses')
+    expect(undoToast?.action?.label).toBe('Undo')
+    undoToast?.action?.onClick()
     await flushPromises()
 
     expect(coursesApi.unarchiveMany).toHaveBeenCalledWith([1, 2])
@@ -1331,7 +1311,7 @@ describe('ManageCoursesView', () => {
       { ...biology, archivedAt: null },
       chemistry,
     ])
-    expect(toast.success).toHaveBeenCalledWith('Courses restored.')
+    expect(toastTitles('success')).toContain('Courses restored.')
     expect(wrapper.findAll('[data-testid="manage-course-card"]')).toHaveLength(3)
   })
 
@@ -1348,11 +1328,11 @@ describe('ManageCoursesView', () => {
     await wrapper.get('[data-testid="manage-archive-all-confirm"]').trigger('click')
     await flushPromises()
 
-    expect(toast.error).toHaveBeenCalledWith('Archive failed')
+    expect(toastTitles('error')).toContain('Archive failed')
     expect(mockCourses.value).toEqual([algebra, biology])
     expect(mockSchedules.value).toEqual([algebraMonday])
     expect(wrapper.findAll('[data-testid="manage-course-card"]')).toHaveLength(2)
-    expect(toastCalls()).toHaveLength(0)
+    expect(useToasts().toasts.value.some((t) => t.action !== undefined)).toBe(false)
   })
 
   it('dismisses the Undo toast when the student leaves the page', async () => {
@@ -1368,6 +1348,6 @@ describe('ManageCoursesView', () => {
 
     expect(routeLeaveGuard).not.toBeNull()
     expect(routeLeaveGuard!({ fullPath: '/archive' })).toBe(true)
-    expect(toast.dismiss).toHaveBeenCalledWith(0)
+    expect(useToasts().toasts.value).toHaveLength(0)
   })
 })

@@ -3,7 +3,7 @@
 // run states here instead of the toast shelf. AppShell renders one at a
 // time, auto-dismisses it, and opens the Process dialog on tap.
 import { computed } from 'vue'
-import { CircleCheck, CircleX, LoaderCircle } from '@lucide/vue'
+import { CircleCheck, CircleX, Info, LoaderCircle } from '@lucide/vue'
 import type { ToastKind } from '@/composables/useToasts'
 
 export interface DuckotaBubbleProps {
@@ -26,8 +26,10 @@ const icon = computed(() => {
       return CircleCheck
     case 'error':
       return CircleX
-    default:
+    case 'loading':
       return LoaderCircle
+    default:
+      return Info
   }
 })
 
@@ -53,7 +55,7 @@ const iconColor = computed(() => {
     <component
       :is="icon"
       class="mt-0.5 h-5 w-5 shrink-0"
-      :class="{ 'motion-safe:animate-spin': kind === 'info' }"
+      :class="{ 'motion-safe:animate-spin': kind === 'loading' }"
       :style="{ color: iconColor }"
       aria-hidden="true"
     />

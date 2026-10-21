@@ -3,7 +3,6 @@
 @import 'tailwindcss';
 @import './base.css';
 @import 'tw-animate-css';
-@import 'vue-sonner/style.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -243,9 +242,4 @@
 .sx__slide-left,
 .sx__slide-right {
   animation: none !important;
-}
-
-/* Keep sonner toasts interactive while a modal layer holds the body pointer-events lock */
-[data-sonner-toast] {
-  pointer-events: auto;
 }
