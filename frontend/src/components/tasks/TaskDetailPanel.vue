@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Task form and detail content. Create mode is active when taskId is null.
 import { computed, onMounted, reactive, ref } from 'vue'
-import { ArrowLeft, CalendarIcon, Clock, FileText, Trash2, X } from '@lucide/vue'
+import { CalendarIcon, Clock, FileText, Trash2, X } from '@lucide/vue'
 import { parseDate, type DateValue } from '@internationalized/date'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -12,6 +12,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import DialogShell from '@/components/ui/DialogShell.vue'
 import CoursePicker from '@/components/CoursePicker.vue'
+import DetailTopBar from '@/components/DetailTopBar.vue'
+import SaveButton from '@/components/SaveButton.vue'
 import { ApiError } from '@/api'
 import { useCatalog } from '@/composables/useCatalog'
 import { useArchive } from '@/composables/useArchive'
@@ -268,49 +270,30 @@ onMounted(() => {
 <template>
   <div class="flex h-full flex-col overflow-hidden bg-[#F5F6EE] text-slate-800">
     <!-- Header bar: close left, title center, save right -->
-    <header
-      class="relative flex h-14 shrink-0 items-center justify-between border-b-[3px] border-(--color-app-border) px-4"
+    <DetailTopBar
+      :title="isViewMode ? 'Task' : 'New task'"
+      back-label="Close"
       :class="contentStaggerClass"
+      @close="emit('close')"
     >
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon-touch"
-        data-testid="task-back"
-        aria-label="Close"
-        class="text-(--color-text-main)"
-        @click="emit('close')"
-      >
-        <ArrowLeft class="size-6" />
-      </Button>
-
-      <h1
-        class="pointer-events-none absolute left-1/2 -translate-x-1/2 text-xl font-bold tracking-tight text-slate-800"
-        style="font-family: 'Quicksand', sans-serif; font-weight: 700"
-      >
-        {{ isViewMode ? 'Task' : 'New task' }}
-      </h1>
-
-      <span
-        v-if="isArchivedCourse"
-        data-testid="archived-course-label"
-        class="inline-flex min-h-11 items-center rounded-full border border-(--color-app-border) bg-white px-4 text-xs font-bold uppercase tracking-wider text-(--color-text-muted)"
-      >
-        Archived course
-      </span>
-      <Button
-        v-else
-        type="button"
-        variant="tactile"
-        size="touch"
-        data-testid="task-save"
-        :disabled="saving || !dirty || !canSave"
-        :class="controlsStaggerClass"
-        @click="handleSave"
-      >
-        {{ saving ? 'Saving…' : 'Save' }}
-      </Button>
-    </header>
+      <template #trailing>
+        <span
+          v-if="isArchivedCourse"
+          data-testid="archived-course-label"
+          class="inline-flex min-h-11 items-center rounded-full border border-(--color-app-border) bg-white px-4 text-xs font-bold uppercase tracking-wider text-(--color-text-muted)"
+        >
+          Archived course
+        </span>
+        <SaveButton
+          v-else
+          data-testid="task-save"
+          :saving="saving"
+          :disabled="saving || !dirty || !canSave"
+          :class="controlsStaggerClass"
+          @click="handleSave"
+        />
+      </template>
+    </DetailTopBar>
 
     <main class="flex-1 overflow-y-auto px-4 py-4">
       <!-- Identity zone -->

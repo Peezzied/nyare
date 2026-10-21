@@ -245,7 +245,7 @@ describe('NoteEditor.vue', () => {
     await flushPromises()
 
     // Clicking back triggers the unsaved changes dialog
-    const backButton = wrapper.find('[data-testid="back-button"]')
+    const backButton = wrapper.find('[data-testid="detail-back"]')
     await backButton.trigger('click')
     await flushPromises()
 
@@ -644,7 +644,7 @@ describe('NoteEditor.vue', () => {
     const wrapper = mount(NoteEditor, { attachTo: document.body })
     await flushPromises()
 
-    const backButton = wrapper.find('[data-testid="back-button"]')
+    const backButton = wrapper.find('[data-testid="detail-back"]')
     await backButton.trigger('click')
     await flushPromises()
 
@@ -684,7 +684,7 @@ describe('NoteEditor.vue', () => {
     await picker.vm.$emit('select', 2)
     await flushPromises()
 
-    const backButton = wrapper.find('[data-testid="back-button"]')
+    const backButton = wrapper.find('[data-testid="detail-back"]')
     await backButton.trigger('click')
     await flushPromises()
 
@@ -715,7 +715,7 @@ describe('NoteEditor.vue', () => {
     await titleInput.setValue('Calculus Derivatives with Integrals')
     await flushPromises()
 
-    const backButton = wrapper.find('[data-testid="back-button"]')
+    const backButton = wrapper.find('[data-testid="detail-back"]')
     await backButton.trigger('click')
     await flushPromises()
 
@@ -763,7 +763,7 @@ describe('NoteEditor.vue', () => {
     await tiptap.vm.$emit('update:modelValue', '<p>Modified physics body</p>')
     await flushPromises()
 
-    const backButton = wrapper.find('[data-testid="back-button"]')
+    const backButton = wrapper.find('[data-testid="detail-back"]')
     await backButton.trigger('click')
     await flushPromises()
 
@@ -804,7 +804,7 @@ describe('NoteEditor.vue', () => {
     await titleInput.setValue('Transient Title')
     await flushPromises()
 
-    const backButton = wrapper.find('[data-testid="back-button"]')
+    const backButton = wrapper.find('[data-testid="detail-back"]')
     await backButton.trigger('click')
     await flushPromises()
 
@@ -862,7 +862,7 @@ describe('NoteEditor.vue', () => {
     })
     await flushPromises()
 
-    await wrapper.find('[data-testid="back-button"]').trigger('click')
+    await wrapper.find('[data-testid="detail-back"]').trigger('click')
     await flushPromises()
 
     expect(wrapper.emitted('close')).toHaveLength(1)
