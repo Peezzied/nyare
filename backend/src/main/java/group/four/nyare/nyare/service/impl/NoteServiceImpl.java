@@ -33,8 +33,6 @@ public class NoteServiceImpl implements NoteService {
     public static final int DEFAULT_MAX_BACKDATE_DAYS = 14;
 
     private static final int PREVIEW_MAX_LENGTH = 200;
-    private static final int TITLE_MAX_LENGTH = 60;
-    private static final String DEFAULT_TITLE = "Untitled Note";
 
     @Value("${nyare.notes.max-backdate-days:14}")
     private int maxBackdateDays = DEFAULT_MAX_BACKDATE_DAYS;
@@ -65,7 +63,7 @@ public class NoteServiceImpl implements NoteService {
         if (request.getTitle() != null && !request.getTitle().isBlank()) {
             title = request.getTitle().trim();
         } else {
-            title = computeFallbackTitle(request.getContent());
+            title = Note.DEFAULT_TITLE;
         }
 
         LocalDate entryDate = request.getEntryDate() != null ? request.getEntryDate() : LocalDate.now();
@@ -121,8 +119,6 @@ public class NoteServiceImpl implements NoteService {
 
         if (request.getTitle() != null && !request.getTitle().isBlank()) {
             note.setTitle(request.getTitle().trim());
-        } else if (note.getTitle() == null || note.getTitle().isBlank() || DEFAULT_TITLE.equalsIgnoreCase(note.getTitle().trim())) {
-            note.setTitle(computeFallbackTitle(request.getContent()));
         }
 
         Note savedNote = noteRepository.save(note);
@@ -201,27 +197,5 @@ public class NoteServiceImpl implements NoteService {
                 note.getCreatedAt(),
                 note.getUpdatedAt()
         );
-    }
-
-    private String computeFallbackTitle(String content) {
-        if (content == null || content.isBlank()) {
-            return DEFAULT_TITLE;
-        }
-
-        for (String rawLine : content.lines().toList()) {
-            String line = rawLine.trim();
-            if (line.isEmpty()) {
-                continue;
-            }
-
-            String stripped = line.replaceFirst("^[#\\-*\\s>]+", "").trim();
-            if (!stripped.isEmpty()) {
-                return stripped.length() > TITLE_MAX_LENGTH
-                        ? stripped.substring(0, TITLE_MAX_LENGTH)
-                        : stripped;
-            }
-        }
-
-        return DEFAULT_TITLE;
     }
 }

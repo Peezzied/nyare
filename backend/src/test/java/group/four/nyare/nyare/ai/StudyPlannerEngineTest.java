@@ -110,7 +110,7 @@ class StudyPlannerEngineTest {
         String sent = promptCaptor.getValue().getContents();
         assertThat(sent).contains("<temporal_context>");
         assertThat(sent).contains("<journal_notes>");
-        assertThat(sent).contains("note_ref,course,title,entry_date,content");
+        assertThat(sent).contains("note_ref,course,title,entry_date,needs_title,content");
         assertThat(sent).contains("<existing_tasks>");
         assertThat(sent).contains("course,task_id,title,status,scheduled_date,duration_minutes");
         assertThat(sent).contains("<class_schedules>");
@@ -340,6 +340,28 @@ class StudyPlannerEngineTest {
         String sent = promptCaptor.getValue().getContents();
         assertThat(sent).contains("Chapter 4 Notes");
         assertThat(sent).contains("Untitled Note");
+    }
+
+    @Test
+    @DisplayName("process flags untitled notes with needs_title in journal CSV")
+    void processFlagsUntitledNotesWithNeedsTitle() {
+        Course course = new Course("CS101", "Computer Science");
+        Note custom = new Note(course, "Chapter 4 Notes", "Content here");
+        Note untitled = new Note(course, "Other content");
+
+        ArgumentCaptor<Prompt> promptCaptor = ArgumentCaptor.forClass(Prompt.class);
+        when(chatClient.prompt(promptCaptor.capture()).advisors(any(Consumer.class)).call()
+                .entity(PlannerAuditRecords.LlmPayload.class))
+                .thenReturn(new PlannerAuditRecords.LlmPayload(List.of(), List.of(), List.of(), List.of()));
+
+        engine.process(List.of(custom, untitled), List.of(), List.of(), List.of(), List.of());
+
+        String sent = promptCaptor.getValue().getContents();
+        assertThat(sent).contains("needs_title");
+        assertThat(sent.lines().filter(l -> l.contains("Chapter 4 Notes")).findFirst())
+                .hasValueSatisfying(l -> assertThat(l).contains(",false,"));
+        assertThat(sent.lines().filter(l -> l.contains("Untitled Note")).findFirst())
+                .hasValueSatisfying(l -> assertThat(l).contains(",true,"));
     }
 
     @Test

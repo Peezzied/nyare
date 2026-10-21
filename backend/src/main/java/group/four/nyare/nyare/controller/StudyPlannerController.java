@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -34,6 +35,11 @@ public class StudyPlannerController {
     private final StudyPlannerService studyPlannerService;
     private final SessionContext sessionContext;
     private final long sseHeartbeatMs;
+
+    // The pool holds one SQLite connection and a run checks it out for its whole
+    // transaction, so a status call during a run would starve. The committed state
+    // cannot change mid-run, so the pre-flight snapshot answers /status identically.
+    private final Map<Long, PlannerStatusResponse> activeRuns = new ConcurrentHashMap<>();
 
     public StudyPlannerController(
             StudyPlannerService studyPlannerService,
@@ -52,7 +58,9 @@ public class StudyPlannerController {
     @GetMapping("/status")
     public ResponseEntity<PlannerStatusResponse> getStatus() {
         Long userId = sessionContext.requireUserId();
-        PlannerStatusResponse response = studyPlannerService.getPlannerStatus(userId);
+        PlannerStatusResponse snapshot = activeRuns.get(userId);
+        PlannerStatusResponse response =
+                snapshot != null ? snapshot : studyPlannerService.getPlannerStatus(userId);
         return ResponseEntity.ok(response);
     }
 
@@ -68,6 +76,7 @@ public class StudyPlannerController {
     public SseEmitter process() {
         Long userId = sessionContext.requireUserId();
         PlannerStatusResponse status = studyPlannerService.getPlannerStatus(userId);
+        activeRuns.put(userId, status);
 
         // 0 disables the async timeout (servlet spec): the run is bounded by the
         // per-call AI timeouts and cancelled when the client disconnects.
@@ -117,6 +126,7 @@ public class StudyPlannerController {
                         "title", "Internal Server Error",
                         "detail", ex.getMessage() != null ? ex.getMessage() : "Unknown error"));
             } finally {
+                activeRuns.remove(userId);
                 heartbeat.interrupt();
                 completeQuietly(emitter);
             }

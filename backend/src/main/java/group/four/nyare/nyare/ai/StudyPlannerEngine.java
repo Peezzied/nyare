@@ -49,7 +49,7 @@ import java.util.function.Function;
 public class StudyPlannerEngine {
 
     private static final class CsvHeaders {
-        static final String[] NOTE = {"note_ref", "course", "title", "entry_date", "content"};
+        static final String[] NOTE = {"note_ref", "course", "title", "entry_date", "needs_title", "content"};
         static final String[] IMAGE = {"image_ref", "note_ref", "description"};
         static final String[] TASK = {"course", "task_id", "title", "status", "scheduled_date", "duration_minutes"};
         static final String[] EVENT = {"course", "event_id", "title", "deadline"};
@@ -301,8 +301,9 @@ public class StudyPlannerEngine {
                 note -> new Object[]{
                         noteCodec.encode(note),
                         note.getCourse() != null ? note.getCourse().getName() : "",
-                        note.getTitle() != null ? note.getTitle() : "Untitled Note",
+                        note.getTitle() != null ? note.getTitle() : Note.DEFAULT_TITLE,
                         note.getEntryDate() != null ? note.getEntryDate().toString() : LocalDate.now().toString(),
+                        note.requiresGeneratedTitle(),
                         note.getContent()
                 }
         );

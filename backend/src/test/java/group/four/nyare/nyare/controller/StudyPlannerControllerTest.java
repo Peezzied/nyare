@@ -29,8 +29,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
@@ -94,6 +97,41 @@ class StudyPlannerControllerTest {
                 .andExpect(content().string(containsString("event:init")))
                 .andExpect(content().string(containsString("event:progress")))
                 .andExpect(content().string(containsString("event:done")));
+    }
+
+    @Test
+    void status_duringActiveRun_servesPreFlightSnapshot() throws Exception {
+        // given
+        LocalDate date = LocalDate.of(2026, 10, 1);
+        PlannerStatusResponse status = new PlannerStatusResponse(
+                true, 1, List.of(date), List.of("CS101"));
+
+        CountDownLatch captured = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+
+        when(studyPlannerService.getPlannerStatus(1L)).thenReturn(status);
+        when(studyPlannerService.processNotes(eq(1L), any(ProcessListener.class))).thenAnswer(inv -> {
+            captured.countDown();
+            release.await(10, TimeUnit.SECONDS);
+            return new ProcessSummaryResponse(0, 0, 0, List.of());
+        });
+
+        mockMvc.perform(post("/api/study-planner/process").session(mockSession()))
+                .andExpect(request().asyncStarted())
+                .andReturn();
+        assertThat(captured.await(5, TimeUnit.SECONDS)).isTrue();
+
+        try {
+            // when
+            mockMvc.perform(get("/api/study-planner/status").session(mockSession()))
+                    .andExpect(status().isOk())
+                    .andExpect(content().string(containsString("\"dirtyNoteCount\":1")));
+
+            // then: the snapshot answered; the service was not re-queried mid-run.
+            verify(studyPlannerService, times(1)).getPlannerStatus(1L);
+        } finally {
+            release.countDown();
+        }
     }
 
     @Test

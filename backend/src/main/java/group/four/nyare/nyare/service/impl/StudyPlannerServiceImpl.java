@@ -215,7 +215,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
                 extracted.noteTitles().forEach((noteId, title) -> {
                     if (title != null && !title.isBlank()) {
                         Note note = noteMap.get(noteId);
-                        if (note != null) {
+                        if (note != null && note.requiresGeneratedTitle()) {
                             note.setTitle(title.trim());
                         }
                     }
