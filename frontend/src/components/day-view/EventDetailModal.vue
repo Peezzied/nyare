@@ -4,10 +4,10 @@
 // over 320ms, contract back over 240ms, ephemeral history state for device back
 // gestures, reduced motion falls back to an opacity crossfade.
 import { computed } from 'vue'
-import { ArrowLeft } from '@lucide/vue'
 import type { TapOriginRect } from '@/types/notesTransition'
 import type { CalendarItemDetailView, LinkedNoteRef } from '@/types/calendarItemDetail'
 import { useContainerMorph } from '@/composables/useNoteTransition'
+import DetailTopBar from '@/components/DetailTopBar.vue'
 import CalendarItemDetail from './CalendarItemDetail.vue'
 
 const props = withDefaults(
@@ -100,26 +100,14 @@ const detailTitle = computed(() => {
       "
       :style="cardStyle"
     >
-      <!-- Google Calendar mobile top app bar with back arrow -->
-      <header
-        class="flex items-center justify-between px-4 pt-3 pb-3 border-b border-[#CBD5E1]/60 bg-[#F5F6EE] shrink-0 transition-opacity duration-200"
+      <DetailTopBar
+        :title="detailTitle"
+        title-id="detail-modal-title"
+        back-label="Close detail view"
+        class="transition-opacity duration-200"
         :class="showControls ? 'opacity-100' : 'opacity-0'"
-      >
-        <button
-          type="button"
-          aria-label="Close detail view"
-          class="rounded-full p-2.5 hover:bg-slate-200/70 active:scale-95 text-[#334155] transition-all cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center -ml-2"
-          @click="requestClose(true)"
-        >
-          <ArrowLeft class="w-6 h-6 stroke-[2.2]" />
-        </button>
-
-        <span id="detail-modal-title" class="text-sm font-semibold font-quicksand text-[#64748B]">
-          {{ detailTitle }}
-        </span>
-
-        <div class="w-11" />
-      </header>
+        @close="requestClose(true)"
+      />
 
       <!-- Full-screen scrollable content -->
       <div

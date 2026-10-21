@@ -3,7 +3,6 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import {
-  ArrowLeft,
   AlertCircle,
   CalendarIcon,
   FileText,
@@ -12,12 +11,13 @@ import {
   CheckCircle2,
   GraduationCap,
   ArrowRight,
-  Loader2,
 } from '@lucide/vue'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { parseDate, type DateValue } from '@internationalized/date'
 import DialogShell from '@/components/ui/DialogShell.vue'
+import DetailTopBar from '@/components/DetailTopBar.vue'
+import SaveButton from '@/components/SaveButton.vue'
 import { Button } from '@/components/ui/button'
 import TiptapEditor from '@/components/editor/TiptapEditor.vue'
 import { useNotes } from '@/composables/useNotes'
@@ -674,41 +674,29 @@ defineExpose({ requestBack: handleBack })
     :style="!embedded && viewportHeight ? { height: `${viewportHeight}px` } : undefined"
   >
     <!-- Header Navigation & Save Action -->
-    <header
-      class="shrink-0 flex items-center justify-between border-b border-app-border px-4 py-3"
+    <DetailTopBar
+      :title="isEditMode ? 'Note' : 'New note'"
+      back-label="Back"
       :class="controlsStaggerClass"
+      @close="handleBack"
     >
-      <button
-        type="button"
-        data-testid="back-button"
-        class="flex items-center gap-1 min-h-11 text-sm font-semibold text-text-muted hover:text-text-main transition-colors cursor-pointer"
-        @click="handleBack"
-      >
-        <ArrowLeft class="size-4" />
-        <span>Back</span>
-      </button>
-
-      <span
-        v-if="isArchivedCourse"
-        data-testid="archived-course-label"
-        class="inline-flex min-h-11 items-center rounded-full border border-app-border bg-card px-4 text-xs font-bold uppercase tracking-wider text-text-muted"
-      >
-        Archived course
-      </span>
-      <Button
-        v-else
-        type="button"
-        variant="tactile"
-        size="touch"
-        data-testid="save-button"
-        :disabled="isSaveDisabled"
-        class="cursor-pointer disabled:cursor-not-allowed disabled:shadow-none disabled:active:translate-y-0"
-        @click="saveNote"
-      >
-        <Loader2 v-if="isSaving" class="size-4 animate-spin" />
-        {{ isSaving ? 'Saving...' : 'Save' }}
-      </Button>
-    </header>
+      <template #trailing>
+        <span
+          v-if="isArchivedCourse"
+          data-testid="archived-course-label"
+          class="inline-flex min-h-11 items-center rounded-full border border-app-border bg-card px-4 text-xs font-bold uppercase tracking-wider text-text-muted"
+        >
+          Archived course
+        </span>
+        <SaveButton
+          v-else
+          data-testid="save-button"
+          :saving="isSaving"
+          :disabled="isSaveDisabled"
+          @click="saveNote"
+        />
+      </template>
+    </DetailTopBar>
 
     <!-- Error Banner -->
     <div
@@ -744,16 +732,14 @@ defineExpose({ requestBack: handleBack })
         />
       </div>
 
-      <!-- Course & Date Pills -->
-      <div class="flex flex-wrap items-center gap-y-2 gap-x-7 text-xs">
-        <!-- Course Pill -->
-        <div class="inline-flex items-center gap-1.5" data-testid="course-pill">
-          <label
-            for="course-picker-trigger"
-            class="font-bold uppercase tracking-wider text-text-muted"
-          >
-            Course:
-          </label>
+      <!-- Plan zone -->
+      <section class="mt-4 rounded-2xl bg-white p-1">
+        <!-- Course row -->
+        <div class="flex min-h-11 items-center gap-3 px-3" data-testid="course-pill">
+          <GraduationCap
+            class="h-5 w-5 shrink-0 text-(--color-text-muted)"
+            aria-hidden="true"
+          />
           <span
             v-if="isArchivedCourse"
             data-testid="archived-course-chip"
@@ -774,27 +760,29 @@ defineExpose({ requestBack: handleBack })
           />
         </div>
 
-        <!-- Date Pill -->
-        <div class="inline-flex items-center gap-1.5" data-testid="date-pill">
-          <label
-            for="date-picker-trigger"
-            class="font-bold uppercase tracking-wider text-text-muted"
-          >
-            Date:
-          </label>
+        <div class="h-px bg-slate-100" />
+
+        <!-- Date row -->
+        <div class="flex min-h-11 items-center gap-3 px-3" data-testid="date-pill">
+          <CalendarIcon
+            class="h-5 w-5 shrink-0 text-(--color-text-muted)"
+            aria-hidden="true"
+          />
           <Popover v-model:open="isCalendarOpen">
             <PopoverTrigger as-child>
-              <button
+              <Button
                 id="date-picker-trigger"
                 type="button"
+                variant="ghost"
+                size="touch"
                 data-testid="date-picker"
                 aria-label="Date"
                 :disabled="isArchivedCourse"
-                class="inline-flex min-h-11 items-center gap-1.5 appearance-none rounded-full border border-[#D5EBF1] bg-[#FDFEF7] px-3 py-1 text-xs font-semibold text-text-main cursor-pointer outline-none hover:bg-[#F0F8FA] focus-visible:ring-2 focus-visible:ring-[#00A4C8]/40 transition-colors"
+                class="min-w-0 flex-1 justify-start px-0 text-sm font-normal hover:bg-transparent"
+                :class="entryDate ? 'text-slate-700' : 'text-slate-400'"
               >
-                <CalendarIcon class="size-3.5 text-text-muted" />
-                <span>{{ formattedDisplayDate }}</span>
-              </button>
+                {{ formattedDisplayDate }}
+              </Button>
             </PopoverTrigger>
             <PopoverContent class="w-auto p-0" align="start">
               <Calendar
@@ -806,7 +794,7 @@ defineExpose({ requestBack: handleBack })
             </PopoverContent>
           </Popover>
         </div>
-      </div>
+      </section>
     </section>
 
     <!-- Teal Horizontal Divider Accent -->
