@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import type { DayEvent } from '../../types/calendar'
 import { buildMarkerState } from '../../utils/calendarItemDetail'
-import { CLASS_THEME_STYLES } from '../../utils/calendarStyle'
+import { useCatalog } from '../../composables/useCatalog'
 
 // Compact class pill for the 7-column week grid
 const props = defineProps<{
@@ -24,7 +24,8 @@ function handleActivate(e: MouseEvent | KeyboardEvent) {
   if (rect) emit('select', props.event, rect)
 }
 
-const theme = computed(() => CLASS_THEME_STYLES[props.event.colorTheme])
+const catalog = useCatalog()
+const courseColor = computed(() => catalog.courseColor(props.event.courseId))
 </script>
 
 <template>
@@ -34,7 +35,11 @@ const theme = computed(() => CLASS_THEME_STYLES[props.event.colorTheme])
     tabindex="0"
     :aria-label="`${CLASS_MARKER_LABEL}: ${event.title}`"
     class="h-full w-full cursor-pointer select-none overflow-hidden rounded-md border pr-1 py-px transition-colors hover:brightness-[0.97]"
-    :class="[theme.fill, theme.edge, theme.ink]"
+    :style="{
+      backgroundColor: courseColor.solid,
+      borderColor: courseColor.text,
+      color: '#fff',
+    }"
     @click="handleActivate"
     @keydown.enter.prevent="handleActivate"
     @keydown.space.prevent="handleActivate"

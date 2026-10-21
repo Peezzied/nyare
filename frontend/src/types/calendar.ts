@@ -9,5 +9,4 @@ export interface DayEvent {
   readonly start: string
   readonly end: string
   readonly detail: string
-  readonly colorTheme: 'green' | 'blue' | 'purple' | 'orange'
 }

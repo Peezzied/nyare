@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import UntimedPill from './UntimedPill.vue'
 import type { UntimedDayItem } from '../../utils/untimedItems'
+import { mockCourses } from '../../mocks/calendarData'
+import { useCatalog } from '../../composables/useCatalog'
+
+useCatalog().courses.value = mockCourses
 
 const taskIncomplete: UntimedDayItem = {
   id: 'task-1',

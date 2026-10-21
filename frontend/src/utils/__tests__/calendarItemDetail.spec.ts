@@ -49,7 +49,6 @@ const CLASS_EVENT: DayEvent = {
   start: '2026-10-22 09:00',
   end: '2026-10-22 10:30',
   detail: '',
-  colorTheme: 'green',
 }
 
 describe('buildCalendarItemDetail', () => {

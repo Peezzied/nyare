@@ -1,13 +1,6 @@
 import type { CourseResponse, DayOfWeek, ScheduleResponse } from '../types/api'
 import type { DayEvent } from '../types/calendar'
 
-const COLOR_PALETTE: ('green' | 'blue' | 'purple' | 'orange')[] = [
-  'green',
-  'blue',
-  'purple',
-  'orange',
-]
-
 const DAYS_OF_WEEK: DayOfWeek[] = [
   'SUNDAY',
   'MONDAY',
@@ -87,10 +80,6 @@ export function expandSchedulesForDate(
     const startTimeFormatted = schedule.startTime.slice(0, 5)
     const endTimeFormatted = schedule.endTime.slice(0, 5)
 
-    // Color is assigned by courseId so a course keeps the same color every day
-    const colorTheme =
-      COLOR_PALETTE[Math.abs(schedule.courseId - 1) % COLOR_PALETTE.length] ?? 'green'
-
     return {
       id: String(schedule.id),
       courseId: schedule.courseId,
@@ -98,7 +87,6 @@ export function expandSchedulesForDate(
       start: `${datePrefix} ${startTimeFormatted}`,
       end: `${datePrefix} ${endTimeFormatted}`,
       detail,
-      colorTheme,
     }
   })
 }

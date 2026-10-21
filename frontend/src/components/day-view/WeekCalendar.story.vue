@@ -5,8 +5,11 @@ import { mockCourses, mockEvents, mockSchedules, mockTasks } from '../../mocks/c
 import { expandSchedulesForDate } from '../../utils/scheduleExpander'
 import { deriveUntimedItems } from '../../utils/untimedItems'
 import { toDateKey } from '../../utils/dayKey'
+import { useCatalog } from '../../composables/useCatalog'
 
 const activeDate = ref(new Date(2026, 9, 14))
+
+useCatalog().courses.value = mockCourses
 
 function eventsFor(date: Date) {
   return expandSchedulesForDate(date, mockSchedules, mockCourses)

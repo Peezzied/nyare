@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import type { DayEvent } from '../../types/calendar'
 import { formatTimeRange } from '../../utils/scheduleExpander'
 import { classDurationMinutes, getClassCardTier } from '../../utils/classCardTier'
-import { CLASS_THEME_STYLES } from '../../utils/calendarStyle'
+import { useCatalog } from '../../composables/useCatalog'
 
 const props = withDefaults(
   defineProps<{
@@ -24,7 +24,8 @@ const formattedTime = computed(() => formatTimeRange(startTime.value, endTime.va
 
 const tier = computed(() => getClassCardTier(classDurationMinutes(startTime.value, endTime.value)))
 
-const theme = computed(() => CLASS_THEME_STYLES[props.event.colorTheme])
+const catalog = useCatalog()
+const courseColor = computed(() => catalog.courseColor(props.event.courseId))
 
 const emit = defineEmits<{
   (e: 'select', event: DayEvent, originRect: DOMRect): void
@@ -44,14 +45,13 @@ function handleClick(e: MouseEvent) {
   <div
     ref="cardRef"
     class="flex cursor-pointer flex-col justify-start overflow-hidden rounded-lg border transition-colors hover:brightness-[0.97]"
-    :class="[
-      theme.fill,
-      theme.edge,
-      theme.ink,
-      tier.card,
-      props.embedded ? 'relative h-full w-full' : 'absolute left-2 right-2',
-    ]"
-    :style="props.embedded ? {} : { top: `${top}px`, height: `${height}px` }"
+    :class="[tier.card, props.embedded ? 'relative h-full w-full' : 'absolute left-2 right-2']"
+    :style="{
+      backgroundColor: courseColor.solid,
+      borderColor: courseColor.text,
+      color: '#fff',
+      ...(props.embedded ? {} : { top: `${top}px`, height: `${height}px` }),
+    }"
     @click="handleClick"
   >
     <!-- Course Title -->

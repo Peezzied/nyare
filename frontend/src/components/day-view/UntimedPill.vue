@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { Check, Flag } from '@lucide/vue'
 import type { UntimedDayItem } from '../../utils/untimedItems'
-import { CLASS_THEME_STYLES, classThemeForCourse } from '../../utils/calendarStyle'
+import { useCatalog } from '../../composables/useCatalog'
 
 const props = defineProps<{
   item: UntimedDayItem
@@ -19,12 +19,19 @@ function handleClick(e: MouseEvent) {
 
 // Tri-block surfaces (DESIGN.md §6): an event is a saturated fill with white
 // ink, a task is a white card with a checkbox.
-const theme = computed(() => CLASS_THEME_STYLES[classThemeForCourse(props.item.courseId)])
+const catalog = useCatalog()
+const courseColor = computed(() => catalog.courseColor(props.item.courseId))
 
 const surfaceClasses = computed(() =>
   props.item.category === 'event'
-    ? `${theme.value.solid} ${theme.value.solidEdge} border-2 text-white`
+    ? 'border-2 text-white'
     : 'bg-white border border-[#CBD5E1] text-[#334155]',
+)
+
+const surfaceStyle = computed(() =>
+  props.item.category === 'event'
+    ? { backgroundColor: courseColor.value.solid, borderColor: courseColor.value.text }
+    : undefined,
 )
 </script>
 
@@ -34,6 +41,7 @@ const surfaceClasses = computed(() =>
     type="button"
     class="flex h-7 w-full min-w-0 items-center gap-2 overflow-hidden rounded-lg px-3 text-left text-sm transition-colors active:brightness-95"
     :class="surfaceClasses"
+    :style="surfaceStyle"
     :aria-label="`${props.item.category}: ${props.item.title}`"
     @click="handleClick"
   >

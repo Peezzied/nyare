@@ -5,6 +5,9 @@ import { mockCourses, mockEvents, mockSchedules, mockTasks } from '../../mocks/c
 import { expandSchedulesForDate } from '../../utils/scheduleExpander'
 import { deriveUntimedItems } from '../../utils/untimedItems'
 import { toDateKey } from '../../utils/dayKey'
+import { useCatalog } from '../../composables/useCatalog'
+
+useCatalog().courses.value = mockCourses
 
 // Wednesday 2026-10-14 contains both timed courses and untimed items
 const wednesdayDate = new Date(2026, 9, 14)
