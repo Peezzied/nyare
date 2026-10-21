@@ -646,7 +646,10 @@ onMounted(load)
 </script>
 
 <template>
-  <div data-testid="manage-courses-page" class="h-full overflow-y-auto bg-app-bg px-4 pb-8 pt-4">
+  <div
+    data-testid="manage-courses-page"
+    class="relative h-full overflow-y-auto bg-app-bg px-4 pb-8 pt-4"
+  >
     <p
       v-if="loading"
       data-testid="manage-courses-loading"
@@ -667,37 +670,22 @@ onMounted(load)
       </Button>
     </div>
 
-    <div
-      v-else-if="catalog.courses.value.length === 0"
-      data-testid="manage-empty-state"
-      class="flex flex-col items-center px-6 py-16 text-center"
-    >
-      <div class="flex h-16 w-16 items-center justify-center rounded-full bg-[#E8F6FA]">
-        <BookOpen class="h-8 w-8 text-[#007B99]" aria-hidden="true" />
-      </div>
-      <p class="mt-4 text-lg font-bold text-text-main">No courses yet</p>
-      <p class="mt-1 text-sm text-text-muted">
-        Add a course to plan class times, notes, and tasks.
-      </p>
-      <Button type="button" variant="tactile" size="touch" class="mt-6" @click="addCourse">
-        <Plus class="h-5 w-5" aria-hidden="true" />
-        Add course
-      </Button>
-    </div>
-
     <div v-else class="flex flex-col gap-4">
-      <button
-        type="button"
-        data-testid="manage-archive-all"
-        class="flex min-h-[44px] items-center justify-center gap-2 self-end rounded-xl border border-[#BCE3ED] bg-[#E8F6FA] px-4 text-sm font-bold text-[#007B99] shadow-[0_3px_0_#B0DBE5] transition-all duration-75 hover:bg-[#DDEFF6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:translate-y-0.5 active:shadow-[0_1px_0_#B0DBE5]"
-        style="font-family: 'Quicksand', sans-serif; font-weight: 700"
-        @click="guardEditorExit(startArchiveAll)"
-      >
-        <Archive class="h-5 w-5" aria-hidden="true" />
-        Archive all
-      </button>
+      <Transition name="fade">
+        <button
+          v-if="catalog.courses.value.length > 0"
+          type="button"
+          data-testid="manage-archive-all"
+          class="flex min-h-[44px] items-center justify-center gap-2 self-end rounded-xl border border-[#BCE3ED] bg-[#E8F6FA] px-4 text-sm font-bold text-[#007B99] shadow-[0_3px_0_#B0DBE5] transition-all duration-75 hover:bg-[#DDEFF6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:translate-y-0.5 active:shadow-[0_1px_0_#B0DBE5]"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          @click="guardEditorExit(startArchiveAll)"
+        >
+          <Archive class="h-5 w-5" aria-hidden="true" />
+          Archive all
+        </button>
+      </Transition>
 
-      <ul class="flex flex-col gap-4">
+      <TransitionGroup tag="ul" name="course-row" class="relative flex flex-col gap-4">
         <li v-for="course in catalog.courses.value" :key="course.id">
           <Card
             as="article"
@@ -761,7 +749,27 @@ onMounted(load)
             </div>
           </Card>
         </li>
-      </ul>
+      </TransitionGroup>
+
+      <Transition name="empty-fade">
+        <div
+          v-if="catalog.courses.value.length === 0"
+          data-testid="manage-empty-state"
+          class="flex flex-col items-center px-6 py-16 text-center"
+        >
+          <div class="flex h-16 w-16 items-center justify-center rounded-full bg-[#E8F6FA]">
+            <BookOpen class="h-8 w-8 text-[#007B99]" aria-hidden="true" />
+          </div>
+          <p class="mt-4 text-lg font-bold text-text-main">No courses yet</p>
+          <p class="mt-1 text-sm text-text-muted">
+            Add a course to plan class times, notes, and tasks.
+          </p>
+          <Button type="button" variant="tactile" size="touch" class="mt-6" @click="addCourse">
+            <Plus class="h-5 w-5" aria-hidden="true" />
+            Add course
+          </Button>
+        </div>
+      </Transition>
     </div>
 
     <CourseEditorDrawer
@@ -875,3 +883,71 @@ onMounted(load)
     </DialogShell>
   </div>
 </template>
+
+<style scoped>
+.course-row-enter-active,
+.course-row-leave-active,
+.course-row-move {
+  transition:
+    opacity 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.course-row-leave-active {
+  position: absolute;
+  right: 0;
+  left: 0;
+  z-index: 0;
+  transition-duration: 160ms;
+}
+
+.course-row-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.course-row-leave-to {
+  opacity: 0;
+  transform: translateX(-16px);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 150ms ease-out;
+}
+
+.fade-enter-from,
+.fade-leave-to,
+.empty-fade-enter-from,
+.empty-fade-leave-to {
+  opacity: 0;
+}
+
+.empty-fade-enter-active {
+  transition: opacity 200ms ease-out 140ms;
+}
+
+.empty-fade-leave-active {
+  position: absolute;
+  right: 16px;
+  left: 16px;
+  transition: opacity 150ms ease-in;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course-row-enter-active,
+  .course-row-leave-active,
+  .course-row-move {
+    transition-duration: 120ms;
+  }
+
+  .course-row-enter-from,
+  .course-row-leave-to {
+    transform: none;
+  }
+
+  .empty-fade-enter-active {
+    transition-delay: 0ms;
+  }
+}
+</style>

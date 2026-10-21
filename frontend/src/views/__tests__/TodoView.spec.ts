@@ -241,6 +241,19 @@ describe('TodoView dismissal', () => {
     expect(scrollEl.scrollTop).toBe(240)
     expect(wrapper.get('[role="tab"][aria-selected="true"]').text()).toBe('Scheduled')
   })
+
+  it('removes the row and pushes an undo toast when the modal reports a deletion', async () => {
+    const wrapper = mountView()
+    await flushPromises()
+
+    wrapper.findComponent(TaskContainerModal).vm.$emit('deleted', rowTask)
+    await nextTick()
+
+    expect(wrapper.findComponent(TaskRow).exists()).toBe(false)
+    const toast = useToasts().toasts.value.find((t) => t.title === 'Task deleted')
+    expect(toast?.kind).toBe('info')
+    expect(toast?.action?.label).toBe('Undo')
+  })
 })
 
 describe('TodoView Overdue filter', () => {

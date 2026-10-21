@@ -3,6 +3,7 @@ import { defineComponent, h, nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import TaskContainerModal from '../TaskContainerModal.vue'
 import type { TapOriginRect } from '@/types/notesTransition'
+import type { TaskResponse } from '@/types/api'
 
 const TaskDetailPanelStub = defineComponent({
   name: 'TaskDetailPanel',
@@ -120,6 +121,25 @@ describe('TaskContainerModal', () => {
 
     expect(wrapper.emitted('close')).toHaveLength(1)
     expect(document.body.style.overflow).toBe('')
+  })
+
+  it('re-emits deleted and collapses after the panel reports a deletion', async () => {
+    const wrapper = mountModal({ isOpen: true, taskId: null })
+    await nextTick()
+
+    const task = { id: 'task-1' } as TaskResponse
+    const panel = wrapper.findComponent(TaskDetailPanelStub)
+    panel.vm.$emit('deleted', task)
+    await nextTick()
+
+    expect(wrapper.emitted('deleted')).toEqual([[task]])
+    expect(wrapper.get('[data-testid="task-modal-container"]').classes()).toContain(
+      'duration-[150ms]',
+    )
+
+    await vi.advanceTimersByTimeAsync(150)
+    await nextTick()
+    expect(wrapper.emitted('close')).toHaveLength(1)
   })
 
   it('pushes exactly one task-modal history entry on open', async () => {

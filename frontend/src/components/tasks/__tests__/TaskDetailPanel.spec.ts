@@ -493,10 +493,7 @@ describe('TaskDetailPanel view mode', () => {
     expect(wrapper.find('[data-testid="task-error"]').exists()).toBe(false)
   })
 
-  it('confirms before deleting and emits deleted with the row removed', async () => {
-    tasksMock.deleteTask.mockImplementation(async (id) => {
-      tasksMock.tasks = tasksMock.tasks.filter((t) => t.id !== id)
-    })
+  it('confirms before deleting and emits deleted with the task payload', async () => {
     const wrapper = mountPanel({ taskId: 'task-1' })
     await flushPromises()
 
@@ -509,26 +506,9 @@ describe('TaskDetailPanel view mode', () => {
     await wrapper.get('[data-testid="task-delete-confirm"]').trigger('click')
     await flushPromises()
 
-    expect(tasksMock.deleteTask).toHaveBeenCalledWith('task-1')
-    expect(wrapper.emitted('deleted')).toHaveLength(1)
-    expect(tasksMock.tasks).toHaveLength(0)
-  })
-
-  it('keeps the panel open and shows a retry when the delete fails', async () => {
-    tasksMock.deleteTask.mockRejectedValueOnce(new Error('Network error'))
-    const wrapper = mountPanel({ taskId: 'task-1' })
-    await flushPromises()
-
-    await wrapper.get('[data-testid="task-delete"]').trigger('click')
-    await nextTick()
-    await wrapper.get('[data-testid="task-delete-confirm"]').trigger('click')
-    await flushPromises()
-
-    expect(wrapper.find('[data-testid="task-error"]').exists()).toBe(true)
-    expect(wrapper.emitted('deleted')).toBeUndefined()
-    expect((wrapper.get('[data-testid="task-title"]').element as HTMLTextAreaElement).value).toBe(
-      'Study',
-    )
+    // The caller owns the deferred API delete behind the undo toast.
+    expect(wrapper.emitted('deleted')?.[0]?.[0]).toEqual(viewTask)
+    expect(tasksMock.deleteTask).not.toHaveBeenCalled()
   })
 })
 
