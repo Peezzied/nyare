@@ -87,7 +87,7 @@ class TaskControllerTest {
     @DisplayName("listTasks with session user passes userId to service")
     void listTasks_withSessionUser_passesUserIdToService() throws Exception {
         // given
-        when(taskService.listTasks(eq(USER_ID), any(), any(), any())).thenReturn(List.of(sampleTask));
+        when(taskService.listTasks(eq(USER_ID), any(), any(), any(), any())).thenReturn(List.of(sampleTask));
 
         // when & then
         mockMvc.perform(get("/api/tasks").session(mockSession()))
@@ -95,7 +95,7 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].title").value("Study Chapter 1"));
 
-        verify(taskService).listTasks(USER_ID, null, null, null);
+        verify(taskService).listTasks(USER_ID, null, null, null, false);
     }
 
     @Test

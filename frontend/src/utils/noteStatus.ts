@@ -55,22 +55,22 @@ export function getNoteStatusConfig(status: NoteProcessingStatus): NoteStatusCon
     case 'draft':
       return {
         label: 'Draft',
-        classes: 'border-slate-300 bg-slate-100 text-slate-600',
+        classes: 'border-[#CBD5E1] bg-[#F1F5F9] text-[#527A8C]',
       }
     case 'unprocessed':
       return {
         label: 'Unprocessed',
-        classes: 'border-amber-300 bg-amber-50 text-amber-700',
+        classes: 'border-[#FCE793] bg-[#FEF9E7] text-[#B78103]',
       }
     case 'dirty':
       return {
         label: 'Pending update',
-        classes: 'border-orange-300 bg-orange-50 text-orange-700',
+        classes: 'border-[#FFCC80] bg-[#FFF3E0] text-[#E65100]',
       }
     case 'processed':
       return {
         label: 'Processed',
-        classes: 'border-emerald-300 bg-emerald-50 text-emerald-700',
+        classes: 'border-[#A8DAB5] bg-[#E6F4EA] text-[#0D652D]',
       }
   }
 }

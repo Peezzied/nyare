@@ -2,8 +2,8 @@
 import { computed } from 'vue'
 import { useCatalog } from '@/composables/useCatalog'
 import type { CoursePaletteColor } from '@/constants/palette'
-import { formatEntryDate } from '@/utils/noteDate'
-import { extractFirstImageUrl, stripImageMarkdown } from '@/utils/noteImage'
+import { formatCardTimestamp } from '@/utils/noteDate'
+import { collapseBlankLines, extractFirstImageUrl, stripImageMarkdown } from '@/utils/noteImage'
 import type { NoteSummaryResponse } from '@/types/api'
 
 const emit = defineEmits<{ open: [event: Event] }>()
@@ -17,9 +17,9 @@ const props = defineProps<{
 const catalog = useCatalog()
 
 const color = computed(() => props.badgeColor ?? catalog.courseColor(props.note.courseId))
-const entryLabel = computed(() => formatEntryDate(props.note.entryDate))
+const entryLabel = computed(() => formatCardTimestamp(props.note.entryDate, props.note.createdAt))
 const imageUrl = computed(() => extractFirstImageUrl(props.note.preview))
-const displayText = computed(() => stripImageMarkdown(props.note.preview))
+const displayText = computed(() => collapseBlankLines(stripImageMarkdown(props.note.preview)))
 </script>
 
 <template>
@@ -33,7 +33,7 @@ const displayText = computed(() => stripImageMarkdown(props.note.preview))
     @keydown.space.prevent="emit('open', $event)"
   >
     <span
-      class="inline-block max-w-full truncate rounded-full border px-2 py-1 text-xs font-medium"
+      class="inline-block max-w-full font-secondary truncate rounded-full border px-2 py-1 text-xs "
       :style="{
         backgroundColor: color.bg,
         color: color.text,
@@ -48,15 +48,19 @@ const displayText = computed(() => stripImageMarkdown(props.note.preview))
       :src="imageUrl"
       :alt="note.title"
       loading="lazy"
-      class="mt-2 w-full rounded-lg object-cover"
+      class="mt-2 max-h-40 w-full rounded-lg object-cover"
       data-testid="note-image"
     />
-    <h3 class="mt-2 font-sans text-base font-semibold text-text-main" data-testid="note-title">
+    <h3
+      class="mt-2 line-clamp-2 break-words font-sans text-base font-semibold text-text-main"
+      data-testid="note-title"
+    >
       {{ note.title }}
     </h3>
     <p
       v-if="displayText"
-      class="mt-1 break-words font-secondary text-sm text-text-main"
+      class="mt-1 break-words whitespace-pre-line font-secondary text-sm text-text-soft"
+      :class="imageUrl ? 'line-clamp-3' : 'line-clamp-5'"
       data-testid="note-preview"
     >
       {{ displayText }}

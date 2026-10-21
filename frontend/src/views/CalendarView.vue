@@ -1,35 +1,34 @@
 <script setup lang="ts">
 import { computed, h, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { tasksApi } from '../../api/tasks'
+import { tasksApi } from '@/api/tasks'
 import { useAcademicEvents } from '@/composables/useAcademicEvents'
 import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
 import { useTasks } from '@/composables/useTasks'
 import { useShellHeader } from '@/composables/useShellHeader'
-import type { CalendarViewMode, DayEvent } from '../../types/calendar'
-import type { CalendarItemDetailView, LinkedNoteRef } from '../../types/calendarItemDetail'
-import type { TapOriginRect } from '../../types/notesTransition'
+import type { CalendarViewMode, DayEvent } from '@/types/calendar'
+import type { CalendarItemDetailView, LinkedNoteRef } from '@/types/calendarItemDetail'
+import type { TapOriginRect } from '@/types/notesTransition'
 import type { AcademicEventResponse } from '@/types/api'
-import { buildCalendarItemDetail } from '../../utils/calendarItemDetail'
-import { toDateKey } from '../../utils/dayKey'
-import { deriveDeadlineSections } from '../../utils/deadlineSections'
-import { expandSchedulesForDate, formatDateHeader } from '../../utils/scheduleExpander'
-import { deriveUntimedItems } from '../../utils/untimedItems'
-import type { UntimedDayItem } from '../../utils/untimedItems'
-import { useNow } from '../../composables/useNow'
-import { formatWeekTitle, weekDates } from '../../utils/weekDays'
-import DateTitlePicker from './DateTitlePicker.vue'
-import DeadlinesView from './DeadlinesView.vue'
-import EventDetailModal from './EventDetailModal.vue'
-import HamburgerMenu from '../HamburgerMenu.vue'
-import DayPeek from './DayPeek.vue'
-import DaySwiper from './DaySwiper.vue'
-import ScheduleCalendar from './ScheduleCalendar.vue'
-import TodayButton from './TodayButton.vue'
-import ViewModeToggle from './ViewModeToggle.vue'
-import WeekCalendar from './WeekCalendar.vue'
-import WeekPeek from './WeekPeek.vue'
+import { buildCalendarItemDetail } from '@/utils/calendarItemDetail'
+import { toDateKey } from '@/utils/dayKey'
+import { deriveDeadlineSections } from '@/utils/deadlineSections'
+import { expandSchedulesForDate, formatDateHeader } from '@/utils/scheduleExpander'
+import { deriveUntimedItems } from '@/utils/untimedItems'
+import type { UntimedDayItem } from '@/utils/untimedItems'
+import { useNow } from '@/composables/useNow'
+import { formatWeekTitle, weekDates } from '@/utils/weekDays'
+import DateTitlePicker from '@/components/day-view/DateTitlePicker.vue'
+import DeadlinesView from '@/components/day-view/DeadlinesView.vue'
+import EventDetailModal from '@/components/day-view/EventDetailModal.vue'
+import HamburgerMenu from '@/components/HamburgerMenu.vue'
+import DaySwiper from '@/components/day-view/DaySwiper.vue'
+import ScheduleCalendar from '@/components/day-view/ScheduleCalendar.vue'
+import TodayButton from '@/components/day-view/TodayButton.vue'
+import ViewModeToggle from '@/components/day-view/ViewModeToggle.vue'
+import WeekCalendar from '@/components/day-view/WeekCalendar.vue'
+import WeekHeaderRow from '@/components/day-view/WeekHeaderRow.vue'
 
 // Defaults to today, in the day view
 const selectedDate = ref(new Date())
@@ -72,9 +71,6 @@ function untimedFor(date: Date) {
   return deriveUntimedItems(tasks.value, events.value, toDateKey(date))
 }
 
-const dayEvents = computed(() => eventsFor(selectedDate.value))
-const untimedItems = computed(() => untimedFor(selectedDate.value))
-
 function setViewMode(mode: CalendarViewMode) {
   viewMode.value = mode
 }
@@ -90,11 +86,17 @@ function getCourseName(courseId: number): string {
   return found?.name ?? `Course ${courseId}`
 }
 
+const todayKey = computed(() => toDateKey(now.value))
+
 const isShowingToday = computed(() => {
-  const todayKey = toDateKey(now.value)
-  if (viewMode.value === 'day') return toDateKey(selectedDate.value) === todayKey
-  return weekDates(selectedDate.value).some((date) => toDateKey(date) === todayKey)
+  if (viewMode.value === 'day') return toDateKey(selectedDate.value) === todayKey.value
+  return weekDates(selectedDate.value).some((date) => toDateKey(date) === todayKey.value)
 })
+
+// Pinned week header clone for the swipe chrome; mirrors WeekCalendar's data.
+function weekInfosFor(date: Date) {
+  return weekDates(date).map((d) => ({ date: d, key: toDateKey(d), untimed: untimedFor(d) }))
+}
 
 function goToday() {
   selectedDate.value = new Date()
@@ -239,40 +241,39 @@ useShellHeader({
         :step-days="viewMode === 'day' ? 1 : 7"
         @change-date="selectedDate = $event"
       >
-        <ScheduleCalendar
-          v-if="viewMode === 'day'"
-          :events="dayEvents"
-          :untimed-items="untimedItems"
-          :selected-date="selectedDate"
-          @select-course="openClassDetail"
-          @select-untimed="openUntimedDetail"
-        />
-        <WeekCalendar
-          v-else
-          :selected-date="selectedDate"
-          :events-for="eventsFor"
-          :untimed-for="untimedFor"
-          @select-day="openDay"
-          @select-course="openClassDetail"
-          @select-untimed="openUntimedDetail"
-        />
-
-        <template #peek="{ date, scrollTop, gutterLeft }">
-          <DayPeek
+        <!-- Three live calendars are mounted by the swiper; each panel gets
+             its own date's data. -->
+        <template #default="{ date }">
+          <ScheduleCalendar
             v-if="viewMode === 'day'"
             :events="eventsFor(date)"
             :untimed-items="untimedFor(date)"
-            :scroll-top="scrollTop"
-            :gutter-left="gutterLeft"
+            :selected-date="date"
+            @select-course="openClassDetail"
+            @select-untimed="openUntimedDetail"
           />
-          <WeekPeek
+          <WeekCalendar
             v-else
-            :date="date"
+            :selected-date="date"
             :events-for="eventsFor"
             :untimed-for="untimedFor"
-            :scroll-top="scrollTop"
-            :gutter-left="gutterLeft"
+            @select-day="openDay"
+            @select-course="openClassDetail"
+            @select-untimed="openUntimedDetail"
           />
+        </template>
+
+        <!-- Pinned while swiping: the header row stays put; only the deck
+             underneath moves. -->
+        <template #chrome="{ date, gutterLeft }">
+          <div v-if="viewMode === 'week'" class="bg-app-bg">
+            <WeekHeaderRow
+              :days="weekInfosFor(date)"
+              :today-key="todayKey"
+              :gutter-left="gutterLeft || 55"
+              :cols-width="0"
+            />
+          </div>
         </template>
       </DaySwiper>
 

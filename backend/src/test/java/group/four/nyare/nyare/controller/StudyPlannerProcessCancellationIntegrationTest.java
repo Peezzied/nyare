@@ -125,7 +125,7 @@ class StudyPlannerProcessCancellationIntegrationTest {
         }
 
         // then
-        List<Note> stillDirty = noteRepository.findDirtyNotes(user.getId());
+        List<Note> stillDirty = noteRepository.findDirtyNotes(user.getId(), false);
         assertThat(stillDirty).extracting(Note::getId).contains(note.getId());
         assertThat(stillDirty).allMatch(n -> n.getLastProcessedAt() == null);
 
@@ -163,7 +163,7 @@ class StudyPlannerProcessCancellationIntegrationTest {
         }
 
         // then
-        assertThat(noteRepository.findDirtyNotes(user.getId())).isEmpty();
+        assertThat(noteRepository.findDirtyNotes(user.getId(), false)).isEmpty();
 
         List<Task> tasks = taskRepository.findAll();
         assertThat(tasks).extracting(Task::getTitle).contains("SHOULD NOT PERSIST");

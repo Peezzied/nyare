@@ -251,7 +251,7 @@ describe('Mock Adapter', () => {
     })
 
     it('filters notes by courseId', async () => {
-      const course2Notes = await notesApi.list(2)
+      const course2Notes = await notesApi.list({ courseId: 2 })
       expect(course2Notes.every((n) => n.courseId === 2)).toBe(true)
     })
 
@@ -266,7 +266,7 @@ describe('Mock Adapter', () => {
       expect(newNote.title).toBe('Lab notes')
       expect(newNote.entryDate).toBe('2026-10-07')
 
-      const summaryList = await notesApi.list(3)
+      const summaryList = await notesApi.list({ courseId: 3 })
       const foundSummary = summaryList.find((n) => n.id === newNote.id)
       expect(foundSummary?.title).toBe('Lab notes')
       expect(foundSummary?.entryDate).toBe('2026-10-07')

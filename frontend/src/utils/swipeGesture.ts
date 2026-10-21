@@ -28,3 +28,16 @@ export function resolveRowSwipe(dx: number, dy: number): boolean {
   if (Math.abs(dy) > Math.abs(dx)) return false
   return dx <= -ROW_SWIPE_THRESHOLD_PX
 }
+
+/**
+ * Resolves a swipe on a floating toast. Returns the fly-out direction
+ * (-1 left, 1 right) once the gesture passes the shared row threshold in
+ * either direction, or 0 when the toast should snap back. Vertical-dominant
+ * drags return 0 so native scrolling wins.
+ */
+export function resolveDismissSwipe(dx: number, dy: number): -1 | 0 | 1 {
+  if (Math.abs(dy) > Math.abs(dx)) return 0
+  if (dx <= -ROW_SWIPE_THRESHOLD_PX) return -1
+  if (dx >= ROW_SWIPE_THRESHOLD_PX) return 1
+  return 0
+}

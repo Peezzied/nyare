@@ -47,6 +47,7 @@ Theme Mode: **Light mode only** for the initial MVP. Dark mode is deferred.
 | `--color-primary` | `#00A4C8` | Ocean Cyan primary action color and active indicators |
 | `--color-primary-bevel` | `#007B99` | Darker cyan for 3D tactile button bottom borders |
 | `--color-text-main` | `#334155` | Slate body text and primary labels |
+| `--color-text-soft` | `#527A8C` | Muted steel-ocean secondary body text (note previews) |
 | `--color-text-muted` | `#7B8B97` | Secondary text, date subtitles, and field placeholders |
 | `--color-border` | `#CBD5E1` | Card dividers, input borders, and sheet separators |
 
@@ -171,7 +172,7 @@ Calendar items share course colors but differentiate block types through fill, b
   - Course badge at top left (using the 24-color course palette).
   - Note title (Quicksand 600).
   - Snippet preview text (Inter 400).
-  - Entry date timestamp at bottom right (`Oct 6`).
+  - Entry date timestamp at bottom right (`Oct 06`, or time when created within 24 hours).
 - Floating Action Button (FAB): Bottom right `+` button in Ocean Cyan (`#00A4C8`).
 
 ### 7.4 Tiptap Rich Text Editor

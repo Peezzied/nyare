@@ -164,16 +164,25 @@ describe('API Services', () => {
 
       const result = await coursesApi.list()
       expect(result).toEqual(mockCourses)
-      expect(getSpy).toHaveBeenCalledWith('/api/courses', { userId: undefined })
+      expect(getSpy).toHaveBeenCalledWith('/api/courses', undefined)
     })
 
     it('calls list with userId parameter', async () => {
       const mockCourses: CourseResponse[] = []
       const getSpy = vi.spyOn(apiClient, 'get').mockResolvedValue(mockCourses)
 
-      const result = await coursesApi.list(12)
+      const result = await coursesApi.list({ userId: 12 })
       expect(result).toEqual(mockCourses)
       expect(getSpy).toHaveBeenCalledWith('/api/courses', { userId: 12 })
+    })
+
+    it('calls list with archived parameter', async () => {
+      const mockCourses: CourseResponse[] = []
+      const getSpy = vi.spyOn(apiClient, 'get').mockResolvedValue(mockCourses)
+
+      const result = await coursesApi.list({ archived: true })
+      expect(result).toEqual(mockCourses)
+      expect(getSpy).toHaveBeenCalledWith('/api/courses', { archived: true })
     })
 
     it('calls get with course id', async () => {
@@ -210,6 +219,52 @@ describe('API Services', () => {
 
       await coursesApi.delete(4)
       expect(deleteSpy).toHaveBeenCalledWith('/api/courses/4')
+    })
+
+    it('calls archive with course id', async () => {
+      const mockCourse: CourseResponse = {
+        id: 4,
+        name: 'CS 102',
+        archivedAt: '2026-10-08T00:00:00Z',
+      }
+      const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValue(mockCourse)
+
+      const result = await coursesApi.archive(4)
+      expect(result).toEqual(mockCourse)
+      expect(postSpy).toHaveBeenCalledWith('/api/courses/4/archive')
+    })
+
+    it('calls unarchive with course id', async () => {
+      const mockCourse: CourseResponse = { id: 4, name: 'CS 102', archivedAt: null }
+      const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValue(mockCourse)
+
+      const result = await coursesApi.unarchive(4)
+      expect(result).toEqual(mockCourse)
+      expect(postSpy).toHaveBeenCalledWith('/api/courses/4/unarchive')
+    })
+
+    it('calls unarchiveMany with course ids in the request body', async () => {
+      const mockCourses: CourseResponse[] = [
+        { id: 4, name: 'CS 102' },
+        { id: 7, name: 'CS 201' },
+      ]
+      const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValue(mockCourses)
+
+      const result = await coursesApi.unarchiveMany([4, 7])
+      expect(result).toEqual(mockCourses)
+      expect(postSpy).toHaveBeenCalledWith('/api/courses/unarchive', { courseIds: [4, 7] })
+    })
+
+    it('calls archiveAll on the bulk endpoint', async () => {
+      const mockCourses: CourseResponse[] = [
+        { id: 4, name: 'CS 102', archivedAt: '2026-10-08T00:00:00Z' },
+        { id: 7, name: 'CS 201', archivedAt: '2026-10-08T00:00:00Z' },
+      ]
+      const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValue(mockCourses)
+
+      const result = await coursesApi.archiveAll()
+      expect(result).toEqual(mockCourses)
+      expect(postSpy).toHaveBeenCalledWith('/api/courses/archive-all')
     })
   })
 
@@ -281,7 +336,7 @@ describe('API Services', () => {
       const mockNotes: NoteSummaryResponse[] = []
       const getSpy = vi.spyOn(apiClient, 'get').mockResolvedValue(mockNotes)
 
-      const result = await notesApi.list(10)
+      const result = await notesApi.list({ courseId: 10 })
       expect(result).toEqual(mockNotes)
       expect(getSpy).toHaveBeenCalledWith('/api/notes', { courseId: 10 })
     })

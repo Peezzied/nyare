@@ -17,7 +17,7 @@ export const buttonVariants = cva(
         ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 hover:underline',
         tactile:
-          'rounded-xl bg-[#00A4C8] font-bold text-white shadow-[0_4px_0_0_#007B99] hover:bg-[#0093B4] active:translate-y-1 active:shadow-none',
+          'rounded-xl bg-[#00A4C8] font-bold text-white shadow-[0_3px_0_0_#007B99] hover:bg-[#0093B4] active:translate-y-0.5 active:shadow-[0_1px_0_#007B99]',
         'tactile-destructive':
           'rounded-xl bg-[#DC2626] font-bold text-white shadow-[0_4px_0_0_#991B1B] hover:bg-[#B91C1C] active:translate-y-1 active:shadow-none',
       },

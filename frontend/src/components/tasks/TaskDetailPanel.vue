@@ -14,6 +14,7 @@ import DialogShell from '@/components/ui/DialogShell.vue'
 import CoursePicker from '@/components/CoursePicker.vue'
 import { ApiError } from '@/api'
 import { useCatalog } from '@/composables/useCatalog'
+import { useArchive } from '@/composables/useArchive'
 import { useTasks } from '@/composables/useTasks'
 import { minutesToDuration } from '@/utils/duration'
 import { URGENCY_COLORS, formatDuration, getTaskUrgency } from '@/utils/taskUrgency'
@@ -51,7 +52,8 @@ const emit = defineEmits<{
 }>()
 
 const { courses, schedules, loadCatalog } = useCatalog()
-const { getTask, createTask, updateTask, updateTaskStatus, deleteTask } = useTasks()
+const archive = useArchive()
+const { getTask, createTask, updateTask, updateTaskStatus, deleteTask, resetTasks } = useTasks()
 
 const DURATION_PRESETS = [15, 30, 45, 60, 90, 120, 180] as const
 
@@ -72,6 +74,21 @@ const lastErrorAction = ref<'save' | 'delete'>('save')
 
 const isViewMode = computed(() => props.taskId !== null)
 const done = computed(() => loadedTask.value?.status === 'COMPLETED')
+
+/** True when the task's course is archived. The panel renders read-only. */
+const isArchivedCourse = computed(() => archive.isArchived(loadedTask.value?.courseId))
+
+const archivedCourseName = computed(
+  () =>
+    archive.archivedCourses.value.find((course) => course.id === loadedTask.value?.courseId)
+      ?.name ?? `Course ${loadedTask.value?.courseId ?? ''}`,
+)
+
+const archivedCourseBadgeStyle = computed(() => {
+  const badge = archive.courseColor(loadedTask.value?.courseId)
+  return { backgroundColor: badge.bg, color: badge.text, borderColor: badge.border }
+})
+
 const dirty = computed(() => formIsDirty(form, loadedTask.value))
 const canSave = computed(() => formCanSave(form))
 const titleError = computed(() =>
@@ -151,7 +168,19 @@ async function resolveTask() {
     return
   }
   try {
-    applyTask(await getTask(props.taskId))
+    const task = await getTask(props.taskId)
+    // The archive check is best-effort: a failed catalog or archive load leaves the panel writable.
+    await loadCatalog().catch(() => {})
+    if (!courses.value.some((course) => course.id === task.courseId)) {
+      await archive.loadArchive().catch(() => {})
+    }
+    applyTask(task)
+    // `getTask` upserts into the shared list cache, which holds active tasks
+    // only. An archived course's task must leave it so TodoView cannot render
+    // a read-only row as editable.
+    if (archive.isArchived(task.courseId)) {
+      resetTasks()
+    }
   } catch (err) {
     if (err instanceof ApiError && err.status === 404) {
       emit('missing')
@@ -162,7 +191,7 @@ async function resolveTask() {
 }
 
 async function toggleDone(next: boolean | 'indeterminate') {
-  if (!props.taskId || !loadedTask.value) {
+  if (!props.taskId || !loadedTask.value || isArchivedCourse.value) {
     return
   }
   const previous = loadedTask.value.status
@@ -178,7 +207,7 @@ async function toggleDone(next: boolean | 'indeterminate') {
 }
 
 async function handleSave() {
-  if (saving.value || !dirty.value || !canSave.value) {
+  if (saving.value || !dirty.value || !canSave.value || isArchivedCourse.value) {
     return
   }
 
@@ -204,7 +233,7 @@ async function handleSave() {
 }
 
 async function confirmDelete() {
-  if (!props.taskId || deleting.value) {
+  if (!props.taskId || deleting.value || isArchivedCourse.value) {
     return
   }
   deleting.value = true
@@ -262,7 +291,15 @@ onMounted(() => {
         {{ isViewMode ? 'Task' : 'New task' }}
       </h1>
 
+      <span
+        v-if="isArchivedCourse"
+        data-testid="archived-course-label"
+        class="inline-flex min-h-11 items-center rounded-full border border-(--color-app-border) bg-white px-4 text-xs font-bold uppercase tracking-wider text-(--color-text-muted)"
+      >
+        Archived course
+      </span>
       <Button
+        v-else
         type="button"
         variant="tactile"
         size="touch"
@@ -279,7 +316,10 @@ onMounted(() => {
       <!-- Identity zone -->
       <section :class="contentStaggerClass">
         <div class="flex items-start gap-2">
-          <div v-if="isViewMode" class="flex h-11 w-11 shrink-0 items-start justify-center pt-1.5">
+          <div
+            v-if="isViewMode && !isArchivedCourse"
+            class="flex h-11 w-11 shrink-0 items-start justify-center pt-1.5"
+          >
             <Checkbox
               data-testid="task-complete"
               :model-value="done"
@@ -290,6 +330,7 @@ onMounted(() => {
           <Textarea
             v-model="form.title"
             data-testid="task-title"
+            :readonly="isArchivedCourse"
             aria-label="Task title"
             rows="1"
             placeholder="Task title"
@@ -307,7 +348,16 @@ onMounted(() => {
 
         <div class="mt-2">
           <template v-if="isViewMode">
+            <span
+              v-if="isArchivedCourse"
+              data-testid="archived-course-chip"
+              class="inline-flex max-w-[200px] items-center rounded-full border px-3 py-1 text-xs font-semibold"
+              :style="archivedCourseBadgeStyle"
+            >
+              <span class="truncate">{{ archivedCourseName }}</span>
+            </span>
             <CoursePicker
+              v-else
               v-model="form.courseId"
               :courses="courses"
               :schedules="schedules"
@@ -358,6 +408,7 @@ onMounted(() => {
                 size="touch"
                 data-testid="task-date"
                 aria-label="Scheduled date"
+                :disabled="isArchivedCourse"
                 class="min-w-0 flex-1 justify-start px-0 text-sm font-normal hover:bg-transparent"
                 :class="form.scheduledDate ? 'text-slate-700' : 'text-slate-400'"
               >
@@ -369,7 +420,7 @@ onMounted(() => {
             </PopoverContent>
           </Popover>
           <Button
-            v-if="form.scheduledDate"
+            v-if="form.scheduledDate && !isArchivedCourse"
             type="button"
             variant="ghost"
             size="icon-touch"
@@ -390,6 +441,7 @@ onMounted(() => {
             data-testid="task-duration"
             aria-label="Duration"
             class="min-w-0 flex-1"
+            :disabled="isArchivedCourse"
             :model-value="form.durationMinutes ?? ''"
             @update:model-value="onDurationChange"
           >
@@ -420,6 +472,7 @@ onMounted(() => {
           v-model="form.description"
           data-testid="task-description"
           aria-label="Task description"
+          :readonly="isArchivedCourse"
           rows="3"
           placeholder="Add details"
           class="min-h-0 w-full resize-none rounded-none border-0 bg-transparent px-0 py-0 text-sm text-slate-700 shadow-none placeholder-slate-400 outline-none focus-visible:border-0 focus-visible:ring-0"
@@ -441,7 +494,7 @@ onMounted(() => {
 
       <!-- Danger zone: delete the task (view mode only) -->
       <Button
-        v-if="isViewMode"
+        v-if="isViewMode && !isArchivedCourse"
         type="button"
         variant="tactile-destructive"
         size="touch"

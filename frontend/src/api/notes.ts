@@ -1,14 +1,21 @@
 import { apiClient } from './client'
 import type { NoteRequest, NoteResponse, NoteSummaryResponse } from '@/types/api'
 
+/** Server-side filters for `GET /api/notes`. */
+export interface NoteListParams {
+  courseId?: number
+  /** `true` returns notes of archived courses only. `false` returns notes of active courses. */
+  archived?: boolean
+}
+
 /** API service for course-linked journal notes. */
 export const notesApi = {
   /**
    * Lists note summaries with `GET /api/notes`.
    * Each summary has a content preview. Call `get()` for the full content.
    */
-  list(courseId?: number): Promise<NoteSummaryResponse[]> {
-    return apiClient.get<NoteSummaryResponse[]>('/api/notes', { courseId })
+  list(params?: NoteListParams): Promise<NoteSummaryResponse[]> {
+    return apiClient.get<NoteSummaryResponse[]>('/api/notes', params)
   },
 
   /**

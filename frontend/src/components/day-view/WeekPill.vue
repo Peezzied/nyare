@@ -33,7 +33,7 @@ const theme = computed(() => CLASS_THEME_STYLES[props.event.colorTheme])
     role="button"
     tabindex="0"
     :aria-label="`${CLASS_MARKER_LABEL}: ${event.title}`"
-    class="h-full w-full cursor-pointer select-none overflow-hidden rounded-md border px-1 py-px transition-colors hover:brightness-[0.97]"
+    class="h-full w-full cursor-pointer select-none overflow-hidden rounded-md border pr-1 py-px transition-colors hover:brightness-[0.97]"
     :class="[theme.fill, theme.edge, theme.ink]"
     @click="handleActivate"
     @keydown.enter.prevent="handleActivate"

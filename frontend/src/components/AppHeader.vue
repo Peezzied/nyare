@@ -20,7 +20,7 @@ defineProps<{
     </slot>
 
     <slot name="center">
-      <h1 class="text-xl font-bold tracking-tight text-text-main" data-testid="app-header-title">
+      <h1 class="text-xl font-bold tracking-tight text-text-main truncate" data-testid="app-header-title">
         {{ title }}
       </h1>
     </slot>

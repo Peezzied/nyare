@@ -6,6 +6,8 @@ export interface AcademicEventListParams {
   courseId?: number
   /** `true` returns only events with a deadline at or after the current time. */
   upcoming?: boolean
+  /** `true` returns events of archived courses only. `false` returns events of active courses. */
+  archived?: boolean
 }
 
 /** API service for academic events and deadlines. */

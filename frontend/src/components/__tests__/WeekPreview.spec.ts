@@ -2,6 +2,16 @@ import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import WeekPreview from '@/components/WeekPreview.vue'
 import type { PreviewBlock } from '@/utils/weekPreview'
+import type { CoursePaletteColor } from '@/constants/palette'
+
+const sampleColor: CoursePaletteColor = {
+  id: 'tomato',
+  name: 'Tomato',
+  solid: '#D50000',
+  bg: '#FFEBEE',
+  text: '#B71C1C',
+  border: '#EF9A9A',
+}
 
 describe('WeekPreview.vue', () => {
   it('renders the seven weekday labels and no date numbers', () => {
@@ -31,7 +41,7 @@ describe('WeekPreview.vue', () => {
       title: 'CS 101',
       startTime: '09:00',
       endTime: '10:00',
-      color: '#D50000',
+      color: sampleColor,
       blockId: 'block-1',
     }
 
@@ -53,7 +63,7 @@ describe('WeekPreview.vue', () => {
       title: 'CS 101',
       startTime: '09:00',
       endTime: '10:00',
-      color: '#D50000',
+      color: sampleColor,
       blockId: 'block-1',
     }
 
@@ -69,5 +79,4 @@ describe('WeekPreview.vue', () => {
     expect(wrapper.emitted('selectBlock')).toBeTruthy()
     expect(wrapper.emitted('selectBlock')![0]).toEqual(['block-1'])
   })
-
 })

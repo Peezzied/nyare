@@ -128,6 +128,10 @@ class SessionEnforcementControllerTest {
                 new WriteCase("POST", "/api/notes", ServiceSelector.NOTE),
                 new WriteCase("PUT", "/api/notes/00000000-0000-0000-0000-000000000001", ServiceSelector.NOTE),
                 new WriteCase("DELETE", "/api/courses/1", ServiceSelector.COURSE),
+                new WriteCase("POST", "/api/courses/1/archive", ServiceSelector.COURSE),
+                new WriteCase("POST", "/api/courses/1/unarchive", ServiceSelector.COURSE),
+                new WriteCase("POST", "/api/courses/archive-all", ServiceSelector.COURSE),
+                new WriteCase("POST", "/api/courses/unarchive", ServiceSelector.COURSE),
                 new WriteCase("PATCH", "/api/tasks/00000000-0000-0000-0000-000000000001/status", ServiceSelector.TASK),
                 new WriteCase("POST", "/api/study-planner/process", ServiceSelector.PLANNER)
         );

@@ -30,7 +30,7 @@ describe('NoteCard', () => {
     expect(wrapper.get('[data-testid="note-course-badge"]').text()).toBe('CS 201')
     expect(wrapper.get('[data-testid="note-title"]').text()).toBe('Lecture 7')
     expect(wrapper.get('[data-testid="note-preview"]').text()).toBe('Short lecture note')
-    expect(wrapper.get('[data-testid="note-entry-date"]').text()).toBe('Oct 6')
+    expect(wrapper.get('[data-testid="note-entry-date"]').text()).toBe('Oct 06')
   })
 
   it('falls back to course id when course name is missing', () => {

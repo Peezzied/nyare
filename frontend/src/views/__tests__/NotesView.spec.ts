@@ -337,7 +337,7 @@ describe('NotesView', () => {
 
     const menu = document.querySelector<HTMLElement>('[data-testid="account-menu"]')
     expect(menu).not.toBeNull()
-    expect(menu?.textContent).toContain('Select Account')
+    expect(menu?.querySelector('[data-testid="select-account-item"]')).not.toBeNull()
 
     wrapper.unmount()
   })

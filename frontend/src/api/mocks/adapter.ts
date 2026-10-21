@@ -9,6 +9,7 @@ import type {
   LoginRequest,
   CourseResponse,
   CourseRequest,
+  UnarchiveRequest,
   ScheduleResponse,
   ScheduleRequest,
   NoteResponse,
@@ -87,11 +88,14 @@ export function resetMockFixtures(): void {
 
 /**
  * Session user's notes that wait for Process: `lastProcessedAt` is null or
- * `updatedAt` is newer. Mirrors `NoteRepository.findDirtyNotes` on the backend.
+ * `updatedAt` is newer. Mirrors `NoteRepository.findDirtyNotes` on the backend,
+ * which limits the scan to active courses.
  */
 function dirtyNotes(): NoteResponse[] {
   const courseIds = new Set(
-    state.courses.filter((c) => c.userId === state.currentUser?.id).map((c) => c.id),
+    state.courses
+      .filter((c) => c.userId === state.currentUser?.id && c.archivedAt == null)
+      .map((c) => c.id),
   )
   return state.notes
     .filter(
@@ -122,6 +126,20 @@ function plannerStatus(): PlannerStatusResponse {
       entryDate: n.entryDate,
     })),
   }
+}
+
+/**
+ * Mirrors the backend `archived` list filter: an item shows only when its parent
+ * course matches the flag. `true` keeps items of archived courses.
+ */
+function matchesCourseArchived(courseId: number, archived: boolean): boolean {
+  const course = state.courses.find((c) => c.id === courseId)
+  return course !== undefined && (course.archivedAt != null) === archived
+}
+
+/** Mirrors the backend `requireActiveCourse` write guard on items of archived courses. */
+function courseArchived(courseId: number): boolean {
+  return state.courses.some((c) => c.id === courseId && c.archivedAt != null)
 }
 
 /** Stamps the session user's dirty notes as processed, like the backend Process run does. */
@@ -247,6 +265,9 @@ export function mockRouter(
       const userId = Number(userIdParam)
       list = list.filter((c) => c.userId === userId)
     }
+    // The backend default is `archived=false`, which lists active courses only.
+    const archivedParam = searchParams.get('archived') === 'true'
+    list = list.filter((c) => (c.archivedAt != null) === archivedParam)
     return { status: 200, data: list }
   }
 
@@ -290,6 +311,9 @@ export function mockRouter(
       if (!req?.name?.trim()) {
         return badRequest('Course name is required')
       }
+      if (existing.archivedAt != null) {
+        return badRequest('Course is archived')
+      }
       const updated: CourseResponse = {
         ...existing,
         name: req.name,
@@ -309,9 +333,67 @@ export function mockRouter(
     }
   }
 
+  if (method === 'POST' && pathname === '/api/courses/archive-all') {
+    // One shared timestamp for every course, like the backend FR-016 rule.
+    const now = new Date().toISOString()
+    const archived: CourseResponse[] = []
+    state.courses = state.courses.map((c) => {
+      if (c.userId === state.currentUser?.id && c.archivedAt == null) {
+        const next = { ...c, archivedAt: now }
+        archived.push(next)
+        return next
+      }
+      return c
+    })
+    return { status: 200, data: archived }
+  }
+
+  if (method === 'POST' && pathname === '/api/courses/unarchive') {
+    const req = body as UnarchiveRequest | undefined
+    if (!req?.courseIds?.length) {
+      return badRequest('Course IDs are required')
+    }
+    // All-or-nothing batch: resolve every ID before any mutation.
+    const targets = req.courseIds.map((id) =>
+      state.courses.findIndex((c) => c.id === id && c.userId === state.currentUser?.id),
+    )
+    const missingIndex = targets.findIndex((i) => i === -1)
+    if (missingIndex !== -1) {
+      return notFound(`Course not found with ID: ${req.courseIds[missingIndex]}`)
+    }
+    const restored = targets.map((index) => {
+      const next = { ...state.courses[index]!, archivedAt: null }
+      state.courses[index] = next
+      return next
+    })
+    return { status: 200, data: restored }
+  }
+
+  // Match the archive sub-routes before the generic course ID route.
+  const courseArchiveMatch = pathname.match(/^\/api\/courses\/(\d+)\/(archive|unarchive)$/)
+  if (method === 'POST' && courseArchiveMatch?.[1]) {
+    const id = Number(courseArchiveMatch[1])
+    const index = state.courses.findIndex(
+      (c) => c.id === id && c.userId === state.currentUser?.id,
+    )
+    if (index === -1) {
+      return notFound(`Course not found with ID: ${id}`)
+    }
+    const existing = state.courses[index]!
+    // Re-archiving keeps the first timestamp, so repeated calls stay no-ops.
+    const updated: CourseResponse =
+      courseArchiveMatch[2] === 'archive'
+        ? { ...existing, archivedAt: existing.archivedAt ?? new Date().toISOString() }
+        : { ...existing, archivedAt: null }
+    state.courses[index] = updated
+    return { status: 200, data: updated }
+  }
+
   // Schedules endpoints
   if (method === 'GET' && pathname === '/api/schedules') {
     let list = state.schedules
+    const archivedParam = searchParams.get('archived') === 'true'
+    list = list.filter((s) => matchesCourseArchived(s.courseId, archivedParam))
     const courseIdParam = searchParams.get('courseId')
     if (courseIdParam !== null) {
       const courseId = Number(courseIdParam)
@@ -328,6 +410,9 @@ export function mockRouter(
     const req = body as ScheduleRequest | undefined
     if (!req?.courseId || !req.day || !req.startTime || !req.endTime) {
       return badRequest('All schedule fields are required')
+    }
+    if (courseArchived(req.courseId)) {
+      return badRequest('Course is archived')
     }
     const nextId = state.schedules.reduce((max, s) => Math.max(max, s.id), 0) + 1
     const newSchedule: ScheduleResponse = {
@@ -357,9 +442,15 @@ export function mockRouter(
         return notFound(`Schedule not found with ID: ${id}`)
       }
       const existing = state.schedules[index]!
+      if (courseArchived(existing.courseId)) {
+        return badRequest('Course is archived')
+      }
       const req = body as ScheduleRequest | undefined
       if (!req?.courseId || !req.day || !req.startTime || !req.endTime) {
         return badRequest('All schedule fields are required')
+      }
+      if (courseArchived(req.courseId)) {
+        return badRequest('Course is archived')
       }
       const updated: ScheduleResponse = {
         id: existing.id,
@@ -376,6 +467,9 @@ export function mockRouter(
       if (index === -1) {
         return notFound(`Schedule not found with ID: ${id}`)
       }
+      if (courseArchived(state.schedules[index]!.courseId)) {
+        return badRequest('Course is archived')
+      }
       state.schedules.splice(index, 1)
       return { status: 204 }
     }
@@ -384,6 +478,8 @@ export function mockRouter(
   // Notes endpoints
   if (method === 'GET' && pathname === '/api/notes') {
     let list = state.notes
+    const archivedParam = searchParams.get('archived') === 'true'
+    list = list.filter((n) => matchesCourseArchived(n.courseId, archivedParam))
     const courseIdParam = searchParams.get('courseId')
     if (courseIdParam !== null) {
       const courseId = Number(courseIdParam)
@@ -397,6 +493,9 @@ export function mockRouter(
     const req = body as NoteRequest | undefined
     if (!req?.courseId || req.content === undefined) {
       return badRequest('Course ID and content are required')
+    }
+    if (courseArchived(req.courseId)) {
+      return badRequest('Course is archived')
     }
     const now = new Date().toISOString()
     const today = now.slice(0, 10)
@@ -430,9 +529,15 @@ export function mockRouter(
         return notFound(`Note not found with ID: ${id}`)
       }
       const existing = state.notes[index]!
+      if (courseArchived(existing.courseId)) {
+        return badRequest('Course is archived')
+      }
       const req = body as NoteRequest | undefined
       if (!req?.courseId || req.content === undefined) {
         return badRequest('Course ID and content are required')
+      }
+      if (courseArchived(req.courseId)) {
+        return badRequest('Course is archived')
       }
       const updated: NoteResponse = {
         ...existing,
@@ -456,6 +561,9 @@ export function mockRouter(
       if (index === -1) {
         return notFound(`Note not found with ID: ${id}`)
       }
+      if (courseArchived(state.notes[index]!.courseId)) {
+        return badRequest('Course is archived')
+      }
       state.notes.splice(index, 1)
       return { status: 204 }
     }
@@ -464,6 +572,8 @@ export function mockRouter(
   // Tasks endpoints
   if (method === 'GET' && pathname === '/api/tasks') {
     let list = state.tasks
+    const archivedParam = searchParams.get('archived') === 'true'
+    list = list.filter((t) => matchesCourseArchived(t.courseId, archivedParam))
     const courseIdParam = searchParams.get('courseId')
     if (courseIdParam !== null) {
       const courseId = Number(courseIdParam)
@@ -485,6 +595,9 @@ export function mockRouter(
     const req = body as TaskRequest | undefined
     if (!req?.courseId || !req.title?.trim()) {
       return badRequest('Course ID and title are required')
+    }
+    if (courseArchived(req.courseId)) {
+      return badRequest('Course is archived')
     }
     const now = new Date().toISOString()
     const scheduledDate = req.scheduledDate ?? null
@@ -516,6 +629,9 @@ export function mockRouter(
         return notFound(`Task not found with ID: ${id}`)
       }
       const existing = state.tasks[index]!
+      if (courseArchived(existing.courseId)) {
+        return badRequest('Course is archived')
+      }
       const req = body as TaskStatusRequest | undefined
       if (!req?.status) {
         return badRequest('Status is required')
@@ -546,9 +662,15 @@ export function mockRouter(
         return notFound(`Task not found with ID: ${id}`)
       }
       const existing = state.tasks[index]!
+      if (courseArchived(existing.courseId)) {
+        return badRequest('Course is archived')
+      }
       const req = body as TaskRequest | undefined
       if (!req?.courseId || !req.title?.trim()) {
         return badRequest('Course ID and title are required')
+      }
+      if (courseArchived(req.courseId)) {
+        return badRequest('Course is archived')
       }
       const scheduledDate =
         req.scheduledDate !== undefined ? req.scheduledDate : existing.scheduledDate
@@ -572,6 +694,9 @@ export function mockRouter(
       if (index === -1) {
         return notFound(`Task not found with ID: ${id}`)
       }
+      if (courseArchived(state.tasks[index]!.courseId)) {
+        return badRequest('Course is archived')
+      }
       state.tasks.splice(index, 1)
       return { status: 204 }
     }
@@ -580,6 +705,8 @@ export function mockRouter(
   // Academic Events endpoints
   if (method === 'GET' && pathname === '/api/academic-events') {
     let list = state.academicEvents
+    const archivedParam = searchParams.get('archived') === 'true'
+    list = list.filter((e) => matchesCourseArchived(e.courseId, archivedParam))
     const courseIdParam = searchParams.get('courseId')
     if (courseIdParam !== null) {
       const courseId = Number(courseIdParam)
@@ -598,6 +725,9 @@ export function mockRouter(
     const req = body as AcademicEventRequest | undefined
     if (!req?.courseId || !req.title || !req.deadline) {
       return badRequest('Course ID, title, and deadline are required')
+    }
+    if (courseArchived(req.courseId)) {
+      return badRequest('Course is archived')
     }
     const now = new Date().toISOString()
     const newEvent: AcademicEventResponse = {
@@ -629,9 +759,15 @@ export function mockRouter(
         return notFound(`Academic event not found with ID: ${id}`)
       }
       const existing = state.academicEvents[index]!
+      if (courseArchived(existing.courseId)) {
+        return badRequest('Course is archived')
+      }
       const req = body as AcademicEventRequest | undefined
       if (!req?.courseId || !req.title || !req.deadline) {
         return badRequest('Course ID, title, and deadline are required')
+      }
+      if (courseArchived(req.courseId)) {
+        return badRequest('Course is archived')
       }
       const updated: AcademicEventResponse = {
         ...existing,
@@ -648,6 +784,9 @@ export function mockRouter(
       const index = state.academicEvents.findIndex((e) => e.id === id)
       if (index === -1) {
         return notFound(`Academic event not found with ID: ${id}`)
+      }
+      if (courseArchived(state.academicEvents[index]!.courseId)) {
+        return badRequest('Course is archived')
       }
       state.academicEvents.splice(index, 1)
       return { status: 204 }

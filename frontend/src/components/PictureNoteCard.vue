@@ -2,7 +2,8 @@
 import { computed } from 'vue'
 import { useCatalog } from '@/composables/useCatalog'
 import type { CoursePaletteColor } from '@/constants/palette'
-import { formatEntryDateLong } from '@/utils/noteDate'
+import { formatCardTimestamp } from '@/utils/noteDate'
+import { collapseBlankLines } from '@/utils/noteImage'
 
 const emit = defineEmits<{ open: [event: Event] }>()
 const props = defineProps<{
@@ -13,12 +14,14 @@ const props = defineProps<{
   title: string
   text: string
   entryDate: string
+  createdAt: string
 }>()
 
 const catalog = useCatalog()
 
 const color = computed(() => props.badgeColor ?? catalog.courseColor(props.courseId))
-const entryLabel = computed(() => formatEntryDateLong(props.entryDate))
+const entryLabel = computed(() => formatCardTimestamp(props.entryDate, props.createdAt))
+const displayText = computed(() => collapseBlankLines(props.text))
 </script>
 
 <template>
@@ -35,7 +38,7 @@ const entryLabel = computed(() => formatEntryDateLong(props.entryDate))
       :src="photoUrl"
       :alt="title"
       loading="lazy"
-      class="w-full object-cover"
+      class="max-h-40 w-full object-cover"
       data-testid="picture-note-photo"
     />
     <div class="p-4">
@@ -51,16 +54,16 @@ const entryLabel = computed(() => formatEntryDateLong(props.entryDate))
         {{ courseName ?? `Course ${courseId}` }}
       </span>
       <h3
-        class="mt-2 font-sans text-base font-semibold text-text-main"
+        class="mt-2 line-clamp-1 break-words font-sans text-base font-semibold text-text-main"
         data-testid="picture-note-title"
       >
         {{ title }}
       </h3>
       <p
-        class="mt-1 break-words font-secondary text-sm text-text-main"
+        class="mt-1 line-clamp-2 break-words whitespace-pre-line font-secondary text-sm text-text-soft"
         data-testid="picture-note-text"
       >
-        {{ text }}
+        {{ displayText }}
       </p>
       <p class="mt-2 text-right text-xs text-text-muted" data-testid="picture-note-date">
         {{ entryLabel }}

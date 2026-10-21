@@ -1,33 +1,10 @@
 <script setup lang="ts">
-// Transient toast stack. Renders `useToasts` records bottom-center above
-// the nav bar; each toast slides up, fades, and self-dismisses.
-import { CircleCheck, CircleX, LoaderCircle } from '@lucide/vue'
+// Transient toast stack. Renders `useToasts` records top-center; each toast
+// drops in, fades, and self-dismisses or clears on tap / horizontal swipe.
+import ToastItem from '@/components/ToastItem.vue'
 import { useToasts } from '@/composables/useToasts'
-import type { ToastKind } from '@/composables/useToasts'
 
 const { toasts, dismissToast } = useToasts()
-
-function icon(kind: ToastKind) {
-  switch (kind) {
-    case 'success':
-      return CircleCheck
-    case 'error':
-      return CircleX
-    default:
-      return LoaderCircle
-  }
-}
-
-function iconColor(kind: ToastKind): string {
-  switch (kind) {
-    case 'success':
-      return '#0B8043'
-    case 'error':
-      return '#DC2626'
-    default:
-      return '#00A4C8'
-  }
-}
 </script>
 
 <template>
@@ -36,37 +13,12 @@ function iconColor(kind: ToastKind): string {
     aria-live="polite"
   >
     <TransitionGroup name="toast">
-      <button
+      <ToastItem
         v-for="toast in toasts"
         :key="toast.id"
-        type="button"
-        data-testid="toast"
-        class="pointer-events-auto flex w-full max-w-[340px] items-start gap-3 rounded-2xl border border-[#CBD5E1] bg-white p-3.5 text-left shadow-[0_8px_24px_rgba(0,0,0,0.12)]"
-        @click="dismissToast(toast.id)"
-      >
-        <component
-          :is="icon(toast.kind)"
-          class="mt-0.5 h-5 w-5 shrink-0"
-          :class="{ 'animate-spin': toast.kind === 'info' }"
-          :style="{ color: iconColor(toast.kind) }"
-          aria-hidden="true"
-        />
-        <span class="min-w-0 flex-1">
-          <span
-            class="block text-sm font-semibold text-[#334155]"
-            style="font-family: 'Quicksand', sans-serif; font-weight: 600"
-          >
-            {{ toast.title }}
-          </span>
-          <span
-            v-if="toast.detail"
-            class="mt-0.5 block text-xs text-[#7B8B97]"
-            style="font-family: 'Inter', sans-serif; font-weight: 400"
-          >
-            {{ toast.detail }}
-          </span>
-        </span>
-      </button>
+        :toast="toast"
+        @dismiss="dismissToast(toast.id)"
+      />
     </TransitionGroup>
   </div>
 </template>

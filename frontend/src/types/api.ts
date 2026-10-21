@@ -55,6 +55,8 @@ export interface CourseResponse {
   readonly color?: string | null
   /** ID of the user that owns the course. */
   readonly userId?: number | null
+  /** ISO local date-time of the archive action. `null` means the course is active. */
+  readonly archivedAt?: string | null
 }
 
 /** Request body to create a course with `POST /api/courses`. */
@@ -65,6 +67,11 @@ export interface CourseRequest {
   readonly color?: string | null
   /** Owner user ID. The backend uses it only when no session user exists. */
   readonly userId?: number | null
+}
+
+/** Request body to restore archived courses with `POST /api/courses/unarchive`. */
+export interface UnarchiveRequest {
+  readonly courseIds: number[]
 }
 
 /** Recurring weekly class meeting of a course. */

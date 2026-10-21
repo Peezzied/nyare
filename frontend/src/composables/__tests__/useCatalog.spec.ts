@@ -4,15 +4,25 @@ import { useCatalog } from '../useCatalog'
 import type { CourseResponse, ScheduleResponse } from '@/types/api'
 
 const mocks = vi.hoisted(() => ({
+  resetNotes: vi.fn<() => void>(),
   resetTasks: vi.fn<() => void>(),
   resetEvents: vi.fn<() => void>(),
+  resetArchive: vi.fn<() => void>(),
+  applyCourseRemoved: vi.fn<(id: number) => void>(),
   resetPlanner: vi.fn<() => void>(),
   refreshPlanner: vi.fn<() => Promise<void>>(),
 }))
 
+vi.mock('@/composables/useNotes', () => ({ useNotes: () => ({ resetNotes: mocks.resetNotes }) }))
 vi.mock('@/composables/useTasks', () => ({ useTasks: () => ({ resetTasks: mocks.resetTasks }) }))
 vi.mock('@/composables/useAcademicEvents', () => ({
   useAcademicEvents: () => ({ resetEvents: mocks.resetEvents }),
+}))
+vi.mock('@/composables/useArchive', () => ({
+  useArchive: () => ({
+    resetArchive: mocks.resetArchive,
+    applyCourseRemoved: mocks.applyCourseRemoved,
+  }),
 }))
 vi.mock('@/composables/usePlannerStatus', () => ({
   usePlannerStatus: () => ({ reset: mocks.resetPlanner, refresh: mocks.refreshPlanner }),
@@ -30,8 +40,10 @@ const schedule: ScheduleResponse = {
 describe('useCatalog', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
+    mocks.resetNotes.mockClear()
     mocks.resetTasks.mockClear()
     mocks.resetEvents.mockClear()
+    mocks.resetArchive.mockClear()
     mocks.resetPlanner.mockClear()
     mocks.refreshPlanner.mockReset().mockResolvedValue(undefined)
     // The cache is module-level state, so clear it to isolate each test.
@@ -101,6 +113,24 @@ describe('useCatalog', () => {
 
     expect(mocks.resetTasks).toHaveBeenCalledTimes(1)
     expect(mocks.resetEvents).toHaveBeenCalledTimes(1)
+    expect(mocks.resetPlanner).toHaveBeenCalledTimes(1)
+    expect(mocks.refreshPlanner).toHaveBeenCalledTimes(1)
+  })
+
+  it('applyCourseArchived removes the course and resets the note, task, event, archive, and planner caches', async () => {
+    vi.spyOn(coursesApi, 'list').mockResolvedValue([course])
+    vi.spyOn(schedulesApi, 'list').mockResolvedValue([schedule])
+    const catalog = useCatalog()
+    await catalog.loadCatalog()
+
+    catalog.applyCourseArchived(course.id)
+
+    expect(catalog.courses.value).toEqual([])
+    expect(catalog.schedules.value).toEqual([])
+    expect(mocks.resetNotes).toHaveBeenCalledTimes(1)
+    expect(mocks.resetTasks).toHaveBeenCalledTimes(1)
+    expect(mocks.resetEvents).toHaveBeenCalledTimes(1)
+    expect(mocks.resetArchive).toHaveBeenCalledTimes(1)
     expect(mocks.resetPlanner).toHaveBeenCalledTimes(1)
     expect(mocks.refreshPlanner).toHaveBeenCalledTimes(1)
   })

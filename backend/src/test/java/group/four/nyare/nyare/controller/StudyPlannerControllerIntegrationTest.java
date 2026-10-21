@@ -200,7 +200,7 @@ class StudyPlannerControllerIntegrationTest {
         assertThat(responseBody).contains("\"contextsCreated\":");
 
         // Then: Validate database persistence
-        List<Note> dirtyNotesAfterProcessing = noteRepository.findDirtyNotes(testUser.getId(), LocalDate.now());
+        List<Note> dirtyNotesAfterProcessing = noteRepository.findDirtyNotes(testUser.getId(), LocalDate.now(), false);
         assertThat(dirtyNotesAfterProcessing).isEmpty();
 
         List<Note> processedNotes = noteRepository.findAllById(List.of(

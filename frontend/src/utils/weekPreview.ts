@@ -2,7 +2,7 @@ import type { DayOfWeek } from '@/types/api'
 import type { TimeBlockDraft } from '@/components/TimeBlockCard.vue'
 import { WEEKDAYS } from '@/components/TimeBlockCard.vue'
 import type { CoursePaletteColor } from '@/constants/palette'
-import { HOUR_HEIGHT } from '@/constants/calendar'
+import { getHourHeight } from '@/utils/calendarStyle'
 
 export interface PreviewBlock {
   id: string
@@ -10,7 +10,7 @@ export interface PreviewBlock {
   title: string
   startTime: string
   endTime: string
-  color: string
+  color: CoursePaletteColor
   blockId: string
   dimmed?: boolean
 }
@@ -41,7 +41,7 @@ export function dayFromOffsetX(offsetX: number, gridWidth: number): DayOfWeek {
 }
 
 export function minutesFromOffsetY(offsetY: number, stepMinutes = 15): number {
-  const rawMinutes = (offsetY / HOUR_HEIGHT) * 60
+  const rawMinutes = (offsetY / getHourHeight()) * 60
   const snapped = Math.floor(rawMinutes / stepMinutes) * stepMinutes
   return Math.min(24 * 60, Math.max(0, snapped))
 }
@@ -70,7 +70,7 @@ export function derivePreviewBlocks(
         title: trimmedTitle,
         startTime: block.startTime,
         endTime: block.endTime,
-        color: color.solid,
+        color,
         blockId: block.id,
       })
     }
@@ -89,7 +89,7 @@ export function slotFromOffset(
     return null
   }
 
-  const maxGridHeight = 24 * HOUR_HEIGHT
+  const maxGridHeight = 24 * getHourHeight()
   if (offsetX < 0 || offsetX >= gridWidth || offsetY < 0 || offsetY >= maxGridHeight) {
     return null
   }
@@ -116,7 +116,7 @@ export function moveSlot2D(
   const day = dayFromOffsetX(currentOffsetX, gridWidth)
   const duration = timeToMinutes(slot.endTime) - timeToMinutes(slot.startTime)
 
-  const rawMinutes = (currentOffsetY / HOUR_HEIGHT) * 60
+  const rawMinutes = (currentOffsetY / getHourHeight()) * 60
   let newStart = Math.floor((rawMinutes - initialClickOffsetMinutes) / 15) * 15
   newStart = Math.max(0, Math.min(24 * 60 - duration, newStart))
   const newEnd = newStart + duration
@@ -133,21 +133,22 @@ export function resizeSlotHandle(
   slot: PendingSlot,
   handle: 'top' | 'bottom',
   currentOffsetY: number,
+  minMinutes = 15,
 ): PendingSlot {
   const currentStart = timeToMinutes(slot.startTime)
   const currentEnd = timeToMinutes(slot.endTime)
-  const rawMinutes = (currentOffsetY / HOUR_HEIGHT) * 60
+  const rawMinutes = (currentOffsetY / getHourHeight()) * 60
 
   if (handle === 'top') {
     const snappedStart = Math.floor(rawMinutes / 15) * 15
-    const newStart = Math.max(0, Math.min(currentEnd - 15, snappedStart))
+    const newStart = Math.max(0, Math.min(currentEnd - minMinutes, snappedStart))
     return {
       ...slot,
       startTime: minutesToTime(newStart),
     }
   }
   const snappedEnd = Math.ceil(rawMinutes / 15) * 15
-  const newEnd = Math.min(24 * 60, Math.max(currentStart + 15, snappedEnd))
+  const newEnd = Math.min(24 * 60, Math.max(currentStart + minMinutes, snappedEnd))
   return {
     ...slot,
     endTime: minutesToTime(newEnd),
