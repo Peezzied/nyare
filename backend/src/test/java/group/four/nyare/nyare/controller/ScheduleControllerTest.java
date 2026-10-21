@@ -60,7 +60,7 @@ class ScheduleControllerTest {
     @DisplayName("listSchedules with session user passes userId to service")
     void listSchedules_withSessionUser_passesUserIdToService() throws Exception {
         // given
-        when(scheduleService.listSchedules(eq(USER_ID), any(), any())).thenReturn(List.of(sampleSchedule));
+        when(scheduleService.listSchedules(eq(USER_ID), any(), any(), any())).thenReturn(List.of(sampleSchedule));
 
         // when & then
         mockMvc.perform(get("/api/schedules").session(mockSession()))
@@ -68,6 +68,6 @@ class ScheduleControllerTest {
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].id").value(1));
 
-        verify(scheduleService).listSchedules(USER_ID, null, null);
+        verify(scheduleService).listSchedules(USER_ID, null, null, false);
     }
 }

@@ -3,10 +3,11 @@ SYNC IMPACT REPORT
 ==================
 - Version: 1.1.0 → 1.2.0 (Separation of Development Environment Rules from Presentation Components)
 - Version: 1.2.0 → 1.3.0 (Courses now expose create, update, and delete endpoints)
+- Version: 1.3.0 → 1.4.0 (Course archive state and archive endpoints)
 - Status: Amended
 - Principles Ratified / Modified:
   * I. Virtual Study Plan and Tri-State Planning (Preserved)
-  * II. Course Anchor and Single Parentage (Preserved)
+  * II. Course Anchor and Single Parentage (Modified)
   * III. Grounded Uncertainty Preservation (Preserved)
   * IV. Non-Destructive Additive Planning (Preserved)
   * V. Strict Architectural Layer Isolation (Preserved)
@@ -42,6 +43,8 @@ The `Course` entity serves as the root container for all academic items.
 Every journal note, schedule, task, academic event, and context fact links to exactly one course.
 Developers must not create orphaned academic records.
 Deleting a course removes all associated records through cascade rules.
+A course also holds a non-destructive archived state.
+Archiving hides the course and its records from active views without deleting them.
 Rationale: Single-course parentage simplifies data flow and prevents cross-course synchronization defects.
 
 ### III. Grounded Uncertainty Preservation
@@ -141,7 +144,7 @@ The client must not create time-blocking grids or numerical priority calculation
 The client loads entity lists once per user intent.
 Mutation handlers update local reactive state directly from saved response transfer objects.
 Components must not refetch complete lists after create, update, or delete mutations.
-Courses provide create, update, and delete endpoints.
+Courses provide create, update, delete, archive, and unarchive endpoints.
 The client caches courses and schedules inside `useCatalog`.
 The client refetches courses or schedules only after catalogue mutations.
 Developers must filter collections on the server with backend query parameters.
@@ -228,4 +231,4 @@ The version follows semantic versioning rules:
 - **PATCH**: Wording improvements, non-semantic clarifications, and typo corrections.
 Developers must review constitution compliance during all code reviews.
 
-**Version**: 1.3.0 | **Ratified**: 2026-10-12 | **Last Amended**: 2026-10-19
+**Version**: 1.4.0 | **Ratified**: 2026-10-12 | **Last Amended**: 2026-10-21

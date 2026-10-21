@@ -168,10 +168,10 @@ class AcademicEventServiceImplTest {
         ReflectionTestUtils.setField(otherEvent, "id", UUID.randomUUID());
 
         ArgumentCaptor<LocalDateTime> timeCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
-        when(academicEventRepository.findAllFiltered(eq(42L), eq(1L), eq(true), timeCaptor.capture()))
+        when(academicEventRepository.findAllFiltered(eq(42L), eq(1L), eq(true), timeCaptor.capture(), eq(false)))
                 .thenReturn(List.of(sampleEvent, otherEvent));
 
-        List<AcademicEventResponse> responses = academicEventService.listEvents(42L, 1L, true);
+        List<AcademicEventResponse> responses = academicEventService.listEvents(42L, 1L, true, false);
 
         assertThat(responses).hasSize(2);
         assertThat(timeCaptor.getValue()).isNotNull();

@@ -71,7 +71,7 @@ class AcademicEventControllerTest {
     @DisplayName("listEvents with session user passes userId to service")
     void listEvents_withSessionUser_passesUserIdToService() throws Exception {
         // given
-        when(academicEventService.listEvents(eq(USER_ID), any(), any())).thenReturn(List.of(sampleEvent));
+        when(academicEventService.listEvents(eq(USER_ID), any(), any(), any())).thenReturn(List.of(sampleEvent));
 
         // when & then
         mockMvc.perform(get("/api/academic-events").session(mockSession()))
@@ -79,6 +79,6 @@ class AcademicEventControllerTest {
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].title").value("Midterm Exam"));
 
-        verify(academicEventService).listEvents(USER_ID, null, null);
+        verify(academicEventService).listEvents(USER_ID, null, null, false);
     }
 }

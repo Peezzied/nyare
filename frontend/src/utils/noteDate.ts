@@ -12,7 +12,25 @@ function parseEntryDate(entryDate: string): Date | null {
   return date
 }
 
-/** Formats YYYY-MM-DD as short date. Returns raw value for invalid input. */
+const DAY_MS = 24 * 60 * 60 * 1000
+
+/** Formats card timestamp: time when created within 24 hours, else MMM dd. */
+export function formatCardTimestamp(
+  entryDate: string | null | undefined,
+  createdAt: string | null | undefined,
+  now: Date = new Date(),
+): string {
+  const created = createdAt ? new Date(createdAt) : null
+  if (created && !Number.isNaN(created.getTime()) && now.getTime() - created.getTime() < DAY_MS) {
+    return new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+    }).format(created)
+  }
+  return formatEntryDate(entryDate)
+}
+
+/** Formats YYYY-MM-DD as MMM dd. Returns raw value for invalid input. */
 export function formatEntryDate(entryDate: string | null | undefined): string {
   if (!entryDate || typeof entryDate !== 'string') {
     return ''
@@ -23,23 +41,7 @@ export function formatEntryDate(entryDate: string | null | undefined): string {
   }
   return new Intl.DateTimeFormat('en-US', {
     month: 'short',
-    day: 'numeric',
-    timeZone: 'UTC',
-  }).format(date)
-}
-
-/** Formats YYYY-MM-DD with long month. Returns raw value for invalid input. */
-export function formatEntryDateLong(entryDate: string | null | undefined): string {
-  if (!entryDate || typeof entryDate !== 'string') {
-    return ''
-  }
-  const date = parseEntryDate(entryDate)
-  if (!date) {
-    return entryDate
-  }
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'long',
-    day: 'numeric',
+    day: '2-digit',
     timeZone: 'UTC',
   }).format(date)
 }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { addDays } from '../../utils/dayKey'
+import { computed, onUnmounted, ref } from 'vue'
+import { addDays, toDateKey } from '../../utils/dayKey'
 import { resolveSwipe } from '../../utils/swipeGesture'
 
 const props = withDefaults(
@@ -17,23 +17,22 @@ const emit = defineEmits<{
 
 const SETTLE_MS = 220
 const COMMIT_FRACTION = 0.25 // a slow drag commits after a quarter of the slide distance
-const COVER_TIMEOUT_MS = 500 // safety net if the calendar never reports "ready"
 
 const viewportRef = ref<HTMLElement | null>(null)
+const trackRef = ref<HTMLElement | null>(null)
 const dragX = ref(0)
-// covering = the swipe landed; the preview stays up until the real calendar is ready
-const phase = ref<'idle' | 'dragging' | 'settling' | 'covering'>('idle')
-const peekSide = ref<-1 | 0 | 1>(0) // +1 = next on the right, -1 = previous on the left
-const dragBase = ref<Date>(props.selectedDate) // the date the drag started from
+const phase = ref<'idle' | 'dragging' | 'settling'>('idle')
 const slideDistance = ref(0) // viewport width
-const peekScrollTop = ref(0)
-const peekGutter = ref(0) // width of the time axis
+const gutterLeft = ref(0) // width of the time axis, for the pinned chrome slot
 
-const peekDate = computed(() =>
-  phase.value === 'idle' || peekSide.value === 0
-    ? null
-    : addDays(dragBase.value, peekSide.value * props.stepDays),
-)
+// The previous, current and next calendars are all mounted; a committed swipe
+// just shifts which one sits in the middle. Keyed by date, so Vue moves the
+// already-rendered nodes instead of remounting them.
+const panelDates = computed(() => [
+  addDays(props.selectedDate, -props.stepDays),
+  props.selectedDate,
+  addDays(props.selectedDate, props.stepDays),
+])
 
 function prefersReducedMotion() {
   return typeof window !== 'undefined' && typeof window.matchMedia === 'function'
@@ -41,22 +40,14 @@ function prefersReducedMotion() {
     : false
 }
 
-const trackStyle = computed(() => {
-  if (phase.value !== 'dragging' && phase.value !== 'settling') return {}
-  return {
-    transform: `translate3d(${dragX.value}px, 0, 0)`,
-    transition:
-      phase.value === 'settling'
-        ? `transform ${prefersReducedMotion() ? 0 : SETTLE_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`
-        : 'none',
-    willChange: 'transform',
-  }
-})
-
-// The preview sits one slide-distance to the side; once landed it sits in place
-const peekLeft = computed(() =>
-  phase.value === 'covering' ? '0px' : `${peekSide.value * slideDistance.value}px`,
-)
+const trackStyle = computed(() => ({
+  transform: `translate3d(calc(-100% + ${dragX.value}px), 0, 0)`,
+  transition:
+    phase.value === 'settling' && !prefersReducedMotion()
+      ? `transform ${SETTLE_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`
+      : 'none',
+  willChange: phase.value === 'idle' ? undefined : 'transform',
+}))
 
 // ---- Gesture tracking (plain variables: no re-render needed) ----
 let pointerId: number | null = null
@@ -66,14 +57,13 @@ let startTime = 0
 let locked: 'none' | 'horizontal' | 'vertical' = 'none'
 let suppressClick = false
 let settleTimer = 0
-let coverTimer = 0
 
 function clamp(value: number, limit: number) {
   return Math.max(-limit, Math.min(limit, value))
 }
 
 function onPointerDown(e: PointerEvent) {
-  if (phase.value === 'settling' || phase.value === 'covering' || !e.isPrimary) return
+  if (phase.value === 'settling' || !e.isPrimary) return
   if (e.pointerType === 'mouse' && e.button !== 0) return
   pointerId = e.pointerId
   startX = e.clientX
@@ -85,17 +75,31 @@ function onPointerDown(e: PointerEvent) {
 
 function beginDrag(e: PointerEvent) {
   const viewport = viewportRef.value
-  if (!viewport) return
+  const currentPanel = trackRef.value?.children[1] as HTMLElement | undefined
+  if (!viewport || !currentPanel) return
   const vp = viewport.getBoundingClientRect()
-  const scroller = viewport.querySelector<HTMLElement>('.sx__view-container')
-  const firstCol = viewport.querySelector<HTMLElement>('.sx__time-grid-day')
+  const firstCol = currentPanel.querySelector<HTMLElement>('.sx__time-grid-day')
+  const currentScroller =
+    currentPanel.querySelector<HTMLElement>('[data-cal-scroll]') ??
+    currentPanel.querySelector<HTMLElement>('.sx__view-container')
 
-  peekScrollTop.value = scroller?.scrollTop ?? 0
-  peekGutter.value = firstCol
+  gutterLeft.value = firstCol
     ? Math.max(Math.round(firstCol.getBoundingClientRect().left - vp.left), 0)
     : 0
   slideDistance.value = Math.max(vp.width, 1)
-  dragBase.value = props.selectedDate
+
+  // The middle panel is the visible scroller; match the neighbours to it so
+  // the incoming day is at the same scroll depth when it slides in.
+  const scrollTop = currentScroller?.scrollTop ?? 0
+  for (const panel of Array.from(trackRef.value?.children ?? [])) {
+    const scroller =
+      panel.querySelector<HTMLElement>('[data-cal-scroll]') ??
+      panel.querySelector<HTMLElement>('.sx__view-container')
+    if (scroller && scroller !== currentScroller) {
+      scroller.scrollTo({ top: scrollTop, behavior: 'instant' })
+    }
+  }
+
   phase.value = 'dragging'
   suppressClick = true
   try {
@@ -122,7 +126,6 @@ function onPointerMove(e: PointerEvent) {
   }
 
   dragX.value = clamp(dx, slideDistance.value)
-  if (dragX.value !== 0) peekSide.value = dragX.value < 0 ? 1 : -1
 }
 
 function onPointerUp(e: PointerEvent) {
@@ -147,7 +150,6 @@ function onPointerCancel(e: PointerEvent) {
 
 function settle(offset: -1 | 0 | 1) {
   phase.value = 'settling'
-  if (offset !== 0) peekSide.value = offset
   dragX.value = offset === 0 ? 0 : offset > 0 ? -slideDistance.value : slideDistance.value
   window.clearTimeout(settleTimer)
   settleTimer = window.setTimeout(
@@ -157,31 +159,16 @@ function settle(offset: -1 | 0 | 1) {
 }
 
 function finish(offset: -1 | 0 | 1) {
-  if (offset === 0) {
-    endCover()
-    return
-  }
-  // Change the date and keep the preview covering the spot until the
-  // real calendar says it is drawn and scrolled (see onDayReady)
-  phase.value = 'covering'
-  dragX.value = 0
-  emit('changeDate', addDays(dragBase.value, offset * props.stepDays))
-  window.clearTimeout(coverTimer)
-  coverTimer = window.setTimeout(endCover, COVER_TIMEOUT_MS)
-}
-
-function endCover() {
-  window.clearTimeout(coverTimer)
   phase.value = 'idle'
   dragX.value = 0
-  peekSide.value = 0
+  if (offset !== 0) {
+    // Panels reorder by key in the same patch as the transform reset, so the
+    // incoming calendar stays on screen without a flash.
+    emit('changeDate', addDays(props.selectedDate, offset * props.stepDays))
+  }
 }
 
-// The calendar dispatches "day-ready" once the new range is rendered and scrolled
-function onDayReady() {
-  if (phase.value !== 'covering') return
-  endCover()
-}
+onUnmounted(() => window.clearTimeout(settleTimer))
 
 // A drag must not count as a tap on whatever was under the finger
 function onClickCapture(e: MouseEvent) {
@@ -191,14 +178,6 @@ function onClickCapture(e: MouseEvent) {
     suppressClick = false
   }
 }
-
-onMounted(() => viewportRef.value?.addEventListener('day-ready', onDayReady))
-
-onUnmounted(() => {
-  viewportRef.value?.removeEventListener('day-ready', onDayReady)
-  window.clearTimeout(settleTimer)
-  window.clearTimeout(coverTimer)
-})
 </script>
 
 <template>
@@ -211,17 +190,21 @@ onUnmounted(() => {
     @pointercancel="onPointerCancel"
     @click.capture="onClickCapture"
   >
-    <!-- Entire calendar + peek preview slide together -->
-    <div class="absolute inset-0 flex flex-col" :style="trackStyle">
-      <slot />
-
+    <!-- Three mounted calendars: previous, current, next -->
+    <div ref="trackRef" class="absolute inset-0 flex flex-col" :style="trackStyle">
       <div
-        v-if="peekDate"
-        class="pointer-events-none absolute top-0 z-30 h-full w-full bg-app-bg"
-        :style="{ left: peekLeft }"
+        v-for="(date, index) in panelDates"
+        :key="toDateKey(date)"
+        class="absolute top-0 flex h-full w-full flex-col"
+        :style="{ left: `${index * 100}%` }"
       >
-        <slot name="peek" :date="peekDate" :scrollTop="peekScrollTop" :gutterLeft="peekGutter" />
+        <slot :date="date" :is-current="index === 1" />
       </div>
+    </div>
+
+    <!-- Pinned chrome: the header row stays put while only the deck slides. -->
+    <div v-if="phase !== 'idle'" class="pointer-events-none absolute inset-0 z-40">
+      <slot name="chrome" :date="selectedDate" :gutterLeft="gutterLeft" />
     </div>
   </div>
 </template>

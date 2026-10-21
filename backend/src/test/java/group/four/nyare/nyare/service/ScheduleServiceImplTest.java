@@ -112,14 +112,14 @@ class ScheduleServiceImplTest {
                 LocalTime.of(9, 0), LocalTime.of(10, 30));
         ReflectionTestUtils.setField(tuesdaySchedule, "id", 11L);
 
-        when(scheduleRepository.findAllFiltered(42L, 1L))
+        when(scheduleRepository.findAllFiltered(42L, 1L, false))
                 .thenReturn(List.of(sampleSchedule, tuesdaySchedule));
 
-        List<ScheduleResponse> responses = scheduleService.listSchedules(42L, 1L, DayOfWeek.MONDAY);
+        List<ScheduleResponse> responses = scheduleService.listSchedules(42L, 1L, DayOfWeek.MONDAY, false);
 
         assertThat(responses).hasSize(1);
         assertThat(responses.get(0).getId()).isEqualTo(10L);
-        verify(scheduleRepository).findAllFiltered(42L, 1L);
+        verify(scheduleRepository).findAllFiltered(42L, 1L, false);
     }
 
     @Test
@@ -129,13 +129,13 @@ class ScheduleServiceImplTest {
                 LocalTime.of(9, 0), LocalTime.of(10, 30));
         ReflectionTestUtils.setField(tuesdaySchedule, "id", 11L);
 
-        when(scheduleRepository.findAllFiltered(42L, 1L))
+        when(scheduleRepository.findAllFiltered(42L, 1L, false))
                 .thenReturn(List.of(sampleSchedule, tuesdaySchedule));
 
-        List<ScheduleResponse> responses = scheduleService.listSchedules(42L, 1L, null);
+        List<ScheduleResponse> responses = scheduleService.listSchedules(42L, 1L, null, false);
 
         assertThat(responses).hasSize(2);
-        verify(scheduleRepository).findAllFiltered(42L, 1L);
+        verify(scheduleRepository).findAllFiltered(42L, 1L, false);
     }
 
     @Test

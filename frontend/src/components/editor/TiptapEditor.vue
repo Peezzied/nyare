@@ -143,21 +143,21 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="font-secondary flex flex-col flex-1 min-h-0 w-full bg-background transition-colors overflow-hidden"
+    class="font-secondary flex flex-col flex-1 min-h-0 w-full bg-[#FDFEF7] transition-colors overflow-hidden"
     :class="{ 'opacity-60 cursor-not-allowed select-none': !editable }"
   >
     <div
       v-if="activeError"
       role="alert"
-      class="shrink-0 flex items-center justify-between border-b border-destructive/20 bg-destructive/10 px-3 py-2 text-xs text-destructive transition-colors"
+      class="shrink-0 flex items-center justify-between border-b border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800 transition-colors"
     >
       <div class="flex items-center gap-1.5">
-        <AlertCircle class="size-4 shrink-0" />
+        <AlertCircle class="size-4 shrink-0 text-red-600" />
         <span>{{ activeError }}</span>
       </div>
       <button
         type="button"
-        class="ml-2 font-medium hover:underline cursor-pointer"
+        class="ml-2 font-medium text-red-700 hover:underline cursor-pointer"
         aria-label="Dismiss error notice"
         @click="dismissError"
       >
@@ -167,7 +167,7 @@ onBeforeUnmount(() => {
 
     <div
       v-if="isUploading"
-      class="shrink-0 bg-accent/30 px-3 py-1.5 text-xs text-muted-foreground transition-all border-b border-border"
+      class="shrink-0 bg-[#E8F6FA] px-3 py-1.5 text-xs text-[#00556B] transition-all border-b border-[#D5EBF1]"
     >
       Uploading image...
     </div>
@@ -179,7 +179,7 @@ onBeforeUnmount(() => {
     >
       <EditorContent
         :editor="editor"
-        class="font-secondary min-h-full text-foreground focus-within:outline-none [&_.tiptap]:font-secondary [&_.tiptap]:min-h-full [&_.tiptap]:outline-none [&_.tiptap]:focus:outline-none"
+        class="font-secondary min-h-full text-[#334155] focus-within:outline-none [&_.tiptap]:font-secondary [&_.tiptap]:min-h-full [&_.tiptap]:outline-none [&_.tiptap]:focus:outline-none"
       />
     </div>
 
@@ -203,7 +203,7 @@ onBeforeUnmount(() => {
 }
 
 :deep(.tiptap p.is-editor-empty:first-child::before) {
-  color: #94a3b8;
+  color: #7b8b97;
   content: attr(data-placeholder);
   float: left;
   height: 0;

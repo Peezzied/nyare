@@ -107,26 +107,24 @@ import '@schedule-x/theme-default/dist/calendar.css'
 import { ScheduleXCalendar } from '@schedule-x/vue'
 import { createCalendar, createViewWeek } from '@schedule-x/calendar'
 import { Temporal } from 'temporal-polyfill'
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { HOUR_HEIGHT } from '@/constants/calendar'
+import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { getHourHeight } from '@/utils/calendarStyle'
 import { WEEKDAYS } from '@/components/TimeBlockCard.vue'
 import type { DayOfWeek } from '@/types/api'
 import type { PreviewBlock, PendingSlot } from '@/utils/weekPreview'
-import {
-  minutesToTime,
-  timeToMinutes,
-  moveSlot2D,
-  resizeSlotHandle,
-} from '@/utils/weekPreview'
+import { minutesToTime, timeToMinutes, moveSlot2D, resizeSlotHandle } from '@/utils/weekPreview'
 
 ensureDetachedDomSupport()
 
 interface WeekPreviewProps {
   blocks?: PreviewBlock[]
+  /** Pixels at the scroller's bottom covered by an overlay (e.g. the drawer). */
+  bottomClearance?: number
 }
 
 const props = withDefaults(defineProps<WeekPreviewProps>(), {
   blocks: () => [],
+  bottomClearance: 0,
 })
 
 const emit = defineEmits<{
@@ -136,8 +134,13 @@ const emit = defineEmits<{
 }>()
 
 const TZ = 'Asia/Manila'
-const GRID_HEIGHT = 24 * HOUR_HEIGHT
 const ANCHOR_SUNDAY = '2024-01-07'
+// Same floor as min-h-[44px] on the block button, snapped to the 15-minute grid.
+const PILL_MIN_HEIGHT_PX = 44
+
+function minBlockMinutes(): number {
+  return Math.ceil((PILL_MIN_HEIGHT_PX / getHourHeight()) * 60 / 15) * 15
+}
 
 const DAY_TO_DATE: Record<DayOfWeek, string> = {
   SUNDAY: '2024-01-07',
@@ -159,25 +162,12 @@ const DATE_TO_DAY: Record<string, DayOfWeek> = {
   '2024-01-13': 'SATURDAY',
 }
 
-interface RawPreviewEvent {
-  id: string
-  day: DayOfWeek
-  title: string
-  startTime: string
-  endTime: string
-  color: string
-  blockId: string
-  dimmed?: boolean
-}
-
 function toZonedDateTime(dateStr: string, timeStr: string): Temporal.ZonedDateTime {
   const safeTime = timeStr === '24:00' ? '23:59' : timeStr
   return Temporal.ZonedDateTime.from(`${dateStr}T${safeTime}:00[${TZ}]`)
 }
 
-const allRawEvents = computed<RawPreviewEvent[]>(() => props.blocks.map((b) => ({ ...b })))
-
-function toSxEvents(events: RawPreviewEvent[]) {
+function toSxEvents(events: PreviewBlock[]) {
   return events.map((e) => {
     const dateStr = DAY_TO_DATE[e.day]
     return {
@@ -190,7 +180,6 @@ function toSxEvents(events: RawPreviewEvent[]) {
   })
 }
 
-const calendarKey = ref(0)
 const areaRef = ref<HTMLElement | null>(null)
 const scheduleXRef = ref<InstanceType<typeof ScheduleXCalendar> | null>(null)
 
@@ -204,85 +193,81 @@ function registerAreaRef(el: unknown) {
   }
 }
 
-const calendarApp = computed(() => {
-  const app = createCalendar({
-    views: [createViewWeek()],
-    defaultView: 'week',
-    timezone: TZ,
-    firstDayOfWeek: 7,
-    isResponsive: false,
-    skipAnimations: true,
-    selectedDate: Temporal.PlainDate.from(ANCHOR_SUNDAY),
-    weekOptions: {
-      gridHeight: GRID_HEIGHT,
-      nDays: 7,
-      eventWidth: 96,
-      gridStep: 60,
-      timeAxisFormatOptions: { hour: 'numeric', hour12: true },
+const calendarApp = createCalendar({
+  views: [createViewWeek()],
+  defaultView: 'week',
+  timezone: TZ,
+  firstDayOfWeek: 7,
+  isResponsive: false,
+  skipAnimations: true,
+  selectedDate: Temporal.PlainDate.from(ANCHOR_SUNDAY),
+  weekOptions: {
+    gridHeight: 24 * getHourHeight(),
+    nDays: 7,
+    eventWidth: 94,
+    gridStep: 60,
+    timeAxisFormatOptions: { hour: 'numeric', hour12: true },
+  },
+  callbacks: {
+    onClickDateTime(dateTime: Temporal.ZonedDateTime) {
+      const dateKey = dateTime.toPlainDate().toString()
+      const day = DATE_TO_DAY[dateKey]
+      if (!day) return
+      const rawMin = dateTime.hour * 60 + dateTime.minute
+      const startMinutes = Math.min(24 * 60 - 15, Math.floor(rawMin / 15) * 15)
+      const endMinutes = Math.min(24 * 60, startMinutes + 60)
+      emit('selectSlot', {
+        day,
+        startTime: minutesToTime(startMinutes),
+        endTime: minutesToTime(endMinutes),
+      })
     },
-    callbacks: {
-      onClickDateTime(dateTime: Temporal.ZonedDateTime) {
-        const dateKey = dateTime.toPlainDate().toString()
-        const day = DATE_TO_DAY[dateKey]
-        if (!day) return
-        const rawMin = dateTime.hour * 60 + dateTime.minute
-        const startMinutes = Math.min(24 * 60 - 15, Math.floor(rawMin / 15) * 15)
-        const endMinutes = Math.min(24 * 60, startMinutes + 60)
-        emit('selectSlot', {
-          day,
-          startTime: minutesToTime(startMinutes),
-          endTime: minutesToTime(endMinutes),
-        })
-      },
-    },
-    events: toSxEvents(allRawEvents.value),
-  })
+  },
+  events: toSxEvents(props.blocks),
+})
 
-  const origRender = app.render.bind(app)
-  app.render = (el: HTMLElement | null) => {
-    const target =
-      el ?? areaRef.value?.querySelector<HTMLElement>('.sx-vue-calendar-wrapper') ?? null
-    if (target) {
-      const queue: Array<() => void> = []
-      syncQueue = queue
+const origRender = calendarApp.render.bind(calendarApp)
+calendarApp.render = (el: HTMLElement | null) => {
+  const target =
+    el ?? areaRef.value?.querySelector<HTMLElement>('.sx-vue-calendar-wrapper') ?? null
+  if (target) {
+    const queue: Array<() => void> = []
+    syncQueue = queue
 
-      for (const [id, cb] of pendingRafs.entries()) {
-        pendingRafs.delete(id)
-        queue.push(() => cb(0))
-      }
-      for (const [handle, cb] of pendingZeroTimeouts.entries()) {
-        pendingZeroTimeouts.delete(handle)
-        queue.push(cb)
-      }
+    for (const [id, cb] of pendingRafs.entries()) {
+      pendingRafs.delete(id)
+      queue.push(() => cb(0))
+    }
+    for (const [handle, cb] of pendingZeroTimeouts.entries()) {
+      pendingZeroTimeouts.delete(handle)
+      queue.push(cb)
+    }
 
-      try {
-        let guard = 0
-        while (queue.length > 0 && guard++ < 50) {
-          const fn = queue.shift()!
-          fn()
-        }
-        origRender(target)
-        while (queue.length > 0 && guard++ < 50) {
-          const fn = queue.shift()!
-          fn()
-        }
-        ;(scheduleXRef.value as { $?: { update?: () => void } } | null)?.$?.update?.()
-        while (queue.length > 0 && guard++ < 50) {
-          const fn = queue.shift()!
-          fn()
-        }
-      } finally {
-        syncQueue = null
+    try {
+      let guard = 0
+      while (queue.length > 0 && guard++ < 50) {
+        const fn = queue.shift()!
+        fn()
       }
+      origRender(target)
+      while (queue.length > 0 && guard++ < 50) {
+        const fn = queue.shift()!
+        fn()
+      }
+      ;(scheduleXRef.value as { $?: { update?: () => void } } | null)?.$?.update?.()
+      while (queue.length > 0 && guard++ < 50) {
+        const fn = queue.shift()!
+        fn()
+      }
+    } finally {
+      syncQueue = null
     }
   }
+}
 
-  return app
-})
 const gutterLeft = ref(0)
 const colsWidth = ref(0)
 let resizeObserver: ResizeObserver | null = null
-let savedScrollTop = 0
 let didInitialScroll = false
 
 function updateLayout() {
@@ -301,20 +286,16 @@ function updateLayout() {
 
 function syncScroll() {
   const scroller = areaRef.value?.querySelector<HTMLElement>('.sx__view-container')
-  if (!scroller) return
-  if (!didInitialScroll) {
-    didInitialScroll = true
-    let startMin = 8 * 60
-    for (const b of props.blocks) {
-      const min = timeToMinutes(b.startTime)
-      if (min < startMin) {
-        startMin = min
-      }
+  if (!scroller || didInitialScroll) return
+  didInitialScroll = true
+  let startMin = 8 * 60
+  for (const b of props.blocks) {
+    const min = timeToMinutes(b.startTime)
+    if (min < startMin) {
+      startMin = min
     }
-    scroller.scrollTop = Math.max(0, (startMin / 60) * HOUR_HEIGHT - 20)
-  } else {
-    scroller.scrollTop = savedScrollTop
   }
+  scroller.scrollTop = Math.max(0, (startMin / 60) * getHourHeight() - 20)
 }
 
 function setupCalendarDom() {
@@ -327,21 +308,50 @@ function setupCalendarDom() {
   }
 }
 
+// Events refresh in place; the calendar is never remounted, so the scroll
+// container and its position survive every update.
+const seenBlockIds = new Set(props.blocks.map((b) => b.id))
+
+/** Scrolls the grid so a block stays above anything covering the scroller's bottom edge. */
+function revealBlock(block: PreviewBlock) {
+  const scroller = areaRef.value?.querySelector<HTMLElement>('.sx__view-container')
+  if (!scroller) return
+  const visibleBottom = scroller.clientHeight - props.bottomClearance
+  if (visibleBottom <= 0) return
+  const top = (timeToMinutes(block.startTime) / 60) * getHourHeight()
+  const bottom = (timeToMinutes(block.endTime) / 60) * getHourHeight()
+  if (bottom > scroller.scrollTop + visibleBottom) {
+    scroller.scrollTo({ top: bottom - visibleBottom + 8, behavior: 'smooth' })
+  } else if (top < scroller.scrollTop) {
+    scroller.scrollTo({ top: top - 8, behavior: 'smooth' })
+  }
+}
+
+function syncEvents() {
+  // Only additions after the initial scroll count; first load is positioned by
+  // syncScroll instead.
+  const added = didInitialScroll
+    ? props.blocks.filter((b) => !seenBlockIds.has(b.id))
+    : []
+  seenBlockIds.clear()
+  for (const b of props.blocks) seenBlockIds.add(b.id)
+  calendarApp.events.set(toSxEvents(props.blocks))
+  nextTick(() => {
+    setupCalendarDom()
+    if (added[0]) revealBlock(added[0])
+  })
+}
+
 watch(
   [() => props.blocks],
   () => {
-    // Rebuilding the calendar mid-drag would drop the pointer capture and the
-    // element being visually translated, so defer rebuilds until the drag ends.
+    // Refreshing events mid-drag would drop the pointer capture and the
+    // element being visually translated, so defer until the drag ends.
     if (blockDrag) {
       rebuildAfterDrag = true
       return
     }
-    const scroller = areaRef.value?.querySelector<HTMLElement>('.sx__view-container')
-    if (scroller) {
-      savedScrollTop = scroller.scrollTop
-    }
-    calendarKey.value++
-    nextTick(setupCalendarDom)
+    syncEvents()
   },
   { deep: true },
 )
@@ -351,7 +361,7 @@ type BlockDragMode = 'moving' | 'resizing-top' | 'resizing-bottom'
 interface BlockDrag {
   pointerId: number
   mode: BlockDragMode
-  raw: RawPreviewEvent
+  raw: PreviewBlock
   startClientX: number
   startClientY: number
   clickOffsetMinutes: number
@@ -364,17 +374,24 @@ let blockDrag: BlockDrag | null = null
 let rebuildAfterDrag = false
 let suppressNextBlockClick = false
 
+// The week grid element carries a 55px left gutter for the time axis, so the
+// column span is measured from the first to the last day column instead.
 function dayGridRect(): DOMRect | null {
-  const first = areaRef.value?.querySelector<HTMLElement>('.sx__time-grid-day')
-  return first?.parentElement?.getBoundingClientRect() ?? null
+  const cols = areaRef.value?.querySelectorAll<HTMLElement>('.sx__time-grid-day')
+  const first = cols?.[0]
+  const last = cols?.[cols.length - 1]
+  if (!first || !last) return null
+  const f = first.getBoundingClientRect()
+  const l = last.getBoundingClientRect()
+  return new DOMRect(f.left, f.top, l.right - f.left, f.height)
 }
 
-function onBlockPointerDown(e: PointerEvent, raw: RawPreviewEvent, mode: BlockDragMode = 'moving') {
+function onBlockPointerDown(e: PointerEvent, raw: PreviewBlock, mode: BlockDragMode = 'moving') {
   if (e.button !== 0) return
   const rect = dayGridRect()
   if (!rect) return
 
-  const clickMinutes = ((e.clientY - rect.top) / HOUR_HEIGHT) * 60
+  const clickMinutes = ((e.clientY - rect.top) / getHourHeight()) * 60
   blockDrag = {
     pointerId: e.pointerId,
     mode,
@@ -399,14 +416,17 @@ function onBlockPointerMove(e: PointerEvent) {
   if (!rect) return
 
   if (!drag.moved) {
-    if (Math.abs(e.clientX - drag.startClientX) < 4 && Math.abs(e.clientY - drag.startClientY) < 4) {
+    if (
+      Math.abs(e.clientX - drag.startClientX) < 4 &&
+      Math.abs(e.clientY - drag.startClientY) < 4
+    ) {
       return
     }
     drag.moved = true
   }
 
   const offsetX = Math.max(0, Math.min(rect.width - 1, e.clientX - rect.left))
-  const offsetY = Math.max(0, Math.min(GRID_HEIGHT, e.clientY - rect.top))
+  const offsetY = Math.max(0, Math.min(24 * getHourHeight(), e.clientY - rect.top))
   const base: PendingSlot = {
     day: drag.raw.day,
     startTime: drag.raw.startTime,
@@ -415,13 +435,18 @@ function onBlockPointerMove(e: PointerEvent) {
   const slot =
     drag.mode === 'moving'
       ? moveSlot2D(base, offsetX, offsetY, drag.clickOffsetMinutes, rect.width)
-      : resizeSlotHandle(base, drag.mode === 'resizing-top' ? 'top' : 'bottom', offsetY)
+      : resizeSlotHandle(
+          base,
+          drag.mode === 'resizing-top' ? 'top' : 'bottom',
+          offsetY,
+          minBlockMinutes(),
+        )
   drag.slot = slot
 
   // Live visual: reposition the event container directly; rebuild is deferred.
   const el = drag.eventEl
   if (!el) return
-  const pxPerMinute = HOUR_HEIGHT / 60
+  const pxPerMinute = getHourHeight() / 60
   const colWidth = rect.width / 7
   const rawDayIndex = WEEKDAYS.findIndex((w) => w.value === drag.raw.day)
   const newDayIndex = WEEKDAYS.findIndex((w) => w.value === slot.day)
@@ -447,21 +472,29 @@ function onBlockPointerUp(e: PointerEvent) {
 
   if (drag.moved && drag.slot) {
     suppressNextBlockClick = true
+    // Strip the live-drag transform before the events refresh re-renders the
+    // pill; a reused DOM node would otherwise keep it.
+    const el = drag.eventEl
+    if (el) {
+      el.style.transform = ''
+      el.style.zIndex = ''
+      el.style.height = ''
+    }
     emit('moveBlock', drag.raw.blockId, drag.raw.day, drag.slot)
   }
   if (rebuildAfterDrag) {
     rebuildAfterDrag = false
-    calendarKey.value++
-    nextTick(setupCalendarDom)
+    syncEvents()
   }
 }
 
-function onBlockClick(blockId: string) {
+function onBlockClick(raw: PreviewBlock) {
   if (suppressNextBlockClick) {
     suppressNextBlockClick = false
     return
   }
-  emit('selectBlock', blockId)
+  emit('selectBlock', raw.blockId)
+  nextTick(() => revealBlock(raw))
 }
 
 onMounted(() => {
@@ -480,24 +513,20 @@ onUnmounted(() => {
   <div
     role="grid"
     aria-label="Week preview"
-    class="flex h-full w-full flex-col select-none bg-[#F5F6EE]"
+    class="flex h-full w-full flex-col select-none bg-app-bg"
   >
     <!-- Header row showing only 7 weekday labels and no dates -->
     <div
-      class="flex shrink-0 border-b border-[#9ccfe0] bg-[#F5F6EE]"
+      class="flex shrink-0 border-b border-app-border bg-app-bg"
       :style="gutterLeft > 0 ? { paddingLeft: `${gutterLeft}px` } : {}"
     >
-      <div v-if="gutterLeft === 0" class="w-11 shrink-0 border-r border-[#9ccfe0]/60" />
+      <div v-if="gutterLeft === 0" class="w-11 shrink-0" />
       <div
         class="grid flex-1 grid-cols-7 text-center"
         :style="colsWidth > 0 ? { width: `${colsWidth}px`, flex: 'none' } : {}"
       >
-        <div
-          v-for="day in WEEKDAYS"
-          :key="day.value"
-          class="border-r border-[#9ccfe0]/60 py-2.5 last:border-r-0"
-        >
-          <span class="text-xs font-bold text-[#1E293B]">
+        <div v-for="day in WEEKDAYS" :key="day.value" class="py-2.5">
+          <span class="text-xs font-bold tracking-wide text-stone-500">
             {{ day.label }}
           </span>
         </div>
@@ -507,7 +536,7 @@ onUnmounted(() => {
     <!-- Schedule-X Week Grid -->
     <div :ref="registerAreaRef" class="relative min-h-0 flex-1 sx-nyare-week">
       <div class="absolute inset-0 sx-nyare-fill">
-        <ScheduleXCalendar ref="scheduleXRef" :key="calendarKey" :calendar-app="calendarApp">
+        <ScheduleXCalendar ref="scheduleXRef" :calendar-app="calendarApp">
           <template #headerContent><span /></template>
           <template #timeGridEvent="{ calendarEvent }">
             <div
@@ -521,16 +550,18 @@ onUnmounted(() => {
                     ? `${(calendarEvent as any)._raw.title} ${(calendarEvent as any)._raw.startTime} to ${(calendarEvent as any)._raw.endTime}`
                     : `${(calendarEvent as any)._raw.startTime} to ${(calendarEvent as any)._raw.endTime}`
                 "
-                class="h-full w-full min-h-[44px] cursor-move overflow-hidden rounded-md border-[1.5px] border-black/20 p-1 text-left text-white shadow-sm transition-all active:scale-95"
+                class="h-full w-full min-h-[44px] cursor-move overflow-hidden rounded-md border p-1 text-left shadow-sm transition-all active:scale-95"
                 :style="{
-                  backgroundColor: (calendarEvent as any)._raw.color,
+                  backgroundColor: (calendarEvent as any)._raw.color.bg,
+                  borderColor: (calendarEvent as any)._raw.color.border,
+                  color: (calendarEvent as any)._raw.color.text,
                   opacity: (calendarEvent as any)._raw.dimmed ? 0.55 : 1,
                 }"
-                @click.stop="onBlockClick((calendarEvent as any)._raw.blockId)"
+                @click.stop="onBlockClick((calendarEvent as any)._raw)"
               >
                 <p
                   v-if="(calendarEvent as any)._raw.title"
-                  class="truncate text-[10px] font-bold leading-3"
+                  class="truncate font-secondary text-[10px] font-semibold leading-[13px]"
                 >
                   {{ (calendarEvent as any)._raw.title }}
                 </p>
@@ -587,24 +618,22 @@ onUnmounted(() => {
 
 .sx-nyare-week :deep(.sx__calendar),
 .sx-nyare-week :deep(.sx__view-container) {
-  background-color: #f5f6ee;
-  --sx-color-background: #f5f6ee;
-  --sx-color-outline-variant: #9ccfe0;
-  --sx-color-surface: #f5f6ee;
+  background-color: var(--color-calendar-canvas);
+  --sx-color-background: var(--color-calendar-canvas);
+  --sx-color-outline-variant: #cbd5e1;
+  --sx-color-surface: var(--color-calendar-canvas);
 }
 
 .sx-nyare-week :deep(.sx__week-grid__hour) {
-  border-top: 1px solid #9ccfe0 !important;
+  border-top: 1px solid #cbd5e1 !important;
 }
 
 .sx-nyare-week :deep(.sx__time-grid-day) {
-  border-left: 1px solid #9ccfe0 !important;
+  border-left: 1px solid #cbd5e1 !important;
 }
 
 .sx-nyare-week :deep(.sx__week-grid__hour-text) {
-  color: #a8a29e;
-  font-weight: 600;
-  font-size: 0.75rem;
+  color: var(--color-text-muted);
 }
 
 .sx-nyare-week :deep(.sx__time-grid-event) {
@@ -616,10 +645,15 @@ onUnmounted(() => {
   overflow: visible !important;
 }
 
+/* The element that scrolls: full width without scrollbar track cutting off Saturday */
 .sx-nyare-week :deep(.sx__view-container) {
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #a8a29e transparent;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   overscroll-behavior: contain;
+}
+
+.sx-nyare-week :deep(.sx__view-container)::-webkit-scrollbar {
+  display: none;
 }
 </style>

@@ -7,6 +7,8 @@ export interface TaskListParams {
   status?: TaskStatus
   /** `true` returns tasks with a `scheduledDate`. `false` returns tasks without one. */
   scheduled?: boolean
+  /** `true` returns tasks of archived courses only. `false` returns tasks of active courses. */
+  archived?: boolean
 }
 
 /** API service for tasks. */

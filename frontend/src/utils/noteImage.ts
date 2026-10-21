@@ -23,6 +23,11 @@ export function extractFirstImageUrl(markdown: string | null | undefined): strin
   return isSafeImageUrl(url) ? url : null
 }
 
+/** Collapses blank lines to a single newline for card previews. */
+export function collapseBlankLines(text: string): string {
+  return text.replace(/\n{2,}/g, '\n')
+}
+
 /** Removes image markdown from text. Keeps surrounding words. */
 export function stripImageMarkdown(markdown: string | null | undefined): string {
   if (!markdown || typeof markdown !== 'string') {

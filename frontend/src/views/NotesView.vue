@@ -13,6 +13,7 @@ import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
 import { useShellHeader } from '@/composables/useShellHeader'
 import { toTapOriginRect } from '@/composables/useNoteTransition'
+import { extractFirstImageUrl } from '@/utils/noteImage'
 
 // ponytail: the search button is visual-only and has no action.
 useShellHeader({
@@ -95,63 +96,68 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div ref="rootEl" class="flex min-h-full mx-auto w-full">
-    <p
-      v-if="loading && notes.length === 0"
-      class="mt-6 text-center text-sm text-text-muted"
-      data-testid="notes-loading"
-    >
-      Notes are loading.
-    </p>
-
-    <div
-      v-else-if="error"
-      class="mt-6 rounded-2xl border border-app-border bg-card p-6 text-center"
-      data-testid="notes-error"
-      role="alert"
-    >
-      <p class="font-sans text-base font-semibold text-text-main">Notes failed to load.</p>
-
-      <p class="mt-1 text-sm text-text-muted">{{ error }}</p>
-
-      <button
-        class="btn-tactile mt-4 rounded-xl px-4 py-2 font-sans text-sm font-bold text-white"
-        type="button"
-        @click="loadNotes(true)"
+  <div ref="rootEl" class="relative flex h-full flex-col">
+    <div class="min-h-0 flex-1 overflow-y-auto px-4 pt-4 pb-24">
+      <p
+        v-if="loading && notes.length === 0"
+        class="py-12 text-center text-sm text-text-muted"
+        data-testid="notes-loading"
       >
-        Retry
-      </button>
-    </div>
+        Notes are loading.
+      </p>
 
-    <p
-      v-else-if="notes.length === 0"
-      class="mt-6 text-center text-sm text-text-muted"
-      data-testid="notes-empty"
-    >
-      No notes exist yet.
-    </p>
+      <div
+        v-else-if="error"
+        class="rounded-2xl border border-app-border bg-card p-6 text-center"
+        data-testid="notes-error"
+        role="alert"
+      >
+        <p class="font-sans text-base font-semibold text-text-main">Notes failed to load.</p>
 
-    <div v-else class="mt-6 w-full columns-2 gap-4" data-testid="notes-grid">
-      <div v-for="note in notes" :key="note.id" class="break-inside-avoid pb-4">
-        <NoteCard
-          :note="note"
-          :course-name="courseNameFor(note)"
-          :badge-color="badgeColorFor(note)"
-          @open="openNote(note.id, $event)"
-        />
+        <p class="mt-1 text-sm text-text-muted">{{ error }}</p>
+
+        <button
+          class="btn-tactile mt-4 rounded-xl px-4 py-2 font-sans text-sm font-bold text-white"
+          type="button"
+          @click="loadNotes(true)"
+        >
+          Retry
+        </button>
       </div>
 
-      <div v-if="pictureNote" class="break-inside-avoid pb-4">
-        <PictureNoteCard
-          :photo-url="pictureNote.photoUrl"
-          :course-id="pictureNote.note.courseId"
-          :course-name="courseNameFor(pictureNote.note)"
-          :badge-color="badgeColorFor(pictureNote.note)"
-          :title="pictureNote.note.title"
-          :text="pictureNote.note.preview"
-          :entry-date="pictureNote.note.entryDate"
-          @open="openNote(pictureNote.note.id, $event)"
-        />
+      <p
+        v-else-if="notes.length === 0"
+        class="py-12 text-center text-sm text-text-muted"
+        data-testid="notes-empty"
+      >
+        No notes exist yet.
+      </p>
+
+      <div v-else class="columns-2 gap-2" data-testid="notes-grid">
+        <div v-for="note in notes" :key="note.id" class="break-inside-avoid pb-2">
+          <NoteCard
+            :note="note"
+            :course-name="courseNameFor(note)"
+            :badge-color="badgeColorFor(note)"
+            :class="extractFirstImageUrl(note.preview) ? 'max-h-80' : 'max-h-64'"
+            @open="openNote(note.id, $event)"
+          />
+        </div>
+
+        <div v-if="pictureNote" class="break-inside-avoid pb-4">
+          <PictureNoteCard
+            class="max-h-80"
+            :photo-url="pictureNote.photoUrl"
+            :course-id="pictureNote.note.courseId"
+            :course-name="courseNameFor(pictureNote.note)"
+            :badge-color="badgeColorFor(pictureNote.note)"
+            :title="pictureNote.note.title"
+            :text="pictureNote.note.preview"
+            :entry-date="pictureNote.note.entryDate"
+            :created-at="pictureNote.note.createdAt"
+            @open="openNote(pictureNote.note.id, $event)"
+          />
+        </div>
       </div>
     </div>
 

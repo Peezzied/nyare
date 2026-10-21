@@ -7,12 +7,19 @@ import { formatDuration, formatDueLabel, getTaskUrgency, URGENCY_COLORS } from '
 import { Checkbox } from '@/components/ui/checkbox'
 import type { TaskResponse } from '@/types/api'
 
-const props = defineProps<{
-  task: TaskResponse
-  courseName: string
-  dueDate: string | null
-  time: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    task: TaskResponse
+    courseName: string
+    dueDate: string | null
+    time: string
+    /** Hides the status checkbox and disables the swipe actions, for archived lists. */
+    readonly?: boolean
+  }>(),
+  {
+    readonly: false,
+  },
+)
 
 const emit = defineEmits<{ open: []; toggle: []; actions: [] }>()
 
@@ -44,6 +51,7 @@ let horizontal = false
 let suppressClick = false
 
 function onPointerDown(event: PointerEvent) {
+  if (props.readonly) return
   if (event.button !== 0) return
   if ((event.target as HTMLElement).closest('[data-swipe-exclude]')) return
   activePointer = event.pointerId
@@ -106,6 +114,7 @@ function onRowClick() {
     :class="{ 'opacity-50': done }"
   >
     <div
+      v-if="!readonly"
       aria-hidden="true"
       class="absolute inset-y-0 right-0 flex w-24 items-center justify-end gap-3 bg-[#FEF9E7] px-3"
       :style="{ opacity: Math.min(1, -swipeX / 24) }"
@@ -128,7 +137,7 @@ function onRowClick() {
       @pointerup="onPointerEnd"
       @pointercancel="onPointerCancel"
     >
-      <div class="flex h-11 w-11 shrink-0 items-center justify-center" data-swipe-exclude @click.stop>
+      <div v-if="!readonly" class="flex h-11 w-11 shrink-0 items-center justify-center" data-swipe-exclude @click.stop>
         <Checkbox :model-value="done" :aria-label="`Mark ${task.title} as completed`"
           @update:model-value="emit('toggle')" />
       </div>

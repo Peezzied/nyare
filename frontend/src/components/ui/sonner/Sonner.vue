@@ -14,6 +14,10 @@ import { Toaster as Sonner } from 'vue-sonner'
 const props = withDefaults(defineProps<ToasterProps>(), {
   position: 'top-center',
   richColors: true,
+  // Default directions for `top-center` only include 'top'; allow all four so
+  // sideways swipes dismiss too.
+  swipeDirections: () =>
+    ['top', 'right', 'bottom', 'left'] as NonNullable<ToasterProps['swipeDirections']>,
 })
 </script>
 

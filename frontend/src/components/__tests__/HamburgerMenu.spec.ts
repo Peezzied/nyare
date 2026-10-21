@@ -76,13 +76,32 @@ describe('HamburgerMenu', () => {
     const selectItem = document.querySelector<HTMLElement>('[data-testid="select-account-item"]')
     expect(selectItem).not.toBeNull()
     expect(
-      item!.compareDocumentPosition(selectItem!) & Node.DOCUMENT_POSITION_FOLLOWING,
+      item!.compareDocumentPosition(selectItem!) & Node.DOCUMENT_POSITION_PRECEDING,
     ).toBeTruthy()
 
     item?.click()
     await flushPromises()
 
     expect(mockPush).toHaveBeenCalledWith({ name: 'manage-courses' })
+    await vi.waitFor(() => {
+      expect(document.querySelector('[data-testid="account-menu"]')).toBeNull()
+    })
+    wrapper.unmount()
+  })
+
+  it('navigates to the archive and closes the drawer', async () => {
+    const wrapper = mount(HamburgerMenu)
+    await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
+    await flushPromises()
+
+    const item = document.querySelector<HTMLElement>('[data-testid="archive-item"]')
+    expect(item).not.toBeNull()
+    expect(item?.textContent).toContain('Archive')
+
+    item?.click()
+    await flushPromises()
+
+    expect(mockPush).toHaveBeenCalledWith({ name: 'archive' })
     await vi.waitFor(() => {
       expect(document.querySelector('[data-testid="account-menu"]')).toBeNull()
     })

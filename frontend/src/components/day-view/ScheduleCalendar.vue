@@ -123,7 +123,8 @@ const nowLabel = computed(() => {
 
 // ---- DOM references ----
 const wrapperRef = ref<HTMLElement | null>(null) // whole component (strip + grid)
-const areaRef = ref<HTMLElement | null>(null) // the Schedule X area below the strip
+const areaRef = ref<HTMLElement | null>(null) // the frame the overlays anchor to
+const scrollerRef = ref<HTMLElement | null>(null) // the element that scrolls
 const dayColEl = ref<HTMLElement | null>(null) // the positioned day column
 const scrollEl = ref<HTMLElement | null>(null) // the element that scrolls
 const scrollTop = ref(0)
@@ -170,11 +171,6 @@ watch(
     findDayCol(40, toDateKey(newDate), () => {
       attachScrollListener()
       settle(15)
-    })
-
-    // Notify the swiper that the date change is in place
-    requestAnimationFrame(() => {
-      wrapperRef.value?.dispatchEvent(new CustomEvent('day-ready', { bubbles: true }))
     })
   },
 )
@@ -246,36 +242,26 @@ function findDayCol(tries = 40, dateKey?: string, onFound?: () => void) {
   }
 }
 
-function attachScrollListener(tries = 40) {
+function attachScrollListener() {
   if (scrollCleanup) {
     scrollCleanup()
     scrollCleanup = null
   }
-  const el = areaRef.value?.querySelector<HTMLElement>('.sx__view-container') ?? null
-  if (!el) {
-    if (tries > 0) {
-      requestAnimationFrame(() => attachScrollListener(tries - 1))
-    } else {
-      console.warn('[DayView] .sx__view-container not found')
-    }
-    return
-  }
+  const el = scrollerRef.value
+  if (!el) return
   scrollEl.value = el
   observeLayout()
   el.addEventListener('scroll', measure, { passive: true })
   scrollCleanup = () => el.removeEventListener('scroll', measure)
   if (didInitialScroll) {
-    // Rebuild after a swipe: keep the scroll position
-    el.scrollTop = savedScrollTop
+    // Rebuild after a swipe: keep the scroll position. 'instant' overrides
+    // the theme's scroll-behavior: smooth, which would animate the restore.
+    el.scrollTo({ top: savedScrollTop, behavior: 'instant' })
   } else {
     didInitialScroll = true
     scrollToNow('auto')
   }
   measure()
-  // Tell the swiper this day is on screen and scrolled into place
-  requestAnimationFrame(() => {
-    wrapperRef.value?.dispatchEvent(new CustomEvent('day-ready', { bubbles: true }))
-  })
 }
 
 function setup() {
@@ -336,30 +322,35 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
 
 <template>
   <div ref="wrapperRef" class="relative flex min-h-0 flex-1 flex-col bg-app-bg">
-    <!-- Tasks/events without a time: sits on top like Google Calendar's all-day row -->
-    <AllDayStrip
-      v-if="untimedItems.length > 0"
-      class="shrink-0 pt-4"
-      :items="untimedItems"
-      :today="isToday"
-      :style="{ paddingLeft: `${gutterLeft}px` }"
-      @select-untimed="onSelectUntimed"
-    />
-
-    <!-- Schedule X area: takes all the remaining space and scrolls inside -->
-    <div ref="areaRef" class="relative min-h-0 flex-1 sx-nyare-wrapper">
-      <!-- Absolute box: always exactly the size of the free space, so Schedule X
-           gets a real height and scrolls inside it -->
-      <div class="absolute inset-0 sx-nyare-fill">
-        <ScheduleXCalendar :calendar-app="calendarApp">
-          <template #timeGridEvent="{ calendarEvent }">
-            <CourseCard
-              :event="(calendarEvent as any)._raw as DayEvent"
-              embedded
-              @select="onSelectCourse"
-            />
-          </template>
-        </ScheduleXCalendar>
+    <div ref="areaRef" class="relative min-h-0 flex-1">
+      <!-- The all-day strip scrolls with the grid, like Google Calendar mobile -->
+      <div
+        ref="scrollerRef"
+        data-cal-scroll
+        class="absolute inset-0 overflow-y-auto overscroll-contain sx-nyare-scroll"
+      >
+        <AllDayStrip
+          v-if="untimedItems.length > 0"
+          class="pt-4"
+          :items="untimedItems"
+          :today="isToday"
+          :style="{ paddingLeft: `${gutterLeft}px` }"
+          @select-untimed="onSelectUntimed"
+        />
+        <div
+          class="sx-nyare-wrapper"
+          :style="{ height: `${(boundaries.endHour - boundaries.startHour) * getHourHeight()}px` }"
+        >
+          <ScheduleXCalendar :calendar-app="calendarApp">
+            <template #timeGridEvent="{ calendarEvent }">
+              <CourseCard
+                :event="(calendarEvent as any)._raw as DayEvent"
+                embedded
+                @select="onSelectCourse"
+              />
+            </template>
+          </ScheduleXCalendar>
+        </div>
       </div>
 
       <!-- Subtle yellow wash across today's column -->
@@ -392,11 +383,11 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
 </template>
 
 <style scoped>
-/* Give every Schedule X wrapper a real height so the grid scrolls inside it */
-.sx-nyare-fill,
-.sx-nyare-fill :deep(.sx-vue-calendar-wrapper),
-.sx-nyare-fill :deep(.sx__calendar-wrapper),
-.sx-nyare-fill :deep(.sx__calendar) {
+/* The grid wrapper carries an explicit pixel height; the inner Schedule-X
+   chain fills it and the outer .sx-nyare-scroll element scrolls it. */
+.sx-nyare-wrapper :deep(.sx-vue-calendar-wrapper),
+.sx-nyare-wrapper :deep(.sx__calendar-wrapper),
+.sx-nyare-wrapper :deep(.sx__calendar) {
   height: 100%;
   max-height: none;
   width: 100%;
@@ -456,12 +447,16 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
   transform: none !important;
 }
 
-/* The element that scrolls: thin scrollbar, contained overscroll */
+/* Schedule-X's own scroller is neutralized: the whole grid stays expanded and
+   the outer data-cal-scroll element does the scrolling. */
 .sx-nyare-wrapper :deep(.sx__view-container) {
-  overflow-y: auto;
+  overflow-y: visible;
+  padding-right: 0;
+}
+
+/* The element that scrolls: thin scrollbar, contained overscroll */
+.sx-nyare-scroll {
   scrollbar-width: thin;
   scrollbar-color: #a8a29e transparent;
-  overscroll-behavior: contain;
-  padding-right: 0;
 }
 </style>

@@ -957,6 +957,7 @@ defineExpose({
     >
       <WeekPreview
         :blocks="previewBlocks"
+        :bottom-clearance="isOpen && stage === 'partial' ? 210 : 0"
         @select-slot="handleSelectSlot"
         @select-block="handleSelectBlock"
         @move-block="handleMoveBlock"
@@ -1068,7 +1069,7 @@ defineExpose({
 
     <!-- Course dock: one chip per course editor, pinned + at the right -->
     <footer
-      class="absolute inset-x-0 bottom-0 z-[60] flex min-h-16 items-center gap-2 border-t border-[#CBD5E1] bg-[#FDFEF7] px-3 pb-[env(safe-area-inset-bottom)]"
+      class="absolute inset-x-0 bottom-0 z-[60] flex min-h-16 items-center gap-2 border-t border-[#CBD5E1] bg-[#F6F7EE] px-3 pb-[env(safe-area-inset-bottom)]"
     >
       <div
         class="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto py-2.5"

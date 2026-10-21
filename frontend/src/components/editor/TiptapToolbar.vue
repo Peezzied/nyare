@@ -215,11 +215,11 @@ const isActionDisabled = (item: ToolbarActionItem): boolean => {
 </script>
 
 <template>
-  <div class="flex flex-row border-t-2 border-[#00A4C8]">
+  <div class="flex flex-row border-t border-app-border">
     <div
       role="toolbar"
       aria-label="Rich text editor toolbar"
-      class="minimal-scrollbar flex flex-nowrap items-center gap-2 overflow-x-auto bg-card p-2 text-card-foreground select-none"
+      class="minimal-scrollbar flex flex-nowrap items-center gap-2 overflow-x-auto bg-[#FDFEF7] p-2 text-[#334155] select-none"
     >
       <input
         ref="fileInputRef"
@@ -237,8 +237,8 @@ const isActionDisabled = (item: ToolbarActionItem): boolean => {
             size="icon"
             :variant="item.isActive?.() ? 'secondary' : 'ghost'"
             :class="[
-              'size-9 shrink-0 transition-colors',
-              item.isActive?.() ? 'bg-accent text-accent-foreground shadow-xs font-semibold' : '',
+              'size-11 shrink-0 transition-colors',
+              item.isActive?.() ? 'bg-[#E8F6FA] text-[#007B99] font-semibold' : '',
             ]"
             :aria-label="item.label"
             :aria-pressed="item.isActive ? (item.isActive() ? 'true' : 'false') : undefined"
@@ -252,7 +252,7 @@ const isActionDisabled = (item: ToolbarActionItem): boolean => {
     </div>
     <!-- History Tools (Floating Right Cluster: Standout Undo & Redo) -->
     <div
-      class="flex items-center gap-1.5 shrink-0 sticky right-0 ml-auto self-stretch bg-card px-2"
+      class="flex items-center gap-1.5 shrink-0 sticky right-0 ml-auto self-stretch bg-[#FDFEF7] px-2"
       data-testid="history-cluster"
     >
       <template v-for="item in historyActions" :key="item.id">
@@ -261,7 +261,7 @@ const isActionDisabled = (item: ToolbarActionItem): boolean => {
           size="icon"
           variant="ghost"
           :class="[
-            'size-9 shrink-0 font-bold transition-all text-[#00A4C8] border border-[#00A4C8]/30 bg-[#00A4C8]/10 hover:bg-[#00A4C8]/20 active:scale-95 shadow-xs',
+            'size-11 shrink-0 font-bold transition-all text-[#00A4C8] border border-[#00A4C8]/30 bg-[#00A4C8]/10 hover:bg-[#00A4C8]/20 active:scale-95',
             isActionDisabled(item) ? 'opacity-30 pointer-events-none cursor-not-allowed' : '',
           ]"
           :aria-label="item.label"

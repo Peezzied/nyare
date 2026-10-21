@@ -3,7 +3,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { defineComponent, nextTick } from 'vue'
 import type { AcademicEventResponse, TaskResponse } from '@/types/api'
 import { toDateKey } from '@/utils/dayKey'
-import DayViewContainer from '../DayViewContainer.vue'
+import CalendarView from '../CalendarView.vue'
 
 const mocks = vi.hoisted(() => ({
   push: vi.fn<(route: unknown) => void>(),
@@ -66,6 +66,12 @@ const ScheduleCalendarStub = defineComponent({
   template: '<div />',
 })
 
+const DaySwiperStub = defineComponent({
+  name: 'DaySwiper',
+  props: { selectedDate: { type: Date, default: () => new Date() } },
+  template: '<div><slot :date="selectedDate" /></div>',
+})
+
 const EventDetailModalStub = defineComponent({
   name: 'EventDetailModal',
   props: { isOpen: Boolean, originRect: Object, item: Object },
@@ -74,16 +80,14 @@ const EventDetailModalStub = defineComponent({
 })
 
 function mountContainer() {
-  return mount(DayViewContainer, {
+  return mount(CalendarView, {
     global: {
       renderStubDefaultSlot: true,
       stubs: {
         DayViewHeader: true,
         BurgerMenu: true,
-        DaySwiper: true,
+        DaySwiper: DaySwiperStub,
         WeekCalendar: true,
-        DayPeek: true,
-        WeekPeek: true,
         NavigationBar: true,
         ScheduleCalendar: ScheduleCalendarStub,
         EventDetailModal: EventDetailModalStub,
@@ -121,7 +125,7 @@ beforeEach(() => {
   mocks.notes.value = [{ id: 'note-1', title: 'Lecture 7: Self-Balancing Trees' }]
 })
 
-describe('DayViewContainer detail', () => {
+describe('CalendarView detail', () => {
   it('builds the detail view for a tapped task chip (FR-006)', async () => {
     const wrapper = mountContainer()
     await flushPromises()

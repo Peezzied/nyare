@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, type CSSProperties } from 'vue'
-import { ArrowRightLeft, ChevronRight, GraduationCap, Menu, X } from '@lucide/vue'
+import { Archive, ArrowRightLeft, ChevronRight, GraduationCap, Menu, X } from '@lucide/vue'
 import { onKeyStroke } from '@vueuse/core'
 import { minidenticon } from 'minidenticons'
 import { useRouter } from 'vue-router'
@@ -249,6 +249,11 @@ function goToManageCourses(): void {
   void router.push({ name: 'manage-courses' })
 }
 
+function goToArchive(): void {
+  closeMenu()
+  void router.push({ name: 'archive' })
+}
+
 function goToSelectAccount(): void {
   closeMenu()
   void router.push('/select-account')
@@ -336,7 +341,7 @@ onUnmounted(() => {
                   data-testid="menu-profile-avatar"
                   class="h-12 w-12 shrink-0 rounded-full border border-app-border bg-white object-cover"
                 />
-                <div class="min-w-0">
+                <div class="min-w-0 flex-1">
                   <p class="text-xs font-semibold uppercase tracking-wider text-text-muted">
                     Current profile
                   </p>
@@ -347,6 +352,15 @@ onUnmounted(() => {
                     {{ displayName }}
                   </p>
                 </div>
+                <button
+                  type="button"
+                  aria-label="Select account"
+                  data-testid="select-account-item"
+                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-primary transition-colors hover:bg-black/5 active:bg-black/10 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
+                  @click="goToSelectAccount"
+                >
+                  <ArrowRightLeft class="h-5 w-5" aria-hidden="true" />
+                </button>
               </div>
             </section>
 
@@ -363,12 +377,12 @@ onUnmounted(() => {
 
             <button
               type="button"
-              data-testid="select-account-item"
+              data-testid="archive-item"
               class="flex min-h-12 w-full items-center gap-3 rounded-xl border border-app-border bg-card px-4 py-3 text-left font-semibold text-text-main transition-colors hover:bg-black/5 active:bg-black/10 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
-              @click="goToSelectAccount"
+              @click="goToArchive"
             >
-              <ArrowRightLeft class="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
-              <span class="flex-1">Select Account</span>
+              <Archive class="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+              <span class="flex-1">Archive</span>
               <ChevronRight class="h-4 w-4 shrink-0 text-text-muted" aria-hidden="true" />
             </button>
 

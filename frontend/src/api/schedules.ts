@@ -5,6 +5,8 @@ import type { DayOfWeek, ScheduleRequest, ScheduleResponse } from '@/types/api'
 export interface ScheduleListParams {
   courseId?: number
   day?: DayOfWeek
+  /** `true` returns schedules of archived courses only. `false` returns schedules of active courses. */
+  archived?: boolean
 }
 
 /** API service for recurring weekly class meetings. */

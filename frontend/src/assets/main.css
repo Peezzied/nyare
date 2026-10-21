@@ -18,6 +18,7 @@
   --color-primary: #00a4c8;
   --color-primary-bevel: #007b99;
   --color-text-main: #334155;
+  --color-text-soft: #527a8c;
   --color-text-muted: #7b8b97;
   --color-app-border: #cbd5e1;
   --color-calendar-canvas: #fdfef7;
@@ -67,9 +68,6 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-
-  /* Hour row height for the day and week grids; read by getHourHeight() in src/utils/calendarStyle.ts. */
-  --calendar-hour-height: 80px;
 }
 
 @layer base {
@@ -245,4 +243,9 @@
 .sx__slide-left,
 .sx__slide-right {
   animation: none !important;
+}
+
+/* Keep sonner toasts interactive while a modal layer holds the body pointer-events lock */
+[data-sonner-toast] {
+  pointer-events: auto;
 }

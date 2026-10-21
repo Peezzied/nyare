@@ -132,15 +132,16 @@ watch([() => props.selectedDate, allEvents], ([newDate, newEvents]) => {
   calendarControls.setDate(Temporal.PlainDate.from(toDateKey(newDate)))
   calendarApp.value.events.set(toSxEvents(newEvents))
 
-  if (scrollEl.value) {
-    scrollEl.value.scrollTop = savedScrollTop
-  }
-  measure()
-  settle(15)
-
-  // Notify the swiper that the week change is in place
-  requestAnimationFrame(() => {
-    wrapperRef.value?.dispatchEvent(new CustomEvent('day-ready', { bubbles: true }))
+  // Schedule X can still show the previous week for a frame or two after
+  // setDate; wait for the new columns before unblocking the swipe cover.
+  waitForColumns(toDateKey(weekDates(newDate)[0] ?? newDate), 40, () => {
+    if (scrollEl.value) {
+      // 'instant' overrides the theme's scroll-behavior: smooth, which would
+      // animate the restore and race the swipe cover.
+      scrollEl.value.scrollTo({ top: savedScrollTop, behavior: 'instant' })
+    }
+    measure()
+    settle(15)
   })
 })
 
@@ -200,6 +201,16 @@ function settle(frames = 90) {
   settleFrame = requestAnimationFrame(tick)
 }
 
+function waitForColumns(dateKey: string, tries = 40, done?: () => void) {
+  if (queryColumns()[0]?.dataset.timeGridDate === dateKey) {
+    done?.()
+    return
+  }
+  if (tries > 0) {
+    requestAnimationFrame(() => waitForColumns(dateKey, tries - 1, done))
+  }
+}
+
 function findColumns(tries = 40) {
   if (queryColumns().length > 0) {
     columnsReady.value = true
@@ -239,10 +250,6 @@ function attachScrollListener(tries = 40) {
     scrollToNow('auto')
   }
   measure()
-  // Tell the swiper this week is on screen and scrolled into place
-  requestAnimationFrame(() => {
-    wrapperRef.value?.dispatchEvent(new CustomEvent('day-ready', { bubbles: true }))
-  })
 }
 
 function setup() {

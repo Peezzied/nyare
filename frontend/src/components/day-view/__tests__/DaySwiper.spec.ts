@@ -183,8 +183,8 @@ describe('DaySwiper', () => {
     wrapper.unmount()
   })
 
-  it('measures and passes gutterLeft to peek slot during drag', async () => {
-    let capturedPeekProps: Record<string, unknown> | null = null
+  it('measures and passes gutterLeft to chrome slot during drag', async () => {
+    let capturedChromeProps: Record<string, unknown> | null = null
     const wrapper = mount(DaySwiper, {
       props: {
         selectedDate: baseDate,
@@ -193,11 +193,11 @@ describe('DaySwiper', () => {
       slots: {
         default: () =>
           h('div', { class: 'calendar-content' }, [
-            h('div', { class: 'sx__time-grid-day', id: 'col1' }),
+            h('div', { class: 'sx__time-grid-day' }),
           ]),
-        peek: (slotProps) => {
-          capturedPeekProps = slotProps
-          return h('div', { class: 'peek-content' }, 'Peek')
+        chrome: (slotProps) => {
+          capturedChromeProps = slotProps
+          return h('div', { class: 'chrome-content' }, 'Chrome')
         },
       },
       attachTo: document.body,
@@ -215,18 +215,20 @@ describe('DaySwiper', () => {
       toJSON: () => {},
     })
 
-    const col1 = wrapper.find('#col1').element
-    vi.spyOn(col1, 'getBoundingClientRect').mockReturnValue({
-      x: 55,
-      y: 0,
-      width: 48,
-      height: 800,
-      top: 0,
-      left: 55,
-      bottom: 800,
-      right: 103,
-      toJSON: () => {},
-    })
+    // The slot renders once per panel; the swiper reads the middle panel's column
+    for (const col of wrapper.findAll('.sx__time-grid-day')) {
+      vi.spyOn(col.element, 'getBoundingClientRect').mockReturnValue({
+        x: 55,
+        y: 0,
+        width: 48,
+        height: 800,
+        top: 0,
+        left: 55,
+        bottom: 800,
+        right: 103,
+        toJSON: () => {},
+      } as DOMRect)
+    }
 
     const el = wrapper.element
     dispatchPointer(el, 'pointerdown', {
@@ -244,9 +246,9 @@ describe('DaySwiper', () => {
 
     await wrapper.vm.$nextTick()
 
-    expect(capturedPeekProps).not.toBeNull()
-    const peekProps = capturedPeekProps as unknown as { gutterLeft: number }
-    expect(peekProps.gutterLeft).toBe(55)
+    expect(capturedChromeProps).not.toBeNull()
+    const chromeProps = capturedChromeProps as unknown as { gutterLeft: number }
+    expect(chromeProps.gutterLeft).toBe(55)
 
     wrapper.unmount()
   })

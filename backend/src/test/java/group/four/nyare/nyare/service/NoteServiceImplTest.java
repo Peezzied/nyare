@@ -337,10 +337,10 @@ class NoteServiceImplTest {
     void listNotes_withCourseId_returnsSummariesForCourse() {
         // given
         when(courseRepository.existsById(1L)).thenReturn(true);
-        when(noteRepository.findAllFiltered(42L, 1L)).thenReturn(List.of(note));
+        when(noteRepository.findAllFiltered(42L, 1L, false)).thenReturn(List.of(note));
 
         // when
-        List<NoteSummaryResponse> responses = noteService.listNotes(42L, 1L);
+        List<NoteSummaryResponse> responses = noteService.listNotes(42L, 1L, false);
 
         // then
         assertThat(responses).hasSize(1);
@@ -355,7 +355,7 @@ class NoteServiceImplTest {
         when(courseRepository.existsById(999L)).thenReturn(false);
 
         // when & then
-        assertThatThrownBy(() -> noteService.listNotes(42L, 999L))
+        assertThatThrownBy(() -> noteService.listNotes(42L, 999L, false))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Course not found with ID: 999");
     }
@@ -364,14 +364,14 @@ class NoteServiceImplTest {
     void listNotes_scopedToUser_returnsOnlyOwnData() {
         // given
         Note otherNote = new Note(course, "Other notes");
-        when(noteRepository.findAllFiltered(42L, null)).thenReturn(List.of(note, otherNote));
+        when(noteRepository.findAllFiltered(42L, null, false)).thenReturn(List.of(note, otherNote));
 
         // when
-        List<NoteSummaryResponse> responses = noteService.listNotes(42L, null);
+        List<NoteSummaryResponse> responses = noteService.listNotes(42L, null, false);
 
         // then
         assertThat(responses).hasSize(2);
-        verify(noteRepository).findAllFiltered(42L, null);
+        verify(noteRepository).findAllFiltered(42L, null, false);
     }
 
     @Test
@@ -379,10 +379,10 @@ class NoteServiceImplTest {
         // given
         String longContent = "a".repeat(250);
         Note longNote = new Note(course, longContent);
-        when(noteRepository.findAllFiltered(42L, null)).thenReturn(List.of(longNote));
+        when(noteRepository.findAllFiltered(42L, null, false)).thenReturn(List.of(longNote));
 
         // when
-        List<NoteSummaryResponse> responses = noteService.listNotes(42L, null);
+        List<NoteSummaryResponse> responses = noteService.listNotes(42L, null, false);
 
         // then
         assertThat(responses).hasSize(1);

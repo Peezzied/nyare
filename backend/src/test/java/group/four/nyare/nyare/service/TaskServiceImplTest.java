@@ -121,13 +121,13 @@ class TaskServiceImplTest {
     void listTasks_scopedToUser_returnsOnlyOwnData() {
         Task otherTask = new Task(sampleCourse, "Write report");
         ReflectionTestUtils.setField(otherTask, "id", UUID.randomUUID());
-        when(taskRepository.findAllFiltered(42L, 1L, TaskStatus.TODO, true))
+        when(taskRepository.findAllFiltered(42L, 1L, TaskStatus.TODO, true, false))
                 .thenReturn(List.of(sampleTask, otherTask));
 
-        List<TaskResponse> responses = taskService.listTasks(42L, 1L, TaskStatus.TODO, true);
+        List<TaskResponse> responses = taskService.listTasks(42L, 1L, TaskStatus.TODO, true, false);
 
         assertThat(responses).hasSize(2);
-        verify(taskRepository).findAllFiltered(42L, 1L, TaskStatus.TODO, true);
+        verify(taskRepository).findAllFiltered(42L, 1L, TaskStatus.TODO, true, false);
     }
 
     @Test

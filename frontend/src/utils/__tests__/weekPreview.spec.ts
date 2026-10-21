@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import type { TimeBlockDraft } from '@/components/TimeBlockCard.vue'
 import type { CoursePaletteColor } from '@/constants/palette'
 import {
@@ -18,6 +18,16 @@ const sampleColor: CoursePaletteColor = {
   text: '#B71C1C',
   border: '#EF9A9A',
 }
+
+const HOUR_HEIGHT_VAR = '--calendar-hour-height'
+
+beforeEach(() => {
+  document.documentElement.style.setProperty(HOUR_HEIGHT_VAR, '80px')
+})
+
+afterEach(() => {
+  document.documentElement.style.removeProperty(HOUR_HEIGHT_VAR)
+})
 
 describe('derivePreviewBlocks', () => {
   it('yields two preview blocks for one draft with Monday and Wednesday', () => {
@@ -41,7 +51,7 @@ describe('derivePreviewBlocks', () => {
       title: 'CS 101',
       startTime: '09:00',
       endTime: '10:00',
-      color: '#D50000',
+      color: sampleColor,
       blockId: 'block-1',
     })
     expect(result[1]).toEqual({
@@ -50,7 +60,7 @@ describe('derivePreviewBlocks', () => {
       title: 'CS 101',
       startTime: '09:00',
       endTime: '10:00',
-      color: '#D50000',
+      color: sampleColor,
       blockId: 'block-1',
     })
   })
@@ -153,7 +163,7 @@ describe('derivePreviewBlocks', () => {
     expect(result[0]?.title).toBe('CS 101')
   })
 
-  it('applies the solid color from the palette', () => {
+  it('carries the palette color entry', () => {
     const draft: TimeBlockDraft = {
       id: 'block-1',
       selectedDays: ['MONDAY'],
@@ -166,7 +176,7 @@ describe('derivePreviewBlocks', () => {
     }
 
     const result = derivePreviewBlocks([draft], 'CS 101', sampleColor)
-    expect(result[0]?.color).toBe('#D50000')
+    expect(result[0]?.color).toBe(sampleColor)
   })
 })
 

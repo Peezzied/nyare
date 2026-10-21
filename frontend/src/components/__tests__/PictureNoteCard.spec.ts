@@ -9,6 +9,7 @@ const props = {
   title: 'Board snapshot',
   text: 'Formulas from the review session.',
   entryDate: '2026-09-28',
+  createdAt: '2026-09-28T10:00:00Z',
 }
 
 describe('PictureNoteCard', () => {
@@ -27,7 +28,7 @@ describe('PictureNoteCard', () => {
     expect(wrapper.get('[data-testid="picture-note-text"]').text()).toBe(
       'Formulas from the review session.',
     )
-    expect(wrapper.get('[data-testid="picture-note-date"]').text()).toBe('September 28')
+    expect(wrapper.get('[data-testid="picture-note-date"]').text()).toBe('Sep 28')
   })
 
   it('falls back to course id when course name is missing', () => {

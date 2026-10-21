@@ -56,25 +56,25 @@ describe('noteStatus utility', () => {
     it('returns correct label and styling for draft', () => {
       const config = getNoteStatusConfig('draft')
       expect(config.label).toBe('Draft')
-      expect(config.classes).toContain('bg-slate-100')
+      expect(config.classes).toContain('bg-[#F1F5F9]')
     })
 
     it('returns correct label and styling for unprocessed', () => {
       const config = getNoteStatusConfig('unprocessed')
       expect(config.label).toBe('Unprocessed')
-      expect(config.classes).toContain('bg-amber-50')
+      expect(config.classes).toContain('bg-[#FEF9E7]')
     })
 
     it('returns correct label and styling for dirty', () => {
       const config = getNoteStatusConfig('dirty')
       expect(config.label).toBe('Pending update')
-      expect(config.classes).toContain('bg-orange-50')
+      expect(config.classes).toContain('bg-[#FFF3E0]')
     })
 
     it('returns correct label and styling for processed', () => {
       const config = getNoteStatusConfig('processed')
       expect(config.label).toBe('Processed')
-      expect(config.classes).toContain('bg-emerald-50')
+      expect(config.classes).toContain('bg-[#E6F4EA]')
     })
   })
 

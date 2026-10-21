@@ -120,7 +120,7 @@ class NoteControllerTest {
     @Test
     void listNotes_withCourseId_returns200AndList() throws Exception {
         // given
-        when(noteService.listNotes(USER_ID, 1L)).thenReturn(List.of(sampleSummary));
+        when(noteService.listNotes(USER_ID, 1L, false)).thenReturn(List.of(sampleSummary));
 
         // when & then
         mockMvc.perform(get("/api/notes").param("courseId", "1").session(mockSession()))
@@ -129,13 +129,13 @@ class NoteControllerTest {
                 .andExpect(jsonPath("$[0].preview").value("Lecture Notes"))
                 .andExpect(jsonPath("$[0].truncated").value(false));
 
-        verify(noteService).listNotes(USER_ID, 1L);
+        verify(noteService).listNotes(USER_ID, 1L, false);
     }
 
     @Test
     void listNotes_withoutCourseId_returns200AndList() throws Exception {
         // given
-        when(noteService.listNotes(USER_ID, null)).thenReturn(List.of(sampleSummary));
+        when(noteService.listNotes(USER_ID, null, false)).thenReturn(List.of(sampleSummary));
 
         // when & then
         mockMvc.perform(get("/api/notes").session(mockSession()))
@@ -143,7 +143,7 @@ class NoteControllerTest {
                 .andExpect(jsonPath("$[0].id").value(noteId.toString()))
                 .andExpect(jsonPath("$[0].preview").value("Lecture Notes"));
 
-        verify(noteService).listNotes(USER_ID, null);
+        verify(noteService).listNotes(USER_ID, null, false);
     }
 
     @Test

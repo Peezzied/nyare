@@ -75,7 +75,7 @@ describe('ProcessDialog', () => {
     const dialog = wrapper.get('[role="dialog"]')
     expect(dialog.text()).toContain('Process pending notes?')
     expect(dialog.text()).toContain('CS101')
-    expect(dialog.text()).toContain('Oct 1')
+    expect(dialog.text()).toContain('Oct 01')
     expect(wrapper.find('[data-testid="process-confirm"]').exists()).toBe(true)
   })
 

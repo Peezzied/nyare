@@ -32,6 +32,9 @@ defineOptions({ inheritAttrs: false })
 const isOpen = ref(false)
 const catalog = useCatalog()
 
+/** Opens the course dialog from an external control such as an empty-state prompt. */
+defineExpose({ open: () => (isOpen.value = true) })
+
 const selectedCourse = computed(() => {
   if (props.modelValue === null) {
     return null

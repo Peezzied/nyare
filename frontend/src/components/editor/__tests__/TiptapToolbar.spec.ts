@@ -172,7 +172,7 @@ describe('TiptapToolbar', () => {
 
     const boldButton = wrapper.find('button[aria-label="Bold"]')
     expect(boldButton.attributes('aria-pressed')).toBe('true')
-    expect(boldButton.classes()).toContain('bg-accent')
+    expect(boldButton.classes()).toContain('bg-[#E8F6FA]')
 
     const italicButton = wrapper.find('button[aria-label="Italic"]')
     expect(italicButton.attributes('aria-pressed')).toBe('false')
@@ -296,7 +296,7 @@ describe('TiptapToolbar', () => {
 
     const buttons = wrapper.findAll('button')
     buttons.forEach((btn) => {
-      expect(btn.classes()).toContain('size-9')
+      expect(btn.classes()).toContain('size-11')
     })
   })
 
