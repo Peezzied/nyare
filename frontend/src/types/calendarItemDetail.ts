@@ -6,7 +6,7 @@ export type CalendarItemKind = 'class' | 'task' | 'event'
 /** The three marker categories. Maps one-to-one to `CalendarItemKind`. */
 export type CalendarItemCategory = 'class' | 'event' | 'task'
 
-/** Source journal entry of a task or an event. */
+/** Journal entry linked to a calendar item. */
 export interface LinkedNoteRef {
   id: string
   /** `null` when the cached notes list has no matching note. */
@@ -17,6 +17,9 @@ export interface LinkedNoteRef {
 export interface CachedNote {
   readonly id: string
   readonly title: string
+  readonly courseId: number
+  /** ISO date `YYYY-MM-DD`; matches a class meeting's day for linked notes. */
+  readonly entryDate: string
 }
 
 /** Drives the complete control. `null` for a class and an event. */
@@ -27,7 +30,8 @@ export interface CalendarItemTaskState {
 
 /**
  * The single view model of the shared detail component (FR-021).
- * `duration` applies to a task only. `note` applies to a task and an event.
+ * `duration` applies to a task only. A task and an event list their single
+ * source note in `notes`; a class lists the course's notes from its meeting day.
  * `timeWindow` is always a string or `null`, never a placeholder (FR-022).
  */
 export interface CalendarItemDetailView {
@@ -37,7 +41,12 @@ export interface CalendarItemDetailView {
   courseId: number
   timeWindow: string | null
   duration: string | null
-  note: LinkedNoteRef | null
+  notes: LinkedNoteRef[]
+  /**
+   * ISO date `YYYY-MM-DD` a new note takes on the add-note action. A class
+   * carries its meeting day; a task and an event carry `null`.
+   */
+  entryDate: string | null
   task: CalendarItemTaskState | null
   /** Host-owned tap geometry. The builder leaves it unset. */
   originRect?: TapOriginRect | null

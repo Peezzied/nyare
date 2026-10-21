@@ -28,6 +28,7 @@ const props = withDefaults(
 const emit = defineEmits<{
   (e: 'close'): void
   (e: 'open-note', note: LinkedNoteRef): void
+  (e: 'add-note'): void
   (e: 'complete-task', taskId: string): void
 }>()
 
@@ -118,6 +119,7 @@ const detailTitle = computed(() => {
           v-if="item"
           :item="item"
           @open-note="emit('open-note', $event)"
+          @add-note="emit('add-note')"
           @complete-task="emit('complete-task', $event)"
         />
       </div>

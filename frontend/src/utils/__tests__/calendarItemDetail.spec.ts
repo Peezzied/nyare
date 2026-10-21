@@ -3,7 +3,14 @@ import { buildCalendarItemDetail, buildMarkerState } from '../calendarItemDetail
 import type { DayEvent } from '@/types/calendar'
 import type { AcademicEventResponse, TaskResponse } from '@/types/api'
 
-const CACHED_NOTES = [{ id: 'note-1', title: 'Lecture 7: Self-Balancing Trees' }]
+const CACHED_NOTES = [
+  {
+    id: 'note-1',
+    title: 'Lecture 7: Self-Balancing Trees',
+    courseId: 1,
+    entryDate: '2026-10-22',
+  },
+]
 
 function taskResponse(overrides: Partial<TaskResponse> = {}): TaskResponse {
   return {
@@ -46,22 +53,22 @@ const CLASS_EVENT: DayEvent = {
 }
 
 describe('buildCalendarItemDetail', () => {
-  it('sets note to null when the task has no noteId (FR-018)', () => {
+  it('lists no notes when the task has no noteId (FR-018)', () => {
     const view = buildCalendarItemDetail(taskResponse({ noteId: null }), 'task', CACHED_NOTES)
 
-    expect(view.note).toBeNull()
+    expect(view.notes).toEqual([])
   })
 
-  it('sets note to null when the task noteId is empty (FR-018)', () => {
+  it('lists no notes when the task noteId is empty (FR-018)', () => {
     const view = buildCalendarItemDetail(taskResponse({ noteId: '' }), 'task', CACHED_NOTES)
 
-    expect(view.note).toBeNull()
+    expect(view.notes).toEqual([])
   })
 
   it('resolves the note title from the cached notes list', () => {
     const view = buildCalendarItemDetail(taskResponse({ noteId: 'note-1' }), 'task', CACHED_NOTES)
 
-    expect(view.note).toEqual({ id: 'note-1', title: 'Lecture 7: Self-Balancing Trees' })
+    expect(view.notes).toEqual([{ id: 'note-1', title: 'Lecture 7: Self-Balancing Trees' }])
   })
 
   it('sets note title to null when the cached notes list has no match', () => {
@@ -71,7 +78,7 @@ describe('buildCalendarItemDetail', () => {
       CACHED_NOTES,
     )
 
-    expect(view.note).toEqual({ id: 'note-gone', title: null })
+    expect(view.notes).toEqual([{ id: 'note-gone', title: null }])
   })
 
   it('sets duration to null when the task has no duration (FR-019)', () => {
@@ -129,16 +136,44 @@ describe('buildCalendarItemDetail', () => {
   it('resolves the event note from the cached notes list', () => {
     const view = buildCalendarItemDetail(academicEvent({ noteId: 'note-1' }), 'event', CACHED_NOTES)
 
-    expect(view.note).toEqual({ id: 'note-1', title: 'Lecture 7: Self-Balancing Trees' })
+    expect(view.notes).toEqual([{ id: 'note-1', title: 'Lecture 7: Self-Balancing Trees' }])
   })
 
-  it('has no note, no duration and no complete control for a class', () => {
+  it('has no notes, no duration and no complete control for a class', () => {
     const view = buildCalendarItemDetail(CLASS_EVENT, 'class')
 
     expect(view.kind).toBe('class')
-    expect(view.note).toBeNull()
+    expect(view.notes).toEqual([])
     expect(view.duration).toBeNull()
     expect(view.task).toBeNull()
+  })
+
+  it('lists course notes whose entryDate is the class meeting day', () => {
+    const view = buildCalendarItemDetail(CLASS_EVENT, 'class', CACHED_NOTES)
+
+    expect(view.notes).toEqual([{ id: 'note-1', title: 'Lecture 7: Self-Balancing Trees' }])
+  })
+
+  it('excludes notes of other days and other courses from a class', () => {
+    const notes = [
+      ...CACHED_NOTES,
+      { id: 'note-old', title: 'Lecture 6', courseId: 1, entryDate: '2026-10-15' },
+      { id: 'note-phys', title: 'Gauss law', courseId: 3, entryDate: '2026-10-22' },
+    ]
+    const view = buildCalendarItemDetail(CLASS_EVENT, 'class', notes)
+
+    expect(view.notes.map((note) => note.id)).toEqual(['note-1'])
+  })
+
+  it('carries the meeting day in entryDate for the add-note action', () => {
+    const view = buildCalendarItemDetail(CLASS_EVENT, 'class')
+
+    expect(view.entryDate).toBe('2026-10-22')
+  })
+
+  it('keeps entryDate null for a task and an event', () => {
+    expect(buildCalendarItemDetail(taskResponse(), 'task').entryDate).toBeNull()
+    expect(buildCalendarItemDetail(academicEvent(), 'event').entryDate).toBeNull()
   })
 
   it('uses the schedule time range as the class timeWindow', () => {
