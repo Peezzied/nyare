@@ -46,9 +46,10 @@ public class TaskController {
     public ResponseEntity<List<TaskResponse>> listTasks(
             @RequestParam(required = false) Long courseId,
             @RequestParam(required = false) TaskStatus status,
-            @RequestParam(required = false) Boolean scheduled) {
+            @RequestParam(required = false) Boolean scheduled,
+            @RequestParam(defaultValue = "false") Boolean archived) {
         Long userId = sessionContext.requireUserId();
-        List<TaskResponse> tasks = taskService.listTasks(userId, courseId, status, scheduled);
+        List<TaskResponse> tasks = taskService.listTasks(userId, courseId, status, scheduled, archived);
         return ResponseEntity.ok(tasks);
     }
 

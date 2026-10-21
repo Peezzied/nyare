@@ -10,22 +10,19 @@ import {
   Clock,
   RefreshCw,
   CheckCircle2,
+  GraduationCap,
+  ArrowRight,
+  Loader2,
 } from '@lucide/vue'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { parseDate, type DateValue } from '@internationalized/date'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog'
+import DialogShell from '@/components/ui/DialogShell.vue'
 import { Button } from '@/components/ui/button'
 import TiptapEditor from '@/components/editor/TiptapEditor.vue'
 import { useNotes } from '@/composables/useNotes'
 import { useCatalog } from '@/composables/useCatalog'
+import { useArchive } from '@/composables/useArchive'
 import CoursePicker from '@/components/CoursePicker.vue'
 import { markdownToHtml, htmlToMarkdown, extractImageUrls } from '@/utils/markdown'
 import {
@@ -85,6 +82,7 @@ const emit = defineEmits<{
 const route = useRoute()
 const router = useRouter()
 const { courses, schedules, loadCatalog } = useCatalog()
+const archive = useArchive()
 const { saveNote: persistNote, getNote } = useNotes()
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -126,6 +124,36 @@ const activeNoteId = computed(() => {
 })
 
 const isEditMode = computed(() => !!activeNoteId.value)
+
+/** True when the note's course is archived. The editor renders read-only. */
+const isArchivedCourse = computed(() => archive.isArchived(selectedCourseId.value))
+
+const archivedCourseName = computed(
+  () =>
+    archive.archivedCourses.value.find((course) => course.id === selectedCourseId.value)?.name ??
+    `Course ${selectedCourseId.value ?? ''}`,
+)
+
+const archivedCourseBadgeStyle = computed(() => {
+  const badge = archive.courseColor(selectedCourseId.value)
+  return { backgroundColor: badge.bg, color: badge.text, borderColor: badge.border }
+})
+
+/**
+ * Loads the archive list when the selected course is missing from the active
+ * catalog. A failed lookup leaves the editor writable.
+ */
+async function checkArchivedCourse(): Promise<void> {
+  const courseId = selectedCourseId.value
+  if (courseId === null || courses.value.some((course) => course.id === courseId)) {
+    return
+  }
+  try {
+    await archive.loadArchive()
+  } catch {
+    // A failed lookup leaves the editor writable.
+  }
+}
 
 const processingStatus = computed(() => {
   return getNoteProcessingStatus({
@@ -383,6 +411,12 @@ function onUploadError(error: Error) {
   errorMessage.value = error.message
 }
 
+const coursePickerRef = ref<InstanceType<typeof CoursePicker> | null>(null)
+
+function openCoursePicker() {
+  coursePickerRef.value?.open()
+}
+
 const isUnsavedDialogOpen = ref(false)
 const pendingNavigation = ref<(() => void) | null>(null)
 
@@ -467,7 +501,7 @@ async function loadNote(id: string) {
 }
 
 async function saveNote() {
-  if (isSaveDisabled.value) {
+  if (isArchivedCourse.value || isSaveDisabled.value) {
     return
   }
 
@@ -565,6 +599,11 @@ watch(
   },
 )
 
+// The selected course may arrive late through loadNote or prefill props.
+watch(selectedCourseId, () => {
+  void checkArchivedCourse()
+})
+
 function staggeredClass(shown: boolean): string {
   return `transition-[opacity,transform] ${shown ? 'opacity-100 translate-y-0 duration-200' : 'opacity-0 translate-y-2 duration-[80ms]'}`
 }
@@ -614,6 +653,7 @@ onMounted(async () => {
     await nextTick()
     initialState.value = getCurrentState()
   }
+  await checkArchivedCourse()
 })
 
 onBeforeUnmount(() => {
@@ -629,34 +669,45 @@ defineExpose({ requestBack: handleBack })
 <template>
   <div
     data-testid="note-editor-container"
-    class="flex flex-col bg-[#F6F7EE] font-sans text-slate-800 overflow-hidden"
+    class="flex flex-col bg-app-bg font-sans text-text-main overflow-hidden"
     :class="embedded ? 'h-full' : viewportHeight ? '' : 'h-dvh'"
     :style="!embedded && viewportHeight ? { height: `${viewportHeight}px` } : undefined"
   >
     <!-- Header Navigation & Save Action -->
     <header
-      class="shrink-0 flex items-center justify-between border-b border-[#00A4C8]/30 px-4 py-3"
+      class="shrink-0 flex items-center justify-between border-b border-app-border px-4 py-3"
       :class="controlsStaggerClass"
     >
       <button
         type="button"
         data-testid="back-button"
-        class="flex items-center gap-1 text-sm font-semibold text-[#7B8B97] hover:text-slate-900 transition-colors cursor-pointer"
+        class="flex items-center gap-1 min-h-11 text-sm font-semibold text-text-muted hover:text-text-main transition-colors cursor-pointer"
         @click="handleBack"
       >
         <ArrowLeft class="size-4" />
         <span>Back</span>
       </button>
 
-      <button
+      <span
+        v-if="isArchivedCourse"
+        data-testid="archived-course-label"
+        class="inline-flex min-h-11 items-center rounded-full border border-app-border bg-card px-4 text-xs font-bold uppercase tracking-wider text-text-muted"
+      >
+        Archived course
+      </span>
+      <Button
+        v-else
         type="button"
+        variant="tactile"
+        size="touch"
         data-testid="save-button"
         :disabled="isSaveDisabled"
-        class="rounded-xl bg-[#00A4C8] px-4 py-2 text-sm font-bold text-white shadow-[0_4px_0_0_#007B99] hover:bg-[#0093B4] active:translate-y-1 active:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:active:translate-y-0 cursor-pointer"
+        class="cursor-pointer disabled:cursor-not-allowed disabled:shadow-none disabled:active:translate-y-0"
         @click="saveNote"
       >
+        <Loader2 v-if="isSaving" class="size-4 animate-spin" />
         {{ isSaving ? 'Saving...' : 'Save' }}
-      </button>
+      </Button>
     </header>
 
     <!-- Error Banner -->
@@ -664,7 +715,7 @@ defineExpose({ requestBack: handleBack })
       v-if="errorMessage"
       role="alert"
       data-testid="error-banner"
-      class="shrink-0 mx-4 mt-3 flex items-center justify-between rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-800"
+      class="shrink-0 mx-4 mt-3 flex items-center justify-between rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-800"
     >
       <div class="flex items-center gap-2">
         <AlertCircle class="size-4 shrink-0 text-red-600" />
@@ -672,7 +723,7 @@ defineExpose({ requestBack: handleBack })
       </div>
       <button
         type="button"
-        class="font-medium text-red-700 hover:underline cursor-pointer"
+        class="shrink-0 min-h-11 -my-2 px-2 font-medium text-red-700 hover:underline cursor-pointer"
         @click="errorMessage = null"
       >
         Dismiss
@@ -688,7 +739,8 @@ defineExpose({ requestBack: handleBack })
           data-testid="title-input"
           type="text"
           placeholder="Untitled Note..."
-          class="w-full bg-transparent !font-sans text-2xl font-bold text-slate-800 placeholder-slate-400 outline-none"
+          :readonly="isArchivedCourse"
+          class="w-full bg-transparent !font-sans text-2xl font-bold text-text-main placeholder:text-text-muted outline-none"
         />
       </div>
 
@@ -698,11 +750,21 @@ defineExpose({ requestBack: handleBack })
         <div class="inline-flex items-center gap-1.5" data-testid="course-pill">
           <label
             for="course-picker-trigger"
-            class="font-bold uppercase tracking-wider text-slate-500"
+            class="font-bold uppercase tracking-wider text-text-muted"
           >
             Course:
           </label>
+          <span
+            v-if="isArchivedCourse"
+            data-testid="archived-course-chip"
+            class="inline-flex max-w-[200px] items-center rounded-full border px-3 py-1 text-xs font-semibold"
+            :style="archivedCourseBadgeStyle"
+          >
+            <span class="truncate">{{ archivedCourseName }}</span>
+          </span>
           <CoursePicker
+            v-else
+            ref="coursePickerRef"
             id="course-picker-trigger"
             data-testid="course-picker-trigger"
             aria-label="Course"
@@ -716,7 +778,7 @@ defineExpose({ requestBack: handleBack })
         <div class="inline-flex items-center gap-1.5" data-testid="date-pill">
           <label
             for="date-picker-trigger"
-            class="font-bold uppercase tracking-wider text-slate-500"
+            class="font-bold uppercase tracking-wider text-text-muted"
           >
             Date:
           </label>
@@ -727,9 +789,10 @@ defineExpose({ requestBack: handleBack })
                 type="button"
                 data-testid="date-picker"
                 aria-label="Date"
-                class="inline-flex items-center gap-1.5 appearance-none rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-700 cursor-pointer outline-none hover:bg-slate-50 transition-colors"
+                :disabled="isArchivedCourse"
+                class="inline-flex min-h-11 items-center gap-1.5 appearance-none rounded-full border border-[#D5EBF1] bg-[#FDFEF7] px-3 py-1 text-xs font-semibold text-text-main cursor-pointer outline-none hover:bg-[#F0F8FA] focus-visible:ring-2 focus-visible:ring-[#00A4C8]/40 transition-colors"
               >
-                <CalendarIcon class="size-3.5 text-slate-500" />
+                <CalendarIcon class="size-3.5 text-text-muted" />
                 <span>{{ formattedDisplayDate }}</span>
               </button>
             </PopoverTrigger>
@@ -747,29 +810,36 @@ defineExpose({ requestBack: handleBack })
     </section>
 
     <!-- Teal Horizontal Divider Accent -->
-    <div class="shrink-0 mx-4 my-2 h-[2px] bg-[#00A4C8]" :class="contentStaggerClass" />
+    <div class="shrink-0 mx-4 my-2 h-px bg-[#00A4C8]/30" :class="contentStaggerClass" />
 
     <!-- Locked Editor Helper Prompt (when courseId is unassigned) -->
-    <div
+    <button
       v-if="!selectedCourseId"
+      type="button"
       data-testid="course-gating-prompt"
-      class="shrink-0 mx-4 my-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs font-medium text-amber-800"
+      class="shrink-0 mx-4 my-2 flex items-center gap-2.5 rounded-xl border border-[#D5EBF1] bg-[#E8F6FA] px-3.5 py-2.5 text-left text-xs cursor-pointer transition-colors hover:bg-[#D8EEF6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8]/40"
       :class="contentStaggerClass"
+      @click="openCoursePicker"
     >
-      Select a course first to start typing... can't type kapag hindi pa naglalagay course wdyt
-    </div>
+      <GraduationCap class="size-4 shrink-0 text-[#007B99]" />
+      <span class="leading-snug text-[#00556B]">
+        <span class="font-bold text-[#1E293B]">Select a course to start writing.</span>
+        Nyare files every note under a course.
+      </span>
+      <ArrowRight class="size-3.5 ml-auto shrink-0 text-[#007B99]/60" />
+    </button>
 
     <!-- Editor Body Container -->
-    <main class="flex-1 min-h-0 flex flex-col w-full px-4 pt-2 pb-0" :class="contentStaggerClass">
+    <main class="flex-1 min-h-0 flex flex-col w-full pt-2 pb-0" :class="contentStaggerClass">
       <TiptapEditor
         class="flex-1 min-h-0 w-full"
         :toolbar-class="controlsStaggerClass"
         :model-value="htmlContent"
-        :editable="!!selectedCourseId"
+        :editable="!!selectedCourseId && !isArchivedCourse"
         :placeholder="
           selectedCourseId
             ? 'Write note content...'
-            : 'type here... can\'t type kapag hindi pa naglalagay course wdyt'
+            : 'Select a course to start writing'
         "
         @update:model-value="onEditorContentChange"
         @image-uploaded="onImageUploaded"
@@ -778,10 +848,10 @@ defineExpose({ requestBack: handleBack })
         <template #status-bar>
           <div
             data-testid="editor-status-bar"
-            class="shrink-0 flex items-center justify-between border-t border-slate-200 bg-[#FDFEF7] px-3 py-1.5 text-xs text-slate-600 select-none"
+            class="shrink-0 flex items-center justify-between border-t border-app-border bg-[#FDFEF7] px-3 py-1.5 text-xs text-text-soft select-none"
           >
             <div class="flex items-center gap-1.5" data-testid="status-indicator-group">
-              <span class="font-bold uppercase tracking-wider text-slate-400 text-[10px]">
+              <span class="font-bold uppercase tracking-wider text-text-muted text-[10px]">
                 Status:
               </span>
               <div
@@ -794,7 +864,7 @@ defineExpose({ requestBack: handleBack })
               </div>
             </div>
 
-            <div data-testid="word-count" class="font-medium text-slate-500">
+            <div data-testid="word-count" class="font-medium text-text-muted">
               {{ wordCountDisplay }}
             </div>
           </div>
@@ -803,42 +873,43 @@ defineExpose({ requestBack: handleBack })
     </main>
 
     <!-- Unsaved Changes Dialog -->
-    <Dialog :open="isUnsavedDialogOpen" @update:open="(val) => (isUnsavedDialogOpen = val)">
-      <DialogContent
+    <DialogShell
+      v-model:open="isUnsavedDialogOpen"
+      title="Discard Changes"
+      @cancel="cancelDiscard"
+    >
+      <p
         data-testid="unsaved-changes-dialog"
-        :show-close-button="false"
-        class="w-[calc(100%-3rem)] max-w-sm rounded-2xl border border-[#00A4C8]/30 bg-[#FDFEF7] p-5 shadow-xl !font-sans"
+        class="mt-2 text-sm text-[#7B8B97]"
+        style="font-family: 'Inter', sans-serif; font-weight: 400"
       >
-        <DialogHeader class="text-left space-y-1.5">
-          <DialogTitle class="text-base font-bold text-slate-800 tracking-tight">
-            Unsaved Changes
-          </DialogTitle>
-          <DialogDescription class="text-xs leading-relaxed">
-            You have unsaved changes in this note. Are you sure you want to discard them and leave?
-          </DialogDescription>
-        </DialogHeader>
+        You have unsaved changes in this note. Discard them and leave?
+      </p>
 
-        <DialogFooter class="flex flex-row items-center justify-end gap-2 pt-3">
-          <Button
-            type="button"
-            data-testid="cancel-discard-button"
-            variant="ghost"
-            class="rounded-xl px-4 py-2 text-xs font-bold text-[#7B8B97] hover:bg-slate-200/60 hover:text-slate-800 cursor-pointer"
-            @click="cancelDiscard"
-          >
-            Keep Editing
-          </Button>
-          <Button
-            type="button"
-            data-testid="confirm-discard-button"
-            variant="destructive"
-            class="rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow-[0_3px_0_0_#991B1B] hover:bg-red-500 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer"
-            @click="confirmDiscard"
-          >
-            Discard Changes
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      <template #actions="{ disabled, dismiss }">
+        <Button
+          type="button"
+          variant="secondary"
+          size="touch"
+          data-testid="cancel-discard-button"
+          :disabled="disabled"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
+          @click="dismiss"
+        >
+          Keep Editing
+        </Button>
+        <Button
+          type="button"
+          variant="tactile-destructive"
+          size="touch"
+          data-testid="confirm-discard-button"
+          :disabled="disabled"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          @click="confirmDiscard"
+        >
+          Discard
+        </Button>
+      </template>
+    </DialogShell>
   </div>
 </template>

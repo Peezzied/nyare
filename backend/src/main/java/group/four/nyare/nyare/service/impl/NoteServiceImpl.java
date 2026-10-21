@@ -57,6 +57,7 @@ public class NoteServiceImpl implements NoteService {
 
         Course course = courseRepository.findByIdAndUserId(request.getCourseId(), userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + request.getCourseId()));
+        requireActiveCourse(course);
 
         validateImageReferences(request.getContent());
 
@@ -74,14 +75,14 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public List<NoteSummaryResponse> listNotes(Long userId, Long courseId) {
+    public List<NoteSummaryResponse> listNotes(Long userId, Long courseId, Boolean archived) {
         if (courseId != null) {
             if (!courseRepository.existsById(courseId)) {
                 throw new ResourceNotFoundException("Course not found with ID: " + courseId);
             }
         }
 
-        return noteRepository.findAllFiltered(userId, courseId)
+        return noteRepository.findAllFiltered(userId, courseId, archived)
                 .stream()
                 .map(this::toSummary)
                 .toList();
@@ -103,9 +104,11 @@ public class NoteServiceImpl implements NoteService {
 
         Note note = noteRepository.findByIdAndCourseUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Note not found with ID: " + id));
+        requireActiveCourse(note.getCourse());
 
         Course course = courseRepository.findByIdAndUserId(request.getCourseId(), userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + request.getCourseId()));
+        requireActiveCourse(course);
 
         validateImageReferences(request.getContent());
 
@@ -131,7 +134,14 @@ public class NoteServiceImpl implements NoteService {
     public void deleteNote(UUID id, Long userId) {
         Note note = noteRepository.findByIdAndCourseUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Note not found with ID: " + id));
+        requireActiveCourse(note.getCourse());
         noteRepository.delete(note);
+    }
+
+    private void requireActiveCourse(Course course) {
+        if (course.getArchivedAt() != null) {
+            throw new BadRequestException("Course is archived");
+        }
     }
 
     private void validateEntryDate(LocalDate entryDate) {

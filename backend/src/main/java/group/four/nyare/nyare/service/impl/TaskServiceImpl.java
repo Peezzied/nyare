@@ -3,6 +3,7 @@ package group.four.nyare.nyare.service.impl;
 import group.four.nyare.nyare.dto.TaskRequest;
 import group.four.nyare.nyare.dto.TaskResponse;
 import group.four.nyare.nyare.dto.TaskStatusRequest;
+import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.Task;
@@ -33,6 +34,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public TaskResponse createTask(TaskRequest request, Long userId) {
         Course course = findCourseOrThrow(request.getCourseId(), userId);
+        requireActiveCourse(course);
 
         Task task = new Task(course, request.getTitle());
         task.setDescription(request.getDescription());
@@ -49,8 +51,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponse> listTasks(Long userId, Long courseId, TaskStatus status, Boolean scheduled) {
-        return taskRepository.findAllFiltered(userId, courseId, status, scheduled)
+    public List<TaskResponse> listTasks(Long userId, Long courseId, TaskStatus status, Boolean scheduled, Boolean archived) {
+        return taskRepository.findAllFiltered(userId, courseId, status, scheduled, archived)
                 .stream()
                 .map(this::toResponse)
                 .toList();
@@ -66,7 +68,9 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public TaskResponse updateTask(UUID id, TaskRequest request, Long userId) {
         Task task = findTaskOrThrow(id, userId);
+        requireActiveCourse(task.getCourse());
         Course course = findCourseOrThrow(request.getCourseId(), userId);
+        requireActiveCourse(course);
 
         task.setCourse(course);
         task.setTitle(request.getTitle());
@@ -84,6 +88,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public TaskResponse updateTaskStatus(UUID id, TaskStatusRequest request, Long userId) {
         Task task = findTaskOrThrow(id, userId);
+        requireActiveCourse(task.getCourse());
         task.setStatus(request.getStatus());
 
         return toResponse(task);
@@ -93,6 +98,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public void deleteTask(UUID id, Long userId) {
         Task task = findTaskOrThrow(id, userId);
+        requireActiveCourse(task.getCourse());
         taskRepository.delete(task);
     }
 
@@ -104,6 +110,12 @@ public class TaskServiceImpl implements TaskService {
     private Course findCourseOrThrow(Long courseId, Long userId) {
         return courseRepository.findByIdAndUserId(courseId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + courseId));
+    }
+
+    private void requireActiveCourse(Course course) {
+        if (course.getArchivedAt() != null) {
+            throw new BadRequestException("Course is archived");
+        }
     }
 
     private TaskResponse toResponse(Task task) {

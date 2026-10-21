@@ -67,7 +67,7 @@ const router = createRouter({
         {
           path: '/calendar',
           name: 'calendar',
-          component: () => import('@/components/day-view/DayViewContainer.vue'),
+          component: () => import('@/views/CalendarView.vue'),
         },
         {
           path: '/notes',
@@ -78,6 +78,16 @@ const router = createRouter({
           path: '/manage-courses',
           name: 'manage-courses',
           component: () => import('@/views/ManageCoursesView.vue'),
+        },
+        {
+          path: '/archive',
+          name: 'archive',
+          component: () => import('@/views/ArchiveView.vue'),
+        },
+        {
+          path: '/archive/:courseId',
+          name: 'archived-course',
+          component: () => import('@/views/ArchivedCourseView.vue'),
         },
       ],
     },

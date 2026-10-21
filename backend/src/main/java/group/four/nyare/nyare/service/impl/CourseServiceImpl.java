@@ -2,6 +2,7 @@ package group.four.nyare.nyare.service.impl;
 
 import group.four.nyare.nyare.dto.CourseRequest;
 import group.four.nyare.nyare.dto.CourseResponse;
+import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.User;
@@ -11,6 +12,7 @@ import group.four.nyare.nyare.service.CourseService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -42,7 +44,14 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<CourseResponse> listCourses(Long userId) {
-        return courseRepository.findByUserId(userId).stream()
+        return courseRepository.findByUserIdAndArchivedAtIsNull(userId).stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<CourseResponse> listArchivedCourses(Long userId) {
+        return courseRepository.findByUserIdAndArchivedAtIsNotNull(userId).stream()
                 .map(this::toResponse)
                 .toList();
     }
@@ -59,6 +68,9 @@ public class CourseServiceImpl implements CourseService {
     public CourseResponse updateCourse(Long id, CourseRequest request, Long userId) {
         Course course = courseRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + id));
+        if (course.getArchivedAt() != null) {
+            throw new BadRequestException("Course is archived");
+        }
         course.setName(request.getName());
         course.setDescription(request.getDescription());
         course.setColor(request.getColor());
@@ -73,13 +85,59 @@ public class CourseServiceImpl implements CourseService {
         courseRepository.delete(course);
     }
 
+    @Override
+    @Transactional
+    public CourseResponse archiveCourse(Long id, Long userId) {
+        Course course = courseRepository.findByIdAndUserId(id, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + id));
+        if (course.getArchivedAt() == null) {
+            course.setArchivedAt(LocalDateTime.now());
+        }
+        return toResponse(course);
+    }
+
+    @Override
+    @Transactional
+    public CourseResponse unarchiveCourse(Long id, Long userId) {
+        Course course = courseRepository.findByIdAndUserId(id, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + id));
+        course.setArchivedAt(null);
+        return toResponse(course);
+    }
+
+    @Override
+    @Transactional
+    public List<CourseResponse> archiveAllCourses(Long userId) {
+        List<Course> courses = courseRepository.findByUserIdAndArchivedAtIsNull(userId);
+        LocalDateTime archivedAt = LocalDateTime.now();
+        courses.forEach(course -> course.setArchivedAt(archivedAt));
+        return courses.stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public List<CourseResponse> unarchiveCourses(List<Long> courseIds, Long userId) {
+        List<Course> courses = courseIds.stream()
+                .map(id -> courseRepository.findByIdAndUserId(id, userId)
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "Course not found with ID: " + id)))
+                .toList();
+        courses.forEach(course -> course.setArchivedAt(null));
+        return courses.stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
     private CourseResponse toResponse(Course course) {
         return new CourseResponse(
                 course.getId(),
                 course.getName(),
                 course.getDescription(),
                 course.getUser() != null ? course.getUser().getId() : null,
-                course.getColor()
+                course.getColor(),
+                course.getArchivedAt()
         );
     }
 }

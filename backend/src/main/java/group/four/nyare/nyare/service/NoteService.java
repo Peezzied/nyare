@@ -30,10 +30,11 @@ public interface NoteService {
      * Each summary carries a truncated markdown preview instead of full content.
      *
      * @param courseId the optional course ID to filter by
+     * @param archived {@code true} to list notes of archived courses, {@code false} for active courses
      * @return list of note summaries, newest first
      * @throws ResourceNotFoundException if the specified course does not exist
      */
-    List<NoteSummaryResponse> listNotes(Long userId, Long courseId);
+    List<NoteSummaryResponse> listNotes(Long userId, Long courseId, Boolean archived);
 
     /**
      * Retrieves a single note owned by the session user.

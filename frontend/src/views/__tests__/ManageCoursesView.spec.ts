@@ -22,18 +22,31 @@ vi.mock('vue-router', () => ({
   },
 }))
 
-vi.mock('vue-sonner', () => ({
-  toast: {
+vi.mock('vue-sonner', () => {
+  // The Undo toast calls `toast(message, options)` directly, so the mock is
+  // callable and carries the error, success, and dismiss methods too.
+  const toastMock = vi.fn<(message: string, options?: unknown) => string | number>(() => 0)
+  Object.assign(toastMock, {
     error: vi.fn<(message: string) => void>(),
     success: vi.fn<(message: string) => void>(),
-  },
-}))
+    dismiss: vi.fn<(id?: number | string) => void>(),
+  })
+  return {
+    toast: toastMock,
+    // `@/components/ui/sonner` re-exports this vue-sonner component. The stub
+    // renders nothing and swallows the Toaster props it cannot inherit.
+    Toaster: { name: 'SonnerStub', inheritAttrs: false, render: () => null },
+  }
+})
 
 vi.mock('@/api', () => ({
   coursesApi: {
     create: vi.fn<(request: unknown) => Promise<CourseResponse>>(),
     update: vi.fn<(id: number, request: unknown) => Promise<CourseResponse>>(),
     delete: vi.fn<(id: number) => Promise<void>>(),
+    archive: vi.fn<(id: number) => Promise<CourseResponse>>(),
+    archiveAll: vi.fn<() => Promise<CourseResponse[]>>(),
+    unarchiveMany: vi.fn<(ids: number[]) => Promise<CourseResponse[]>>(),
   },
   schedulesApi: {
     create: vi.fn<(request: unknown) => Promise<ScheduleResponse>>(),
@@ -65,6 +78,27 @@ vi.mock('@/composables/useCatalog', () => ({
       await coursesApi.delete(id)
       mockCourses.value = mockCourses.value.filter((c) => c.id !== id)
       mockSchedules.value = mockSchedules.value.filter((s) => s.courseId !== id)
+    }),
+    archiveCourse: vi.fn<(id: number) => Promise<void>>(async (id: number) => {
+      await coursesApi.archive(id)
+      mockCourses.value = mockCourses.value.filter((c) => c.id !== id)
+      mockSchedules.value = mockSchedules.value.filter((s) => s.courseId !== id)
+    }),
+    archiveAllCourses: vi.fn<() => Promise<number[]>>(async () => {
+      const archived = await coursesApi.archiveAll()
+      for (const course of archived) {
+        mockCourses.value = mockCourses.value.filter((c) => c.id !== course.id)
+        mockSchedules.value = mockSchedules.value.filter((s) => s.courseId !== course.id)
+      }
+      return archived.map((course) => course.id)
+    }),
+    unarchiveCourses: vi.fn<(ids: number[]) => Promise<void>>(async (ids: number[]) => {
+      const restored = await coursesApi.unarchiveMany(ids)
+      const byId = new Map(mockCourses.value.map((c) => [c.id, c]))
+      for (const course of restored) {
+        byId.set(course.id, course)
+      }
+      mockCourses.value = [...byId.values()].sort((a, b) => a.id - b.id)
     }),
     applyCourseCreated: vi.fn<(course: CourseResponse) => void>((course: CourseResponse) => {
       mockCourses.value = [...mockCourses.value, course]
@@ -121,8 +155,21 @@ interface ExposedManageCoursesView {
   addingCourse: boolean
   editingCourse: CourseResponse | null
   deletingCourse: CourseResponse | null
+  archivingCourse: CourseResponse | null
+  archiveAllOpen: boolean
   editingEditor: CourseEditor | null
   editorOpen: boolean
+}
+
+/** Options of one plain `toast(message, options)` call in the mocked vue-sonner. */
+interface UndoToastOptions {
+  action?: { label: string; onClick: () => void }
+  duration?: number
+}
+
+/** Reads the captured calls of the callable `toast` mock. */
+function toastCalls(): [string, UndoToastOptions?][] {
+  return (toast as unknown as { mock: { calls: [string, UndoToastOptions?][] } }).mock.calls
 }
 
 const algebra: CourseResponse = { id: 1, name: 'Algebra', description: null, userId: 1 }
@@ -182,6 +229,8 @@ describe('ManageCoursesView', () => {
         }) as Promise<CourseResponse>,
     )
     vi.mocked(coursesApi.delete).mockResolvedValue(undefined)
+    vi.mocked(coursesApi.archiveAll).mockResolvedValue([])
+    vi.mocked(coursesApi.unarchiveMany).mockResolvedValue([])
     vi.mocked(coursesApi.update).mockImplementation(
       (id, request) => Promise.resolve({ id, ...(request as object) }) as Promise<CourseResponse>,
     )
@@ -1114,5 +1163,211 @@ describe('ManageCoursesView', () => {
     expect(viewVm(wrapper).editingCourse).toBeNull()
     expect(viewVm(wrapper).editorOpen).toBe(false)
     expect(drawerBody().find('#course-name-input').exists()).toBe(false)
+  })
+
+  it('opens the archive confirm dialog when the archive button is tapped', async () => {
+    mockCourses.value = [algebra]
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.get('[data-testid="manage-course-archive"]').trigger('click')
+    await flushPromises()
+
+    expect(viewVm(wrapper).archivingCourse?.id).toBe(1)
+    expect(wrapper.text()).toContain('Archive course?')
+    expect(wrapper.text()).toContain(
+      'Archive Algebra? Its notes, tasks, events, and class times leave your active views.',
+    )
+    expect(coursesApi.archive).not.toHaveBeenCalled()
+  })
+
+  it('archives the course and removes it from the list on confirm', async () => {
+    mockCourses.value = [algebra, biology]
+    mockSchedules.value = [algebraMonday]
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.findAll('[data-testid="manage-course-archive"]')[0]!.trigger('click')
+    await flushPromises()
+    await wrapper.get('[data-testid="manage-archive-confirm"]').trigger('click')
+    await flushPromises()
+
+    expect(coursesApi.archive).toHaveBeenCalledTimes(1)
+    expect(coursesApi.archive).toHaveBeenCalledWith(1)
+    expect(mockCourses.value).toEqual([biology])
+    expect(mockSchedules.value).toEqual([])
+    expect(viewVm(wrapper).archivingCourse).toBeNull()
+    expect(wrapper.findAll('[data-testid="manage-course-card"]')).toHaveLength(1)
+    expect(toast.success).toHaveBeenCalledWith('Course archived.')
+  })
+
+  it('keeps the course and calls nothing when the student cancels the archive', async () => {
+    mockCourses.value = [algebra]
+    mockSchedules.value = [algebraMonday]
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.get('[data-testid="manage-course-archive"]').trigger('click')
+    await flushPromises()
+    expect(viewVm(wrapper).archivingCourse?.id).toBe(1)
+
+    await wrapper.get('[data-testid="manage-archive-cancel"]').trigger('click')
+    await flushPromises()
+
+    expect(coursesApi.archive).not.toHaveBeenCalled()
+    expect(viewVm(wrapper).archivingCourse).toBeNull()
+    expect(mockCourses.value).toEqual([algebra])
+    expect(mockSchedules.value).toEqual([algebraMonday])
+    expect(wrapper.get('[data-testid="manage-course-card"]').text()).toContain('Algebra')
+  })
+
+  it('hides the archive-all action when the student has no courses', async () => {
+    const wrapper = mountView()
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="manage-archive-all"]').exists()).toBe(false)
+    expect(wrapper.get('[data-testid="manage-empty-state"]').text()).toContain('No courses yet')
+  })
+
+  it('states the course count in the archive-all confirm dialog', async () => {
+    mockCourses.value = [algebra, biology]
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.get('[data-testid="manage-archive-all"]').trigger('click')
+    await flushPromises()
+
+    expect(viewVm(wrapper).archiveAllOpen).toBe(true)
+    expect(wrapper.text()).toContain('Archive all courses?')
+    expect(wrapper.text()).toContain(
+      'Archive all 2 courses? Notes, tasks, events, and class times leave your active views.',
+    )
+    expect(coursesApi.archiveAll).not.toHaveBeenCalled()
+  })
+
+  it('keeps every course when the student cancels the archive-all dialog', async () => {
+    mockCourses.value = [algebra, biology]
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.get('[data-testid="manage-archive-all"]').trigger('click')
+    await flushPromises()
+    await wrapper.get('[data-testid="manage-archive-all-cancel"]').trigger('click')
+    await flushPromises()
+
+    expect(coursesApi.archiveAll).not.toHaveBeenCalled()
+    expect(viewVm(wrapper).archiveAllOpen).toBe(false)
+    expect(mockCourses.value).toEqual([algebra, biology])
+    expect(wrapper.findAll('[data-testid="manage-course-card"]')).toHaveLength(2)
+  })
+
+  it('archives every course and offers an Undo toast for 8 seconds on confirm', async () => {
+    mockCourses.value = [algebra, biology]
+    mockSchedules.value = [algebraMonday]
+    const archivedAt = '2026-10-08T00:00:00'
+    vi.mocked(coursesApi.archiveAll).mockResolvedValue([
+      { ...algebra, archivedAt },
+      { ...biology, archivedAt },
+    ])
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.get('[data-testid="manage-archive-all"]').trigger('click')
+    await flushPromises()
+    await wrapper.get('[data-testid="manage-archive-all-confirm"]').trigger('click')
+    await flushPromises()
+
+    expect(coursesApi.archiveAll).toHaveBeenCalledTimes(1)
+    expect(mockCourses.value).toEqual([])
+    expect(mockSchedules.value).toEqual([])
+    expect(viewVm(wrapper).archiveAllOpen).toBe(false)
+    expect(wrapper.findAll('[data-testid="manage-course-card"]')).toHaveLength(0)
+    expect(wrapper.get('[data-testid="manage-empty-state"]').text()).toContain('No courses yet')
+    expect(toast).toHaveBeenCalledWith(
+      'Archived 2 courses',
+      expect.objectContaining({
+        duration: 8000,
+        action: expect.objectContaining({ label: 'Undo' }),
+      }),
+    )
+  })
+
+  it('unarchives exactly the bulk-archived courses when the student selects Undo', async () => {
+    mockCourses.value = [algebra, biology, chemistry]
+    const archivedAt = '2026-10-08T00:00:00'
+    vi.mocked(coursesApi.archiveAll).mockResolvedValue([
+      { ...algebra, archivedAt },
+      { ...biology, archivedAt },
+    ])
+    vi.mocked(coursesApi.unarchiveMany).mockResolvedValue([
+      { ...algebra, archivedAt: null },
+      { ...biology, archivedAt: null },
+    ])
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.get('[data-testid="manage-archive-all"]').trigger('click')
+    await flushPromises()
+    await wrapper.get('[data-testid="manage-archive-all-confirm"]').trigger('click')
+    await flushPromises()
+
+    expect(mockCourses.value).toEqual([chemistry])
+
+    const undoToast = toastCalls().find(([message]) => message === 'Archived 2 courses')
+    expect(undoToast?.[1]?.action?.label).toBe('Undo')
+    undoToast![1]!.action!.onClick()
+    await flushPromises()
+
+    expect(coursesApi.unarchiveMany).toHaveBeenCalledWith([1, 2])
+    expect(mockCourses.value).toEqual([
+      { ...algebra, archivedAt: null },
+      { ...biology, archivedAt: null },
+      chemistry,
+    ])
+    expect(toast.success).toHaveBeenCalledWith('Courses restored.')
+    expect(wrapper.findAll('[data-testid="manage-course-card"]')).toHaveLength(3)
+  })
+
+  it('keeps every course and shows an error toast when the bulk archive fails', async () => {
+    mockCourses.value = [algebra, biology]
+    mockSchedules.value = [algebraMonday]
+    vi.mocked(coursesApi.archiveAll).mockRejectedValue(new Error('Archive failed'))
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.get('[data-testid="manage-archive-all"]').trigger('click')
+    await flushPromises()
+    await wrapper.get('[data-testid="manage-archive-all-confirm"]').trigger('click')
+    await flushPromises()
+
+    expect(toast.error).toHaveBeenCalledWith('Archive failed')
+    expect(mockCourses.value).toEqual([algebra, biology])
+    expect(mockSchedules.value).toEqual([algebraMonday])
+    expect(wrapper.findAll('[data-testid="manage-course-card"]')).toHaveLength(2)
+    expect(toastCalls()).toHaveLength(0)
+  })
+
+  it('dismisses the Undo toast when the student leaves the page', async () => {
+    mockCourses.value = [algebra]
+    vi.mocked(coursesApi.archiveAll).mockResolvedValue([{ ...algebra, archivedAt: '2026-10-08T00:00:00' }])
+
+    const wrapper = mountView()
+    await flushPromises()
+    await wrapper.get('[data-testid="manage-archive-all"]').trigger('click')
+    await flushPromises()
+    await wrapper.get('[data-testid="manage-archive-all-confirm"]').trigger('click')
+    await flushPromises()
+
+    expect(routeLeaveGuard).not.toBeNull()
+    expect(routeLeaveGuard!({ fullPath: '/archive' })).toBe(true)
+    expect(toast.dismiss).toHaveBeenCalledWith(0)
   })
 })

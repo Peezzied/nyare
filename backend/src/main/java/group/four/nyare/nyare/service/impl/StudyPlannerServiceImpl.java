@@ -81,7 +81,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         if (userId == null) {
             throw new BadRequestException("User identifier is required");
         }
-        List<Note> dirtyNotes = noteRepository.findDirtyNotes(userId);
+        List<Note> dirtyNotes = noteRepository.findDirtyNotes(userId, false);
         if (dirtyNotes.isEmpty()) {
             return new PlannerStatusResponse(false, 0, List.of(), List.of(), List.of());
         }
@@ -120,7 +120,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
             throw new BadRequestException("User identifier is required for processing");
         }
 
-        List<Note> dirtyNotes = noteRepository.findDirtyNotes(userId);
+        List<Note> dirtyNotes = noteRepository.findDirtyNotes(userId, false);
 
         if (dirtyNotes.isEmpty()) {
             throw new BadRequestException("No journal notes found to process");
@@ -137,7 +137,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
             throw new BadRequestException("User identifier is required for processing");
         }
 
-        List<Note> dirtyNotes = noteRepository.findDirtyNotes(userId, date);
+        List<Note> dirtyNotes = noteRepository.findDirtyNotes(userId, date, false);
 
         if (dirtyNotes.isEmpty()) {
             throw new BadRequestException("No journal notes found for " + date + " to process");
@@ -187,15 +187,15 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
                     .map(n -> n.getCourse().getId())
                     .collect(Collectors.toSet());
 
-            List<Task> existingTasks = taskRepository.findAllFiltered(userId, null, null, null).stream()
+            List<Task> existingTasks = taskRepository.findAllFiltered(userId, null, null, null, false).stream()
                     .filter(t -> t.getStatus() != TaskStatus.COMPLETED)
                     .toList();
             List<AcademicEvent> existingEvents =
-                    academicEventRepository.findAllFiltered(userId, null, true, LocalDateTime.now());
+                    academicEventRepository.findAllFiltered(userId, null, true, LocalDateTime.now(), false);
             List<AcademicContext> existingContexts = dateCourseIds.isEmpty()
                     ? Collections.emptyList()
                     : academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(dateCourseIds);
-            List<Schedule> schedules = scheduleRepository.findAllFiltered(userId, null);
+            List<Schedule> schedules = scheduleRepository.findAllFiltered(userId, null, false);
 
             StudyPlannerEngine.ExtractedData extracted = studyPlannerEngine.process(
                     dateNotes, existingTasks, existingEvents, existingContexts, schedules, noteImages);

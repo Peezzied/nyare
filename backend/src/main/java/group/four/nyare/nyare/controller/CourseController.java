@@ -3,6 +3,7 @@ package group.four.nyare.nyare.controller;
 import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.dto.CourseRequest;
 import group.four.nyare.nyare.dto.CourseResponse;
+import group.four.nyare.nyare.dto.UnarchiveRequest;
 import group.four.nyare.nyare.service.CourseService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -41,8 +43,12 @@ public class CourseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CourseResponse>> listCourses() {
-        List<CourseResponse> courses = courseService.listCourses(sessionContext.requireUserId());
+    public ResponseEntity<List<CourseResponse>> listCourses(
+            @RequestParam(defaultValue = "false") Boolean archived) {
+        Long userId = sessionContext.requireUserId();
+        List<CourseResponse> courses = archived
+                ? courseService.listArchivedCourses(userId)
+                : courseService.listCourses(userId);
         return ResponseEntity.ok(courses);
     }
 
@@ -63,5 +69,27 @@ public class CourseController {
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id, sessionContext.requireUserId());
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/archive")
+    public ResponseEntity<CourseResponse> archiveCourse(@PathVariable Long id) {
+        return ResponseEntity.ok(courseService.archiveCourse(id, sessionContext.requireUserId()));
+    }
+
+    @PostMapping("/{id}/unarchive")
+    public ResponseEntity<CourseResponse> unarchiveCourse(@PathVariable Long id) {
+        return ResponseEntity.ok(courseService.unarchiveCourse(id, sessionContext.requireUserId()));
+    }
+
+    @PostMapping("/archive-all")
+    public ResponseEntity<List<CourseResponse>> archiveAllCourses() {
+        return ResponseEntity.ok(courseService.archiveAllCourses(sessionContext.requireUserId()));
+    }
+
+    @PostMapping("/unarchive")
+    public ResponseEntity<List<CourseResponse>> unarchiveCourses(
+            @Valid @RequestBody UnarchiveRequest request) {
+        return ResponseEntity.ok(
+                courseService.unarchiveCourses(request.getCourseIds(), sessionContext.requireUserId()));
     }
 }

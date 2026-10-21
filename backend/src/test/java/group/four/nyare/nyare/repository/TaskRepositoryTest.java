@@ -49,8 +49,8 @@ class TaskRepositoryTest {
         Task task1 = taskRepository.save(new Task(course1, "User 1 Task"));
         Task task2 = taskRepository.save(new Task(course2, "User 2 Task"));
 
-        List<Task> user1Tasks = taskRepository.findAllFiltered(user1.getId(), null, null, null);
-        List<Task> user2Tasks = taskRepository.findAllFiltered(user2.getId(), null, null, null);
+        List<Task> user1Tasks = taskRepository.findAllFiltered(user1.getId(), null, null, null, false);
+        List<Task> user2Tasks = taskRepository.findAllFiltered(user2.getId(), null, null, null, false);
 
         assertThat(user1Tasks).extracting(Task::getId).containsExactly(task1.getId());
         assertThat(user2Tasks).extracting(Task::getId).containsExactly(task2.getId());
@@ -72,18 +72,18 @@ class TaskRepositoryTest {
 
         Task otherCourseTask = taskRepository.save(new Task(course1b, "Other Course Task"));
 
-        List<Task> course1Tasks = taskRepository.findAllFiltered(user1.getId(), course1.getId(), null, null);
+        List<Task> course1Tasks = taskRepository.findAllFiltered(user1.getId(), course1.getId(), null, null, false);
         assertThat(course1Tasks).extracting(Task::getId)
                 .containsExactlyInAnyOrder(scheduledTodo.getId(), unscheduledInProgress.getId());
 
-        List<Task> scheduledTasks = taskRepository.findAllFiltered(user1.getId(), null, null, true);
+        List<Task> scheduledTasks = taskRepository.findAllFiltered(user1.getId(), null, null, true, false);
         assertThat(scheduledTasks).extracting(Task::getId).containsExactly(scheduledTodo.getId());
 
-        List<Task> unscheduledTasks = taskRepository.findAllFiltered(user1.getId(), null, null, false);
+        List<Task> unscheduledTasks = taskRepository.findAllFiltered(user1.getId(), null, null, false, false);
         assertThat(unscheduledTasks).extracting(Task::getId)
                 .containsExactlyInAnyOrder(unscheduledInProgress.getId(), otherCourseTask.getId());
 
-        List<Task> inProgressTasks = taskRepository.findAllFiltered(user1.getId(), null, TaskStatus.IN_PROGRESS, null);
+        List<Task> inProgressTasks = taskRepository.findAllFiltered(user1.getId(), null, TaskStatus.IN_PROGRESS, null, false);
         assertThat(inProgressTasks).extracting(Task::getId).containsExactly(unscheduledInProgress.getId());
     }
 }

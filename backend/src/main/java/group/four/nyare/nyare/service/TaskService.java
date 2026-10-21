@@ -29,9 +29,10 @@ public interface TaskService {
      * @param status    optional task status filter; {@code null} to match all statuses
      * @param scheduled optional scheduling filter: {@code true} for scheduled tasks,
      *                  {@code false} for unscheduled/later tasks, or {@code null} for all tasks
+     * @param archived  {@code true} to list tasks of archived courses, {@code false} for active courses
      * @return list of matching task responses, ordered by creation date descending
      */
-    List<TaskResponse> listTasks(Long userId, Long courseId, TaskStatus status, Boolean scheduled);
+    List<TaskResponse> listTasks(Long userId, Long courseId, TaskStatus status, Boolean scheduled, Boolean archived);
 
     /**
      * Retrieves a single task owned by the session user.

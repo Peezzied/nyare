@@ -15,6 +15,10 @@
 - Q: What should the student see after tapping an archived course on the Archive page? → A: Option B. Read-only notes, tasks, and events of the course.
 - Q: Should the Archive page also have an "Unarchive all" button that restores every archived course in one action? → A: Option B. No permanent button. After "Archive all", the system shows an "Undo" message for a short time that reverses the whole action.
 
+### Session 2026-10-21
+
+- Q: Where does the student open the Archive page? → A: Archive is a menu item in the hamburger panel, like Manage Courses. The Manage Courses page has no Archive link.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Archive a Course (Priority: P1)
@@ -41,11 +45,11 @@ A student opens the Archive page to see the courses that the student archived be
 
 **Why this priority**: Without a place to see archived courses, the student cannot trust that archive keeps data, and cannot unarchive.
 
-**Independent Test**: Archive two courses. Open the Archive page from the Manage Courses page. Verify that both courses appear with name, color, and archive date.
+**Independent Test**: Archive two courses. Open the Archive page from the Archive menu item in the hamburger panel. Verify that both courses appear with name, color, and archive date.
 
 **Acceptance Scenarios**:
 
-1. **Given** archived courses, **When** the student selects the Archive link on the Manage Courses page, **Then** the Archive page opens and lists all archived courses of that student.
+1. **Given** archived courses, **When** the student selects the Archive menu item in the hamburger panel, **Then** the Archive page opens and lists all archived courses of that student.
 2. **Given** the Archive page, **When** it lists a course, **Then** the course shows its name, its color, and the date of archive.
 3. **Given** no archived courses, **When** the Archive page opens, **Then** the page shows an empty state that explains how to archive a course.
 4. **Given** the Archive page, **When** the student selects an archived course, **Then** the system shows the class times, notes, tasks, and events of that course in read-only form.
@@ -111,7 +115,7 @@ A student no longer needs an archived course. The student deletes it from the Ar
 - What happens when the student archives a course with notes that are not yet processed? The planner skips those notes while the course is archived. After unarchive, the planner processes them on the next run if they are still inside the 14-day horizon.
 - What happens when the student archives a course with open tasks? The system keeps the tasks with their status, scheduled date, and duration. The tasks do not appear in active views.
 - What happens when the student archives a course with upcoming events? The planner does not generate preparation tasks for those events while the course is archived.
-- What happens when the student archives every course? The calendar shows no classes. The Manage Courses page shows an empty state with links to add a course and to open the Archive page.
+- What happens when the student archives every course? The calendar shows no classes. The Manage Courses page shows an empty state with a link to add a course. The Archive menu item stays available in the hamburger panel.
 - What happens when the student opens a direct link to a note or task of an archived course? The system shows the item in read-only form with a label that the course is archived.
 - What happens when the student wants to restore many archived courses after the "Undo" message closes? The student unarchives each course on the Archive page. The system offers no "Unarchive all" action.
 - What happens when "Undo" fails? The courses stay archived and the system shows an error message. The student can unarchive each course on the Archive page.
@@ -126,7 +130,7 @@ A student no longer needs an archived course. The student deletes it from the Ar
 - **FR-003**: Archive MUST NOT delete or change any notes, tasks, events, class times, or context facts of the course.
 - **FR-004**: The system MUST hide archived courses and all of their items from the calendar, the Tasks view, the Notes view, the course picker, and the Manage Courses list.
 - **FR-005**: The planner MUST NOT process notes of archived courses and MUST NOT schedule or generate tasks for archived courses.
-- **FR-006**: The Manage Courses page MUST contain a link to the Archive page.
+- **FR-006**: The hamburger panel MUST contain an Archive menu item next to the Manage Courses menu item. The Archive menu item MUST open the Archive page.
 - **FR-007**: The Archive page MUST list all archived courses of the signed-in student with name, color, and archive date.
 - **FR-008**: The Archive page MUST show an unarchive action on each archived course.
 - **FR-009**: Unarchive MUST return the course and all of its items to the active views with no data change.
@@ -152,7 +156,7 @@ A student no longer needs an archived course. The student deletes it from the Ar
 ### Measurable Outcomes
 
 - **SC-001**: A student can archive a course in 3 taps or fewer from the Manage Courses page.
-- **SC-002**: A student can unarchive a course in 3 taps or fewer from the Manage Courses page.
+- **SC-002**: A student can unarchive a course in 3 taps or fewer from the hamburger panel.
 - **SC-003**: 100% of notes, tasks, events, and class times of a course are present after an archive and unarchive cycle.
 - **SC-004**: 0 items of archived courses appear in the calendar, Tasks view, Notes view, or course picker.
 - **SC-005**: 0 planner runs create or reschedule tasks for archived courses.
@@ -162,7 +166,7 @@ A student no longer needs an archived course. The student deletes it from the Ar
 
 - This feature depends on the Manage Courses page (`specs/004-manage-courses-page`).
 - The student archives one course at a time, or all active courses at once. Term grouping and archive of a selected subset are out of scope.
-- The student opens the Archive page from the Manage Courses page. The bottom navigation bar does not change.
+- The student opens the Archive page from the Archive menu item in the hamburger panel, like the Manage Courses menu item. The bottom navigation bar does not change.
 - Only the owner of a course can archive, unarchive, or delete it.
 - Archive keeps task status, scheduled date, and duration unchanged. The planner may reschedule tasks on the first run after unarchive under normal planner rules.
 - The constitution states that course deletion cascades. Archive adds a non-destructive state and needs a constitution amendment under Principle II and the Frontend Data Flow section.

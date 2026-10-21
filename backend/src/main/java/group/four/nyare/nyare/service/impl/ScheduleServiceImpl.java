@@ -37,6 +37,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         Course course = courseRepository.findByIdAndUserId(request.getCourseId(), userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Course not found with ID: " + request.getCourseId()));
+        requireActiveCourse(course);
 
         validateTimes(request.getStartTime(), request.getEndTime());
 
@@ -48,8 +49,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<ScheduleResponse> listSchedules(Long userId, Long courseId, DayOfWeek day) {
-        List<Schedule> schedules = scheduleRepository.findAllFiltered(userId, courseId);
+    public List<ScheduleResponse> listSchedules(Long userId, Long courseId, DayOfWeek day, Boolean archived) {
+        List<Schedule> schedules = scheduleRepository.findAllFiltered(userId, courseId, archived);
         if (day != null) {
             schedules = schedules.stream()
                     .filter(s -> s.getDay() == day)
@@ -75,10 +76,12 @@ public class ScheduleServiceImpl implements ScheduleService {
         Schedule schedule = scheduleRepository.findByIdAndCourseUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Schedule not found with ID: " + id));
+        requireActiveCourse(schedule.getCourse());
 
         Course course = courseRepository.findByIdAndUserId(request.getCourseId(), userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Course not found with ID: " + request.getCourseId()));
+        requireActiveCourse(course);
 
         validateTimes(request.getStartTime(), request.getEndTime());
 
@@ -95,7 +98,14 @@ public class ScheduleServiceImpl implements ScheduleService {
     public void deleteSchedule(Long id, Long userId) {
         Schedule schedule = scheduleRepository.findByIdAndCourseUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Schedule not found with ID: " + id));
+        requireActiveCourse(schedule.getCourse());
         scheduleRepository.delete(schedule);
+    }
+
+    private void requireActiveCourse(Course course) {
+        if (course.getArchivedAt() != null) {
+            throw new BadRequestException("Course is archived");
+        }
     }
 
     private void validateTimes(LocalTime startTime, LocalTime endTime) {

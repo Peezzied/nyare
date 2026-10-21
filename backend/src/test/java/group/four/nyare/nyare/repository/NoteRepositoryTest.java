@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,8 +50,8 @@ class NoteRepositoryTest {
         Note note1 = noteRepository.save(new Note(course1, "User 1 dirty note"));
         Note note2 = noteRepository.save(new Note(course2, "User 2 dirty note"));
 
-        List<Note> user1DirtyNotes = noteRepository.findDirtyNotes(user1.getId(), LocalDate.now());
-        List<Note> user2DirtyNotes = noteRepository.findDirtyNotes(user2.getId(), LocalDate.now());
+        List<Note> user1DirtyNotes = noteRepository.findDirtyNotes(user1.getId(), LocalDate.now(), false);
+        List<Note> user2DirtyNotes = noteRepository.findDirtyNotes(user2.getId(), LocalDate.now(), false);
 
         assertThat(user1DirtyNotes).extracting(Note::getId).containsExactly(note1.getId());
         assertThat(user2DirtyNotes).extracting(Note::getId).containsExactly(note2.getId());
@@ -65,7 +66,7 @@ class NoteRepositoryTest {
         cleanNote.setLastProcessedAt(Instant.now().plusSeconds(60));
         cleanNote = noteRepository.save(cleanNote);
 
-        List<Note> dirtyNotes = noteRepository.findDirtyNotes(user1.getId(), LocalDate.now());
+        List<Note> dirtyNotes = noteRepository.findDirtyNotes(user1.getId(), LocalDate.now(), false);
 
         assertThat(dirtyNotes).extracting(Note::getId).contains(dirtyNote.getId());
         assertThat(dirtyNotes).extracting(Note::getId).doesNotContain(cleanNote.getId());
@@ -80,11 +81,11 @@ class NoteRepositoryTest {
         Note note1b = noteRepository.save(new Note(course1b, "Note 1B"));
         Note note2 = noteRepository.save(new Note(course2, "Note 2"));
 
-        List<Note> user1AllNotes = noteRepository.findAllFiltered(user1.getId(), null);
+        List<Note> user1AllNotes = noteRepository.findAllFiltered(user1.getId(), null, false);
         assertThat(user1AllNotes).extracting(Note::getId).containsExactlyInAnyOrder(note1a.getId(), note1b.getId());
         assertThat(user1AllNotes).extracting(Note::getId).doesNotContain(note2.getId());
 
-        List<Note> user1Course1Notes = noteRepository.findAllFiltered(user1.getId(), course1.getId());
+        List<Note> user1Course1Notes = noteRepository.findAllFiltered(user1.getId(), course1.getId(), false);
         assertThat(user1Course1Notes).extracting(Note::getId).containsExactly(note1a.getId());
     }
 
@@ -96,10 +97,51 @@ class NoteRepositoryTest {
         noteRepository.save(newerNote);
         noteRepository.save(olderNote);
 
-        List<Note> dirtyNotes = noteRepository.findDirtyNotes(user1.getId());
+        List<Note> dirtyNotes = noteRepository.findDirtyNotes(user1.getId(), false);
 
         assertThat(dirtyNotes).extracting(Note::getId)
                 .containsExactly(olderNote.getId(), newerNote.getId());
+    }
+
+    @Test
+    @DisplayName("findAllFiltered hides notes on archived courses unless archived is true")
+    void findAllFiltered_hidesArchivedCourseNotes() {
+        Note note = noteRepository.save(new Note(course1, "Note on soon-archived course"));
+        course1.setArchivedAt(LocalDateTime.now());
+
+        List<Note> activeNotes = noteRepository.findAllFiltered(user1.getId(), null, false);
+        List<Note> archivedNotes = noteRepository.findAllFiltered(user1.getId(), null, true);
+
+        assertThat(activeNotes).extracting(Note::getId).doesNotContain(note.getId());
+        assertThat(archivedNotes).extracting(Note::getId).containsExactly(note.getId());
+    }
+
+    @Test
+    @DisplayName("findDirtyNotes hides dirty notes on archived courses unless archived is true")
+    void findDirtyNotes_hidesArchivedCourseNotes() {
+        Note dirtyNote = noteRepository.save(new Note(course1, "Dirty note on archived course"));
+        course1.setArchivedAt(LocalDateTime.now());
+
+        List<Note> activeDirty = noteRepository.findDirtyNotes(user1.getId(), false);
+        List<Note> archivedDirty = noteRepository.findDirtyNotes(user1.getId(), true);
+
+        assertThat(activeDirty).extracting(Note::getId).doesNotContain(dirtyNote.getId());
+        assertThat(archivedDirty).extracting(Note::getId).containsExactly(dirtyNote.getId());
+    }
+
+    @Test
+    @DisplayName("findDirtyNotes for a date hides dirty notes on archived courses")
+    void findDirtyNotes_forDate_hidesArchivedCourseNotes() {
+        Note dirtyNote = noteRepository.save(new Note(course1, "Dated dirty note"));
+        course1.setArchivedAt(LocalDateTime.now());
+
+        List<Note> activeDirty =
+                noteRepository.findDirtyNotes(user1.getId(), LocalDate.now(), false);
+        List<Note> archivedDirty =
+                noteRepository.findDirtyNotes(user1.getId(), LocalDate.now(), true);
+
+        assertThat(activeDirty).extracting(Note::getId).doesNotContain(dirtyNote.getId());
+        assertThat(archivedDirty).extracting(Note::getId).containsExactly(dirtyNote.getId());
     }
 }
 

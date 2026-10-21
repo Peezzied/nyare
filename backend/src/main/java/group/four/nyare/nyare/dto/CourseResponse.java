@@ -1,5 +1,7 @@
 package group.four.nyare.nyare.dto;
 
+import java.time.LocalDateTime;
+
 /**
  * Response payload representing a course.
  */
@@ -10,20 +12,27 @@ public class CourseResponse {
     private String description;
     private Long userId;
     private String color;
+    private LocalDateTime archivedAt;
 
     public CourseResponse() {
     }
 
     public CourseResponse(Long id, String name, String description, Long userId) {
-        this(id, name, description, userId, null);
+        this(id, name, description, userId, null, null);
     }
 
     public CourseResponse(Long id, String name, String description, Long userId, String color) {
+        this(id, name, description, userId, color, null);
+    }
+
+    public CourseResponse(Long id, String name, String description, Long userId, String color,
+            LocalDateTime archivedAt) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.userId = userId;
         this.color = color;
+        this.archivedAt = archivedAt;
     }
 
     public Long getId() {
@@ -64,5 +73,13 @@ public class CourseResponse {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public LocalDateTime getArchivedAt() {
+        return archivedAt;
+    }
+
+    public void setArchivedAt(LocalDateTime archivedAt) {
+        this.archivedAt = archivedAt;
     }
 }

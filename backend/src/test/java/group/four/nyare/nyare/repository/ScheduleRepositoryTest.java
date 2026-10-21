@@ -53,8 +53,8 @@ class ScheduleRepositoryTest {
                 new Schedule(course2, DayOfWeek.MONDAY, LocalTime.of(11, 0), LocalTime.of(12, 30))
         );
 
-        List<Schedule> user1Schedules = scheduleRepository.findAllFiltered(user1.getId(), null);
-        List<Schedule> user2Schedules = scheduleRepository.findAllFiltered(user2.getId(), null);
+        List<Schedule> user1Schedules = scheduleRepository.findAllFiltered(user1.getId(), null, false);
+        List<Schedule> user2Schedules = scheduleRepository.findAllFiltered(user2.getId(), null, false);
 
         assertThat(user1Schedules).extracting(Schedule::getId).containsExactly(schedule1.getId());
         assertThat(user2Schedules).extracting(Schedule::getId).containsExactly(schedule2.getId());
@@ -75,10 +75,10 @@ class ScheduleRepositoryTest {
                 new Schedule(course1b, DayOfWeek.FRIDAY, LocalTime.of(14, 0), LocalTime.of(15, 30))
         );
 
-        List<Schedule> course1Schedules = scheduleRepository.findAllFiltered(user1.getId(), course1.getId());
+        List<Schedule> course1Schedules = scheduleRepository.findAllFiltered(user1.getId(), course1.getId(), false);
         assertThat(course1Schedules).extracting(Schedule::getId).containsExactlyInAnyOrder(s1.getId(), s2.getId());
 
-        List<Schedule> allUser1Schedules = scheduleRepository.findAllFiltered(user1.getId(), null);
+        List<Schedule> allUser1Schedules = scheduleRepository.findAllFiltered(user1.getId(), null, false);
         assertThat(allUser1Schedules).extracting(Schedule::getId).containsExactlyInAnyOrder(s1.getId(), s2.getId(), s3.getId());
     }
 }

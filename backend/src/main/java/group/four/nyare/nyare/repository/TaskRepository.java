@@ -33,6 +33,7 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
      * @param courseId  optional course identifier
      * @param status    optional task status
      * @param scheduled optional scheduling filter
+     * @param archived  course archive filter: {@code true} for archived courses, {@code false} for active courses
      * @return list of matching tasks ordered by creation date descending
      */
     @Query("""
@@ -43,13 +44,16 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
               AND (:scheduled IS NULL
                    OR (:scheduled = true AND t.scheduledDate IS NOT NULL)
                    OR (:scheduled = false AND t.scheduledDate IS NULL))
+              AND ((:archived = true AND t.course.archivedAt IS NOT NULL)
+                   OR (:archived = false AND t.course.archivedAt IS NULL))
             ORDER BY t.createdAt DESC
             """)
     List<Task> findAllFiltered(
             @Param("userId") Long userId,
             @Param("courseId") Long courseId,
             @Param("status") TaskStatus status,
-            @Param("scheduled") Boolean scheduled
+            @Param("scheduled") Boolean scheduled,
+            @Param("archived") Boolean archived
     );
 
     /**

@@ -40,6 +40,7 @@ public class AcademicEventServiceImpl implements AcademicEventService {
     public AcademicEventResponse createEvent(AcademicEventRequest request, Long userId) {
         Course course = courseRepository.findByIdAndUserId(request.getCourseId(), userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + request.getCourseId()));
+        requireActiveCourse(course);
 
         Note note = null;
         if (request.getNoteId() != null) {
@@ -56,9 +57,9 @@ public class AcademicEventServiceImpl implements AcademicEventService {
     }
 
     @Override
-    public List<AcademicEventResponse> listEvents(Long userId, Long courseId, Boolean upcoming) {
+    public List<AcademicEventResponse> listEvents(Long userId, Long courseId, Boolean upcoming, Boolean archived) {
         LocalDateTime now = LocalDateTime.now();
-        return academicEventRepository.findAllFiltered(userId, courseId, upcoming, now)
+        return academicEventRepository.findAllFiltered(userId, courseId, upcoming, now, archived)
                 .stream()
                 .map(this::toResponse)
                 .toList();
@@ -76,9 +77,11 @@ public class AcademicEventServiceImpl implements AcademicEventService {
     public AcademicEventResponse updateEvent(UUID id, AcademicEventRequest request, Long userId) {
         AcademicEvent event = academicEventRepository.findByIdAndCourseUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Academic event not found with ID: " + id));
+        requireActiveCourse(event.getCourse());
 
         Course course = courseRepository.findByIdAndUserId(request.getCourseId(), userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + request.getCourseId()));
+        requireActiveCourse(course);
 
         Note note = null;
         if (request.getNoteId() != null) {
@@ -103,7 +106,14 @@ public class AcademicEventServiceImpl implements AcademicEventService {
     public void deleteEvent(UUID id, Long userId) {
         AcademicEvent event = academicEventRepository.findByIdAndCourseUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Academic event not found with ID: " + id));
+        requireActiveCourse(event.getCourse());
         academicEventRepository.delete(event);
+    }
+
+    private void requireActiveCourse(Course course) {
+        if (course.getArchivedAt() != null) {
+            throw new BadRequestException("Course is archived");
+        }
     }
 
     private AcademicEventResponse toResponse(AcademicEvent event) {
