@@ -60,8 +60,9 @@ interface NoteResponse {
    - Embedded image URLs matching pattern `/api/images/([0-9a-fA-F-]{36})` must be valid UUIDs matching images in the repository.
    - If unverified/deleted images are detected, prevent save and notify user.
 
-4. **Title Fallback**:
-   - If `title` is blank or "Untitled Note", compute fallback from first non-empty line of content (capped to 60 characters).
+4. **Title**:
+   - A blank or omitted `title` stores "Untitled Note". It stays until the user or the AI (Process) edits it.
+   - No derived fallback: no first-line title is stored or displayed.
 
 ## 4. UI State Transitions
 

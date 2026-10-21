@@ -45,6 +45,7 @@ describe('NoteCard', () => {
     const image = wrapper.get('[data-testid="note-image"]')
     expect(image.attributes('src')).toBe('/api/images/abc-123')
     expect(wrapper.get('[data-testid="note-preview"]').text()).not.toContain('![')
+    expect(wrapper.get('article').element.firstElementChild).toBe(image.element)
   })
 
   it('renders no image for text notes', () => {

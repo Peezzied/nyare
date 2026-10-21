@@ -41,6 +41,16 @@ const PREVIEW_NOTES: readonly PreviewNote[] = [
     updatedAt: '2026-10-03T11:15:00Z',
   },
   {
+    id: 'note-calc2-board',
+    courseId: 2,
+    title: 'Board snapshot',
+    content:
+      'Formulas from the review session.\n\n![whiteboard](/preview/note-board.svg)\n![convergence diagram](/preview/note-diagram.svg)',
+    entryDate: '2026-10-04',
+    createdAt: '2026-10-04T12:00:00Z',
+    updatedAt: '2026-10-04T12:05:00Z',
+  },
+  {
     id: 'note-philhis-japan',
     courseId: 4,
     title: 'Japanese period',

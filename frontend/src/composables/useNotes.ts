@@ -9,12 +9,6 @@ import {
   devPreviewCourseNames,
   devPreviewEnabled,
 } from '@/api/mocks/notesDevPreview'
-import {
-  pictureNotePreview,
-  prototypeBadgeFor,
-  prototypePreviewEnabled,
-  type PictureNotePreview,
-} from '@/api/mocks/notesPrototypePreview'
 import { useCatalog } from './useCatalog'
 import type { CoursePaletteColor } from '@/constants/palette'
 
@@ -26,6 +20,15 @@ const cache = createCache(() => {
   loading.value = false
   error.value = null
 })
+
+/** Title the backend stores when no title is derivable; the planner may rename these. */
+const UNTITLED_TITLE = 'untitled note'
+
+/** True when a title is blank or the backend's default "Untitled Note". */
+export function isUntitledTitle(title?: string | null): boolean {
+  const normalized = (title ?? '').trim().toLowerCase()
+  return normalized === '' || normalized === UNTITLED_TITLE
+}
 
 /** Maps a saved note DTO to its list summary, mirroring the backend preview cut. */
 function toSummary(note: NoteResponse): NoteSummaryResponse {
@@ -135,6 +138,20 @@ export function useNotes() {
       .catch(() => {})
   }
 
+  /**
+   * True when the list holds a note the planner may rename on Process:
+   * a blank or default title. `courseIds` scopes the check to affected
+   * courses; an empty or missing list checks every note.
+   */
+  function hasUntitledNotes(courseIds?: number[]): boolean {
+    return notes.value.some((n) => {
+      if (courseIds?.length && !courseIds.includes(n.courseId)) {
+        return false
+      }
+      return isUntitledTitle(n.title)
+    })
+  }
+
   function resetNotes(): void {
     cache.reset()
   }
@@ -147,12 +164,6 @@ export function useNotes() {
     showDevPreview.value ? devPreviewNotes() : rawNotes.value,
   )
 
-  const showPictureCard = computed(() => prototypePreviewEnabled() || showDevPreview.value)
-
-  const pictureNote: ComputedRef<PictureNotePreview | null> = computed(() =>
-    showPictureCard.value ? pictureNotePreview : null,
-  )
-
   function getCourseName(courseId: number, catalogMap?: Map<number, string>): string | undefined {
     if (showDevPreview.value) {
       return devPreviewCourseNames().get(courseId)
@@ -161,16 +172,11 @@ export function useNotes() {
   }
 
   function getBadgeColor(courseId: number): CoursePaletteColor {
-    const stored = useCatalog().courseColor(courseId)
-    if (showPictureCard.value) {
-      return prototypeBadgeFor(courseId) ?? stored
-    }
-    return stored
+    return useCatalog().courseColor(courseId)
   }
 
   return {
     notes,
-    pictureNote,
     loading,
     error,
     loadNotes,
@@ -179,6 +185,7 @@ export function useNotes() {
     stageNoteDeletion,
     restoreStagedNote,
     commitNoteDeletion,
+    hasUntitledNotes,
     resetNotes,
     getCourseName,
     getBadgeColor,

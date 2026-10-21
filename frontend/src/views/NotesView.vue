@@ -2,7 +2,6 @@
 import { computed, h, onMounted, ref } from 'vue'
 import { Search } from '@lucide/vue'
 import NoteCard from '@/components/NoteCard.vue'
-import PictureNoteCard from '@/components/PictureNoteCard.vue'
 import HeaderIconButton from '@/components/HeaderIconButton.vue'
 import NoteEditorModal from '@/components/notes/NoteEditorModal.vue'
 import AddFab from '@/components/AddFab.vue'
@@ -69,7 +68,7 @@ function newNote(event?: Event) {
     triggerKind: 'fab',
   })
 }
-const { notes, pictureNote, loading, error, loadNotes, getCourseName, getBadgeColor } = useNotes()
+const { notes, loading, error, loadNotes, getCourseName, getBadgeColor } = useNotes()
 
 const courseNames = computed(() => {
   const names = new Map<number, string>()
@@ -141,21 +140,6 @@ onMounted(async () => {
             :badge-color="badgeColorFor(note)"
             :class="extractFirstImageUrl(note.preview) ? 'max-h-80' : 'max-h-64'"
             @open="openNote(note.id, $event)"
-          />
-        </div>
-
-        <div v-if="pictureNote" class="break-inside-avoid pb-4">
-          <PictureNoteCard
-            class="max-h-80"
-            :photo-url="pictureNote.photoUrl"
-            :course-id="pictureNote.note.courseId"
-            :course-name="courseNameFor(pictureNote.note)"
-            :badge-color="badgeColorFor(pictureNote.note)"
-            :title="pictureNote.note.title"
-            :text="pictureNote.note.preview"
-            :entry-date="pictureNote.note.entryDate"
-            :created-at="pictureNote.note.createdAt"
-            @open="openNote(pictureNote.note.id, $event)"
           />
         </div>
       </div>

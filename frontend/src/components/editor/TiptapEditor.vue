@@ -179,7 +179,7 @@ onBeforeUnmount(() => {
     >
       <EditorContent
         :editor="editor"
-        class="font-secondary min-h-full text-[#334155] focus-within:outline-none [&_.tiptap]:font-secondary [&_.tiptap]:min-h-full [&_.tiptap]:outline-none [&_.tiptap]:focus:outline-none"
+        class="font-secondary h-full min-h-full text-[#334155] focus-within:outline-none [&_.tiptap]:font-secondary [&_.tiptap]:min-h-full [&_.tiptap]:outline-none [&_.tiptap]:focus:outline-none"
       />
     </div>
 

@@ -134,7 +134,7 @@ export interface NoteSummaryResponse {
 /** Request body to create or update a note. */
 export interface NoteRequest {
   readonly courseId: number
-  /** Blank or omitted values make the backend compute a fallback title from the content. */
+  /** Blank or omitted values keep the note untitled; Process may generate a title later. */
   readonly title?: string | null
   readonly content: string
   /**

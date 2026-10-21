@@ -7,6 +7,7 @@ import { notesApi } from '@/api/notes'
 import { coursesApi, schedulesApi, studyPlannerApi } from '@/api'
 import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
+import { useProcess, resetProcess } from '@/composables/useProcess'
 import { useToasts } from '@/composables/useToasts'
 import type {
   NoteRequest,
@@ -50,8 +51,9 @@ vi.mock('@/api/notes', () => ({
 describe('NoteEditor.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    // useCatalog keeps module-level state. Reset it so each test loads the mocked catalog again.
+    // useCatalog and useProcess keep module-level state. Reset them so each test starts clean.
     useCatalog().resetCatalog()
+    resetProcess()
     mockRoute.params = {}
     mockRoute.query = {}
     beforeRouteLeaveCallback = null
@@ -182,6 +184,41 @@ describe('NoteEditor.vue', () => {
     expect(mockRouter.back).toHaveBeenCalled()
   })
 
+  it('sends a null title on save when the title field is blank', async () => {
+    vi.mocked(notesApi.create).mockResolvedValueOnce({
+      id: 'note-uuid-untitled-1',
+      courseId: 1,
+      title: 'Untitled Note',
+      content: 'First line of the body',
+      entryDate: '2026-10-13',
+      createdAt: '2026-10-13T00:00:00Z',
+      updatedAt: '2026-10-13T00:00:00Z',
+    })
+
+    const wrapper = mount(NoteEditor, {
+      props: {
+        initialCourseId: 1,
+      },
+    })
+    await flushPromises()
+
+    const tiptap = wrapper.findComponent(TiptapEditor)
+    await tiptap.vm.$emit('update:modelValue', '<p>First line of the body</p>')
+    await flushPromises()
+
+    await wrapper.find('[data-testid="save-button"]').trigger('click')
+    await flushPromises()
+
+    expect(notesApi.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        courseId: 1,
+        title: null,
+        content: 'First line of the body',
+      }),
+    )
+    expect(mockRouter.back).toHaveBeenCalled()
+  })
+
   it('loads existing note via notesApi.get and updates note via notesApi.update in edit mode', async () => {
     mockRoute.params = { id: 'note-uuid-existing-99' }
 
@@ -228,6 +265,73 @@ describe('NoteEditor.vue', () => {
       }),
     )
     expect(mockRouter.back).toHaveBeenCalled()
+  })
+
+  it('adopts the AI-generated title when a Process run completes while the note is open', async () => {
+    mockRoute.params = { id: 'note-uuid-untitled-7' }
+
+    const untitledNote: NoteResponse = {
+      id: 'note-uuid-untitled-7',
+      courseId: 2,
+      title: 'Untitled Note',
+      content: 'integration by parts drill',
+      entryDate: '2026-10-12',
+      createdAt: '2026-10-12T00:00:00Z',
+      updatedAt: '2026-10-12T00:00:00Z',
+    }
+    vi.mocked(notesApi.get)
+      .mockResolvedValueOnce(untitledNote)
+      .mockResolvedValueOnce({ ...untitledNote, title: 'Integration by parts drill' })
+
+    const wrapper = mount(NoteEditor)
+    await flushPromises()
+
+    const titleInput = wrapper.find<HTMLInputElement>('[data-testid="title-input"]')
+    expect(titleInput.element.value).toBe('Untitled Note')
+
+    // The run commits and the SSE done event fills the shared summary.
+    useProcess().summary.value = {
+      tasksCreated: 1,
+      eventsCreated: 0,
+      contextsCreated: 0,
+      affectedCourseIds: [2],
+    }
+    await flushPromises()
+
+    expect(notesApi.get).toHaveBeenCalledTimes(2)
+    expect(titleInput.element.value).toBe('Integration by parts drill')
+  })
+
+  it('leaves a custom title untouched when a Process run completes', async () => {
+    mockRoute.params = { id: 'note-uuid-titled-8' }
+
+    const titledNote: NoteResponse = {
+      id: 'note-uuid-titled-8',
+      courseId: 2,
+      title: 'Calculus Derivatives',
+      content: 'chain rule notes',
+      entryDate: '2026-10-12',
+      createdAt: '2026-10-12T00:00:00Z',
+      updatedAt: '2026-10-12T00:00:00Z',
+    }
+    vi.mocked(notesApi.get).mockResolvedValueOnce(titledNote)
+
+    const wrapper = mount(NoteEditor)
+    await flushPromises()
+
+    useProcess().summary.value = {
+      tasksCreated: 1,
+      eventsCreated: 0,
+      contextsCreated: 0,
+      affectedCourseIds: [2],
+    }
+    await flushPromises()
+
+    // The loaded note has a custom title, so no refresh request fires.
+    expect(notesApi.get).toHaveBeenCalledTimes(1)
+    expect(wrapper.find<HTMLInputElement>('[data-testid="title-input"]').element.value).toBe(
+      'Calculus Derivatives',
+    )
   })
 
   it('shows unsaved changes dialog when navigating back with unsaved content', async () => {

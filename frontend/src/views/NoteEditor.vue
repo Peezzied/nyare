@@ -22,7 +22,8 @@ import DetailTopBar from '@/components/DetailTopBar.vue'
 import SaveButton from '@/components/SaveButton.vue'
 import { Button } from '@/components/ui/button'
 import TiptapEditor from '@/components/editor/TiptapEditor.vue'
-import { useNotes } from '@/composables/useNotes'
+import { useNotes, isUntitledTitle } from '@/composables/useNotes'
+import { useProcess } from '@/composables/useProcess'
 import { useToasts } from '@/composables/useToasts'
 import { useCatalog } from '@/composables/useCatalog'
 import { useArchive } from '@/composables/useArchive'
@@ -371,19 +372,6 @@ const isSaveDisabled = computed(() => {
   return false
 })
 
-function computeFallbackTitle(content: string): string {
-  if (!content || !content.trim()) {
-    return 'Untitled Note'
-  }
-  for (const rawLine of content.split('\n')) {
-    const stripped = rawLine.replace(/^[#\-*\s>]+/, '').trim()
-    if (stripped) {
-      return stripped.length > 60 ? stripped.slice(0, 60) : stripped
-    }
-  }
-  return 'Untitled Note'
-}
-
 function validateEmbeddedImages(markdown: string): { valid: boolean; error?: string } {
   const imageUrls = extractImageUrls(markdown)
   for (const url of imageUrls) {
@@ -585,10 +573,9 @@ async function saveNote() {
   }
 
   const trimmedTitle = title.value.trim()
-  const finalTitle = trimmedTitle || computeFallbackTitle(contentMarkdown.value)
   const payload = {
     courseId: selectedCourseId.value!,
-    title: finalTitle,
+    title: trimmedTitle || null,
     content: contentMarkdown.value,
     entryDate: entryDate.value || todayString,
   }
@@ -605,7 +592,7 @@ async function saveNote() {
     lastProcessedAt.value = savedNote.lastProcessedAt ?? null
     updatedAt.value = savedNote.updatedAt ?? null
     initialState.value = {
-      title: savedNote.title ?? '',
+      title: trimmedTitle,
       courseId: savedNote.courseId ?? null,
       entryDate: savedNote.entryDate ?? todayString,
       content: savedNote.content ?? '',
@@ -661,6 +648,40 @@ watch(
     }
   },
 )
+
+// A committed Process run may rename a note still titled "Untitled Note".
+// Adopt the new title in place only while the field still shows an untitled
+// value, so typed input is never overwritten.
+const proc = useProcess()
+watch([proc.summary, proc.savedAfterCancel], async ([done, committed]) => {
+  const id = activeNoteId.value
+  if ((!done && !committed) || !id) {
+    return
+  }
+  if (!isUntitledTitle(initialState.value.title) || !isUntitledTitle(title.value)) {
+    return
+  }
+  const affected = done?.affectedCourseIds
+  if (
+    affected?.length &&
+    selectedCourseId.value !== null &&
+    !affected.includes(selectedCourseId.value)
+  ) {
+    return
+  }
+  try {
+    const fresh = await getNote(id)
+    if (isUntitledTitle(fresh.title) || !isUntitledTitle(title.value)) {
+      return
+    }
+    title.value = fresh.title
+    initialState.value.title = fresh.title
+    lastProcessedAt.value = fresh.lastProcessedAt ?? null
+    updatedAt.value = fresh.updatedAt ?? null
+  } catch {
+    // The refresh is best-effort; the next load picks the title up.
+  }
+})
 
 // The selected course may arrive late through loadNote or prefill props.
 watch(selectedCourseId, () => {
