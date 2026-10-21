@@ -98,11 +98,13 @@ export interface UseProcess {
  * backend stops at the next checkpoint and rolls back. Navigation does not
  * cancel a run: only `cancel()` or a session reset does. In `options.onDone`,
  * refresh tasks and academic events for `summary.affectedCourseIds` — do not
- * refetch courses, schedules, or notes (see Backend Roundtrip Conventions in
- * frontend/AGENTS.md). After a cancel, the planner status is rechecked in the
- * background; if the run had already committed, `savedAfterCancel` becomes
- * true and `options.onSavedAfterCancel` runs — refetch tasks and academic
- * events in full there, since there is no summary to give affected course ids.
+ * refetch courses or schedules (see Backend Roundtrip Conventions in
+ * frontend/AGENTS.md). A run may rename notes still titled "Untitled Note",
+ * so force-reload notes only when the cache holds one. After a cancel, the
+ * planner status is rechecked in the background; if the run had already
+ * committed, `savedAfterCancel` becomes true and `options.onSavedAfterCancel`
+ * runs — refetch tasks and academic events in full there, since there is no
+ * summary to give affected course ids.
  */
 export function useProcess(options: UseProcessOptions = {}): UseProcess {
   const notifications = useNotifications()

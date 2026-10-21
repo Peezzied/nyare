@@ -131,10 +131,10 @@ describe('NotesView', () => {
       const wrapper = mountView()
       await flushPromises()
 
-      expect(wrapper.findAll('[data-testid="note-card"]').length).toBe(6)
+      expect(wrapper.findAll('[data-testid="note-card"]').length).toBe(7)
+      expect(wrapper.find('[data-testid="note-image"]').exists()).toBe(true)
       expect(wrapper.text()).toContain('Limits recap')
       expect(wrapper.text()).toContain('Pipeline stages')
-      expect(wrapper.find('[data-testid="picture-note-card"]').exists()).toBe(true)
       expect(wrapper.find('[data-testid="notes-empty"]').exists()).toBe(false)
     } finally {
       vi.unstubAllEnvs()
@@ -150,7 +150,6 @@ describe('NotesView', () => {
 
     expect(wrapper.findAll('[data-testid="note-card"]').length).toBe(1)
     expect(wrapper.text()).toContain('Lecture 7')
-    expect(wrapper.find('[data-testid="picture-note-card"]').exists()).toBe(false)
   })
 
   it('keeps the empty state in production builds', async () => {
@@ -164,7 +163,6 @@ describe('NotesView', () => {
 
       expect(wrapper.find('[data-testid="notes-empty"]').exists()).toBe(true)
       expect(wrapper.find('[data-testid="notes-grid"]').exists()).toBe(false)
-      expect(wrapper.find('[data-testid="picture-note-card"]').exists()).toBe(false)
     } finally {
       vi.unstubAllEnvs()
     }
@@ -204,32 +202,6 @@ describe('NotesView', () => {
     expect(modal.props('isOpen')).toBe(true)
     expect(modal.props('noteId')).toBeNull()
     expect(mockPush).not.toHaveBeenCalled()
-  })
-
-  it('hides the picture preview card outside mock mode', async () => {
-    mockCatalog()
-    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
-
-    const wrapper = mountView()
-    await flushPromises()
-
-    expect(wrapper.find('[data-testid="picture-note-card"]').exists()).toBe(false)
-  })
-
-  it('shows the picture preview card in mock mode', async () => {
-    mockCatalog()
-    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
-    vi.stubEnv('VITE_USE_MOCKS', 'true')
-
-    try {
-      const wrapper = mountView()
-      await flushPromises()
-
-      expect(wrapper.find('[data-testid="picture-note-card"]').exists()).toBe(true)
-      expect(wrapper.text()).toContain('Board snapshot')
-    } finally {
-      vi.unstubAllEnvs()
-    }
   })
 
   it('opens the editor modal for the clicked note without routing', async () => {

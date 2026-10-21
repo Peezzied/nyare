@@ -44,6 +44,24 @@ describe('useNotes', () => {
     expect(list).toHaveBeenCalledTimes(2)
   })
 
+  it('reports untitled notes, optionally scoped to affected courses', async () => {
+    const untitled: NoteSummaryResponse = {
+      ...summary,
+      id: 'note-2',
+      courseId: 2,
+      title: 'Untitled Note',
+    }
+    vi.spyOn(notesApi, 'list').mockResolvedValue([summary, untitled])
+    const notes = useNotes()
+    await notes.loadNotes()
+
+    expect(notes.hasUntitledNotes()).toBe(true)
+    expect(notes.hasUntitledNotes([])).toBe(true)
+    expect(notes.hasUntitledNotes([2])).toBe(true)
+    expect(notes.hasUntitledNotes([1])).toBe(false)
+    expect(notes.hasUntitledNotes([9])).toBe(false)
+  })
+
   it('stores error message when list fails', async () => {
     vi.spyOn(notesApi, 'list').mockRejectedValue(new Error('Network error'))
     const notes = useNotes()

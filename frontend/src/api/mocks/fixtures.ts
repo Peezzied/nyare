@@ -147,6 +147,17 @@ const INITIAL_FIXTURES: FixtureState = {
       lastProcessedAt: '2026-10-05T11:30:00Z',
     },
     {
+      id: 'note-cs201-board',
+      courseId: 1,
+      title: 'Lecture 9: Graph Traversals',
+      content:
+        '# Lecture 9: Graph Traversals\n\n![whiteboard](/preview/note-board.svg)\n\nCovered BFS and DFS orderings on directed graphs.\n\n- BFS uses a queue and visits neighbors level by level.\n- DFS uses a stack and follows one branch to its end.\n\n![traversal diagram](/preview/note-diagram.svg)',
+      entryDate: '2026-10-07',
+      createdAt: '2026-10-07T10:00:00Z',
+      updatedAt: '2026-10-07T10:20:00Z',
+      lastProcessedAt: '2026-10-07T10:30:00Z',
+    },
+    {
       id: 'note-math204-eigen',
       courseId: 2,
       title: 'Lecture 12: Eigenvalues and Diagonalization',
