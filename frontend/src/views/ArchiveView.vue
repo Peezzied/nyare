@@ -30,18 +30,41 @@ useShellHeader({
       },
       () => h(ArrowLeft, { class: 'h-6 w-6', 'aria-hidden': 'true' }),
     ),
+  right: () =>
+    archive.archivedCourses.value.length > 0
+      ? h(
+          HeaderIconButton,
+          {
+            'aria-label': 'Delete all archived courses',
+            'data-testid': 'archive-delete-all',
+            onClick: () => {
+              deletingAll.value = true
+            },
+          },
+          () => h(Trash2, { class: 'h-6 w-6 text-[#B91C1C]', 'aria-hidden': 'true' }),
+        )
+      : h('span', { class: 'block h-11 w-11', 'aria-hidden': 'true' }),
 })
 
 const loading = ref(true)
 const loadFailed = ref(false)
 const unarchivingId = ref<number | null>(null)
 const deletingCourse = ref<CourseResponse | null>(null)
+const deletingAll = ref(false)
 
-const deleteMessage = computed(() =>
-  deletingCourse.value
-    ? `This deletes ${deletingCourse.value.name} and all its notes, tasks, events, and class times.`
-    : '',
+const deleteTitle = computed(() =>
+  deletingAll.value ? 'Delete all archived courses?' : 'Delete course?',
 )
+
+const deleteMessage = computed(() => {
+  if (deletingAll.value) {
+    const count = archive.archivedCourses.value.length
+    return `This deletes all ${count} archived ${count === 1 ? 'course' : 'courses'} and their notes, tasks, events, and class times.`
+  }
+  return deletingCourse.value
+    ? `This deletes ${deletingCourse.value.name} and all its notes, tasks, events, and class times.`
+    : ''
+})
 
 function archivedLabel(course: CourseResponse): string {
   const formatted = formatEntryDate(course.archivedAt?.slice(0, 10))
@@ -73,6 +96,19 @@ async function unarchiveCourse(course: CourseResponse): Promise<void> {
 }
 
 async function confirmDelete(): Promise<void> {
+  if (deletingAll.value) {
+    deletingAll.value = false
+    const failed = await archive.deleteAllArchived()
+    useToasts().pushToast(
+      failed === 0
+        ? { kind: 'success', title: 'Archive emptied.' }
+        : {
+            kind: 'error',
+            title: `Could not delete ${failed} ${failed === 1 ? 'course' : 'courses'}.`,
+          },
+    )
+    return
+  }
   const course = deletingCourse.value
   if (!course) {
     return
@@ -88,6 +124,11 @@ async function confirmDelete(): Promise<void> {
       detail: error instanceof Error ? error.message : undefined,
     })
   }
+}
+
+function closeDeleteDialog(): void {
+  deletingCourse.value = null
+  deletingAll.value = false
 }
 
 function goBack(): void {
@@ -202,9 +243,9 @@ onMounted(load)
     </ul>
 
     <DialogShell
-      :open="deletingCourse !== null"
-      title="Delete course?"
-      @update:open="deletingCourse = null"
+      :open="deletingCourse !== null || deletingAll"
+      :title="deleteTitle"
+      @update:open="closeDeleteDialog"
     >
       <p
         class="mt-2 text-sm text-[#7B8B97]"

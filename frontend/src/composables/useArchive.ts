@@ -90,6 +90,23 @@ export function useArchive() {
     applyCourseRemoved(id)
   }
 
+  /**
+   * Deletes every archived course via the API and drops the deleted ones
+   * from the cache. The API has no bulk delete, so the deletes fan out.
+   * @returns the number of courses that failed to delete.
+   */
+  async function deleteAllArchived(): Promise<number> {
+    const results = await Promise.allSettled(
+      archivedCourses.value.map((course) => coursesApi.delete(course.id).then(() => course.id)),
+    )
+    for (const result of results) {
+      if (result.status === 'fulfilled') {
+        applyCourseRemoved(result.value)
+      }
+    }
+    return archivedCourses.value.length
+  }
+
   /** Removes the course row locally after a delete or an unarchive elsewhere. */
   function applyCourseRemoved(id: number): void {
     archivedCourses.value = archivedCourses.value.filter((course) => course.id !== id)
@@ -118,6 +135,7 @@ export function useArchive() {
     courseColor,
     loadCourseContent,
     deleteArchivedCourse,
+    deleteAllArchived,
     applyCourseRemoved,
     resetArchive,
   }
