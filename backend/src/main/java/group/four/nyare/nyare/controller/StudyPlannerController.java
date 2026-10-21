@@ -101,23 +101,24 @@ public class StudyPlannerController {
 
                 ProcessSummaryResponse result = studyPlannerService.processNotes(userId, listener);
                 emitter.send(SseEmitter.event().name("done").data(OBJECT_MAPPER.writeValueAsString(result)));
-                emitter.complete();
             } catch (CancellationException ex) {
-                // Run cancelled and rolled back; the container completes the request.
+                // Run cancelled and rolled back; the finally block closes the stream.
             } catch (BadRequestException ex) {
                 sendQuietly(emitter, "error", Map.of(
                         "status", 400,
                         "title", "Bad Request",
                         "detail", ex.getMessage()));
-                emitter.complete();
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
+                // Catch Throwable so no failure leaves the stream open. The error
+                // event already reports the failure, so complete() is enough and
+                // avoids a second servlet error dispatch on a committed response.
                 sendQuietly(emitter, "error", Map.of(
                         "status", 500,
                         "title", "Internal Server Error",
                         "detail", ex.getMessage() != null ? ex.getMessage() : "Unknown error"));
-                emitter.completeWithError(ex);
             } finally {
                 heartbeat.interrupt();
+                completeQuietly(emitter);
             }
         });
 
@@ -142,6 +143,17 @@ public class StudyPlannerController {
                 cancelled.set(true);
             }
         });
+    }
+
+    /**
+     * Completes the emitter without failing on an already-closed or errored stream.
+     */
+    private void completeQuietly(SseEmitter emitter) {
+        try {
+            emitter.complete();
+        } catch (RuntimeException ex) {
+            // Emitter already completed or the client is gone.
+        }
     }
 
     private void sendQuietly(SseEmitter emitter, String name, Object payload) {
