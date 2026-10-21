@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import AllDayStrip from './AllDayStrip.vue'
 import type { UntimedDayItem } from '../../utils/untimedItems'
+import { mockCourses } from '../../mocks/calendarData'
+import { useCatalog } from '../../composables/useCatalog'
+
+useCatalog().courses.value = mockCourses
 
 const mixedItems: UntimedDayItem[] = [
   {

@@ -4,7 +4,7 @@
 import { computed } from 'vue'
 import { Flag } from '@lucide/vue'
 import type { DeadlineRow } from '@/utils/deadlineSections'
-import { CLASS_THEME_STYLES, classThemeForCourse } from '@/utils/calendarStyle'
+import { useCatalog } from '@/composables/useCatalog'
 
 const props = defineProps<{
   row: DeadlineRow
@@ -16,12 +16,17 @@ const emit = defineEmits<{
   (e: 'select', originRect: DOMRect): void
 }>()
 
-const theme = computed(() => CLASS_THEME_STYLES[classThemeForCourse(props.row.event.courseId)])
+const catalog = useCatalog()
+const courseColor = computed(() => catalog.courseColor(props.row.event.courseId))
 
 const surfaceClasses = computed(() =>
+  props.past ? 'border border-[#D5DBCB] bg-[#F1F3EA] text-[#7B8B97]' : 'border-2 text-white',
+)
+
+const surfaceStyle = computed(() =>
   props.past
-    ? 'border border-[#D5DBCB] bg-[#F1F3EA] text-[#7B8B97]'
-    : `${theme.value.solid} ${theme.value.solidEdge} border-2 text-white`,
+    ? undefined
+    : { backgroundColor: courseColor.value.solid, borderColor: courseColor.value.text },
 )
 
 const meta = computed(() =>
@@ -38,6 +43,7 @@ function handleClick(e: MouseEvent) {
     type="button"
     class="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors active:brightness-95"
     :class="surfaceClasses"
+    :style="surfaceStyle"
     :aria-label="`Deadline: ${row.event.title}`"
     @click="handleClick"
   >

@@ -11,7 +11,6 @@ describe('WeekPill', () => {
     start: '2026-10-14 13:00',
     end: '2026-10-14 15:00',
     detail: 'Room 301',
-    colorTheme: 'blue',
   }
 
   it('renders the title and omits the detail line', () => {

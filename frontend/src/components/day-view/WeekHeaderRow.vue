@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import type { UntimedDayItem } from '../../utils/untimedItems'
 import { buildMarkerState } from '../../utils/calendarItemDetail'
-import { CLASS_THEME_STYLES, classThemeForCourse } from '../../utils/calendarStyle'
+import { useCatalog } from '../../composables/useCatalog'
 import { isoWeekNumber } from '../../utils/weekDays'
 import CategoryMarker from './CategoryMarker.vue'
 
@@ -28,14 +28,20 @@ function onUntimedClick(e: MouseEvent, item: UntimedDayItem) {
 
 const MAX_PILLS = 2
 
+const catalog = useCatalog()
+
 // Tri-block surfaces (DESIGN.md §6): an event chip is a saturated fill with
 // white ink, a task chip is a white card.
 function chipClasses(item: UntimedDayItem) {
-  if (item.category === 'event') {
-    const theme = CLASS_THEME_STYLES[classThemeForCourse(item.courseId)]
-    return `${theme.solid} ${theme.solidEdge} border text-white`
-  }
-  return 'border border-[#CBD5E1] bg-white text-[#334155]'
+  return item.category === 'event'
+    ? 'border text-white'
+    : 'border border-[#CBD5E1] bg-white text-[#334155]'
+}
+
+function chipStyle(item: UntimedDayItem) {
+  if (item.category !== 'event') return undefined
+  const color = catalog.courseColor(item.courseId)
+  return { backgroundColor: color.solid, borderColor: color.text }
 }
 
 function dayName(date: Date) {
@@ -103,6 +109,7 @@ function dayAriaLabel(day: { date: Date; untimed: UntimedDayItem[] }) {
             :key="item.id"
             class="flex h-5 shrink-0 cursor-pointer items-center gap-0.5 truncate rounded-lg px-1 text-left font-secondary text-[10px] font-semibold leading-[14px] transition-transform active:scale-95"
             :class="chipClasses(item)"
+            :style="chipStyle(item)"
             @click.stop="onUntimedClick($event, item)"
           >
             <CategoryMarker :category="item.category" :completed="item.completed" />
