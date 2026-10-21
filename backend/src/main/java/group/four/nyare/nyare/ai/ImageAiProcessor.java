@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -26,6 +28,7 @@ public class ImageAiProcessor {
 
     private final ChatClient chatClient;
     private final long aiTimeoutMs;
+    private static final ExecutorService VIRTUAL_EXECUTOR = Executors.newVirtualThreadPerTaskExecutor();
 
     private static final String USER_PROMPT =
             "Describe the attached academic note image in at most 120 words. "
@@ -89,7 +92,8 @@ public class ImageAiProcessor {
                 chatClient.prompt()
                         .user(u -> u.text(USER_PROMPT).media(mimeType, resource))
                         .call()
-                        .content()
+                        .content(),
+                VIRTUAL_EXECUTOR
         );
 
         try {

@@ -31,6 +31,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 
 /**
@@ -46,6 +51,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
      * ignores prompt guidance.
      */
     static final int MAX_IMAGE_DESCRIPTION_LENGTH = 500;
+    private static final ExecutorService VIRTUAL_EXECUTOR = Executors.newVirtualThreadPerTaskExecutor();
 
     private final NoteRepository noteRepository;
     private final TaskRepository taskRepository;
@@ -313,15 +319,52 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
                 .filter(img -> img.getId() != null)
                 .collect(Collectors.toMap(Image::getId, img -> img, (a, b) -> a));
 
+        List<Image> unanalyzedImages = existingImages.stream()
+                .filter(img -> img.getDescription() == null || img.getDescription().isBlank())
+                .toList();
+
         List<Image> imagesToUpdate = new ArrayList<>();
-        for (Image image : existingImages) {
-            if (image.getDescription() == null || image.getDescription().isBlank()) {
-                String description = imageAiProcessor.describeImage(image.getData(), image.getContentType());
-                if (description != null && !description.isBlank()) {
-                    image.setDescription(truncateDescription(description.strip()));
-                    imagesToUpdate.add(image);
-                }
+        if (unanalyzedImages.size() == 1) {
+            Image image = unanalyzedImages.getFirst();
+            String description = imageAiProcessor.describeImage(image.getData(), image.getContentType());
+            if (description != null && !description.isBlank()) {
+                image.setDescription(truncateDescription(description.strip()));
+                imagesToUpdate.add(image);
             }
+        } else if (unanalyzedImages.size() > 1) {
+            Semaphore semaphore = new Semaphore(3);
+            List<CompletableFuture<Void>> futures = new ArrayList<>();
+            List<Image> synchronizedUpdates = Collections.synchronizedList(new ArrayList<>());
+
+            for (Image image : unanalyzedImages) {
+                futures.add(CompletableFuture.runAsync(() -> {
+                    try {
+                        semaphore.acquire();
+                        try {
+                            String description = imageAiProcessor.describeImage(image.getData(), image.getContentType());
+                            if (description != null && !description.isBlank()) {
+                                image.setDescription(truncateDescription(description.strip()));
+                                synchronizedUpdates.add(image);
+                            }
+                        } finally {
+                            semaphore.release();
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }, VIRTUAL_EXECUTOR));
+            }
+
+            try {
+                CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+            } catch (CompletionException ex) {
+                Throwable cause = ex.getCause();
+                if (cause instanceof RuntimeException runtime) {
+                    throw runtime;
+                }
+                throw new BadRequestException("Image processing failed: " + (cause != null ? cause.getMessage() : ex.getMessage()), cause);
+            }
+            imagesToUpdate.addAll(synchronizedUpdates);
         }
 
         if (!imagesToUpdate.isEmpty()) {

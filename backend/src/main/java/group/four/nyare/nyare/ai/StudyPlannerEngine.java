@@ -31,6 +31,8 @@ import java.util.*;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
@@ -73,6 +75,7 @@ public class StudyPlannerEngine {
      * slow model surfaces as an SSE error event instead of hanging the run.
      */
     private static final long DEFAULT_AI_TIMEOUT_MS = 50_000;
+    private static final ExecutorService VIRTUAL_EXECUTOR = Executors.newVirtualThreadPerTaskExecutor();
 
     private final ChatClient chatClient;
     private final long aiTimeoutMs;
@@ -264,7 +267,8 @@ public class StudyPlannerEngine {
                     a.param("imageDescriptionMap", imageDescriptionMap);
                 })
                 .call()
-                .entity(PlannerAuditRecords.LlmPayload.class));
+                .entity(PlannerAuditRecords.LlmPayload.class),
+                VIRTUAL_EXECUTOR);
 
         try {
             return future.orTimeout(aiTimeoutMs, TimeUnit.MILLISECONDS).join();

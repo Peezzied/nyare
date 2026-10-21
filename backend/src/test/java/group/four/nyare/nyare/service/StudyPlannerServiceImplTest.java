@@ -460,6 +460,51 @@ class StudyPlannerServiceImplTest {
     }
 
     @Test
+    @DisplayName("processNotes processes multiple missing image descriptions concurrently and persists all")
+    void processNotes_withMultipleMissingImageDescriptions_processesConcurrentlyAndPersistsAll() {
+        UUID imgId1 = UUID.randomUUID();
+        UUID imgId2 = UUID.randomUUID();
+        UUID imgId3 = UUID.randomUUID();
+        UUID noteId = UUID.randomUUID();
+        Course course = courseWithId(1L, "CS101");
+        Note note = noteWithCourse(course);
+        note.setContent("Images: ![img1](/api/images/" + imgId1 + ") ![img2](/api/images/" + imgId2 + ") ![img3](/api/images/" + imgId3 + ")");
+        ReflectionTestUtils.setField(note, "id", noteId);
+
+        Image img1 = new Image(new byte[]{1}, "image/png", "img1.png", 1L);
+        ReflectionTestUtils.setField(img1, "id", imgId1);
+        Image img2 = new Image(new byte[]{2}, "image/png", "img2.png", 1L);
+        ReflectionTestUtils.setField(img2, "id", imgId2);
+        Image img3 = new Image(new byte[]{3}, "image/png", "img3.png", 1L);
+        ReflectionTestUtils.setField(img3, "id", imgId3);
+
+        when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
+        when(imageRepository.findAllById(anySet())).thenReturn(List.of(img1, img2, img3));
+        when(imageAiProcessor.describeImage(eq(img1.getData()), eq(img1.getContentType()))).thenReturn("Description 1");
+        when(imageAiProcessor.describeImage(eq(img2.getData()), eq(img2.getContentType()))).thenReturn("Description 2");
+        when(imageAiProcessor.describeImage(eq(img3.getData()), eq(img3.getContentType()))).thenReturn("Description 3");
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(any())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+                .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of()));
+        when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+
+        service.processNotes(DATE, USER_ID);
+
+        verify(imageAiProcessor).describeImage(img1.getData(), img1.getContentType());
+        verify(imageAiProcessor).describeImage(img2.getData(), img2.getContentType());
+        verify(imageAiProcessor).describeImage(img3.getData(), img3.getContentType());
+
+        ArgumentCaptor<List<Image>> captor = ArgumentCaptor.forClass(List.class);
+        verify(imageRepository).saveAll(captor.capture());
+        List<Image> saved = captor.getValue();
+        assertThat(saved).hasSize(3);
+        assertThat(saved).extracting(Image::getDescription).containsExactlyInAnyOrder("Description 1", "Description 2", "Description 3");
+    }
+
+    @Test
     @DisplayName("processNotes updates and persists generated note titles")
     void processNotes_extractedNoteTitlesPresent_updatesAndPersistsNoteTitles() {
         // given
