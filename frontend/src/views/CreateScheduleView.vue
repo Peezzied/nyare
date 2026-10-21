@@ -32,7 +32,6 @@ import type { DayOfWeek } from '@/types/api'
 import { COURSE_PALETTE_24 } from '@/constants/palette'
 import { Button } from '@/components/ui/button'
 import CourseEditorDrawer from '@/components/CourseEditorDrawer.vue'
-import DiscardDraftConfirmDialog from '@/components/DiscardDraftConfirmDialog.vue'
 import StepProgress from '@/components/StepProgress.vue'
 import DialogShell from '@/components/ui/DialogShell.vue'
 import { ArrowLeft, Check, Plus, X } from 'lucide-vue-next'
@@ -92,12 +91,11 @@ const { user } = useAuth()
 const { studentName, isNameValid } = useOnboarding()
 
 const catalogAvailable = ref(true)
-const showDiscardDialog = ref(false)
 const showSubmitConfirm = ref(false)
 const pendingStepTarget = ref<string | null>(null)
 const showRemoveDialog = ref(false)
 const pendingRemoveId = ref<string | null>(null)
-const showSwitchDialog = ref(false)
+const drawerRef = ref<InstanceType<typeof CourseEditorDrawer> | null>(null)
 let pendingSwitchAction: (() => void) | null = null
 
 // One editor per course being drafted. Previously staged drafts hydrate into
@@ -193,15 +191,14 @@ function handleWindowKeydown(event: KeyboardEvent) {
   if (
     event.key === 'Escape' &&
     isOpen.value &&
-    !showDiscardDialog.value &&
+    !drawerRef.value?.discardOpen &&
     !showRemoveDialog.value &&
-    !showSwitchDialog.value &&
     !showSubmitConfirm.value
   ) {
     if (hasUnsavedChanges.value) {
       event.preventDefault()
       event.stopPropagation()
-      showDiscardDialog.value = true
+      drawerRef.value?.requestDiscard(discardMessage.value)
     }
   }
 }
@@ -264,7 +261,7 @@ function onOpenChange(val: boolean, details?: DrawerOpenChangeDetails) {
   if (!val) {
     if (hasUnsavedChanges.value) {
       isOpen.value = true
-      showDiscardDialog.value = true
+      drawerRef.value?.requestDiscard(discardMessage.value)
       return
     }
     closeImmediately()
@@ -311,7 +308,7 @@ const switchGuardMessage = computed(
 function guardCourseNavigation(action: () => void) {
   if (isEditorDirty(activeEditor.value)) {
     pendingSwitchAction = action
-    showSwitchDialog.value = true
+    drawerRef.value?.requestDiscard(switchGuardMessage.value)
     return
   }
   action()
@@ -344,20 +341,18 @@ function requestEditorSwitch(id: string, after?: () => void) {
     return
   }
   pendingSwitchAction = run
-  showSwitchDialog.value = true
+  drawerRef.value?.requestDiscard(switchGuardMessage.value)
 }
 
 function confirmSwitchDiscard() {
   const action = pendingSwitchAction
   pendingSwitchAction = null
-  showSwitchDialog.value = false
   revertEditor(activeEditor.value)
   action?.()
 }
 
 function cancelSwitchGuard() {
   pendingSwitchAction = null
-  showSwitchDialog.value = false
   activateEditor(activeEditorId.value)
   setStage('full')
 }
@@ -580,7 +575,7 @@ const ONBOARDING_STEP_LABELS = ['Start', 'Your name', 'Class schedule']
 
 function goBack() {
   if (hasUnsavedChanges.value) {
-    showDiscardDialog.value = true
+    drawerRef.value?.requestDiscard(discardMessage.value)
     return
   }
   closeImmediately()
@@ -593,7 +588,7 @@ function onStepSelect(step: number) {
   }
   if (hasUnsavedChanges.value) {
     pendingStepTarget.value = target
-    showDiscardDialog.value = true
+    drawerRef.value?.requestDiscard(discardMessage.value)
     return
   }
   closeImmediately(target)
@@ -640,14 +635,12 @@ function handleDiscard() {
   }
   resetDrafts()
 
-  showDiscardDialog.value = false
   const target = pendingStepTarget.value ?? '/welcome'
   pendingStepTarget.value = null
   closeImmediately(target)
 }
 
 function handleKeepEditing() {
-  showDiscardDialog.value = false
   pendingStepTarget.value = null
   const dirty = dirtyEditors.value[0]
   if (dirty) {
@@ -657,6 +650,22 @@ function handleKeepEditing() {
   }
   isOpen.value = true
   emit('update:open', true)
+}
+
+function handleConfirmedDiscard() {
+  if (pendingSwitchAction) {
+    confirmSwitchDiscard()
+    return
+  }
+  handleDiscard()
+}
+
+function handleConfirmedKeepEditing() {
+  if (pendingSwitchAction) {
+    cancelSwitchGuard()
+    return
+  }
+  handleKeepEditing()
 }
 
 function addBlock() {
@@ -1047,17 +1056,21 @@ defineExpose({
     </header>
 
     <CourseEditorDrawer
+      ref="drawerRef"
       :editor="activeEditor"
       :open="isOpen"
       :stage="stage"
       :saving="saving"
       :can-save="isEditorValid(activeEditor)"
+      :dirty="isEditorDirty(activeEditor)"
       :portal="props.portal"
       :unavailable-days="unavailableDaysForBlock"
       @update:open="onOpenChange"
       @update:stage="setStage"
       @save="saveCourse"
       @close="closeDrawer"
+      @discard="handleConfirmedDiscard"
+      @keep-editing="handleConfirmedKeepEditing"
       @submit="requestSubmit"
       @add-block="addBlock"
       @remove="removeBlock"
@@ -1177,21 +1190,6 @@ defineExpose({
       </button>
     </footer>
 
-    <DiscardDraftConfirmDialog
-      :open="showDiscardDialog"
-      :message="discardMessage"
-      @update:open="showDiscardDialog = $event"
-      @keep-editing="handleKeepEditing"
-      @discard="handleDiscard"
-    />
-    <DiscardDraftConfirmDialog
-      :open="showSwitchDialog"
-      title="Discard changes?"
-      :message="switchGuardMessage"
-      @update:open="showSwitchDialog = $event"
-      @keep-editing="cancelSwitchGuard"
-      @discard="confirmSwitchDiscard"
-    />
     <DialogShell
       v-model:open="showSubmitConfirm"
       title="Submit your schedule?"
@@ -1232,15 +1230,38 @@ defineExpose({
       </template>
     </DialogShell>
 
-    <DiscardDraftConfirmDialog
+    <DialogShell
       :open="showRemoveDialog"
       title="Remove course?"
-      :message="`This removes ${pendingRemoveName} and its class times from your draft.`"
-      confirm-label="Remove"
-      cancel-label="Keep course"
       @update:open="showRemoveDialog = $event"
-      @keep-editing="cancelRemoveEditor"
-      @discard="confirmRemoveEditor"
-    />
+      @cancel="cancelRemoveEditor"
+    >
+      <p
+        class="mt-2 text-sm text-[#7B8B97]"
+        style="font-family: 'Inter', sans-serif; font-weight: 400"
+      >
+        This removes {{ pendingRemoveName }} and its class times from your draft.
+      </p>
+
+      <template #actions="{ dismiss }">
+        <button
+          type="button"
+          class="min-h-[44px] rounded-xl border-b-4 border-[#CBD5E1] bg-[#E2E8F0] px-4 py-2.5 text-sm font-semibold text-[#334155] transition-all duration-75 hover:bg-[#D7DEE8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
+          @click="dismiss"
+        >
+          Keep course
+        </button>
+
+        <button
+          type="button"
+          class="min-h-[44px] rounded-xl border-b-4 border-[#991B1B] bg-[#DC2626] px-5 py-2.5 text-sm font-bold text-white transition-all duration-75 hover:bg-[#B91C1C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          @click="confirmRemoveEditor"
+        >
+          Remove
+        </button>
+      </template>
+    </DialogShell>
   </div>
 </template>

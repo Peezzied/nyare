@@ -5,7 +5,6 @@ import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import type { DrawerOpenChangeDetails } from 'reka-ui'
 import HeaderIconButton from '@/components/HeaderIconButton.vue'
 import CourseEditorDrawer from '@/components/CourseEditorDrawer.vue'
-import DiscardDraftConfirmDialog from '@/components/DiscardDraftConfirmDialog.vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import DialogShell from '@/components/ui/DialogShell.vue'
@@ -93,7 +92,7 @@ const drawerEditor = ref<CourseEditor | null>(null)
 const editorOpen = ref(false)
 const editorStage = ref<'partial' | 'full'>('full')
 const editorSaving = ref(false)
-const showDiscardDialog = ref(false)
+const drawerRef = ref<InstanceType<typeof CourseEditorDrawer> | null>(null)
 let pendingExit: (() => void) | null = null
 
 const DAY_ORDER: Record<DayOfWeek, number> = {
@@ -191,7 +190,6 @@ watch([editingCourse, addingCourse], ([course, adding]) => {
   if (!course) {
     editingEditor.value = null
     editorOpen.value = false
-    showDiscardDialog.value = false
     return
   }
   editingEditor.value = createCourseEditor(draftForCourse(course))
@@ -551,15 +549,7 @@ async function undoArchiveAll(ids: number[]) {
   }
 }
 
-function requestEditorClose() {
-  if (editorSaving.value) {
-    return
-  }
-  if (editingEditor.value && isEditorDirty(editingEditor.value)) {
-    editorOpen.value = true
-    showDiscardDialog.value = true
-    return
-  }
+function closeEditor() {
   editingCourse.value = null
   addingCourse.value = false
 }
@@ -576,11 +566,15 @@ function onDrawerOpenChange(value: boolean, details?: DrawerOpenChangeDetails) {
     editorOpen.value = true
     return
   }
-  requestEditorClose()
+  if (editorHasUnsavedChanges()) {
+    editorOpen.value = true
+    drawerRef.value?.requestDiscard()
+    return
+  }
+  closeEditor()
 }
 
 function handleDiscardEdits() {
-  showDiscardDialog.value = false
   const action = pendingExit
   pendingExit = null
   // The watcher drops the editor during the next flush. A pending exit runs
@@ -592,7 +586,6 @@ function handleDiscardEdits() {
 
 function handleKeepEditing() {
   pendingExit = null
-  showDiscardDialog.value = false
   editorOpen.value = true
   editorStage.value = 'full'
 }
@@ -606,7 +599,7 @@ function guardEditorExit(action: () => void): void {
   if (editorHasUnsavedChanges()) {
     pendingExit = action
     editorOpen.value = true
-    showDiscardDialog.value = true
+    drawerRef.value?.requestDiscard()
     return
   }
   action()
@@ -628,7 +621,7 @@ onBeforeRouteLeave((to) => {
   }
   pendingExit = () => void router.push(to.fullPath)
   editorOpen.value = true
-  showDiscardDialog.value = true
+  drawerRef.value?.requestDiscard()
   return false
 })
 
@@ -774,11 +767,13 @@ onMounted(load)
 
     <CourseEditorDrawer
       v-if="drawerEditor"
+      ref="drawerRef"
       :editor="drawerEditor"
       :open="editorOpen"
       :stage="editorStage"
       :saving="editorSaving"
       :can-save="editorCanSave"
+      :dirty="editorHasUnsavedChanges()"
       can-remove
       cover-bottom-when-full
       portal
@@ -786,7 +781,9 @@ onMounted(load)
       @update:open="onDrawerOpenChange"
       @update:stage="editorStage = $event"
       @save="saveCourseEdit"
-      @close="requestEditorClose"
+      @close="closeEditor"
+      @discard="handleDiscardEdits"
+      @keep-editing="handleKeepEditing"
       @submit="saveCourseEdit"
       @add-block="addBlock"
       @remove="removeBlock"
@@ -795,22 +792,38 @@ onMounted(load)
       @update:end-time="onEndTimeChange"
     />
 
-    <DiscardDraftConfirmDialog
-      :open="showDiscardDialog"
-      @update:open="showDiscardDialog = $event"
-      @keep-editing="handleKeepEditing"
-      @discard="handleDiscardEdits"
-    />
-
-    <DiscardDraftConfirmDialog
+    <DialogShell
       :open="deletingCourse !== null"
       title="Delete course?"
-      :message="deleteMessage"
-      confirm-label="Delete"
-      cancel-label="Keep course"
-      @keep-editing="deletingCourse = null"
-      @discard="confirmDelete"
-    />
+      @update:open="deletingCourse = null"
+    >
+      <p
+        class="mt-2 text-sm text-[#7B8B97]"
+        style="font-family: 'Inter', sans-serif; font-weight: 400"
+      >
+        {{ deleteMessage }}
+      </p>
+
+      <template #actions="{ dismiss }">
+        <button
+          type="button"
+          class="min-h-[44px] rounded-xl border-b-4 border-[#CBD5E1] bg-[#E2E8F0] px-4 py-2.5 text-sm font-semibold text-[#334155] transition-all duration-75 hover:bg-[#D7DEE8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
+          @click="dismiss"
+        >
+          Keep course
+        </button>
+
+        <button
+          type="button"
+          class="min-h-[44px] rounded-xl border-b-4 border-[#991B1B] bg-[#DC2626] px-5 py-2.5 text-sm font-bold text-white transition-all duration-75 hover:bg-[#B91C1C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          @click="confirmDelete"
+        >
+          Delete
+        </button>
+      </template>
+    </DialogShell>
 
     <DialogShell
       :open="archivingCourse !== null"

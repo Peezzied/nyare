@@ -5,6 +5,7 @@ import { Plus, Save, X } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Drawer, DrawerContent, DrawerHeader } from '@/components/ui/drawer'
+import DialogShell from '@/components/ui/DialogShell.vue'
 import TimeBlockCard, { type TimeBlockDraft } from '@/components/TimeBlockCard.vue'
 import { COURSE_PALETTE_24 } from '@/constants/palette'
 import type { CourseEditor } from '@/composables/useCourseEditor'
@@ -22,11 +23,16 @@ const props = withDefaults(
     canRemove?: boolean
     coverBottomWhenFull?: boolean
     unavailableDays?: (block: TimeBlockDraft) => DayOfWeek[]
+    /** True when the draft has unsaved changes; the close button prompts before it closes. */
+    dirty?: boolean
+    /** Message for the unsaved-changes prompt. */
+    discardMessage?: string
   }>(),
   {
     showColor: true,
     portal: false,
     unavailableDays: () => [],
+    dirty: false,
   },
 )
 
@@ -35,6 +41,8 @@ const emit = defineEmits<{
   (e: 'update:stage', value: 'partial' | 'full'): void
   (e: 'save'): void
   (e: 'close'): void
+  (e: 'discard'): void
+  (e: 'keepEditing'): void
   (e: 'submit'): void
   (e: 'add-block'): void
   (e: 'remove', block: TimeBlockDraft): void
@@ -42,6 +50,48 @@ const emit = defineEmits<{
   (e: 'update:startTime', block: TimeBlockDraft, value: string): void
   (e: 'update:endTime', block: TimeBlockDraft, value: string): void
 }>()
+
+const DISCARD_MESSAGE = 'You have unsaved changes. Are you sure you want to discard your draft?'
+
+const discardOpen = ref(false)
+const discardMessageOverride = ref<string | null>(null)
+const discardClosesDrawer = ref(false)
+
+function requestClose() {
+  if (props.saving) {
+    return
+  }
+  if (!props.dirty) {
+    emit('close')
+    return
+  }
+  discardClosesDrawer.value = true
+  discardMessageOverride.value = null
+  discardOpen.value = true
+}
+
+/** Opens the unsaved-changes prompt for a parent-driven exit. */
+function requestDiscard(message?: string) {
+  discardClosesDrawer.value = false
+  discardMessageOverride.value = message ?? null
+  discardOpen.value = true
+}
+
+function handleDiscard() {
+  discardOpen.value = false
+  if (discardClosesDrawer.value) {
+    emit('close')
+    return
+  }
+  emit('discard')
+}
+
+function handleKeepEditing() {
+  discardOpen.value = false
+  emit('keepEditing')
+}
+
+defineExpose({ requestDiscard, discardOpen })
 
 const SNAP_PARTIAL = '210px'
 const SNAP_FULL = 1
@@ -222,7 +272,7 @@ const isAddAnotherTimeDisabled = computed(() => {
           size="icon"
           aria-label="Close drawer"
           class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[#334155] transition-colors hover:bg-[#C2E8F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8]"
-          @click="emit('close')"
+          @click="requestClose"
         >
           <X class="size-5" aria-hidden="true" />
         </Button>
@@ -433,6 +483,41 @@ const isAddAnotherTimeDisabled = computed(() => {
       </div>
     </DrawerContent>
   </Drawer>
+
+  <DialogShell
+    :open="discardOpen"
+    title="Discard changes?"
+    overlay-class="z-[80]"
+    @update:open="discardOpen = $event"
+    @cancel="handleKeepEditing"
+  >
+    <p
+      class="mt-2 text-sm text-[#7B8B97]"
+      style="font-family: 'Inter', sans-serif; font-weight: 400"
+    >
+      {{ discardMessageOverride ?? discardMessage ?? DISCARD_MESSAGE }}
+    </p>
+
+    <template #actions="{ dismiss }">
+      <button
+        type="button"
+        class="min-h-[44px] rounded-xl border-b-4 border-[#CBD5E1] bg-[#E2E8F0] px-4 py-2.5 text-sm font-semibold text-[#334155] transition-all duration-75 hover:bg-[#D7DEE8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
+        style="font-family: 'Quicksand', sans-serif; font-weight: 600"
+        @click="dismiss"
+      >
+        Keep editing
+      </button>
+
+      <button
+        type="button"
+        class="min-h-[44px] rounded-xl border-b-4 border-[#991B1B] bg-[#DC2626] px-5 py-2.5 text-sm font-bold text-white transition-all duration-75 hover:bg-[#B91C1C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
+        style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+        @click="handleDiscard"
+      >
+        Discard
+      </button>
+    </template>
+  </DialogShell>
 </template>
 
 <style scoped>

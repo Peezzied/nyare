@@ -5,6 +5,7 @@ import { createMemoryHistory, createRouter } from 'vue-router'
 import type { CourseResponse, DayOfWeek, ScheduleResponse, UserResponse } from '@/types/api'
 import { coursesApi, schedulesApi } from '@/api'
 import CreateScheduleView from '../CreateScheduleView.vue'
+import DialogShell from '@/components/ui/DialogShell.vue'
 import { useAuth } from '@/composables/useAuth'
 import { useOnboarding } from '@/composables/useOnboarding'
 import { authApi } from '@/api'
@@ -20,6 +21,19 @@ function toastTitles(kind?: ToastKind): string[] {
   return useToasts()
     .toasts.value.filter((t) => !kind || t.kind === kind)
     .map((t) => t.title)
+}
+
+function discardDialog(wrapper: ReturnType<typeof mount>) {
+  return wrapper
+    .findAllComponents(DialogShell)
+    .find((dialog) => dialog.props('title') === 'Discard changes?')
+}
+
+async function clickDialogButton(wrapper: ReturnType<typeof mount>, label: string) {
+  const dialog = discardDialog(wrapper)
+  expect(dialog?.props('open')).toBe(true)
+  await dialog!.findAll('button').find((button) => button.text() === label)!.trigger('click')
+  await flushPromises()
 }
 
 interface ExposedScheduleView {
@@ -245,7 +259,10 @@ describe('CreateScheduleView', () => {
     await wrapper.find('[aria-label="Submit schedule"]').trigger('click')
     await flushPromises()
 
-    expect(wrapper.findComponent({ name: 'DialogShell' }).props('open')).toBe(true)
+    const submitDialog = wrapper
+      .findAllComponents(DialogShell)
+      .find((dialog) => dialog.props('title') === 'Submit your schedule?')
+    expect(submitDialog?.props('open')).toBe(true)
     expect(wrapper.text()).toContain('Submit your schedule?')
     expect(coursesApi.create).not.toHaveBeenCalled()
 
@@ -467,8 +484,8 @@ describe('CreateScheduleView', () => {
     const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
     await router.isReady()
 
-    const dialogBefore = wrapper.findComponent({ name: 'DiscardDraftConfirmDialog' })
-    expect(dialogBefore.props('open')).toBe(false)
+    const dialogBefore = discardDialog(wrapper)
+    expect(dialogBefore?.props('open')).toBe(false)
 
     // Make an edit (type a title)
     await wrapper.find('input[type="text"]').setValue('Draft Course')
@@ -477,13 +494,12 @@ describe('CreateScheduleView', () => {
     await wrapper.find('[aria-label="Go back"]').trigger('click')
     await flushPromises()
 
-    const dialog = wrapper.findComponent({ name: 'DiscardDraftConfirmDialog' })
-    expect(dialog.props('open')).toBe(true)
+    const dialog = discardDialog(wrapper)
+    expect(dialog?.props('open')).toBe(true)
 
     // Choose Keep editing
-    await dialog.vm.$emit('keepEditing')
-    await flushPromises()
-    expect(dialog.props('open')).toBe(false)
+    await clickDialogButton(wrapper, 'Keep editing')
+    expect(dialog?.props('open')).toBe(false)
     expect((wrapper.find('input[type="text"]').element as HTMLInputElement).value).toBe(
       'Draft Course',
     )
@@ -491,11 +507,10 @@ describe('CreateScheduleView', () => {
     // Click Go Back again, and choose Discard
     await wrapper.find('[aria-label="Go back"]').trigger('click')
     await flushPromises()
-    expect(dialog.props('open')).toBe(true)
+    expect(dialog?.props('open')).toBe(true)
 
-    await dialog.vm.$emit('discard')
-    await flushPromises()
-    expect(dialog.props('open')).toBe(false)
+    await clickDialogButton(wrapper, 'Discard')
+    expect(dialog?.props('open')).toBe(false)
     expect(wrapper.find('input[type="text"]').exists()).toBe(false)
     expect((wrapper.vm as unknown as ExposedScheduleView).courseName).toBe('')
     expect(wrapper.emitted('close')).toBeDefined()
@@ -508,7 +523,7 @@ describe('CreateScheduleView', () => {
     // Untouched close
     await wrapper.find('[aria-label="Go back"]').trigger('click')
     await flushPromises()
-    expect(wrapper.findComponent({ name: 'DiscardDraftConfirmDialog' }).props('open')).toBe(false)
+    expect(discardDialog(wrapper)?.props('open')).toBe(false)
     expect(wrapper.emitted('close')).toHaveLength(1)
 
     // Mount fresh and save successfully
@@ -524,7 +539,7 @@ describe('CreateScheduleView', () => {
     // Now close - should not prompt
     await wrapper2.find('[aria-label="Go back"]').trigger('click')
     await flushPromises()
-    expect(wrapper2.findComponent({ name: 'DiscardDraftConfirmDialog' }).props('open')).toBe(false)
+    expect(discardDialog(wrapper2)?.props('open')).toBe(false)
     expect(wrapper2.emitted('close')).toHaveLength(1)
   })
 
@@ -546,8 +561,8 @@ describe('CreateScheduleView', () => {
     await wrapper.find('[aria-label="Go back"]').trigger('click')
     await flushPromises()
 
-    const dialog = wrapper.findComponent({ name: 'DiscardDraftConfirmDialog' })
-    expect(dialog.props('open')).toBe(true)
+    const dialog = discardDialog(wrapper)
+    expect(dialog?.props('open')).toBe(true)
   })
 
   it('clears staged drafts when the discard dialog confirms', async () => {
@@ -565,9 +580,7 @@ describe('CreateScheduleView', () => {
     await wrapper.find('[aria-label="Go back"]').trigger('click')
     await flushPromises()
 
-    const dialog = wrapper.findComponent({ name: 'DiscardDraftConfirmDialog' })
-    await dialog.vm.$emit('discard')
-    await flushPromises()
+    await clickDialogButton(wrapper, 'Discard')
 
     expect(useCourseDrafts().draftCourses.value).toHaveLength(0)
     expect(wrapper.emitted('close')).toBeDefined()
@@ -699,8 +712,7 @@ describe('CreateScheduleView', () => {
     await back.trigger('click')
     await flushPromises()
 
-    const dialog = wrapper.findComponent({ name: 'DiscardDraftConfirmDialog' })
-    expect(dialog.props('open')).toBe(false)
+    expect(discardDialog(wrapper)?.props('open')).toBe(false)
     expect(wrapper.emitted('close')).toHaveLength(1)
     expect((wrapper.vm as unknown as ExposedScheduleView).pendingSlot).toBeNull()
   })
@@ -727,8 +739,7 @@ describe('CreateScheduleView', () => {
     await back.trigger('click')
     await flushPromises()
 
-    const dialog = wrapper.findComponent({ name: 'DiscardDraftConfirmDialog' })
-    expect(dialog.props('open')).toBe(true)
+    expect(discardDialog(wrapper)?.props('open')).toBe(true)
   })
 
   it('applies a block drag move to the owning editor', async () => {
@@ -901,12 +912,11 @@ describe('CreateScheduleView', () => {
     await wrapper.find('[aria-label="Go back"]').trigger('click')
     await flushPromises()
 
-    const dialog = wrapper.findComponent({ name: 'DiscardDraftConfirmDialog' })
-    expect(dialog.props('open')).toBe(true)
+    const dialog = discardDialog(wrapper)
+    expect(dialog?.props('open')).toBe(true)
 
     // Confirm discard
-    await dialog.vm.$emit('discard')
-    await flushPromises()
+    await clickDialogButton(wrapper, 'Discard')
 
     // Form reverts to snapshot
     expect((wrapper.vm as unknown as ExposedScheduleView).courseName).toBe('Physics 101')
@@ -941,8 +951,7 @@ describe('CreateScheduleView', () => {
     await wrapper.find('[aria-label="Go back"]').trigger('click')
     await flushPromises()
 
-    const dialog = wrapper.findComponent({ name: 'DiscardDraftConfirmDialog' })
-    expect(dialog.props('open')).toBe(false)
+    expect(discardDialog(wrapper)?.props('open')).toBe(false)
   })
 
   it('includes other staged courses from useCourseDrafts in week preview blocks', async () => {
@@ -1038,23 +1047,19 @@ describe('CreateScheduleView', () => {
     await chips[0]!.find('button').trigger('click')
     await flushPromises()
 
-    const guardDialog = wrapper
-      .findAllComponents({ name: 'DiscardDraftConfirmDialog' })
-      .find((d) => d.props('open'))
-    expect(guardDialog?.props('message')).toBe('You have unsaved changes to History.')
+    const guardDialog = discardDialog(wrapper)
+    expect(guardDialog?.props('open')).toBe(true)
+    expect(guardDialog?.text()).toContain('You have unsaved changes to History.')
 
     // Discard reverts History and completes the pending switch to Math
-    await guardDialog!.vm.$emit('discard')
-    await flushPromises()
+    await clickDialogButton(wrapper, 'Discard')
     expect((wrapper.find('input[type="text"]').element as HTMLInputElement).value).toBe('Math')
 
     // Math is saved and clean, so switching back runs without a prompt
     await chips[1]!.find('button').trigger('click')
     await flushPromises()
     expect((wrapper.find('input[type="text"]').element as HTMLInputElement).value).toBe('')
-    expect(
-      wrapper.findAllComponents({ name: 'DiscardDraftConfirmDialog' }).some((d) => d.props('open')),
-    ).toBe(false)
+    expect(discardDialog(wrapper)?.props('open')).toBe(false)
   })
 
   it('removes a saved course via the active chip remove action', async () => {
@@ -1085,11 +1090,11 @@ describe('CreateScheduleView', () => {
     await flushPromises()
 
     const removeDialog = wrapper
-      .findAllComponents({ name: 'DiscardDraftConfirmDialog' })
-      .find((d) => d.props('title') === 'Remove course?')
+      .findAllComponents(DialogShell)
+      .find((dialog) => dialog.props('title') === 'Remove course?')
     expect(removeDialog?.props('open')).toBe(true)
 
-    await removeDialog!.vm.$emit('discard')
+    await removeDialog!.findAll('button').find((b) => b.text() === 'Remove')!.trigger('click')
     await flushPromises()
 
     expect(wrapper.findAll('[data-testid="course-chip"]')).toHaveLength(1)
@@ -1111,11 +1116,7 @@ describe('CreateScheduleView', () => {
     // Math is dirty: adding a course prompts; discarding reverts it
     await wrapper.find('[data-testid="add-course"]').trigger('click')
     await flushPromises()
-    const guardDialog = wrapper
-      .findAllComponents({ name: 'DiscardDraftConfirmDialog' })
-      .find((d) => d.props('open'))
-    await guardDialog!.vm.$emit('discard')
-    await flushPromises()
+    await clickDialogButton(wrapper, 'Discard')
 
     await wrapper.find('input[type="text"]').setValue('History')
     await wrapper.find('[aria-label="TUESDAY"]').trigger('click')
@@ -1149,15 +1150,13 @@ describe('CreateScheduleView', () => {
     await wrapper.find('[data-testid="add-course"]').trigger('click')
     await flushPromises()
 
-    const dialog = wrapper
-      .findAllComponents({ name: 'DiscardDraftConfirmDialog' })
-      .find((d) => d.props('open'))
-    expect(dialog?.props('message')).toBe('You have unsaved changes to Math.')
+    const dialog = discardDialog(wrapper)
+    expect(dialog?.props('open')).toBe(true)
+    expect(dialog?.text()).toContain('You have unsaved changes to Math.')
     expect(wrapper.findAll('[data-testid="course-chip"]')).toHaveLength(1)
 
     // Keep editing stays on the dirty course drawer
-    await dialog!.vm.$emit('keepEditing')
-    await flushPromises()
+    await clickDialogButton(wrapper, 'Keep editing')
     expect(wrapper.findAll('[data-testid="course-chip"]')).toHaveLength(1)
     expect((wrapper.find('input[type="text"]').element as HTMLInputElement).value).toBe('Math')
     expect((wrapper.vm as unknown as ExposedScheduleView).stage).toBe('full')
@@ -1215,11 +1214,7 @@ describe('CreateScheduleView', () => {
     await wrapper.find('[data-testid="add-course"]').trigger('click')
     await flushPromises()
 
-    const dialog = wrapper
-      .findAllComponents({ name: 'DiscardDraftConfirmDialog' })
-      .find((d) => d.props('open'))
-    await dialog!.vm.$emit('discard')
-    await flushPromises()
+    await clickDialogButton(wrapper, 'Discard')
 
     // The reverted first editor stays blank; a fresh editor becomes active
     expect(wrapper.findAll('[data-testid="course-chip"]')).toHaveLength(2)
@@ -1241,11 +1236,7 @@ describe('CreateScheduleView', () => {
     await wrapper.find('[aria-label="Go back"]').trigger('click')
     await flushPromises()
 
-    const dialog = wrapper
-      .findAllComponents({ name: 'DiscardDraftConfirmDialog' })
-      .find((d) => d.props('open'))
-    await dialog!.vm.$emit('keepEditing')
-    await flushPromises()
+    await clickDialogButton(wrapper, 'Keep editing')
 
     expect((wrapper.vm as unknown as ExposedScheduleView).activeEditorId).toBe(stray.id)
     expect((wrapper.vm as unknown as ExposedScheduleView).stage).toBe('full')
@@ -1317,9 +1308,7 @@ describe('CreateScheduleView', () => {
     await chips[0]!.find('button').trigger('click')
     await flushPromises()
     expect((wrapper.vm as unknown as ExposedScheduleView).stage).toBe('partial')
-    expect(
-      wrapper.findAllComponents({ name: 'DiscardDraftConfirmDialog' }).some((d) => d.props('open')),
-    ).toBe(false)
+    expect(discardDialog(wrapper)?.props('open')).toBe(false)
   })
 
   it('shows plural discard message when multiple courses have unsaved changes', async () => {
@@ -1336,9 +1325,7 @@ describe('CreateScheduleView', () => {
     await wrapper.find('[aria-label="Go back"]').trigger('click')
     await flushPromises()
 
-    const dialog = wrapper
-      .findAllComponents({ name: 'DiscardDraftConfirmDialog' })
-      .find((d) => d.props('open'))
-    expect(dialog?.props('message')).toBe('This discards unsaved changes across 2 courses.')
+    const dialog = discardDialog(wrapper)
+    expect(dialog?.text()).toContain('This discards unsaved changes across 2 courses.')
   })
 })

@@ -2,6 +2,7 @@
 // Shared confirmation popup: Duckota scrim card with a content slot and a button slot.
 import { nextTick, onUnmounted, ref, useId, watch } from 'vue'
 import duckotaFeedback from '@/assets/mascot/duckota_feedback.png'
+import { cn } from '@/lib/utils'
 
 interface Props {
   /** Dialog visibility. Bind it with v-model:open. */
@@ -10,11 +11,14 @@ interface Props {
   title: string
   /** In-flight state. It blocks dismissal and sets the button slot's `disabled`. */
   busy?: boolean
+  /** Extra overlay classes, for example to raise the layer above a drawer. */
+  overlayClass?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   open: false,
   busy: false,
+  overlayClass: '',
 })
 
 const emit = defineEmits<{
@@ -80,7 +84,12 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeydown))
   <Transition name="popup">
     <div
       v-if="open"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.4)] px-4"
+      :class="
+        cn(
+          'fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.4)] px-4',
+          overlayClass,
+        )
+      "
       role="presentation"
       @click.self="dismiss"
     >
