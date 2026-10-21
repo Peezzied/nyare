@@ -23,6 +23,11 @@ const mockApplyCourseRemoved = vi.fn<(id: number) => void>((id: number) => {
 const mockDeleteArchivedCourse = vi.fn<(id: number) => Promise<void>>(async (id: number) => {
   mockApplyCourseRemoved(id)
 })
+// Mirrors the real bulk delete: everything leaves the cache, 0 failures.
+const mockDeleteAllArchived = vi.fn<() => Promise<number>>(async () => {
+  mockArchivedCourses.value = []
+  return 0
+})
 
 vi.mock('@/composables/useArchive', () => ({
   useArchive: () => ({
@@ -30,6 +35,7 @@ vi.mock('@/composables/useArchive', () => ({
     loadArchive: mockLoadArchive,
     applyCourseRemoved: mockApplyCourseRemoved,
     deleteArchivedCourse: mockDeleteArchivedCourse,
+    deleteAllArchived: mockDeleteAllArchived,
     // Mirrors the real resolver: a stored slug wins, else the derived color.
     courseColor: (courseId: number | undefined | null) => {
       const slug = mockArchivedCourses.value.find((c) => c.id === courseId)?.color
@@ -132,6 +138,7 @@ describe('ArchiveView', () => {
     const empty = wrapper.get('[data-testid="archive-empty-state"]')
     expect(empty.text()).toContain('No archived courses')
     expect(wrapper.find('[data-testid="archive-course-row"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="archive-delete-all"]').exists()).toBe(false)
   })
 
   it('restores the course from the row unarchive action without navigating', async () => {
@@ -230,6 +237,48 @@ describe('ArchiveView', () => {
     expect(mockApplyCourseRemoved).not.toHaveBeenCalled()
     expect(mockPushToast).toHaveBeenCalledWith(
       expect.objectContaining({ kind: 'error', title: 'Could not delete the course.' }),
+    )
+    expect(wrapper.findAll('[data-testid="archive-course-row"]')).toHaveLength(1)
+  })
+
+  it('empties the archive after the student confirms the delete-all dialog', async () => {
+    mockArchivedCourses.value = [algebra, biology]
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.get('[data-testid="archive-delete-all"]').trigger('click')
+    await flushPromises()
+
+    const dialog = wrapper.get('[role="dialog"]')
+    expect(dialog.text()).toContain('all 2 archived courses')
+
+    await wrapper.get('[data-testid="archive-delete-confirm"]').trigger('click')
+    await flushPromises()
+
+    expect(mockDeleteAllArchived).toHaveBeenCalledTimes(1)
+    expect(mockDeleteArchivedCourse).not.toHaveBeenCalled()
+    expect(mockPushToast).toHaveBeenCalledWith({ kind: 'success', title: 'Archive emptied.' })
+    expect(wrapper.findAll('[data-testid="archive-course-row"]')).toHaveLength(0)
+  })
+
+  it('reports the count when some bulk deletes fail', async () => {
+    mockArchivedCourses.value = [algebra, biology]
+    mockDeleteAllArchived.mockImplementationOnce(async () => {
+      mockArchivedCourses.value = [biology]
+      return 1
+    })
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.get('[data-testid="archive-delete-all"]').trigger('click')
+    await flushPromises()
+    await wrapper.get('[data-testid="archive-delete-confirm"]').trigger('click')
+    await flushPromises()
+
+    expect(mockPushToast).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: 'error', title: 'Could not delete 1 course.' }),
     )
     expect(wrapper.findAll('[data-testid="archive-course-row"]')).toHaveLength(1)
   })
