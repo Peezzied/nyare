@@ -20,7 +20,8 @@ const CLASS_ITEM: CalendarItemDetailView = {
   courseId: 1,
   timeWindow: '9:00 - 10:30 AM',
   duration: null,
-  note: null,
+  notes: [],
+  entryDate: '2026-10-21',
   task: null,
 }
 
@@ -31,7 +32,8 @@ const OPEN_TASK_ITEM: CalendarItemDetailView = {
   courseId: 1,
   timeWindow: 'Oct 10, 2026',
   duration: '1.5hr',
-  note: { id: 'note-cs201-avl', title: 'Lecture 7: Self-Balancing Trees' },
+  notes: [{ id: 'note-cs201-avl', title: 'Lecture 7: Self-Balancing Trees' }],
+  entryDate: null,
   task: { id: 'task-cs201-avl-impl', completed: false },
 }
 
@@ -42,7 +44,8 @@ const COMPLETED_TASK_ITEM: CalendarItemDetailView = {
   courseId: 1,
   timeWindow: 'Oct 4, 2026',
   duration: '45min',
-  note: null,
+  notes: [],
+  entryDate: null,
   task: { id: 'task-cs201-hw1', completed: true },
 }
 
@@ -53,7 +56,8 @@ const EVENT_ITEM: CalendarItemDetailView = {
   courseId: 1,
   timeWindow: 'Oct 22, 2026, 9 AM',
   duration: null,
-  note: { id: 'note-cs201-avl', title: 'Lecture 7: Self-Balancing Trees' },
+  notes: [{ id: 'note-cs201-avl', title: 'Lecture 7: Self-Balancing Trees' }],
+  entryDate: null,
   task: null,
 }
 
@@ -62,6 +66,17 @@ export const CALENDAR_ITEM_DETAIL_FIXTURES: CalendarItemDetailFixture[] = [
   {
     name: 'class-with-window',
     item: CLASS_ITEM,
+  },
+  {
+    name: 'class-with-notes',
+    item: {
+      ...CLASS_ITEM,
+      // The meeting day's journal entries.
+      notes: [
+        { id: 'note-cs201-avl', title: 'Lecture 7: Self-Balancing Trees' },
+        { id: 'note-cs201-avl-recap', title: 'AVL recap before the lab' },
+      ],
+    },
   },
   {
     name: 'task-with-note-and-duration',
@@ -77,7 +92,8 @@ export const CALENDAR_ITEM_DETAIL_FIXTURES: CalendarItemDetailFixture[] = [
       timeWindow: 'Oct 20, 2026',
       duration: '1hr',
       // No source note, so the note control stays hidden (FR-018).
-      note: null,
+      notes: [],
+      entryDate: null,
       task: { id: 'task-cs201-hw2', completed: false },
     },
   },
@@ -91,7 +107,8 @@ export const CALENDAR_ITEM_DETAIL_FIXTURES: CalendarItemDetailFixture[] = [
       timeWindow: 'Oct 23, 2026',
       // Unknown duration, so the duration field stays hidden (FR-019).
       duration: null,
-      note: { id: 'note-math204-eigen', title: 'Lecture 12: Eigenvalues and Diagonalization' },
+      notes: [{ id: 'note-math204-eigen', title: 'Lecture 12: Eigenvalues and Diagonalization' }],
+      entryDate: null,
       task: { id: 'task-math204-review', completed: false },
     },
   },
@@ -105,7 +122,8 @@ export const CALENDAR_ITEM_DETAIL_FIXTURES: CalendarItemDetailFixture[] = [
       // No scheduled date, so the plan-category label replaces the date.
       timeWindow: 'Later',
       duration: '1hr',
-      note: null,
+      notes: [],
+      entryDate: null,
       task: { id: 'task-phys102-lab-report', completed: false },
     },
   },
@@ -126,7 +144,8 @@ export const CALENDAR_ITEM_DETAIL_FIXTURES: CalendarItemDetailFixture[] = [
       courseId: 3,
       timeWindow: 'Oct 28, 2026, 1:30 PM',
       duration: null,
-      note: null,
+      notes: [],
+      entryDate: null,
       task: null,
     },
   },

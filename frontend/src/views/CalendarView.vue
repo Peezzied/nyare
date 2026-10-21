@@ -145,7 +145,7 @@ function openDetail(item: CalendarItemDetailView, originRect: DOMRect | null) {
 
 /** Opens the detail view for a class meeting (FR-006). */
 function openClassDetail(event: DayEvent, originRect: DOMRect) {
-  openDetail(buildCalendarItemDetail(event, 'class'), originRect)
+  openDetail(buildCalendarItemDetail(event, 'class', notes.value), originRect)
 }
 
 /** Opens the detail view for a tapped task (FR-006) or event (FR-007) chip. */
@@ -174,6 +174,14 @@ function closeDetail() {
 function openLinkedNote(note: LinkedNoteRef) {
   isDetailOpen.value = false
   router.push({ name: 'note-edit', params: { id: note.id } })
+}
+
+/** Opens a new note prefilled with the class's course and meeting day. */
+function addNote() {
+  const item = detailItem.value
+  if (!item?.entryDate) return
+  isDetailOpen.value = false
+  router.push({ name: 'note-new', query: { courseId: item.courseId, entryDate: item.entryDate } })
 }
 
 /**
@@ -298,6 +306,7 @@ useShellHeader({
       :frame-el="null"
       @close="closeDetail"
       @open-note="openLinkedNote"
+      @add-note="addNote"
       @complete-task="completeTask"
     />
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { CSSProperties } from 'vue'
-import { Check, SquarePen } from '@lucide/vue'
+import { Check, Plus, SquarePen } from '@lucide/vue'
 import TactileButton from '../TactileButton.vue'
 import { useCatalog } from '@/composables/useCatalog'
 import type { CalendarItemDetailView, LinkedNoteRef } from '@/types/calendarItemDetail'
@@ -12,6 +12,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'open-note', note: LinkedNoteRef): void
+  (e: 'add-note'): void
   (e: 'complete-task', taskId: string): void
 }>()
 
@@ -20,13 +21,17 @@ const catalog = useCatalog()
 const dotStyle = computed<CSSProperties>(() => ({
   backgroundColor: catalog.courseColor(props.item.courseId).solid,
 }))
-const noteTitle = computed(() => props.item.note?.title ?? 'Linked note')
+const notesLabel = computed(() => (props.item.kind === 'class' ? 'Notes' : 'Linked note'))
 const completeLabel = computed(() =>
   props.item.task?.completed ? 'Task completed' : 'Mark task complete',
 )
 
-function onOpenNote() {
-  if (props.item.note) emit('open-note', props.item.note)
+function noteTitle(note: LinkedNoteRef): string {
+  return note.title ?? 'Linked note'
+}
+
+function onOpenNote(note: LinkedNoteRef) {
+  emit('open-note', note)
 }
 
 function onCompleteTask() {
@@ -68,16 +73,32 @@ function onCompleteTask() {
       </div>
     </dl>
 
+    <div v-if="item.notes.length" class="flex flex-col gap-2">
+      <h3 class="text-xs font-bold tracking-wide text-[#64748B] uppercase">{{ notesLabel }}</h3>
+      <button
+        v-for="note in item.notes"
+        :key="note.id"
+        data-testid="note-control"
+        type="button"
+        class="flex min-h-[44px] min-w-[44px] cursor-pointer items-center gap-2 rounded-xl border-2 border-[#CBD5E1] bg-white/70 px-4 py-2.5 text-left font-quicksand text-sm font-bold text-[#334155] transition-transform hover:bg-white active:translate-y-0.5"
+        :aria-label="`Open linked note: ${noteTitle(note)}`"
+        @click="onOpenNote(note)"
+      >
+        <SquarePen class="h-4 w-4 shrink-0" aria-hidden="true" />
+        <span class="truncate">{{ noteTitle(note) }}</span>
+      </button>
+    </div>
+
     <button
-      v-if="item.note"
-      data-testid="note-control"
+      v-if="item.entryDate"
+      data-testid="add-note-control"
       type="button"
-      class="flex min-h-[44px] min-w-[44px] cursor-pointer items-center gap-2 rounded-xl border-2 border-[#CBD5E1] bg-white/70 px-4 py-2.5 text-left font-quicksand text-sm font-bold text-[#334155] transition-transform hover:bg-white active:translate-y-0.5"
-      :aria-label="`Open linked note: ${noteTitle}`"
-      @click="onOpenNote"
+      class="flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#7CCFE2] bg-[#E8F6FA]/60 px-4 py-2.5 font-quicksand text-sm font-bold text-[#007B99] transition-colors hover:bg-[#E8F6FA] active:translate-y-0.5"
+      :aria-label="`Add a note for ${item.title}`"
+      @click="emit('add-note')"
     >
-      <SquarePen class="h-4 w-4 shrink-0" aria-hidden="true" />
-      <span class="truncate">{{ noteTitle }}</span>
+      <Plus class="h-4 w-4" aria-hidden="true" />
+      Add note
     </button>
 
     <div v-if="item.task">

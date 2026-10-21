@@ -74,7 +74,15 @@ function resolveNote(
   return { id: noteId, title: cached ? cached.title : null }
 }
 
-function buildClassView(dayEvent: DayEvent): CalendarItemDetailView {
+/** Journal entries of the class's course written on the meeting day. */
+function resolveClassNotes(dayEvent: DayEvent, notes: readonly CachedNote[]): LinkedNoteRef[] {
+  const day = dayEvent.start.split(' ')[0]
+  return notes
+    .filter((note) => note.courseId === dayEvent.courseId && note.entryDate === day)
+    .map((note) => ({ id: note.id, title: note.title }))
+}
+
+function buildClassView(dayEvent: DayEvent, notes: readonly CachedNote[]): CalendarItemDetailView {
   const startTime = dayEvent.start.split(' ')[1] ?? ''
   const endTime = dayEvent.end.split(' ')[1] ?? ''
   return {
@@ -84,13 +92,15 @@ function buildClassView(dayEvent: DayEvent): CalendarItemDetailView {
     courseId: dayEvent.courseId,
     timeWindow: formatTimeRange(startTime, endTime),
     duration: null,
-    note: null,
+    notes: resolveClassNotes(dayEvent, notes),
+    entryDate: dayEvent.start.split(' ')[0] ?? null,
     task: null,
   }
 }
 
 function buildTaskView(task: TaskResponse, notes: readonly CachedNote[]): CalendarItemDetailView {
   const duration = task.duration ? formatDuration(task.duration) : ''
+  const note = resolveNote(task.noteId, notes)
   return {
     kind: 'task',
     id: task.id,
@@ -101,7 +111,8 @@ function buildTaskView(task: TaskResponse, notes: readonly CachedNote[]): Calend
       : (PLAN_CATEGORY_LABELS[getPlanCategory(task)] ?? null),
     // An unknown or unparseable duration stays empty (FR-019).
     duration: duration || null,
-    note: resolveNote(task.noteId, notes),
+    notes: note ? [note] : [],
+    entryDate: null,
     task: { id: task.id, completed: task.status === 'COMPLETED' },
   }
 }
@@ -110,6 +121,7 @@ function buildEventView(
   event: AcademicEventResponse,
   notes: readonly CachedNote[],
 ): CalendarItemDetailView {
+  const note = resolveNote(event.noteId, notes)
   return {
     kind: 'event',
     id: event.id,
@@ -118,13 +130,18 @@ function buildEventView(
     timeWindow: formatDeadlineLabel(event.deadline),
     // An academic event carries no duration (FR-017).
     duration: null,
-    note: resolveNote(event.noteId, notes),
+    notes: note ? [note] : [],
+    entryDate: null,
     task: null,
   }
 }
 
 /** Builds the detail view model for a class meeting. */
-export function buildCalendarItemDetail(item: DayEvent, kind: 'class'): CalendarItemDetailView
+export function buildCalendarItemDetail(
+  item: DayEvent,
+  kind: 'class',
+  notes?: readonly CachedNote[],
+): CalendarItemDetailView
 /** Builds the detail view model for an academic task. */
 export function buildCalendarItemDetail(
   item: TaskResponse,
@@ -144,7 +161,7 @@ export function buildCalendarItemDetail(
 ): CalendarItemDetailView {
   switch (kind) {
     case 'class':
-      return buildClassView(item as DayEvent)
+      return buildClassView(item as DayEvent, notes)
     case 'task':
       return buildTaskView(item as TaskResponse, notes)
     case 'event':

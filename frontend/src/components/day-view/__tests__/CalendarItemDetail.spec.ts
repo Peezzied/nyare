@@ -11,7 +11,8 @@ function view(overrides: Partial<CalendarItemDetailView> = {}): CalendarItemDeta
     courseId: 1,
     timeWindow: 'Oct 22, 2026',
     duration: '1.5hr',
-    note: { id: 'note-1', title: 'Lecture 7: Self-Balancing Trees' },
+    notes: [{ id: 'note-1', title: 'Lecture 7: Self-Balancing Trees' }],
+    entryDate: null,
     task: { id: 'task-1', completed: false },
     ...overrides,
   }
@@ -43,7 +44,7 @@ describe('CalendarItemDetail', () => {
   })
 
   it('hides the note control when the item has no note (FR-018)', () => {
-    const wrapper = mount(CalendarItemDetail, { props: { item: view({ note: null }) } })
+    const wrapper = mount(CalendarItemDetail, { props: { item: view({ notes: [] }) } })
 
     expect(wrapper.find('[data-testid="note-control"]').exists()).toBe(false)
   })
@@ -58,7 +59,7 @@ describe('CalendarItemDetail', () => {
 
   it('keeps a generic note label when the cached title is unknown', () => {
     const wrapper = mount(CalendarItemDetail, {
-      props: { item: view({ note: { id: 'note-gone', title: null } }) },
+      props: { item: view({ notes: [{ id: 'note-gone', title: null }] }) },
     })
 
     expect(wrapper.find('[data-testid="note-control"]').exists()).toBe(true)
@@ -72,6 +73,46 @@ describe('CalendarItemDetail', () => {
     expect(wrapper.emitted('open-note')).toEqual([
       [{ id: 'note-1', title: 'Lecture 7: Self-Balancing Trees' }],
     ])
+  })
+
+  it('renders one control per linked note for a class', () => {
+    const wrapper = mount(CalendarItemDetail, {
+      props: {
+        item: view({
+          kind: 'class',
+          task: null,
+          duration: null,
+          notes: [
+            { id: 'note-1', title: 'Lecture 7: Self-Balancing Trees' },
+            { id: 'note-2', title: 'AVL recap before the lab' },
+          ],
+          entryDate: '2026-10-22',
+        }),
+      },
+    })
+
+    expect(wrapper.findAll('[data-testid="note-control"]')).toHaveLength(2)
+    expect(wrapper.text()).toContain('AVL recap before the lab')
+  })
+
+  it('shows the add-note control only when the item has an entryDate', () => {
+    const classItem = mount(CalendarItemDetail, {
+      props: { item: view({ kind: 'class', task: null, entryDate: '2026-10-22' }) },
+    })
+    const taskItem = mount(CalendarItemDetail, { props: { item: view() } })
+
+    expect(classItem.find('[data-testid="add-note-control"]').exists()).toBe(true)
+    expect(taskItem.find('[data-testid="add-note-control"]').exists()).toBe(false)
+  })
+
+  it('emits add-note when the quick action is tapped', async () => {
+    const wrapper = mount(CalendarItemDetail, {
+      props: { item: view({ kind: 'class', task: null, entryDate: '2026-10-22' }) },
+    })
+
+    await wrapper.find('[data-testid="add-note-control"]').trigger('click')
+
+    expect(wrapper.emitted('add-note')).toHaveLength(1)
   })
 
   it('hides the complete control for a class and an event', () => {

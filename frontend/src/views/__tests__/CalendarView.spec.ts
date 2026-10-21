@@ -15,7 +15,14 @@ const mocks = vi.hoisted(() => ({
   // Shared stand-ins for the refs the container touches.
   tasks: { value: [] as TaskResponse[] },
   events: { value: [] as AcademicEventResponse[] },
-  notes: { value: [] as { id: string; title: string | null }[] },
+  notes: {
+    value: [] as {
+      id: string
+      title: string | null
+      courseId?: number
+      entryDate?: string
+    }[],
+  },
   courses: { value: [] as unknown[] },
   schedules: { value: [] as unknown[] },
 }))
@@ -75,7 +82,7 @@ const DaySwiperStub = defineComponent({
 const EventDetailModalStub = defineComponent({
   name: 'EventDetailModal',
   props: { isOpen: Boolean, originRect: Object, item: Object },
-  emits: ['close', 'open-note', 'complete-task'],
+  emits: ['close', 'open-note', 'add-note', 'complete-task'],
   template: '<div />',
 })
 
@@ -142,9 +149,68 @@ describe('CalendarView detail', () => {
       title: 'Implement AVL Tree Rotations',
       timeWindow: 'Oct 14, 2026',
       duration: '1.5hr',
-      note: { id: 'note-1', title: 'Lecture 7: Self-Balancing Trees' },
+      notes: [{ id: 'note-1', title: 'Lecture 7: Self-Balancing Trees' }],
       task: { id: 'task-1', completed: false },
     })
+  })
+
+  it('builds the class detail with same-day linked notes', async () => {
+    mocks.notes.value = [
+      { id: 'note-1', title: 'Lecture 7', courseId: 1, entryDate: '2026-10-22' },
+      { id: 'note-2', title: 'Older lecture', courseId: 1, entryDate: '2026-10-15' },
+    ]
+    const wrapper = mountContainer()
+    await flushPromises()
+
+    wrapper.findComponent(ScheduleCalendarStub).vm.$emit(
+      'select-course',
+      {
+        id: '1',
+        courseId: 1,
+        title: 'CS 201 - Data Structures & Algorithms',
+        start: '2026-10-22 09:00',
+        end: '2026-10-22 10:30',
+        detail: '',
+        colorTheme: 'green',
+      },
+      null,
+    )
+    await nextTick()
+
+    expect(wrapper.findComponent(EventDetailModalStub).props('item')).toMatchObject({
+      kind: 'class',
+      entryDate: '2026-10-22',
+      notes: [{ id: 'note-1', title: 'Lecture 7' }],
+    })
+  })
+
+  it('opens a new note prefilled with the class course and day on add-note', async () => {
+    const wrapper = mountContainer()
+    await flushPromises()
+
+    wrapper.findComponent(ScheduleCalendarStub).vm.$emit(
+      'select-course',
+      {
+        id: '1',
+        courseId: 1,
+        title: 'CS 201 - Data Structures & Algorithms',
+        start: '2026-10-22 09:00',
+        end: '2026-10-22 10:30',
+        detail: '',
+        colorTheme: 'green',
+      },
+      null,
+    )
+    await nextTick()
+
+    wrapper.findComponent(EventDetailModalStub).vm.$emit('add-note')
+    await nextTick()
+
+    expect(mocks.push).toHaveBeenCalledWith({
+      name: 'note-new',
+      query: { courseId: 1, entryDate: '2026-10-22' },
+    })
+    expect(wrapper.findComponent(EventDetailModalStub).props('isOpen')).toBe(false)
   })
 
   it('reads the notes from the shared cache instead of a second list call', async () => {
@@ -224,7 +290,12 @@ describe('CalendarView detail', () => {
 
     mocks.tasks.value = [
       ...mocks.tasks.value,
-      { ...OPEN_TASK, id: 'task-2', title: 'Review graph proofs', scheduledDate: toDateKey(new Date()) },
+      {
+        ...OPEN_TASK,
+        id: 'task-2',
+        title: 'Review graph proofs',
+        scheduledDate: toDateKey(new Date()),
+      },
     ]
     await nextTick()
 

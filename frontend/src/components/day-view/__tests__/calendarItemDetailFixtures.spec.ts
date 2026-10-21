@@ -20,6 +20,7 @@ describe('CALENDAR_ITEM_DETAIL_FIXTURES', () => {
 
     expect(names).toEqual([
       'class-with-window',
+      'class-with-notes',
       'task-with-note-and-duration',
       'task-without-note',
       'task-without-duration',
@@ -102,6 +103,25 @@ describe('detail states', () => {
     expect(wrapper.find('[data-testid="detail-duration"]').exists()).toBe(false)
     expect(wrapper.find('[data-testid="note-control"]').exists()).toBe(false)
     expect(wrapper.find('[data-testid="complete-control"]').exists()).toBe(false)
+  })
+
+  it('lists the linked notes and the add-note action for a class', () => {
+    const wrapper = render('class-with-notes')
+
+    expect(wrapper.findAll('[data-testid="note-control"]')).toHaveLength(2)
+    expect(wrapper.find('[data-testid="add-note-control"]').exists()).toBe(true)
+  })
+
+  it('keeps the add-note action on a class without notes', () => {
+    expect(render('class-with-window').find('[data-testid="add-note-control"]').exists()).toBe(true)
+  })
+
+  it('hides the add-note action on tasks and events', () => {
+    for (const entry of CALENDAR_ITEM_DETAIL_FIXTURES) {
+      if (entry.item.kind === 'class') continue
+      const wrapper = mount(CalendarItemDetail, { props: { item: entry.item } })
+      expect(wrapper.find('[data-testid="add-note-control"]').exists()).toBe(false)
+    }
   })
 })
 
