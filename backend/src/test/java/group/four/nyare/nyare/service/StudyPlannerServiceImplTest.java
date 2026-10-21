@@ -539,6 +539,37 @@ class StudyPlannerServiceImplTest {
     }
 
     @Test
+    @DisplayName("processNotes ignores generated titles for notes with custom titles")
+    void processNotes_noteTitleForCustomTitledNote_keepsExistingTitle() {
+        // given
+        UUID noteId = UUID.randomUUID();
+        Course course = courseWithId(1L, "CS101");
+        Note note = noteWithCourse(course);
+        note.setTitle("Chapter 4 Notes");
+        ReflectionTestUtils.setField(note, "id", noteId);
+
+        StudyPlannerEngine.ExtractedData extracted = new StudyPlannerEngine.ExtractedData(
+                List.of(), List.of(), List.of(), Map.of(noteId, "AI Replacement Title"));
+
+        when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(taskRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
+        when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+
+        // when
+        service.processNotes(DATE, USER_ID);
+
+        // then
+        assertThat(note.getTitle()).isEqualTo("Chapter 4 Notes");
+    }
+
+    @Test
     @DisplayName("processNotes cancelled before first date throws CancellationException and skips engine")
     void processNotes_listenerCancelledBeforeFirstDate_throwsCancellationAndSkipsEngine() {
         // given

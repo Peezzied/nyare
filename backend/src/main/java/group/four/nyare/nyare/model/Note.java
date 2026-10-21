@@ -36,6 +36,8 @@ import java.util.UUID;
 @EntityListeners(AuditingEntityListener.class)
 public class Note {
 
+    public static final String DEFAULT_TITLE = "Untitled Note";
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false, updatable = false)
@@ -109,7 +111,7 @@ public class Note {
      * @param entryDate the entry date
      */
     public Note(Course course, String content, LocalDate entryDate) {
-        this(course, "Untitled Note", content, entryDate);
+        this(course, DEFAULT_TITLE, content, entryDate);
     }
 
     /**
@@ -119,7 +121,7 @@ public class Note {
      * @param content the markdown note content
      */
     public Note(Course course, String content) {
-        this(course, "Untitled Note", content, LocalDate.now());
+        this(course, DEFAULT_TITLE, content, LocalDate.now());
     }
 
     public UUID getId() {
@@ -172,6 +174,14 @@ public class Note {
 
     public void setLastProcessedAt(Instant lastProcessedAt) {
         this.lastProcessedAt = lastProcessedAt;
+    }
+
+    /**
+     * Returns true when the note still carries the default or a blank title,
+     * marking it eligible for AI-generated titles during journal processing.
+     */
+    public boolean requiresGeneratedTitle() {
+        return title == null || title.isBlank() || DEFAULT_TITLE.equalsIgnoreCase(title.trim());
     }
 
     public LocalDate getEntryDate() {

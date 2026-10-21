@@ -77,7 +77,7 @@ class NoteServiceImplTest {
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response.getTitle()).isEqualTo("Lecture 1");
+        assertThat(response.getTitle()).isEqualTo("Untitled Note");
         assertThat(response.getContent()).isEqualTo("Lecture 1");
     }
 
@@ -126,7 +126,7 @@ class NoteServiceImplTest {
     }
 
     @Test
-    void createNote_withNullTitle_generatesFallbackTitleFromContent() {
+    void createNote_withNullTitle_defaultsToUntitledNote() {
         // given
         NoteRequest request = new NoteRequest(1L, null, "# Heading Title\nBody content");
         when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
@@ -137,7 +137,7 @@ class NoteServiceImplTest {
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response.getTitle()).isEqualTo("Heading Title");
+        assertThat(response.getTitle()).isEqualTo("Untitled Note");
         assertThat(response.getContent()).isEqualTo("# Heading Title\nBody content");
     }
 
@@ -157,10 +157,10 @@ class NoteServiceImplTest {
     }
 
     @Test
-    void createNote_withLongFirstLine_truncatesFallbackTitleToSixtyChars() {
+    void createNote_withBlankTitleAndHeadingContent_stillDefaultsToUntitledNote() {
         // given
         String longLine = "A".repeat(80);
-        NoteRequest request = new NoteRequest(1L, null, "## " + longLine);
+        NoteRequest request = new NoteRequest(1L, "  ", "## " + longLine);
         when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
         when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -169,7 +169,7 @@ class NoteServiceImplTest {
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response.getTitle()).isEqualTo("A".repeat(60));
+        assertThat(response.getTitle()).isEqualTo("Untitled Note");
     }
 
     @Test
@@ -247,7 +247,7 @@ class NoteServiceImplTest {
     }
 
     @Test
-    void updateNote_withNullTitleAndDefaultExistingTitle_computesFallbackTitle() {
+    void updateNote_withNullTitleAndDefaultExistingTitle_keepsUntitledNote() {
         // given
         Note defaultNote = new Note(course, "Untitled Note", "Original content");
         NoteRequest request = new NoteRequest(1L, null, "### New Section Header\nNew body");
@@ -260,7 +260,7 @@ class NoteServiceImplTest {
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response.getTitle()).isEqualTo("New Section Header");
+        assertThat(response.getTitle()).isEqualTo("Untitled Note");
         assertThat(response.getContent()).isEqualTo("### New Section Header\nNew body");
     }
 
