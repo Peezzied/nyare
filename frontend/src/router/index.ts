@@ -36,22 +36,6 @@ const router = createRouter({
       component: () => import('@/views/OnboardingSuccessView.vue'),
     },
     {
-      path: '/tasks/:id',
-      name: 'task-detail',
-      component: () => import('@/views/TaskDetailView.vue'),
-    },
-    // Optional query params `courseId` and `entryDate` prefill the new note.
-    {
-      path: '/notes/new',
-      name: 'note-new',
-      component: () => import('../views/NoteEditor.vue'),
-    },
-    {
-      path: '/notes/:id',
-      name: 'note-edit',
-      component: () => import('../views/NoteEditor.vue'),
-    },
-    {
       path: '/select-account',
       alias: '/accounts',
       name: 'select-account',
@@ -68,6 +52,18 @@ const router = createRouter({
           name: 'tasks',
           component: () => import('@/views/TodoView.vue'),
         },
+        // The task overlay lives inside TodoView; these routes drive it by
+        // name so the row morph and the list stay mounted.
+        {
+          path: '/tasks/new',
+          name: 'task-new',
+          component: () => import('@/views/TodoView.vue'),
+        },
+        {
+          path: '/tasks/:id',
+          name: 'task-detail',
+          component: () => import('@/views/TodoView.vue'),
+        },
         {
           path: '/calendar',
           name: 'calendar',
@@ -76,6 +72,19 @@ const router = createRouter({
         {
           path: '/notes',
           name: 'notes',
+          component: () => import('../views/NotesView.vue'),
+        },
+        // The editor overlay lives inside NotesView; these routes drive it by
+        // name so the card morph and the list stay mounted. Optional query
+        // params `courseId` and `entryDate` prefill the new note.
+        {
+          path: '/notes/new',
+          name: 'note-new',
+          component: () => import('../views/NotesView.vue'),
+        },
+        {
+          path: '/notes/:id',
+          name: 'note-edit',
           component: () => import('../views/NotesView.vue'),
         },
         {
@@ -110,6 +119,7 @@ const GATED_WHEN_NOT_ONBOARDED = [
   'notes',
   'note-new',
   'note-edit',
+  'task-new',
   'task-detail',
 ]
 

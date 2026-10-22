@@ -188,8 +188,6 @@ describe('router session guard', () => {
 
     // Imported after loadRouter so it resolves to the same module instance.
     const { useToasts } = await import('@/composables/useToasts')
-    expect(
-      useToasts().toasts.value.some((t) => t.title === 'Session ended'),
-    ).toBe(true)
+    expect(useToasts().toasts.value.some((t) => t.title === 'Session ended')).toBe(true)
   })
 })

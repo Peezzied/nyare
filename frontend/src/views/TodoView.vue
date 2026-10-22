@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, h, onActivated, onMounted } from 'vue'
+import { ref, computed, h, onActivated, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import HamburgerMenu from '@/components/HamburgerMenu.vue'
 import AddFab from '@/components/AddFab.vue'
 import { Button } from '@/components/ui/button'
@@ -15,7 +16,11 @@ import { useToasts } from '@/composables/useToasts'
 import { useUndoableTaskDelete } from '@/composables/useUndoableTaskDelete'
 import { getPlanCategory } from '@/utils/planCategory'
 import { useShellHeader } from '@/composables/useShellHeader'
-import { toTapOriginRect } from '@/composables/useNoteTransition'
+import {
+  setNoteMorphOrigin,
+  takeNoteMorphOrigin,
+  toTapOriginRect,
+} from '@/composables/useNoteTransition'
 import TaskRow from '@/components/TaskRow.vue'
 import TaskContainerModal from '@/components/tasks/TaskContainerModal.vue'
 import TaskQuickActionsSheet from '@/components/tasks/TaskQuickActionsSheet.vue'
@@ -31,69 +36,55 @@ type ActiveFilter = 'ALL' | 'OVERDUE' | PlanCategory
 
 useShellHeader({ title: 'To-do', left: () => h(HamburgerMenu) })
 
+const route = useRoute()
+const router = useRouter()
 const catalog = useCatalog()
 const { tasks, loadTasks, updateTask, updateTaskStatus } = useTasks()
 const { deleteTaskWithUndo } = useUndoableTaskDelete()
 const loading = ref(true)
 const activeFilter = ref<ActiveFilter>('ALL')
 
-interface TaskModalState {
-  open: boolean
-  taskId: string | null
-  originRect: TapOriginRect | null
-  triggerKind: 'row' | 'fab'
-}
+// The route drives the overlay: /tasks/new creates, /tasks/:id edits, /tasks lists.
+const modalOpen = computed(() => route.name === 'task-new' || route.name === 'task-detail')
+const modalTaskId = computed(() => (route.name === 'task-detail' ? String(route.params.id) : null))
+const modalOrigin = ref<TapOriginRect | null>(null)
 
-const taskModal = ref<TaskModalState>({
-  open: false,
-  taskId: null,
-  originRect: null,
-  triggerKind: 'fab',
-})
-
-function openTaskModal(options: {
-  taskId: string | null
-  originRect: TapOriginRect | null
-  triggerKind: 'row' | 'fab'
-}) {
-  // A second tap while the overlay is up or animating is ignored.
-  if (taskModal.value.open) {
-    return
-  }
-  taskModal.value = {
-    open: true,
-    taskId: options.taskId,
-    originRect: options.originRect,
-    triggerKind: options.triggerKind,
-  }
-}
+// Consume the stored tap rect exactly when the overlay opens, so a remount
+// during navigation or an open without a tap never replays a stale origin.
+watch(
+  modalOpen,
+  (open) => {
+    if (open) {
+      modalOrigin.value = takeNoteMorphOrigin()
+    }
+  },
+  { immediate: true },
+)
 
 function newTask(event?: Event) {
-  if (taskModal.value.open) {
+  if (modalOpen.value) {
     return
   }
   const el = (event?.currentTarget ?? event?.target) as Element | null
-  openTaskModal({
-    taskId: null,
-    originRect: el ? toTapOriginRect(el) : null,
-    triggerKind: 'fab',
-  })
+  setNoteMorphOrigin(el ? toTapOriginRect(el) : null)
+  void router.push({ name: 'task-new' })
 }
 
 function openTaskFromRow(task: TaskResponse, event?: Event) {
-  if (taskModal.value.open) {
+  if (modalOpen.value) {
     return
   }
   const el = (event?.currentTarget ?? event?.target) as Element | null
-  openTaskModal({
-    taskId: task.id,
-    originRect: el ? toTapOriginRect(el) : null,
-    triggerKind: 'row',
-  })
+  setNoteMorphOrigin(el ? toTapOriginRect(el) : null)
+  void router.push({ name: 'task-detail', params: { id: task.id } })
 }
 
-function closeTaskModal() {
-  taskModal.value = { ...taskModal.value, open: false }
+function onModalClosed() {
+  if (window.history.state?.back) {
+    router.back()
+  } else {
+    void router.replace({ name: 'tasks' })
+  }
 }
 
 function onTaskDeleted(task: TaskResponse) {
@@ -134,7 +125,9 @@ function applySchedule(date: string | null) {
 
 function applyDuration(minutes: number | null) {
   const label =
-    minutes === null ? 'Duration cleared' : `Duration set to ${formatDuration(minutesToDuration(minutes))}`
+    minutes === null
+      ? 'Duration cleared'
+      : `Duration set to ${formatDuration(minutesToDuration(minutes))}`
   void patchTask({ durationMinutes: minutes }, label)
 }
 
@@ -247,7 +240,7 @@ onActivated(loadData)
 
 <template>
   <div class="relative flex h-full flex-col bg-(--color-app-bg) text-(--color-text-main)">
-    <div class="min-h-0 flex-1 overflow-y-auto pb-6">
+    <div class="min-h-0 flex-1 overflow-y-auto pb-26">
       <div class="overflow-x-auto px-4 pt-3 pb-2" style="scrollbar-width: none">
         <div
           class="mx-auto inline-flex w-max rounded-full border border-(--color-app-border) bg-(--color-card) p-1"
@@ -338,10 +331,10 @@ onActivated(loadData)
     <AddFab label="Add task" data-testid="tasks-fab" @click="newTask($event)" />
 
     <TaskContainerModal
-      :is-open="taskModal.open"
-      :task-id="taskModal.taskId"
-      :origin-rect="taskModal.originRect"
-      @close="closeTaskModal"
+      :is-open="modalOpen"
+      :task-id="modalTaskId"
+      :origin-rect="modalOrigin"
+      @close="onModalClosed"
       @deleted="onTaskDeleted"
     />
 

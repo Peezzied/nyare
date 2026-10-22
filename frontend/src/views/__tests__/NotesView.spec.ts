@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { defineComponent, h, toValue } from 'vue'
+import { defineComponent, h, reactive, toValue } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import { routerKey, routeLocationKey } from 'vue-router'
 import NotesView from '../NotesView.vue'
@@ -15,15 +15,23 @@ import type { NoteSummaryResponse } from '@/types/api'
 const mockPush = vi.fn<(path: string | { name: string; params?: { id: string } }) => Promise<void>>(
   () => Promise.resolve(),
 )
+const mockReplace = vi.fn<(location: { name: string }) => Promise<void>>(() => Promise.resolve())
+const mockRoute = reactive({
+  name: 'notes',
+  params: {} as Record<string, string>,
+  query: {} as Record<string, string>,
+})
 
 vi.mock('vue-router', () => {
   const routerKey = Symbol('routerKey')
   const routeLocationKey = Symbol('routeLocationKey')
   const routerStub = {
     push: (path: string | { name: string; params?: { id: string } }) => mockPush(path),
+    replace: (location: { name: string }) => mockReplace(location),
   }
   return {
     useRouter: () => routerStub,
+    useRoute: () => mockRoute,
     routerKey,
     routeLocationKey,
   }
@@ -48,7 +56,7 @@ function mockCatalog(): void {
   vi.spyOn(schedulesApi, 'list').mockResolvedValue([])
 }
 
-// NoteEditor uses useRoute, which the vue-router mock above does not provide.
+// The modal hosts the async NoteEditor; stub it so tests skip the heavy editor.
 const NoteEditorStub = defineComponent({
   name: 'NoteEditor',
   setup() {
@@ -91,6 +99,10 @@ describe('NotesView', () => {
     useCatalog().resetCatalog()
     useNotes().resetNotes()
     mockPush.mockClear()
+    mockReplace.mockClear()
+    mockRoute.name = 'notes'
+    mockRoute.params = {}
+    mockRoute.query = {}
   })
 
   it('renders cards in the grid', async () => {
@@ -198,13 +210,10 @@ describe('NotesView', () => {
 
     await fab.trigger('click')
 
-    const modal = wrapper.findComponent(NoteEditorModal)
-    expect(modal.props('isOpen')).toBe(true)
-    expect(modal.props('noteId')).toBeNull()
-    expect(mockPush).not.toHaveBeenCalled()
+    expect(mockPush).toHaveBeenCalledWith({ name: 'note-new' })
   })
 
-  it('opens the editor modal for the clicked note without routing', async () => {
+  it('routes to the note editor for the clicked note', async () => {
     mockCatalog()
     vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
 
@@ -212,16 +221,29 @@ describe('NotesView', () => {
     await flushPromises()
 
     await wrapper.get('[data-testid="note-card"]').trigger('click')
+    await flushPromises()
+
+    expect(mockPush).toHaveBeenCalledWith({ name: 'note-edit', params: { id: 'note-1' } })
+  })
+
+  it('opens the editor modal when the route targets a note', async () => {
+    mockRoute.name = 'note-edit'
+    mockRoute.params = { id: 'note-1' }
+    mockCatalog()
+    vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
+
+    const wrapper = mountView()
     await flushPromises()
 
     const modal = wrapper.findComponent(NoteEditorModal)
     expect(modal.props('isOpen')).toBe(true)
     expect(modal.props('noteId')).toBe('note-1')
     expect(wrapper.find('[data-testid="note-editor-modal"]').exists()).toBe(true)
-    expect(mockPush).not.toHaveBeenCalled()
   })
 
   it('ignores a second open trigger while the modal is open', async () => {
+    mockRoute.name = 'note-edit'
+    mockRoute.params = { id: 'note-1' }
     mockCatalog()
     vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
 
@@ -231,44 +253,27 @@ describe('NotesView', () => {
     await wrapper.get('[data-testid="note-card"]').trigger('click')
     await flushPromises()
 
-    await wrapper.get('[data-testid="notes-fab"]').trigger('click')
-    await flushPromises()
-
-    expect(wrapper.findComponent(NoteEditorModal).props('noteId')).toBe('note-1')
+    expect(mockPush).not.toHaveBeenCalled()
   })
 
-  it('closes the modal on popstate without a route push and preserves scroll', async () => {
-    vi.useFakeTimers()
-    vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => {
-      cb(0)
-      return 0
-    })
-    const scrollSpy = vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
+  it('returns to the notes list route when the modal closes', async () => {
+    mockRoute.name = 'note-edit'
+    mockRoute.params = { id: 'note-1' }
     mockCatalog()
     vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
 
     const wrapper = mountView()
     await flushPromises()
 
-    await wrapper.get('[data-testid="note-card"]').trigger('click')
+    await wrapper.findComponent(NoteEditorModal).vm.$emit('close')
     await flushPromises()
 
-    expect(wrapper.find('[data-testid="note-editor-modal"]').exists()).toBe(true)
-
-    window.dispatchEvent(new Event('popstate'))
-    await vi.advanceTimersByTimeAsync(300)
-    await flushPromises()
-
-    expect(wrapper.find('[data-testid="note-editor-modal"]').exists()).toBe(false)
-    expect(mockPush).not.toHaveBeenCalled()
-    expect(scrollSpy).not.toHaveBeenCalled()
-
-    wrapper.unmount()
-    vi.useRealTimers()
-    vi.unstubAllGlobals()
+    expect(mockReplace).toHaveBeenCalledWith({ name: 'notes' })
   })
 
   it('does not refetch the notes list when the editor saves', async () => {
+    mockRoute.name = 'note-edit'
+    mockRoute.params = { id: 'note-1' }
     mockCatalog()
     const list = vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
 

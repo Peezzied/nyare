@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, h, onActivated, onMounted, ref } from 'vue'
+import { computed, h, onActivated, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { Search } from '@lucide/vue'
 import NoteCard from '@/components/NoteCard.vue'
 import HeaderIconButton from '@/components/HeaderIconButton.vue'
@@ -7,11 +8,15 @@ import NoteEditorModal from '@/components/notes/NoteEditorModal.vue'
 import AddFab from '@/components/AddFab.vue'
 import HamburgerMenu from '@/components/HamburgerMenu.vue'
 import type { NoteSummaryResponse } from '@/types/api'
-import type { NoteModalTriggerKind, TapOriginRect } from '@/types/notesTransition'
+import type { TapOriginRect } from '@/types/notesTransition'
 import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
 import { useShellHeader } from '@/composables/useShellHeader'
-import { toTapOriginRect } from '@/composables/useNoteTransition'
+import {
+  setNoteMorphOrigin,
+  takeNoteMorphOrigin,
+  toTapOriginRect,
+} from '@/composables/useNoteTransition'
 import { extractFirstImageUrl } from '@/utils/noteImage'
 
 defineOptions({ name: 'NotesView' })
@@ -30,45 +35,51 @@ const catalog = useCatalog()
 
 const rootEl = ref<HTMLElement | null>(null)
 
-const modalOpen = ref(false)
-const modalNoteId = ref<string | null>(null)
-const modalOrigin = ref<TapOriginRect | null>(null)
-const modalTrigger = ref<NoteModalTriggerKind | null>(null)
+const route = useRoute()
+const router = useRouter()
 
-function openModal(options: {
-  originRect: TapOriginRect | null
-  noteId: string | null
-  triggerKind: NoteModalTriggerKind
-}) {
+// The route drives the overlay: /notes/new creates, /notes/:id edits, /notes lists.
+const modalOpen = computed(() => route.name === 'note-new' || route.name === 'note-edit')
+const modalNoteId = computed(() => (route.name === 'note-edit' ? String(route.params.id) : null))
+const modalOrigin = ref<TapOriginRect | null>(null)
+
+// Consume the stored tap rect exactly when the overlay opens, so a remount
+// during navigation or an open without a tap never replays a stale origin.
+watch(
+  modalOpen,
+  (open) => {
+    if (open) {
+      modalOrigin.value = takeNoteMorphOrigin()
+    }
+  },
+  { immediate: true },
+)
+
+function openNote(id: string, event?: Event) {
   // A second tap while the overlay is up is a fast double-tap; ignore it.
   if (modalOpen.value) {
     return
   }
-
-  modalOrigin.value = options.originRect
-  modalNoteId.value = options.noteId
-  modalTrigger.value = options.triggerKind
-  modalOpen.value = true
-}
-
-function openNote(id: string, event?: Event) {
   const el = (event?.currentTarget ?? event?.target) as Element | null
-
-  openModal({
-    originRect: el ? toTapOriginRect(el) : null,
-    noteId: id,
-    triggerKind: 'card',
-  })
+  setNoteMorphOrigin(el ? toTapOriginRect(el) : null)
+  void router.push({ name: 'note-edit', params: { id } })
 }
 
 function newNote(event?: Event) {
+  if (modalOpen.value) {
+    return
+  }
   const el = event?.currentTarget as Element | null
+  setNoteMorphOrigin(el ? toTapOriginRect(el) : null)
+  void router.push({ name: 'note-new' })
+}
 
-  openModal({
-    originRect: el ? toTapOriginRect(el) : null,
-    noteId: null,
-    triggerKind: 'fab',
-  })
+function onModalClosed() {
+  if (window.history.state?.back) {
+    router.back()
+  } else {
+    void router.replace({ name: 'notes' })
+  }
 }
 const { notes, loading, error, loadNotes, getCourseName, getBadgeColor } = useNotes()
 
@@ -158,7 +169,7 @@ onActivated(loadData)
       :is-open="modalOpen"
       :note-id="modalNoteId"
       :origin-rect="modalOrigin"
-      @close="modalOpen = false"
+      @close="onModalClosed"
     />
   </div>
 </template>

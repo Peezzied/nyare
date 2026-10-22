@@ -7,7 +7,7 @@ import type { TaskResponse } from '@/types/api'
 
 const TaskDetailPanelStub = defineComponent({
   name: 'TaskDetailPanel',
-  props: ['taskId', 'showContent', 'showControls', 'embedded'],
+  props: ['taskId', 'showContent', 'showControls'],
   emits: ['close', 'deleted', 'missing'],
   setup() {
     return () => h('div', { 'data-testid': 'task-detail-stub' })
