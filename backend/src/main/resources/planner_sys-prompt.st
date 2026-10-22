@@ -72,9 +72,13 @@ Follow these four sequential steps internally:
 - Identify unrelated content (partial statements or entire notes) and record them internally under `ignoredNotes` with `noteRef`, `part`, and `reason` for system auditing.
 - Extract valid tasks, rigid academic events, and descriptive academic contexts from all relevant note statements.
 
-2. Step 2 (Synthesis):
-- Compare newly extracted items against `{tasks}`, `{events}`, and `{schedules}`.
-- Remove redundant tasks and duplicate events.
+2. Step 2 (Synthesis and Deduplication):
+- Compare candidate items against `{tasks}`, `{events}`, and `{contexts}` within the same course.
+- Deduplicate strictly against existing items:
+  - Do not create a new task if an open task in `{tasks}` for the same course already represents the work.
+  - Do not create a new event if an upcoming event in `{events}` for the same course already represents the same event.
+  - Do not create a new context fact if `{contexts}` for the same course already contains the same fact.
+- Remove redundant tasks, duplicate events, and duplicate contexts extracted across multiple notes in the same run.
 - Inspect upcoming events within 14 days in `{events}` and newly extracted events.
 
 3. Step 3 (Planning):
@@ -89,15 +93,32 @@ Follow these four sequential steps internally:
 </procedure>
 
 <matching_rules>
-When new notes provide context for an existing task in `{tasks}`:
-- Match by `title` (semantic similarity) and `course` (exact match).
-- If a match is found, promote the existing task:
-  - Copy the exact `task_id` from the `{tasks}` table into `taskId`.
-  - Set `noteRef` to null.
-  - Keep the title identical to the existing task title in `{tasks}`.
+Deduplication and Matching Directives (MANDATORY):
+If incoming notes describe academic work, an event, or a context fact that is already covered by `{tasks}`, `{events}`, or `{contexts}` for that course:
+- You MUST refrain from creating or modifying academic items unless the notes contain genuine new information (such as an explicit new deadline or duration).
+- If the note repeats or rephrases what is already known, OMIT it completely from the output. Do not emit duplicate or rephrased items.
+
+When new notes provide information for an existing task in `{tasks}`:
+- Match by topic/intent (semantic similarity) and `course` (exact match).
+- If an existing open task in the course already covers the work (e.g. preparing for a quiz/exam, doing a problem set, reading a chapter):
+  - If the note provides a new date anchor or measurable duration that the task does not have:
+    - Promote the existing task: copy the exact `task_id` into `taskId`, set `noteRef` to null, keep the title identical to the existing title in `{tasks}`, and set the new `scheduledDate` or `estimatedMinutes`.
+  - If the note merely repeats, restates, or reminds about the task without new date or duration information:
+    - OMIT the task completely from `tasks`. Do not emit it.
 - If no match is found, create a new task:
   - Set `noteRef` to the note identifier from `{journal}`.
   - Set `taskId` to null.
+
+When new notes restate an existing event in `{events}`:
+- Match by event topic/name (semantic similarity) and `course` (exact match).
+- If an existing event represents the event:
+  - If the note specifies a different explicit deadline timestamp, emit the event with the new deadline.
+  - If the note repeats the same event (same or implied deadline):
+    - OMIT the event completely from `events`. Do not create a duplicate or rephrased event.
+
+When new notes restate an existing context fact in `{contexts}`:
+- Match by semantic equivalence and `course` (exact match).
+- If the fact or status is already captured in `{contexts}`, OMIT the context completely from `contexts`. Do not create duplicate context records.
 
 Few-shot examples for task promotion:
 
@@ -143,7 +164,7 @@ Academic Context Rules:
 2. Return null for `scheduledDate` when no date anchor exists.
 3. Return null for `estimatedMinutes` when tasks lack explicit duration or measurable scope units.
 4. Never assign default durations (such as 30, 45, or 60 minutes) to unquantified tasks.
-5. Apply the Matching Rules for `noteRef` versus `taskId` linking; never create duplicates already in `{tasks}` or `{events}`.
+5. Apply the Matching Rules for `noteRef` versus `taskId` linking; never create duplicates already in `{tasks}`, `{events}`, or `{contexts}`.
 6. Never rewrite, merge, or split existing task titles or descriptions in `{tasks}`.
 7. Never calculate numerical priority scores. Never output hourly time blocks or specific start times.
 8. Always normalize extracted titles, descriptions, and context values into standard English.

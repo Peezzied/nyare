@@ -26,6 +26,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Duration;
@@ -210,16 +212,9 @@ class StudyPlannerServiceImplTest {
 
         ProcessSummaryResponse summary = service.processNotes(USER_ID);
 
-        // Verify chronological execution order and cleanup
-        InOrder inOrder = inOrder(studyPlannerEngine, taskRepository, academicEventRepository, academicContextRepository);
-        inOrder.verify(taskRepository).deleteByNoteInAndStatusNot(List.of(noteDay1), TaskStatus.COMPLETED);
-        inOrder.verify(academicEventRepository).deleteByNoteIn(List.of(noteDay1));
-        inOrder.verify(academicContextRepository).deleteByNoteIn(List.of(noteDay1));
+        // Verify chronological execution order
+        InOrder inOrder = inOrder(studyPlannerEngine);
         inOrder.verify(studyPlannerEngine).process(eq(List.of(noteDay1)), any(), any(), any(), any(), any());
-
-        inOrder.verify(taskRepository).deleteByNoteInAndStatusNot(List.of(noteDay2), TaskStatus.COMPLETED);
-        inOrder.verify(academicEventRepository).deleteByNoteIn(List.of(noteDay2));
-        inOrder.verify(academicContextRepository).deleteByNoteIn(List.of(noteDay2));
         inOrder.verify(studyPlannerEngine).process(eq(List.of(noteDay2)), any(), any(), any(), any(), any());
 
         // Verify aggregated summary
@@ -231,6 +226,34 @@ class StudyPlannerServiceImplTest {
         // Verify notes stamped with lastProcessedAt
         assertThat(noteDay1.getLastProcessedAt()).isNotNull();
         assertThat(noteDay2.getLastProcessedAt()).isNotNull();
+    }
+
+    @Test
+    @ExtendWith(OutputCaptureExtension.class)
+    @DisplayName("processNotes audits run trigger and completion with user scope")
+    void processNotes_auditsTriggerAndCompletion(CapturedOutput output) {
+        Course course = courseWithId(1L, "CS101");
+        Note note = new Note(course, "Content", LocalDate.of(2026, 10, 1));
+        when(noteRepository.findDirtyNotes(USER_ID, false)).thenReturn(List.of(note));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+                .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of()));
+        when(taskRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
+        when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+
+        service.processNotes(USER_ID);
+
+        assertThat(output.getAll())
+                .contains("[AI AUDIT - PROCESS TRIGGERED] UserId: " + USER_ID)
+                .contains("Notes: 1")
+                .contains("Dates: 2026-10-01")
+                .contains("Courses: CS101")
+                .contains("[AI AUDIT - PROCESS COMPLETED] UserId: " + USER_ID);
     }
 
     @Test
@@ -661,6 +684,486 @@ class StudyPlannerServiceImplTest {
         InOrder inOrder = inOrder(listener);
         inOrder.verify(listener).onDateStarted(day1, 1, 2);
         inOrder.verify(listener).onDateStarted(day2, 2, 2);
+    }
+
+    // --- Deduplication & Enrichment Tests (012-ai-extraction-dedup) ---
+
+    @Test
+    @DisplayName("US1: Restating an existing open task creates zero new tasks and leaves existing task unchanged")
+    void processNotes_restatingExistingOpenTask_createsZeroTasksAndLeavesExistingUnchanged() {
+        // given
+        Course course = courseWithId(1L, "CS101");
+        Note note = noteWithCourse(course);
+        UUID noteId = UUID.randomUUID();
+        ReflectionTestUtils.setField(note, "id", noteId);
+
+        Task existingTask = new Task(course, "Read chapter 4");
+        UUID taskId = UUID.randomUUID();
+        ReflectionTestUtils.setField(existingTask, "id", taskId);
+        existingTask.setDescription("Initial description");
+        existingTask.setScheduledDate(LocalDate.of(2026, 10, 5));
+        existingTask.setDuration(Duration.ofMinutes(45));
+
+        // Note repeats the task without new date/duration info, extracted as a new task candidate with same title
+        StudyPlannerEngine.ExtractedTask candidateTask = new StudyPlannerEngine.ExtractedTask(
+                "n1", null, noteId, "Read chapter 4", "Rushed read chapter 4 description", null, null);
+
+        StudyPlannerEngine.ExtractedData extracted = new StudyPlannerEngine.ExtractedData(
+                List.of(candidateTask), List.of(), List.of());
+
+        when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of(existingTask));
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(taskRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+        when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
+        when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+
+        // when
+        ProcessSummaryResponse summary = service.processNotes(DATE, USER_ID);
+
+        // then
+        assertThat(summary.getTasksCreated()).isZero();
+        assertThat(summary.getTasksPromoted()).isZero();
+        assertThat(existingTask.getTitle()).isEqualTo("Read chapter 4");
+        assertThat(existingTask.getDescription()).isEqualTo("Initial description");
+        assertThat(existingTask.getScheduledDate()).isEqualTo(LocalDate.of(2026, 10, 5));
+        assertThat(existingTask.getDuration()).isEqualTo(Duration.ofMinutes(45));
+
+        ArgumentCaptor<List<Task>> taskCaptor = ArgumentCaptor.forClass(List.class);
+        verify(taskRepository).saveAll(taskCaptor.capture());
+        List<Task> savedTasks = taskCaptor.getValue();
+        // Zero new tasks inserted
+        assertThat(savedTasks.stream().filter(t -> t.getId() == null)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("US1: Rephrased review task for same course and quiz creates zero new tasks and leaves existing task unchanged")
+    void processNotes_rephrasedTaskForSameQuiz_createsZeroTasksAndLeavesExistingUnchanged() {
+        // given
+        Course course = courseWithId(1L, "GE Elective 1");
+        Note note = noteWithCourse(course);
+        UUID noteId = UUID.randomUUID();
+        ReflectionTestUtils.setField(note, "id", noteId);
+
+        Task existingTask = new Task(course, "Review last lesson for quiz");
+        UUID taskId = UUID.randomUUID();
+        ReflectionTestUtils.setField(existingTask, "id", taskId);
+        existingTask.setScheduledDate(LocalDate.of(2026, 10, 22));
+
+        // Note LLM outputs reworded task title: "Review for GE Elective 1 quiz"
+        StudyPlannerEngine.ExtractedTask candidateTask = new StudyPlannerEngine.ExtractedTask(
+                "n1", null, noteId, "Review for GE Elective 1 quiz", "Prepare for the quiz tomorrow", LocalDate.of(2026, 10, 22), null);
+
+        StudyPlannerEngine.ExtractedData extracted = new StudyPlannerEngine.ExtractedData(
+                List.of(candidateTask), List.of(), List.of());
+
+        when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of(existingTask));
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(taskRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+        when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
+        when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+
+        // when
+        ProcessSummaryResponse summary = service.processNotes(DATE, USER_ID);
+
+        // then
+        assertThat(summary.getTasksCreated()).isZero();
+        assertThat(summary.getTasksPromoted()).isZero();
+        assertThat(existingTask.getTitle()).isEqualTo("Review last lesson for quiz");
+    }
+
+    @Test
+    @DisplayName("US1: Restating an upcoming academic event creates zero new events")
+    void processNotes_restatingExistingEvent_createsZeroEvents() {
+        // given
+        Course course = courseWithId(1L, "CS101");
+        Note note = noteWithCourse(course);
+        UUID noteId = UUID.randomUUID();
+        ReflectionTestUtils.setField(note, "id", noteId);
+
+        LocalDateTime deadline = LocalDateTime.of(2026, 10, 30, 10, 0);
+        AcademicEvent existingEvent = new AcademicEvent(course, note, "Calculus Midterm Exam", "Coverage ch 1-4", deadline);
+        ReflectionTestUtils.setField(existingEvent, "id", UUID.randomUUID());
+
+        // Extracted candidate with exact same event title and deadline
+        StudyPlannerEngine.ExtractedEvent candidateEvent = new StudyPlannerEngine.ExtractedEvent(
+                "n1", noteId, "Calculus Midterm Exam", "Midterm exam in 2 weeks", deadline);
+
+        StudyPlannerEngine.ExtractedData extracted = new StudyPlannerEngine.ExtractedData(
+                List.of(), List.of(candidateEvent), List.of());
+
+        when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of(existingEvent));
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(taskRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicEventRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+        when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
+        when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+
+        // when
+        ProcessSummaryResponse summary = service.processNotes(DATE, USER_ID);
+
+        // then
+        assertThat(summary.getEventsCreated()).isZero();
+        ArgumentCaptor<List<AcademicEvent>> eventCaptor = ArgumentCaptor.forClass(List.class);
+        verify(academicEventRepository).saveAll(eventCaptor.capture());
+        List<AcademicEvent> savedEvents = eventCaptor.getValue();
+        assertThat(savedEvents.stream().filter(e -> e.getId() == null)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("US1: Restating an existing academic context fact creates zero new contexts")
+    void processNotes_restatingExistingContext_createsZeroContexts() {
+        // given
+        Course course = courseWithId(1L, "CS101");
+        Note note = noteWithCourse(course);
+        UUID noteId = UUID.randomUUID();
+        ReflectionTestUtils.setField(note, "id", noteId);
+
+        AcademicContext existingContext = new AcademicContext(course, note, "Student finds recursion difficult");
+        ReflectionTestUtils.setField(existingContext, "id", UUID.randomUUID());
+
+        StudyPlannerEngine.ExtractedContext candidateContext = new StudyPlannerEngine.ExtractedContext(
+                "n1", noteId, "Student finds recursion difficult");
+
+        StudyPlannerEngine.ExtractedData extracted = new StudyPlannerEngine.ExtractedData(
+                List.of(), List.of(), List.of(candidateContext));
+
+        when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of(existingContext));
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(taskRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicContextRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+        when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+
+        // when
+        ProcessSummaryResponse summary = service.processNotes(DATE, USER_ID);
+
+        // then
+        assertThat(summary.getContextsCreated()).isZero();
+        ArgumentCaptor<List<AcademicContext>> contextCaptor = ArgumentCaptor.forClass(List.class);
+        verify(academicContextRepository).saveAll(contextCaptor.capture());
+        List<AcademicContext> savedContexts = contextCaptor.getValue();
+        assertThat(savedContexts.stream().filter(c -> c.getId() == null)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("US1: Multiple dirty notes in batch containing identical items deduplicate intra-batch")
+    void processNotes_intraBatchDuplicates_extractsAtMostOnce() {
+        // given
+        Course course = courseWithId(1L, "CS101");
+        Note note1 = noteWithCourse(course);
+        UUID note1Id = UUID.randomUUID();
+        ReflectionTestUtils.setField(note1, "id", note1Id);
+
+        Note note2 = noteWithCourse(course);
+        UUID note2Id = UUID.randomUUID();
+        ReflectionTestUtils.setField(note2, "id", note2Id);
+
+        StudyPlannerEngine.ExtractedTask task1 = new StudyPlannerEngine.ExtractedTask(
+                "n1", null, note1Id, "Finish homework 1", "Homework 1 details", null, null);
+        StudyPlannerEngine.ExtractedTask task2 = new StudyPlannerEngine.ExtractedTask(
+                "n2", null, note2Id, "finish homework 1 ", "Homework 1 again", null, null);
+
+        StudyPlannerEngine.ExtractedData extracted = new StudyPlannerEngine.ExtractedData(
+                List.of(task1, task2), List.of(), List.of());
+
+        when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note1, note2));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(taskRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+        when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
+        when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+
+        // when
+        ProcessSummaryResponse summary = service.processNotes(DATE, USER_ID);
+
+        // then
+        assertThat(summary.getTasksCreated()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("US2: Existing backlog task updates scheduledDate and duration when new info is present")
+    void processNotes_backlogTaskWithNewInfo_updatesDateAndDurationKeepingTitle() {
+        // given
+        Course course = courseWithId(1L, "CS101");
+        Note note = noteWithCourse(course);
+        UUID noteId = UUID.randomUUID();
+        ReflectionTestUtils.setField(note, "id", noteId);
+
+        Task backlogTask = new Task(course, "Work on term paper");
+        UUID taskId = UUID.randomUUID();
+        ReflectionTestUtils.setField(backlogTask, "id", taskId);
+        backlogTask.setDescription("Original student description");
+
+        LocalDate newDate = LocalDate.of(2026, 10, 15);
+        StudyPlannerEngine.ExtractedTask candidateTask = new StudyPlannerEngine.ExtractedTask(
+                "n1", null, noteId, "Work on term paper", "term paper due next Tuesday", newDate, 60);
+
+        StudyPlannerEngine.ExtractedData extracted = new StudyPlannerEngine.ExtractedData(
+                List.of(candidateTask), List.of(), List.of());
+
+        when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of(backlogTask));
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(taskRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+        when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
+        when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+
+        // when
+        ProcessSummaryResponse summary = service.processNotes(DATE, USER_ID);
+
+        // then
+        assertThat(summary.getTasksCreated()).isZero();
+        assertThat(summary.getTasksPromoted()).isEqualTo(1);
+        assertThat(backlogTask.getTitle()).isEqualTo("Work on term paper");
+        assertThat(backlogTask.getDescription()).isEqualTo("Original student description");
+        assertThat(backlogTask.getScheduledDate()).isEqualTo(newDate);
+        assertThat(backlogTask.getDuration()).isEqualTo(Duration.ofMinutes(60));
+    }
+
+    @Test
+    @DisplayName("US2: Existing scheduled task retains date and duration when restated note omits them")
+    void processNotes_scheduledTaskRestatedWithoutDate_preservesExistingDateAndDuration() {
+        // given
+        Course course = courseWithId(1L, "CS101");
+        Note note = noteWithCourse(course);
+        UUID noteId = UUID.randomUUID();
+        ReflectionTestUtils.setField(note, "id", noteId);
+
+        Task scheduledTask = new Task(course, "Review discrete math notes");
+        UUID taskId = UUID.randomUUID();
+        ReflectionTestUtils.setField(scheduledTask, "id", taskId);
+        LocalDate existingDate = LocalDate.of(2026, 10, 8);
+        Duration existingDuration = Duration.ofMinutes(30);
+        scheduledTask.setScheduledDate(existingDate);
+        scheduledTask.setDuration(existingDuration);
+
+        // Candidate extracted with null scheduledDate and null duration
+        StudyPlannerEngine.ExtractedTask candidateTask = new StudyPlannerEngine.ExtractedTask(
+                "n1", null, noteId, "Review discrete math notes", "just reviewing notes", null, null);
+
+        StudyPlannerEngine.ExtractedData extracted = new StudyPlannerEngine.ExtractedData(
+                List.of(candidateTask), List.of(), List.of());
+
+        when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of(scheduledTask));
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(taskRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+        when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
+        when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+
+        // when
+        ProcessSummaryResponse summary = service.processNotes(DATE, USER_ID);
+
+        // then
+        assertThat(summary.getTasksCreated()).isZero();
+        assertThat(summary.getTasksPromoted()).isZero();
+        assertThat(scheduledTask.getScheduledDate()).isEqualTo(existingDate);
+        assertThat(scheduledTask.getDuration()).isEqualTo(existingDuration);
+    }
+
+    @Test
+    @DisplayName("US2: Existing event updates deadline when note states a new explicit deadline")
+    void processNotes_existingEventWithChangedDeadline_updatesDeadlineWithoutDuplicate() {
+        // given
+        Course course = courseWithId(1L, "CS101");
+        Note note = noteWithCourse(course);
+        UUID noteId = UUID.randomUUID();
+        ReflectionTestUtils.setField(note, "id", noteId);
+
+        LocalDateTime oldDeadline = LocalDateTime.of(2026, 10, 20, 9, 0);
+        AcademicEvent existingEvent = new AcademicEvent(course, note, "Physics Lab Report", "Lab report due", oldDeadline);
+        ReflectionTestUtils.setField(existingEvent, "id", UUID.randomUUID());
+
+        LocalDateTime newDeadline = LocalDateTime.of(2026, 10, 25, 17, 0);
+        StudyPlannerEngine.ExtractedEvent candidateEvent = new StudyPlannerEngine.ExtractedEvent(
+                "n1", noteId, "Physics Lab Report", "moved to friday 5pm", newDeadline);
+
+        StudyPlannerEngine.ExtractedData extracted = new StudyPlannerEngine.ExtractedData(
+                List.of(), List.of(candidateEvent), List.of());
+
+        when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of(existingEvent));
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(taskRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicEventRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+        when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
+        when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+
+        // when
+        ProcessSummaryResponse summary = service.processNotes(DATE, USER_ID);
+
+        // then
+        assertThat(summary.getEventsCreated()).isZero();
+        assertThat(existingEvent.getDeadline()).isEqualTo(newDeadline);
+    }
+
+    @Test
+    @DisplayName("US3: Manually created open task is not duplicated by dirty note")
+    void processNotes_manualTaskRestated_notDuplicated() {
+        // given
+        Course course = courseWithId(1L, "CS101");
+        Note note = noteWithCourse(course);
+        UUID noteId = UUID.randomUUID();
+        ReflectionTestUtils.setField(note, "id", noteId);
+
+        // Manually created task: origin is null or USER, note is null
+        Task manualTask = new Task(course, "Review linked lists");
+        UUID manualTaskId = UUID.randomUUID();
+        ReflectionTestUtils.setField(manualTask, "id", manualTaskId);
+        manualTask.setNote(null);
+
+        StudyPlannerEngine.ExtractedTask candidateTask = new StudyPlannerEngine.ExtractedTask(
+                "n1", null, noteId, "Review linked lists", "practice linked lists", null, null);
+
+        StudyPlannerEngine.ExtractedData extracted = new StudyPlannerEngine.ExtractedData(
+                List.of(candidateTask), List.of(), List.of());
+
+        when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of(manualTask));
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(taskRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+        when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
+        when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+
+        // when
+        ProcessSummaryResponse summary = service.processNotes(DATE, USER_ID);
+
+        // then
+        assertThat(summary.getTasksCreated()).isZero();
+        assertThat(summary.getTasksPromoted()).isZero();
+    }
+
+    @Test
+    @DisplayName("US3: Manually created academic event is not duplicated by dirty note")
+    void processNotes_manualEventRestated_notDuplicated() {
+        // given
+        Course course = courseWithId(1L, "CS101");
+        Note note = noteWithCourse(course);
+        UUID noteId = UUID.randomUUID();
+        ReflectionTestUtils.setField(note, "id", noteId);
+
+        LocalDateTime deadline = LocalDateTime.of(2026, 11, 1, 23, 59);
+        AcademicEvent manualEvent = new AcademicEvent(course, null, "Project Milestone 1", "Manual event", deadline);
+        ReflectionTestUtils.setField(manualEvent, "id", UUID.randomUUID());
+
+        StudyPlannerEngine.ExtractedEvent candidateEvent = new StudyPlannerEngine.ExtractedEvent(
+                "n1", noteId, "Project Milestone 1", "Submit milestone 1", deadline);
+
+        StudyPlannerEngine.ExtractedData extracted = new StudyPlannerEngine.ExtractedData(
+                List.of(), List.of(candidateEvent), List.of());
+
+        when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of(manualEvent));
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(taskRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicEventRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+        when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
+        when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+
+        // when
+        ProcessSummaryResponse summary = service.processNotes(DATE, USER_ID);
+
+        // then
+        assertThat(summary.getEventsCreated()).isZero();
+    }
+
+    @Test
+    @DisplayName("processNotes reports accurate tasksCreated and tasksPromoted counts in ProcessSummaryResponse")
+    void processNotes_withNewAndPromotedTasks_reportsAccurateSummaryCounts() {
+        // given
+        Course course = courseWithId(1L, "CS101");
+        Note note = noteWithCourse(course);
+        UUID noteId = UUID.randomUUID();
+        ReflectionTestUtils.setField(note, "id", noteId);
+
+        Task existingTask1 = new Task(course, "Finish Assignment 1");
+        ReflectionTestUtils.setField(existingTask1, "id", UUID.randomUUID());
+        existingTask1.setScheduledDate(LocalDate.of(2026, 10, 1));
+
+        Task existingTask2 = new Task(course, "Read Chapter 5");
+        ReflectionTestUtils.setField(existingTask2, "id", UUID.randomUUID());
+
+        Task existingTask3 = new Task(course, "Untouched task");
+        ReflectionTestUtils.setField(existingTask3, "id", UUID.randomUUID());
+
+        // Task 1: new scheduled date -> promoted
+        LocalDate newDate = LocalDate.of(2026, 10, 5);
+        StudyPlannerEngine.ExtractedTask candidate1 = new StudyPlannerEngine.ExtractedTask(
+                "n1", null, noteId, "Finish Assignment 1", "desc", newDate, null);
+
+        // Task 2: new duration -> promoted
+        StudyPlannerEngine.ExtractedTask candidate2 = new StudyPlannerEngine.ExtractedTask(
+                "n2", null, noteId, "Read Chapter 5", "desc", null, 45);
+
+        // Task 3: no changes -> not promoted
+        StudyPlannerEngine.ExtractedTask candidate3 = new StudyPlannerEngine.ExtractedTask(
+                "n3", null, noteId, "Untouched task", "desc", null, null);
+
+        // Task 4: brand new task -> created
+        StudyPlannerEngine.ExtractedTask candidate4 = new StudyPlannerEngine.ExtractedTask(
+                "n4", null, noteId, "Brand New Task", "desc", LocalDate.of(2026, 10, 10), 60);
+
+        StudyPlannerEngine.ExtractedData extracted = new StudyPlannerEngine.ExtractedData(
+                List.of(candidate1, candidate2, candidate3, candidate4), List.of(), List.of());
+
+        when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false)))
+                .thenReturn(List.of(existingTask1, existingTask2, existingTask3));
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(taskRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+        when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
+        when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+
+        // when
+        ProcessSummaryResponse summary = service.processNotes(DATE, USER_ID);
+
+        // then
+        assertThat(summary.getTasksCreated()).isEqualTo(1);
+        assertThat(summary.getTasksPromoted()).isEqualTo(2);
     }
 
     // --- helpers ---

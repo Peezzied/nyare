@@ -72,3 +72,5 @@ src/**/application*.properties
 !src/dev/resources/application*.properties
 
 .superpowers/
+/nyare.db-shm
+/nyare.db-wal
