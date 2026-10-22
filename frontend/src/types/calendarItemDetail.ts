@@ -9,8 +9,7 @@ export type CalendarItemCategory = 'class' | 'event' | 'task'
 /** Journal entry linked to a calendar item. */
 export interface LinkedNoteRef {
   id: string
-  /** `null` when the cached notes list has no matching note. */
-  title: string | null
+  title: string
 }
 
 /** Minimal shape of a cached note. `NoteSummaryResponse` satisfies it. */

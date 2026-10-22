@@ -62,7 +62,11 @@ function pickDate(value: DateValue | undefined) {
 
 <template>
   <Drawer :open="open" @update:open="emit('update:open', $event)">
-    <DrawerContent overlay class="data-[swipe-direction=down]:h-auto" data-testid="task-quick-actions">
+    <DrawerContent
+      overlay
+      class="data-[swipe-direction=down]:h-auto"
+      data-testid="task-quick-actions"
+    >
       <template v-if="task">
         <DrawerTitle class="sr-only">Quick actions</DrawerTitle>
 
@@ -80,11 +84,7 @@ function pickDate(value: DateValue | undefined) {
             </button>
             <Popover v-model:open="datePickerOpen">
               <PopoverTrigger as-child>
-                <button
-                  type="button"
-                  :class="CHIP_BASE"
-                  data-testid="quick-pick-date"
-                >
+                <button type="button" :class="CHIP_BASE" data-testid="quick-pick-date">
                   <CalendarDays class="size-4" aria-hidden="true" />
                   Pick a date…
                 </button>

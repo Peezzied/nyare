@@ -116,23 +116,25 @@ describe('TiptapEditor', () => {
     expect(editor.can().undo()).toBe(false)
   })
 
-  it('renders a scrollable text container and pinned bottom toolbar', () => {
+  it('renders an expanding text container and a sticky bottom toolbar', () => {
     const wrapper = mount(TiptapEditor, {
       props: {
-        modelValue: '<p>Scrollable test note</p>',
+        modelValue: '<p>Expanding test note</p>',
       },
     })
 
-    const scrollContainer = wrapper.find('[data-testid="editor-scroll-container"]')
-    expect(scrollContainer.exists()).toBe(true)
-    expect(scrollContainer.classes()).toContain('overflow-y-auto')
-    expect(scrollContainer.classes()).toContain('flex-1')
-    expect(scrollContainer.classes()).toContain('min-h-0')
+    const content = wrapper.find('[data-testid="editor-content"]')
+    expect(content.exists()).toBe(true)
+    expect(content.classes()).toContain('flex-1')
+    expect(content.classes()).not.toContain('overflow-y-auto')
+
+    const footer = wrapper.find('[data-testid="editor-footer"]')
+    expect(footer.exists()).toBe(true)
+    expect(footer.classes()).toContain('sticky')
+    expect(footer.classes()).toContain('bottom-0')
 
     const toolbar = wrapper.findComponent({ name: 'TiptapToolbar' })
     expect(toolbar.exists()).toBe(true)
-    expect(toolbar.classes()).toContain('shrink-0')
-    expect(toolbar.classes()).toContain('mt-auto')
     expect(toolbar.classes()).toContain('w-full')
   })
 })

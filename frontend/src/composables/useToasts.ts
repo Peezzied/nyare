@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import type { Ref } from 'vue'
+import { uuid } from '@/utils/uuid'
 
 /** Visual tone of one toast. */
 export type ToastKind = 'info' | 'success' | 'error' | 'loading'
@@ -74,7 +75,7 @@ export function useToasts(): UseToasts {
   }
 
   function pushToast(toast: Omit<Toast, 'id'>, durationMs = 4000): string {
-    const id = crypto.randomUUID()
+    const id = uuid()
     toasts.value.push({ ...toast, id })
     timers.set(id, {
       timeout: setTimeout(() => expireToast(id), durationMs),

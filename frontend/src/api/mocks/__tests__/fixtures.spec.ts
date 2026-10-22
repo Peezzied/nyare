@@ -42,6 +42,7 @@ describe('createInitialFixtures', () => {
     expect(fixtures.academicEvents.length).toBeGreaterThanOrEqual(2)
     expect(fixtures.processSummary).toEqual({
       tasksCreated: 2,
+      tasksPromoted: 0,
       eventsCreated: 1,
       contextsCreated: 1,
       affectedCourseIds: [2],

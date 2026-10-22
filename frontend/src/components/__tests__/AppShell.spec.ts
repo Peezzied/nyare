@@ -3,9 +3,15 @@ import { defineComponent, h, ref } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import AppShell from '../AppShell.vue'
 import type { ShellHeaderConfig } from '@/composables/useShellHeader'
-import { academicEventsApi, studyPlannerApi, tasksApi } from '@/api'
+import { academicEventsApi, notesApi, studyPlannerApi, tasksApi } from '@/api'
 import { resetAllCaches } from '@/composables/createCache'
-import type { PlannerStatusResponse, ProcessSummaryResponse } from '@/types/api'
+import { useNotes } from '@/composables/useNotes'
+import { useNotifications } from '@/composables/useNotifications'
+import type {
+  NoteSummaryResponse,
+  PlannerStatusResponse,
+  ProcessSummaryResponse,
+} from '@/types/api'
 import { routerKey, routeLocationKey } from 'vue-router'
 
 const mockPush = vi.fn<(path: string) => Promise<void>>(() => Promise.resolve())
@@ -187,5 +193,234 @@ describe('AppShell', () => {
     // then
     expect(taskList).toHaveBeenCalledWith({ courseId: 7 })
     expect(eventList).toHaveBeenCalledWith({ courseId: 7 })
+  })
+
+  function noteSummary(courseId: number, title: string): NoteSummaryResponse {
+    return {
+      id: `note-${courseId}`,
+      courseId,
+      title,
+      preview: 'draft',
+      truncated: false,
+      contentLength: 5,
+      entryDate: '2026-10-20',
+      createdAt: '2026-10-20T09:00:00Z',
+      updatedAt: '2026-10-20T09:00:00Z',
+    }
+  }
+
+  async function runProcessWithSummary(summary: ProcessSummaryResponse) {
+    vi.spyOn(studyPlannerApi, 'streamProcess').mockImplementation(async (callbacks) => {
+      callbacks.onDone(summary)
+    })
+    const wrapper = mountShell()
+    await flushPromises()
+    await wrapper.get('[data-testid="duckota-fab"]').trigger('click')
+    await flushPromises()
+    await wrapper.get('[data-testid="process-confirm"]').trigger('click')
+    await flushPromises()
+  }
+
+  it('force-reloads notes when an affected course holds an untitled note', async () => {
+    // given
+    vi.spyOn(studyPlannerApi, 'status').mockResolvedValue(statusWith(1))
+    vi.spyOn(tasksApi, 'list').mockResolvedValue([])
+    vi.spyOn(academicEventsApi, 'list').mockResolvedValue([])
+    const noteList = vi.spyOn(notesApi, 'list').mockResolvedValue([noteSummary(7, 'Untitled Note')])
+    await useNotes().loadNotes()
+
+    // when
+    await runProcessWithSummary({
+      tasksCreated: 1,
+      eventsCreated: 0,
+      contextsCreated: 0,
+      affectedCourseIds: [7],
+    })
+
+    // then: the initial load plus the forced reload after the run
+    expect(noteList).toHaveBeenCalledTimes(2)
+  })
+
+  it('keeps the notes cache when untitled notes sit outside affected courses', async () => {
+    // given
+    vi.spyOn(studyPlannerApi, 'status').mockResolvedValue(statusWith(1))
+    vi.spyOn(tasksApi, 'list').mockResolvedValue([])
+    vi.spyOn(academicEventsApi, 'list').mockResolvedValue([])
+    const noteList = vi
+      .spyOn(notesApi, 'list')
+      .mockResolvedValue([noteSummary(9, 'Untitled Note'), noteSummary(7, 'Lecture 7')])
+    await useNotes().loadNotes()
+
+    // when
+    await runProcessWithSummary({
+      tasksCreated: 1,
+      eventsCreated: 0,
+      contextsCreated: 0,
+      affectedCourseIds: [7],
+    })
+
+    // then: only the initial load ran
+    expect(noteList).toHaveBeenCalledTimes(1)
+  })
+
+  it('reopens the run summary when the done bubble is tapped', async () => {
+    // given
+    vi.spyOn(studyPlannerApi, 'status').mockResolvedValue(statusWith(1))
+    vi.spyOn(tasksApi, 'list').mockResolvedValue([])
+    vi.spyOn(academicEventsApi, 'list').mockResolvedValue([])
+    vi.spyOn(studyPlannerApi, 'streamProcess').mockImplementation(async (callbacks) => {
+      callbacks.onDone({ tasksCreated: 1, eventsCreated: 0, contextsCreated: 0 })
+    })
+    const wrapper = mountShell()
+    await flushPromises()
+    await wrapper.get('[data-testid="duckota-fab"]').trigger('click')
+    await flushPromises()
+    await wrapper.get('[data-testid="process-confirm"]').trigger('click')
+    await flushPromises()
+    await wrapper.get('[data-testid="process-close"]').trigger('click')
+    await flushPromises()
+
+    // when
+    await wrapper.get('[data-testid="duckota-bubble"]').trigger('click')
+    await flushPromises()
+
+    // then
+    const dialog = wrapper.get('[role="dialog"]')
+    expect(dialog.text()).toContain('Process complete')
+    expect(dialog.text()).toContain('1 tasks')
+    expect(dialog.text()).not.toContain('Process pending notes?')
+  })
+
+  it('displays promoted tasks in done bubble when tasksPromoted is greater than zero', async () => {
+    // given
+    vi.spyOn(studyPlannerApi, 'status').mockResolvedValue(statusWith(1))
+    vi.spyOn(tasksApi, 'list').mockResolvedValue([])
+    vi.spyOn(academicEventsApi, 'list').mockResolvedValue([])
+    vi.spyOn(studyPlannerApi, 'streamProcess').mockImplementation(async (callbacks) => {
+      callbacks.onDone({ tasksCreated: 2, tasksPromoted: 1, eventsCreated: 1, contextsCreated: 0 })
+    })
+    const wrapper = mountShell()
+    await flushPromises()
+    await wrapper.get('[data-testid="duckota-fab"]').trigger('click')
+    await flushPromises()
+    await wrapper.get('[data-testid="process-confirm"]').trigger('click')
+    await flushPromises()
+
+    // then
+    const bubble = wrapper.get('[data-testid="duckota-bubble"]')
+    expect(bubble.text()).toContain('2 tasks (1 promoted)')
+    wrapper.unmount()
+  })
+
+  it('opens a done record from the notification center on the summary', async () => {
+    // given: a finished run record that maps to no live proc state
+    vi.useFakeTimers()
+    window.matchMedia = vi
+      .fn<(query: string) => MediaQueryList>()
+      .mockImplementation((query: string) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: vi.fn<() => void>(),
+        removeListener: vi.fn<() => void>(),
+        addEventListener: vi.fn<() => void>(),
+        removeEventListener: vi.fn<() => void>(),
+        dispatchEvent: vi.fn<() => boolean>(),
+      }))
+    vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => {
+      cb(0)
+      return 0
+    })
+    vi.spyOn(window.history, 'back').mockImplementation(() => {})
+    const notifications = useNotifications()
+    const recId = notifications.openRecord()
+    notifications.patchRecord(recId, {
+      status: 'done',
+      finishedAt: '2026-10-20T09:01:00Z',
+      noteCount: 1,
+      pendingNotes: [
+        { id: 'note-1', title: 'Lecture', courseName: 'CS101', entryDate: '2026-10-20' },
+      ],
+      summary: { tasksCreated: 3, tasksPromoted: 1, eventsCreated: 1, contextsCreated: 0 },
+    })
+    const wrapper = mountShell()
+    await flushPromises()
+
+    // when
+    await wrapper.get('[data-testid="notifications-button"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.get('[data-testid="notification-done"]').text()).toContain(
+      '3 tasks (1 promoted)',
+    )
+    await wrapper.get('[data-testid="notification-done"]').trigger('click')
+    await vi.advanceTimersByTimeAsync(240)
+    await flushPromises()
+
+    // then
+    const dialog = wrapper.get('[role="dialog"]')
+    expect(dialog.text()).toContain('Process complete')
+    expect(dialog.text()).toContain('3 tasks (1 promoted)')
+    vi.useRealTimers()
+  })
+
+  it('does not open the dialog for records without item lists', async () => {
+    // given: cancelled, failed, and empty done records carry no lists to inspect
+    vi.useFakeTimers()
+    window.matchMedia = vi
+      .fn<(query: string) => MediaQueryList>()
+      .mockImplementation((query: string) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: vi.fn<() => void>(),
+        removeListener: vi.fn<() => void>(),
+        addEventListener: vi.fn<() => void>(),
+        removeEventListener: vi.fn<() => void>(),
+        dispatchEvent: vi.fn<() => boolean>(),
+      }))
+    vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => {
+      cb(0)
+      return 0
+    })
+    vi.spyOn(window.history, 'back').mockImplementation(() => {})
+    const notifications = useNotifications()
+    const cancelled = notifications.openRecord()
+    notifications.patchRecord(cancelled, {
+      status: 'cancelled',
+      finishedAt: '2026-10-20T09:01:00Z',
+    })
+    const failed = notifications.openRecord()
+    notifications.patchRecord(failed, {
+      status: 'error',
+      finishedAt: '2026-10-20T09:02:00Z',
+      error: 'Stream broke',
+    })
+    const emptyDone = notifications.openRecord()
+    notifications.patchRecord(emptyDone, {
+      status: 'done',
+      finishedAt: '2026-10-20T09:03:00Z',
+      pendingNotes: [],
+      summary: { tasksCreated: 0, tasksPromoted: 0, eventsCreated: 0, contextsCreated: 0 },
+    })
+    const wrapper = mountShell()
+    await flushPromises()
+
+    // when
+    await wrapper.get('[data-testid="notifications-button"]').trigger('click')
+    await flushPromises()
+    for (const testid of [
+      'notification-cancelled',
+      'notification-error',
+      'notification-done',
+    ]) {
+      await wrapper.get(`[data-testid="${testid}"]`).trigger('click')
+      await vi.advanceTimersByTimeAsync(240)
+      await flushPromises()
+
+      // then: the center stays open and no Process dialog appears
+      expect(wrapper.find('[data-testid="process-close"]').exists()).toBe(false)
+      expect(wrapper.find('[data-testid="notification-center"]').exists()).toBe(true)
+    }
+    vi.useRealTimers()
   })
 })

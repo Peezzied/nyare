@@ -57,14 +57,6 @@ describe('CalendarItemDetail', () => {
     expect(control.attributes('aria-label')).toContain('Lecture 7: Self-Balancing Trees')
   })
 
-  it('keeps a generic note label when the cached title is unknown', () => {
-    const wrapper = mount(CalendarItemDetail, {
-      props: { item: view({ notes: [{ id: 'note-gone', title: null }] }) },
-    })
-
-    expect(wrapper.find('[data-testid="note-control"]').exists()).toBe(true)
-  })
-
   it('emits open-note with the linked note ref', async () => {
     const wrapper = mount(CalendarItemDetail, { props: { item: view() } })
 
@@ -123,6 +115,24 @@ describe('CalendarItemDetail', () => {
     expect(wrapper.find('[data-testid="complete-control"]').exists()).toBe(false)
   })
 
+  it('shows the open-in-todo control only for task items', () => {
+    const taskItem = mount(CalendarItemDetail, { props: { item: view() } })
+    const eventItem = mount(CalendarItemDetail, {
+      props: { item: view({ kind: 'event', task: null }) },
+    })
+
+    expect(taskItem.find('[data-testid="open-task-control"]').exists()).toBe(true)
+    expect(eventItem.find('[data-testid="open-task-control"]').exists()).toBe(false)
+  })
+
+  it('emits open-task with the task id', async () => {
+    const wrapper = mount(CalendarItemDetail, { props: { item: view() } })
+
+    await wrapper.find('[data-testid="open-task-control"]').trigger('click')
+
+    expect(wrapper.emitted('open-task')).toEqual([['task-1']])
+  })
+
   it('emits complete-task with the task id', async () => {
     const wrapper = mount(CalendarItemDetail, { props: { item: view() } })
 
@@ -137,6 +147,44 @@ describe('CalendarItemDetail', () => {
     })
 
     expect(wrapper.find('[data-testid="complete-control"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('shows the delete control only for event items', () => {
+    const eventItem = mount(CalendarItemDetail, {
+      props: { item: view({ kind: 'event', task: null, duration: null }) },
+    })
+    const taskItem = mount(CalendarItemDetail, { props: { item: view() } })
+    const classItem = mount(CalendarItemDetail, {
+      props: { item: view({ kind: 'class', task: null, duration: null }) },
+    })
+
+    expect(eventItem.find('[data-testid="delete-event-control"]').exists()).toBe(true)
+    expect(taskItem.find('[data-testid="delete-event-control"]').exists()).toBe(false)
+    expect(classItem.find('[data-testid="delete-event-control"]').exists()).toBe(false)
+  })
+
+  it('emits deleted after the confirm dialog accepts', async () => {
+    const wrapper = mount(CalendarItemDetail, {
+      props: { item: view({ kind: 'event', task: null, duration: null }) },
+    })
+
+    await wrapper.find('[data-testid="delete-event-control"]').trigger('click')
+    expect(wrapper.text()).toContain('Are you sure you want to delete this event?')
+
+    await wrapper.find('[data-testid="delete-event-confirm"]').trigger('click')
+
+    expect(wrapper.emitted('deleted')).toHaveLength(1)
+  })
+
+  it('keeps the event when the confirm dialog cancels', async () => {
+    const wrapper = mount(CalendarItemDetail, {
+      props: { item: view({ kind: 'event', task: null, duration: null }) },
+    })
+
+    await wrapper.find('[data-testid="delete-event-control"]').trigger('click')
+    await wrapper.find('[data-testid="delete-event-cancel"]').trigger('click')
+
+    expect(wrapper.emitted('deleted')).toBeUndefined()
   })
 
   it('colors the dot from the course id', () => {

@@ -70,14 +70,24 @@ describe('buildCalendarItemDetail', () => {
     expect(view.notes).toEqual([{ id: 'note-1', title: 'Lecture 7: Self-Balancing Trees' }])
   })
 
-  it('sets note title to null when the cached notes list has no match', () => {
+  it('drops a task noteId that the cached notes list no longer holds', () => {
     const view = buildCalendarItemDetail(
       taskResponse({ noteId: 'note-gone' }),
       'task',
       CACHED_NOTES,
     )
 
-    expect(view.notes).toEqual([{ id: 'note-gone', title: null }])
+    expect(view.notes).toEqual([])
+  })
+
+  it('drops an event noteId that the cached notes list no longer holds', () => {
+    const view = buildCalendarItemDetail(
+      academicEvent({ noteId: 'note-gone' }),
+      'event',
+      CACHED_NOTES,
+    )
+
+    expect(view.notes).toEqual([])
   })
 
   it('sets duration to null when the task has no duration (FR-019)', () => {

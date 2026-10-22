@@ -513,9 +513,7 @@ describe('ManageCoursesView', () => {
     wrapper.findComponent(CourseEditorDrawer).vm.$emit('save')
     await flushPromises()
 
-    expect(
-      toastTitles('error').some((t) => t.includes('end time after its start time')),
-    ).toBe(true)
+    expect(toastTitles('error').some((t) => t.includes('end time after its start time'))).toBe(true)
     expect(drawer.get('[role="alert"]').text()).toBe('End time must be after start time.')
     expect(schedulesApi.update).not.toHaveBeenCalled()
     expect(schedulesApi.create).not.toHaveBeenCalled()
@@ -1337,7 +1335,9 @@ describe('ManageCoursesView', () => {
 
   it('dismisses the Undo toast when the student leaves the page', async () => {
     mockCourses.value = [algebra]
-    vi.mocked(coursesApi.archiveAll).mockResolvedValue([{ ...algebra, archivedAt: '2026-10-08T00:00:00' }])
+    vi.mocked(coursesApi.archiveAll).mockResolvedValue([
+      { ...algebra, archivedAt: '2026-10-08T00:00:00' },
+    ])
 
     const wrapper = mountView()
     await flushPromises()

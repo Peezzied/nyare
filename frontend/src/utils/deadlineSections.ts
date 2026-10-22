@@ -92,7 +92,11 @@ function toSections(
       byDay.set(parsed.dateKey, section)
       sections.push(section)
     }
-    section.rows.push({ event, timeLabel: parsed.timeLabel, countdownLabel: countdown(parsed.date) })
+    section.rows.push({
+      event,
+      timeLabel: parsed.timeLabel,
+      countdownLabel: countdown(parsed.date),
+    })
   }
   return sections
 }
@@ -107,8 +111,9 @@ export function deriveDeadlineSections(
 ): DeadlineSections {
   const parsed = events
     .map((event) => ({ event, parsed: parseDeadline(event.deadline) }))
-    .filter((item): item is { event: AcademicEventResponse; parsed: ParsedDeadline } =>
-      item.parsed !== null,
+    .filter(
+      (item): item is { event: AcademicEventResponse; parsed: ParsedDeadline } =>
+        item.parsed !== null,
     )
 
   const upcoming = parsed

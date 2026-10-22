@@ -350,6 +350,7 @@ describe('Mock Adapter', () => {
       const result = await apiClient.post<ProcessSummaryResponse>('/api/study-planner/process')
       expect(result).toEqual({
         tasksCreated: 2,
+        tasksPromoted: 0,
         eventsCreated: 1,
         contextsCreated: 1,
         affectedCourseIds: [2],
@@ -358,6 +359,7 @@ describe('Mock Adapter', () => {
       const apiResult = await studyPlannerApi.process()
       expect(apiResult).toEqual({
         tasksCreated: 2,
+        tasksPromoted: 0,
         eventsCreated: 1,
         contextsCreated: 1,
         affectedCourseIds: [2],

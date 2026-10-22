@@ -1,14 +1,7 @@
 import '../harness/clientSetup'
 import { describe, beforeAll, it, expect } from 'vitest'
 import { assertBackendReachable } from '../harness/clientSetup'
-import {
-  authApi,
-  coursesApi,
-  schedulesApi,
-  notesApi,
-  tasksApi,
-  academicEventsApi,
-} from '@/api'
+import { authApi, coursesApi, schedulesApi, notesApi, tasksApi, academicEventsApi } from '@/api'
 import { toDateKey } from '@/utils/dayKey'
 
 describe('User Story 4: Course Archive', () => {

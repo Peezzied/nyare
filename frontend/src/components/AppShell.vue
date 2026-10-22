@@ -14,6 +14,7 @@ import NotificationCenterModal from './NotificationCenterModal.vue'
 import ProcessDialog from './ProcessDialog.vue'
 import duckotaImg from '@/assets/mascot/duckota_in_button.png'
 import { useAcademicEvents } from '@/composables/useAcademicEvents'
+import { useNotes } from '@/composables/useNotes'
 import { useNotifications } from '@/composables/useNotifications'
 import { isReducedMotion, toTapOriginRect } from '@/composables/useNoteTransition'
 import { usePlannerStatus } from '@/composables/usePlannerStatus'
@@ -30,6 +31,7 @@ const title = computed(() => toValue(header.title ?? ''))
 const planner = usePlannerStatus()
 const tasks = useTasks()
 const events = useAcademicEvents()
+const notes = useNotes()
 
 const proc = useProcess({
   onDone: async (summary) => {
@@ -38,6 +40,8 @@ const proc = useProcess({
       tasks.refetchForCourses(courseIds),
       events.refetchForCourses(courseIds),
       planner.refresh(),
+      // Process may rename untitled notes; reload the list only when the cache holds one.
+      notes.hasUntitledNotes(courseIds) ? notes.loadNotes(true) : null,
     ])
   },
   onSavedAfterCancel: async () => {
@@ -45,6 +49,7 @@ const proc = useProcess({
       tasks.loadTasks(undefined, true),
       events.loadEvents(undefined, true),
       planner.refresh(),
+      notes.hasUntitledNotes() ? notes.loadNotes(true) : null,
     ])
   },
 })
@@ -54,9 +59,12 @@ const badge = computed(() =>
 )
 
 const dialogOpen = ref(false)
-// One-shot flag: a notification tap reopens the dialog on its terminal run
-// state instead of resetting to the confirm phase.
+// One-shot flag: a notification or bubble tap reopens the dialog on its
+// terminal run state instead of resetting to the confirm phase.
 const preserveRun = ref(false)
+// Record tapped in the center. Older or restored records carry their own
+// summary, so the dialog renders them instead of the live run state.
+const activeRecord = ref<ProcessNotification | null>(null)
 const notifications = useNotifications()
 const centerOpen = ref(false)
 const centerOrigin = ref<TapOriginRect | null>(null)
@@ -68,25 +76,49 @@ function openProcessDialog(): void {
   dialogOpen.value = true
 }
 
+// The bubble only ever reports run state, so a tap inspects the run and
+// never resets the dialog to the confirm phase.
+function onBubbleTap(): void {
+  preserveRun.value = true
+  openProcessDialog()
+}
+
 function openCenter(event: MouseEvent): void {
   const el = event.currentTarget as Element | null
   centerOrigin.value = el ? toTapOriginRect(el) : null
   centerOpen.value = true
 }
 
-function onCenterOpenRun(record: ProcessNotification): void {
-  // Only the record of the live session run maps to ProcessDialog state.
-  // Restored records carry no summary on proc, so their taps do nothing.
-  if (record.id === proc.recordId.value) {
-    reopenRunOnClose = true
-    preserveRun.value = true
-    centerModalRef.value?.requestClose(true)
+// Only a finished run that produced items reopens the dialog. Cancelled,
+// failed, stopped, and empty done records carry no lists to inspect.
+function recordHasItems(record: ProcessNotification): boolean {
+  if (record.status !== 'done') {
+    return false
   }
+  const created =
+    (record.summary?.tasksCreated ?? 0) +
+    (record.summary?.eventsCreated ?? 0) +
+    (record.summary?.contextsCreated ?? 0)
+  return record.pendingNotes.length > 0 || created > 0
+}
+
+function onCenterOpenRun(record: ProcessNotification): void {
+  const isLiveRun = proc.running.value && record.id === proc.recordId.value
+  if (!isLiveRun && !recordHasItems(record)) {
+    return
+  }
+  // The live run's record reads its state from proc. Every other record
+  // renders its own persisted summary, error, and notes.
+  activeRecord.value = record.id === proc.recordId.value ? null : record
+  reopenRunOnClose = true
+  preserveRun.value = true
+  centerModalRef.value?.requestClose(true)
 }
 
 watch(dialogOpen, (opened) => {
   if (!opened) {
     preserveRun.value = false
+    activeRecord.value = null
   }
 })
 
@@ -128,10 +160,14 @@ watch(proc.running, (on) => {
 
 watch(proc.summary, (summary) => {
   if (summary) {
+    const taskPart =
+      (summary.tasksPromoted ?? 0) > 0
+        ? `${summary.tasksCreated} tasks (${summary.tasksPromoted} promoted)`
+        : `${summary.tasksCreated} tasks`
     showBubble(
       'success',
       'Process complete',
-      `${summary.tasksCreated} tasks · ${summary.eventsCreated} events · ${summary.contextsCreated} context created.`,
+      `${taskPart} · ${summary.eventsCreated} events · ${summary.contextsCreated} context created.`,
     )
   }
 })
@@ -185,13 +221,18 @@ function onKeepRunning(event: MouseEvent): void {
 
 onMounted(() => {
   planner.refresh().catch(() => {})
+  if (import.meta.env.MODE === 'test') {
+    return
+  }
   const prefetchViews = () => {
     void import('@/views/CalendarView.vue')
     void import('@/views/TodoView.vue')
     void import('@/views/NotesView.vue')
   }
   if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-    ;(window as unknown as { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(prefetchViews)
+    ;(window as unknown as { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(
+      prefetchViews,
+    )
   } else {
     setTimeout(prefetchViews, 300)
   }
@@ -236,7 +277,7 @@ onMounted(() => {
               :kind="bubble.kind"
               :title="bubble.title"
               :detail="bubble.detail"
-              @tap="openProcessDialog"
+              @tap="onBubbleTap"
             />
           </Transition>
         </div>
@@ -255,6 +296,7 @@ onMounted(() => {
         v-model:open="dialogOpen"
         :proc="proc"
         :preserve-run="preserveRun"
+        :record="activeRecord"
         @keep-running="onKeepRunning"
       />
       <NotificationCenterModal

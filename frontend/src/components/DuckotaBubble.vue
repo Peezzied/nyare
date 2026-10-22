@@ -49,7 +49,7 @@ const iconColor = computed(() => {
   <button
     type="button"
     data-testid="duckota-bubble"
-    class="absolute bottom-[calc(100%+14px)] left-0 z-30 flex w-60 origin-bottom-left cursor-pointer items-start gap-2.5 rounded-2xl border border-[#CBD5E1] bg-[#FDFEF7] p-3 text-left shadow-[0_4px_0_#D5EBF1] drop-shadow-[0_10px_16px_rgba(43,50,54,0.12)]"
+    class="absolute bottom-[calc(100%+14px)] left-0 z-30 flex w-64 origin-bottom-left cursor-pointer items-start gap-2.5 rounded-2xl border border-[#CBD5E1] bg-[#FDFEF7] p-3 text-left shadow-[0_4px_0_#D5EBF1] drop-shadow-[0_10px_16px_rgba(43,50,54,0.12)]"
     @click="emit('tap')"
   >
     <component

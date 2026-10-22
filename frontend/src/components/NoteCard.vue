@@ -24,7 +24,7 @@ const displayText = computed(() => collapseBlankLines(stripImageMarkdown(props.n
 
 <template>
   <article
-    class="cursor-pointer break-inside-avoid overflow-hidden rounded-2xl border border-app-border bg-card transition-transform active:scale-[0.98]"
+    class="cursor-pointer break-inside-avoid overflow-hidden rounded-2xl bg-card transition-transform active:scale-[0.98]"
     role="button"
     tabindex="0"
     data-testid="note-card"

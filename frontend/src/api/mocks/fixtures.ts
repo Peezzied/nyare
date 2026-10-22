@@ -388,6 +388,7 @@ const INITIAL_FIXTURES: FixtureState = {
   ],
   processSummary: {
     tasksCreated: 2,
+    tasksPromoted: 0,
     eventsCreated: 1,
     contextsCreated: 1,
     affectedCourseIds: [2],

@@ -6,6 +6,7 @@ import type {
   ProcessProgressEvent,
   ProcessSummaryResponse,
 } from '@/api'
+import { uuid } from '@/utils/uuid'
 import { createCache } from './createCache'
 import { useAuth } from './useAuth'
 
@@ -138,7 +139,7 @@ export interface UseNotifications {
  */
 export function useNotifications(): UseNotifications {
   function openRecord(): string {
-    const id = crypto.randomUUID()
+    const id = uuid()
     records.value.unshift({
       id,
       status: 'running',

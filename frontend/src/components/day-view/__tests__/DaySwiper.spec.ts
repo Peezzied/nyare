@@ -192,9 +192,7 @@ describe('DaySwiper', () => {
       },
       slots: {
         default: () =>
-          h('div', { class: 'calendar-content' }, [
-            h('div', { class: 'sx__time-grid-day' }),
-          ]),
+          h('div', { class: 'calendar-content' }, [h('div', { class: 'sx__time-grid-day' })]),
         chrome: (slotProps) => {
           capturedChromeProps = slotProps
           return h('div', { class: 'chrome-content' }, 'Chrome')

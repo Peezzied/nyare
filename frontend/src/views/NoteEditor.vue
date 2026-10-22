@@ -475,9 +475,9 @@ function cancelDiscard() {
 
 /**
  * Deletes the open note. The confirm dialog gates intent; the undo toast gates
- * the server commit. Dismissing the toast (Undo, tap, swipe, close) restores
- * the staged summary. When the toast expires, the delete commits; a failed
- * commit restores the summary and reports an error.
+ * the server commit. The Undo action restores the staged summary. Expiry or
+ * dismissal commits the delete; a failed commit restores it and reports an
+ * error.
  */
 function confirmDelete() {
   const id = activeNoteId.value
@@ -493,29 +493,30 @@ function confirmDelete() {
     })
     return
   }
-  let restored = false
+  let cancelled = false
   const restore = () => {
-    if (restored) {
+    cancelled = true
+    restoreStagedNote(staged)
+  }
+  const commit = () => {
+    if (cancelled) {
       return
     }
-    restored = true
-    restoreStagedNote(staged)
+    void commitNoteDeletion(id).catch(() => {
+      restore()
+      pushToast({
+        kind: 'error',
+        title: 'Delete failed',
+        detail: 'The note was restored.',
+      })
+    })
   }
   pushToast({
     kind: 'success',
     title: 'Note deleted',
     action: { label: 'Undo', onClick: restore },
-    onDismiss: restore,
-    onAutoClose: () => {
-      void commitNoteDeletion(id).catch(() => {
-        restore()
-        pushToast({
-          kind: 'error',
-          title: 'Delete failed',
-          detail: 'The note was restored.',
-        })
-      })
-    },
+    onDismiss: commit,
+    onAutoClose: commit,
   })
 }
 
@@ -700,26 +701,20 @@ function staggeredClass(shown: boolean): string {
 const contentStaggerClass = computed(() => staggeredClass(props.showContent))
 const controlsStaggerClass = computed(() => staggeredClass(props.showControls))
 
-// ponytail: visualViewport height adjusts the container when virtual keyboard opens
+// ponytail: visualViewport height resizes the scroll container when the virtual keyboard opens
 const viewportHeight = ref<number | null>(null)
 
 function updateViewportHeight() {
   if (typeof window !== 'undefined' && window.visualViewport) {
     viewportHeight.value = window.visualViewport.height
-    // Mobile browsers may scroll the page when the keyboard opens. Reset it so the header stays visible.
-    if (window.scrollY !== 0) {
-      window.scrollTo(0, 0)
-    }
   }
 }
 
 onMounted(async () => {
-  // Embedded mode skips viewport listeners: updateViewportHeight scrolls the window,
-  // which would destroy the notes list scroll offset behind the modal.
+  // Embedded mode skips viewport listeners: the fixed modal sizes the container, not the viewport.
   if (!props.embedded && typeof window !== 'undefined' && window.visualViewport) {
     updateViewportHeight()
     window.visualViewport.addEventListener('resize', updateViewportHeight)
-    window.visualViewport.addEventListener('scroll', updateViewportHeight)
   }
   if (activeNoteId.value) {
     await Promise.all([loadCatalog(), loadNote(activeNoteId.value)])
@@ -749,7 +744,6 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   if (typeof window !== 'undefined' && window.visualViewport) {
     window.visualViewport.removeEventListener('resize', updateViewportHeight)
-    window.visualViewport.removeEventListener('scroll', updateViewportHeight)
   }
 })
 
@@ -759,7 +753,8 @@ defineExpose({ requestBack: handleBack })
 <template>
   <div
     data-testid="note-editor-container"
-    class="flex flex-col bg-app-bg font-sans text-text-main overflow-hidden"
+    data-note-scrollport
+    class="flex flex-col bg-app-bg font-sans text-text-main overflow-y-auto"
     :class="embedded ? 'h-full' : viewportHeight ? '' : 'h-dvh'"
     :style="!embedded && viewportHeight ? { height: `${viewportHeight}px` } : undefined"
   >
@@ -767,7 +762,7 @@ defineExpose({ requestBack: handleBack })
     <DetailTopBar
       :title="isEditMode ? 'Note' : 'New note'"
       back-label="Back"
-      :class="controlsStaggerClass"
+      :class="[controlsStaggerClass, 'sticky top-0 z-20']"
       @close="handleBack"
     >
       <template #trailing>
@@ -842,7 +837,7 @@ defineExpose({ requestBack: handleBack })
           rows="1"
           placeholder="Untitled Note..."
           :readonly="isArchivedCourse"
-          class="field-sizing-content max-h-24 w-full resize-none bg-transparent !font-sans text-2xl font-bold leading-tight text-text-main placeholder:text-text-muted outline-none"
+          class="field-sizing-content w-full h-fit resize-none break-words bg-transparent !font-sans text-2xl font-bold leading-tight text-text-main placeholder:text-text-muted outline-none"
           @keydown.enter.prevent
         />
       </div>
@@ -851,10 +846,7 @@ defineExpose({ requestBack: handleBack })
       <section class="mt-4 rounded-2xl bg-white p-1">
         <!-- Course row -->
         <div class="flex min-h-11 items-center gap-3 px-3" data-testid="course-pill">
-          <GraduationCap
-            class="h-5 w-5 shrink-0 text-(--color-text-muted)"
-            aria-hidden="true"
-          />
+          <GraduationCap class="h-5 w-5 shrink-0 text-(--color-text-muted)" aria-hidden="true" />
           <span
             v-if="isArchivedCourse"
             data-testid="archived-course-chip"
@@ -879,10 +871,7 @@ defineExpose({ requestBack: handleBack })
 
         <!-- Date row -->
         <div class="flex min-h-11 items-center gap-3 px-3" data-testid="date-pill">
-          <CalendarIcon
-            class="h-5 w-5 shrink-0 text-(--color-text-muted)"
-            aria-hidden="true"
-          />
+          <CalendarIcon class="h-5 w-5 shrink-0 text-(--color-text-muted)" aria-hidden="true" />
           <Popover v-model:open="isCalendarOpen">
             <PopoverTrigger as-child>
               <Button
@@ -933,16 +922,14 @@ defineExpose({ requestBack: handleBack })
     </button>
 
     <!-- Editor Body Container -->
-    <main class="flex-1 min-h-0 flex flex-col w-full pt-2 pb-0" :class="contentStaggerClass">
+    <main class="flex-1 flex flex-col w-full pt-2 pb-0" :class="contentStaggerClass">
       <TiptapEditor
-        class="flex-1 min-h-0 w-full"
+        class="flex-1 w-full"
         :toolbar-class="controlsStaggerClass"
         :model-value="htmlContent"
         :editable="!!selectedCourseId && !isArchivedCourse"
         :placeholder="
-          selectedCourseId
-            ? 'Write note content...'
-            : 'Select a course to start writing'
+          selectedCourseId ? 'Write note content...' : 'Select a course to start writing'
         "
         @update:model-value="onEditorContentChange"
         @image-uploaded="onImageUploaded"
@@ -976,11 +963,7 @@ defineExpose({ requestBack: handleBack })
     </main>
 
     <!-- Unsaved Changes Dialog -->
-    <DialogShell
-      v-model:open="isUnsavedDialogOpen"
-      title="Discard Changes"
-      @cancel="cancelDiscard"
-    >
+    <DialogShell v-model:open="isUnsavedDialogOpen" title="Discard Changes" @cancel="cancelDiscard">
       <p
         data-testid="unsaved-changes-dialog"
         class="mt-2 text-sm text-[#7B8B97]"

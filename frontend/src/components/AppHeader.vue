@@ -19,14 +19,17 @@ useTopBarInset(headerEl)
   <header
     ref="headerEl"
     data-testid="app-header"
-    class="flex h-14 w-full shrink-0 items-center justify-between border-b-[3px] border-app-border bg-app-bg px-1"
+    class="flex h-14 w-full shrink-0 items-center justify-between border-b-[3px] border-app-border bg-nav-bg px-1"
   >
     <slot name="left">
       <AccountMenuButton />
     </slot>
 
     <slot name="center">
-      <h1 class="text-xl font-bold tracking-tight text-text-main truncate" data-testid="app-header-title">
+      <h1
+        class="text-xl font-bold tracking-tight text-text-main truncate"
+        data-testid="app-header-title"
+      >
         {{ title }}
       </h1>
     </slot>
