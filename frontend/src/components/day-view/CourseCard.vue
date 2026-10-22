@@ -44,7 +44,7 @@ function handleClick(e: MouseEvent) {
 <template>
   <div
     ref="cardRef"
-    class="flex cursor-pointer flex-col justify-start overflow-hidden rounded-lg border transition-colors hover:brightness-[0.97]"
+    class="flex cursor-pointer relative z-20 flex-col justify-start overflow-hidden rounded-lg border transition-colors hover:brightness-[0.97]"
     :class="[tier.card, props.embedded ? 'relative h-full w-full' : 'absolute left-2 right-2']"
     :style="{
       backgroundColor: courseColor.solid,

@@ -268,7 +268,7 @@ describe('NotesView', () => {
     vi.unstubAllGlobals()
   })
 
-  it('refreshes the notes list when the editor saves', async () => {
+  it('does not refetch the notes list when the editor saves', async () => {
     mockCatalog()
     const list = vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
 
@@ -280,7 +280,8 @@ describe('NotesView', () => {
     await wrapper.findComponent(NoteEditorModal).vm.$emit('saved', 'note-1')
     await flushPromises()
 
-    expect(list).toHaveBeenCalledTimes(2)
+    // saveNote already upserts the saved DTO into the cached list (FR-006).
+    expect(list).toHaveBeenCalledTimes(1)
   })
 
   it('performs no action on the top bar search click', async () => {

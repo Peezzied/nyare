@@ -3,7 +3,14 @@ import type { DrawerContentEmits, DrawerContentProps } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
 import { reactiveOmit } from '@vueuse/core'
 import { cn } from '@/lib/utils'
-import { DrawerContent, DrawerHandle, DrawerPortal, useForwardPropsEmits } from 'reka-ui'
+import { onMounted } from 'vue'
+import {
+  DrawerContent,
+  DrawerHandle,
+  DrawerPortal,
+  injectDrawerRootContext,
+  useForwardPropsEmits,
+} from 'reka-ui'
 import DrawerOverlay from './DrawerOverlay.vue'
 
 defineOptions({
@@ -34,6 +41,16 @@ const emits = defineEmits<
 const delegatedProps = reactiveOmit(props, 'class', 'portal', 'fullView', 'overlay')
 
 const forwarded = useForwardPropsEmits(delegatedProps, emits)
+
+// DrawerRoot starts popupHeight at 0, which collapses every snap point to
+// offset 0 until ResizeObserver reports the real height. Seeding it at mount
+// keeps the first snap change animating instead of jumping.
+const drawerRootContext = injectDrawerRootContext(null)
+onMounted(() => {
+  if (!drawerRootContext || drawerRootContext.popupHeight.value > 0) return
+  const el = document.getElementById(drawerRootContext.contentId)
+  if (el) drawerRootContext.onPopupHeightChange(el.offsetHeight)
+})
 
 let pointerDownPos: { x: number; y: number; time: number } | null = null
 let handledByPointer = false

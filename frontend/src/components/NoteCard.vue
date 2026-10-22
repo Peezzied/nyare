@@ -36,8 +36,8 @@ const displayText = computed(() => collapseBlankLines(stripImageMarkdown(props.n
       v-if="imageUrl"
       :src="imageUrl"
       :alt="note.title"
-      loading="lazy"
-      class="max-h-40 w-full object-cover"
+      decoding="async"
+      class="h-40 w-full object-cover"
       data-testid="note-image"
     />
     <div class="p-4">

@@ -356,7 +356,7 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
       <!-- Subtle yellow wash across today's column -->
       <div
         v-if="dayColEl !== null && todayColRect"
-        class="pointer-events-none absolute inset-y-0 z-10 bg-urgency-yellow/10"
+        class="pointer-events-none absolute inset-y-0 z-0 bg-urgency-yellow/10"
         :style="{ left: `${todayColRect.left}px`, width: `${todayColRect.width}px` }"
       />
 

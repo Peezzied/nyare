@@ -137,9 +137,28 @@ const TZ = 'Asia/Manila'
 const ANCHOR_SUNDAY = '2024-01-07'
 // Same floor as min-h-[44px] on the block button, snapped to the 15-minute grid.
 const PILL_MIN_HEIGHT_PX = 44
+// The resize handles hang 8px above and below the pill edge.
+const PILL_HANDLE_OVERHANG = 8
 
 function minBlockMinutes(): number {
   return Math.ceil((PILL_MIN_HEIGHT_PX / getHourHeight()) * 60 / 15) * 15
+}
+
+/**
+ * Shifts a pill vertically so its painted height (min-h button plus handle
+ * overhang) stays inside the grid at the start and end of the calendar.
+ */
+function pillShiftY(raw: PreviewBlock): number {
+  const pxPerMinute = getHourHeight() / 60
+  const gridBottom = 24 * getHourHeight()
+  const top = timeToMinutes(raw.startTime) * pxPerMinute
+  const painted = Math.max(
+    PILL_MIN_HEIGHT_PX,
+    (timeToMinutes(raw.endTime) - timeToMinutes(raw.startTime)) * pxPerMinute,
+  )
+  const overBottom = top + painted + PILL_HANDLE_OVERHANG - gridBottom
+  if (overBottom > 0) return -overBottom
+  return Math.max(0, PILL_HANDLE_OVERHANG - top)
 }
 
 const DAY_TO_DATE: Record<DayOfWeek, string> = {
@@ -310,7 +329,9 @@ function setupCalendarDom() {
 
 // Events refresh in place; the calendar is never remounted, so the scroll
 // container and its position survive every update.
-const seenBlockIds = new Set(props.blocks.map((b) => b.id))
+const seenBlocks = new Map(
+  props.blocks.map((b) => [b.id, `${b.startTime}-${b.endTime}`]),
+)
 
 /** Scrolls the grid so a block stays above anything covering the scroller's bottom edge. */
 function revealBlock(block: PreviewBlock) {
@@ -328,17 +349,18 @@ function revealBlock(block: PreviewBlock) {
 }
 
 function syncEvents() {
-  // Only additions after the initial scroll count; first load is positioned by
-  // syncScroll instead.
-  const added = didInitialScroll
-    ? props.blocks.filter((b) => !seenBlockIds.has(b.id))
+  // Blocks added or retimed after the initial scroll count; first load is
+  // positioned by syncScroll instead. A re-tapped pending slot keeps its id,
+  // so the time signature marks it for reveal too.
+  const changed = didInitialScroll
+    ? props.blocks.filter((b) => seenBlocks.get(b.id) !== `${b.startTime}-${b.endTime}`)
     : []
-  seenBlockIds.clear()
-  for (const b of props.blocks) seenBlockIds.add(b.id)
+  seenBlocks.clear()
+  for (const b of props.blocks) seenBlocks.set(b.id, `${b.startTime}-${b.endTime}`)
   calendarApp.events.set(toSxEvents(props.blocks))
   nextTick(() => {
     setupCalendarDom()
-    if (added[0]) revealBlock(added[0])
+    if (changed[0]) revealBlock(changed[0])
   })
 }
 
@@ -373,6 +395,11 @@ interface BlockDrag {
 let blockDrag: BlockDrag | null = null
 let rebuildAfterDrag = false
 let suppressNextBlockClick = false
+let lastDragEvent: PointerEvent | null = null
+let dragScrollRaf = 0
+
+const DRAG_EDGE_ZONE = 56
+const DRAG_SCROLL_STEP = 12
 
 // The week grid element carries a 55px left gutter for the time axis, so the
 // column span is measured from the first to the last day column instead.
@@ -384,6 +411,10 @@ function dayGridRect(): DOMRect | null {
   const f = first.getBoundingClientRect()
   const l = last.getBoundingClientRect()
   return new DOMRect(f.left, f.top, l.right - f.left, f.height)
+}
+
+function dragScroller(): HTMLElement | null {
+  return areaRef.value?.querySelector<HTMLElement>('.sx__view-container') ?? null
 }
 
 function onBlockPointerDown(e: PointerEvent, raw: PreviewBlock, mode: BlockDragMode = 'moving') {
@@ -403,17 +434,44 @@ function onBlockPointerDown(e: PointerEvent, raw: PreviewBlock, mode: BlockDragM
     moved: false,
     slot: null,
   }
+  const scroller = dragScroller()
+  if (scroller) scroller.style.scrollBehavior = 'auto'
 
   window.addEventListener('pointermove', onBlockPointerMove)
   window.addEventListener('pointerup', onBlockPointerUp)
   window.addEventListener('pointercancel', onBlockPointerUp)
 }
 
+/**
+ * Auto-scrolls the grid while a dragged edge hovers near the scroller's top or
+ * the drawer's top edge, so a block can reach the calendar's start and end.
+ */
+function edgeAutoScroll() {
+  const drag = blockDrag
+  const e = lastDragEvent
+  const scroller = dragScroller()
+  if (!drag || !e || !scroller) {
+    dragScrollRaf = 0
+    return
+  }
+  const bounds = scroller.getBoundingClientRect()
+  const bottomEdge = bounds.bottom - props.bottomClearance
+  let delta = 0
+  if (e.clientY > bottomEdge - DRAG_EDGE_ZONE) delta = DRAG_SCROLL_STEP
+  else if (e.clientY < bounds.top + DRAG_EDGE_ZONE) delta = -DRAG_SCROLL_STEP
+  if (!delta) {
+    dragScrollRaf = 0
+    return
+  }
+  scroller.scrollTop += delta
+  applyDragFrame(e)
+  dragScrollRaf = requestAnimationFrame(edgeAutoScroll)
+}
+
 function onBlockPointerMove(e: PointerEvent) {
   const drag = blockDrag
   if (!drag || drag.pointerId !== e.pointerId) return
-  const rect = dayGridRect()
-  if (!rect) return
+  lastDragEvent = e
 
   if (!drag.moved) {
     if (
@@ -424,6 +482,16 @@ function onBlockPointerMove(e: PointerEvent) {
     }
     drag.moved = true
   }
+
+  applyDragFrame(e)
+  if (!dragScrollRaf) dragScrollRaf = requestAnimationFrame(edgeAutoScroll)
+}
+
+function applyDragFrame(e: PointerEvent) {
+  const drag = blockDrag
+  if (!drag) return
+  const rect = dayGridRect()
+  if (!rect) return
 
   const offsetX = Math.max(0, Math.min(rect.width - 1, e.clientX - rect.left))
   const offsetY = Math.max(0, Math.min(24 * getHourHeight(), e.clientY - rect.top))
@@ -466,6 +534,13 @@ function onBlockPointerUp(e: PointerEvent) {
   const drag = blockDrag
   if (!drag || drag.pointerId !== e.pointerId) return
   blockDrag = null
+  lastDragEvent = null
+  if (dragScrollRaf) {
+    cancelAnimationFrame(dragScrollRaf)
+    dragScrollRaf = 0
+  }
+  const scroller = dragScroller()
+  if (scroller) scroller.style.scrollBehavior = ''
   window.removeEventListener('pointermove', onBlockPointerMove)
   window.removeEventListener('pointerup', onBlockPointerUp)
   window.removeEventListener('pointercancel', onBlockPointerUp)
@@ -503,6 +578,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   resizeObserver?.disconnect()
+  cancelAnimationFrame(dragScrollRaf)
+  window.removeEventListener('pointermove', onBlockPointerMove)
+  window.removeEventListener('pointerup', onBlockPointerUp)
+  window.removeEventListener('pointercancel', onBlockPointerUp)
   if (areaRef.value) {
     detachedRoots.delete(areaRef.value)
   }
@@ -534,13 +613,20 @@ onUnmounted(() => {
     </div>
 
     <!-- Schedule-X Week Grid -->
-    <div :ref="registerAreaRef" class="relative min-h-0 flex-1 sx-nyare-week">
+    <div
+      :ref="registerAreaRef"
+      class="relative min-h-0 flex-1 sx-nyare-week"
+      :style="{ '--week-preview-clearance': `${bottomClearance + 8}px` }"
+    >
       <div class="absolute inset-0 sx-nyare-fill">
         <ScheduleXCalendar ref="scheduleXRef" :calendar-app="calendarApp">
           <template #headerContent><span /></template>
           <template #timeGridEvent="{ calendarEvent }">
             <div
               class="group relative h-full w-full touch-none"
+              :style="{
+                transform: `translateY(${pillShiftY((calendarEvent as any)._raw)}px)`,
+              }"
               @pointerdown="onBlockPointerDown($event, (calendarEvent as any)._raw)"
             >
               <button
@@ -651,6 +737,13 @@ onUnmounted(() => {
   scrollbar-width: none;
   -ms-overflow-style: none;
   overscroll-behavior: contain;
+}
+
+/* Spacer inside the scroll flow: lets bottom-edge slots rise above the open drawer. */
+.sx-nyare-week :deep(.sx__view-container)::after {
+  content: '';
+  display: block;
+  height: var(--week-preview-clearance, 8px);
 }
 
 .sx-nyare-week :deep(.sx__view-container)::-webkit-scrollbar {

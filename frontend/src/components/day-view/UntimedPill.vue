@@ -39,7 +39,7 @@ const surfaceStyle = computed(() =>
   <!-- h-7 keeps the all-day row compact on a phone -->
   <button
     type="button"
-    class="flex h-7 w-full min-w-0 items-center gap-2 overflow-hidden rounded-lg px-3 text-left text-sm transition-colors active:brightness-95"
+    class="flex h-7 w-full min-w-0 items-center gap-2 relative z-20 overflow-hidden rounded-lg px-3 text-left text-sm transition-colors active:brightness-95"
     :class="surfaceClasses"
     :style="surfaceStyle"
     :aria-label="`${props.item.category}: ${props.item.title}`"

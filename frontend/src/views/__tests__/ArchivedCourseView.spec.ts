@@ -195,7 +195,9 @@ describe('ArchivedCourseView', () => {
     const wrapper = mountView()
     await flushPromises()
 
-    expect(mockLoadCourseContent).not.toHaveBeenCalled()
+    // The archive list and course content fan out concurrently (FR-002); a
+    // missing course still lands on the not-found state and never uses it.
+    expect(mockLoadCourseContent).toHaveBeenCalledWith(9)
     const notFound = wrapper.get('[data-testid="archived-course-not-found"]')
     expect(notFound.text()).toContain('Course not found in the archive.')
     expect(wrapper.find('[data-testid="archived-course-unarchive"]').exists()).toBe(false)

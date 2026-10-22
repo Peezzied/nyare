@@ -170,9 +170,18 @@ async function load(): Promise<void> {
   loading.value = true
   loadFailed.value = false
   try {
-    await archive.loadArchive()
+    const [, loadedContent] = await Promise.all([
+      archive.loadArchive(),
+      courseId.value !== null
+        ? archive.loadCourseContent(courseId.value).catch(() => null)
+        : Promise.resolve(null),
+    ])
     if (courseId.value !== null && course.value) {
-      content.value = await archive.loadCourseContent(courseId.value)
+      if (loadedContent === null) {
+        loadFailed.value = true
+      } else {
+        content.value = loadedContent
+      }
     }
   } catch {
     loadFailed.value = true

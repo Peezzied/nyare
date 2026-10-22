@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, useId, watch } from 'vue'
 import type { DrawerOpenChangeDetails } from 'reka-ui'
-import { Plus, Save, X } from 'lucide-vue-next'
+import { Plus, X } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
+import SaveButton from '@/components/SaveButton.vue'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Drawer, DrawerContent, DrawerHeader } from '@/components/ui/drawer'
 import DialogShell from '@/components/ui/DialogShell.vue'
@@ -100,6 +101,40 @@ const snapPoints = [SNAP_PARTIAL, SNAP_FULL]
 const activeSnapPoint = ref<string | number>(props.stage === 'full' ? SNAP_FULL : SNAP_PARTIAL)
 
 const isFull = computed(() => activeSnapPoint.value === SNAP_FULL || activeSnapPoint.value === 1)
+
+// The parchment wash fades with the sheet's real translateY: full cover in
+// partial mode, gone once the sheet reaches full screen.
+const sheetId = useId()
+const parchmentCover = ref(1)
+let parchmentRaf = 0
+let sheetEl: HTMLElement | null = null
+
+function sampleParchment() {
+  if (!sheetEl?.isConnected) {
+    sheetEl = document.querySelector(`[data-course-editor-sheet="${sheetId}"]`)
+  }
+  if (sheetEl) {
+    const translateY = new DOMMatrixReadOnly(getComputedStyle(sheetEl).transform).m42
+    const travel = sheetEl.offsetHeight - Number.parseFloat(SNAP_PARTIAL)
+    parchmentCover.value =
+      travel > 0 ? Math.min(1, Math.max(0, translateY / travel)) : 0
+  }
+  parchmentRaf = requestAnimationFrame(sampleParchment)
+}
+
+watch(
+  () => props.open,
+  (open) => {
+    cancelAnimationFrame(parchmentRaf)
+    sheetEl = null
+    if (open) {
+      parchmentRaf = requestAnimationFrame(sampleParchment)
+    }
+  },
+  { immediate: true },
+)
+
+onBeforeUnmount(() => cancelAnimationFrame(parchmentRaf))
 
 // The 4rem lift keeps the sheet above a bottom bar in partial mode. In full
 // mode an opted-in parent drops the lift so the sheet covers that bar.
@@ -253,6 +288,7 @@ const isAddAnotherTimeDisabled = computed(() => {
     <DrawerContent
       :portal="portal"
       :full-view="isFull"
+      :data-course-editor-sheet="sheetId"
       :class="[
         'border-t border-[#C2E8F1] bg-[#FDFEF7] outline-none shadow-2xl',
         lifted &&
@@ -263,6 +299,11 @@ const isAddAnotherTimeDisabled = computed(() => {
       @touchend="handleTouchEnd"
       @interact-outside.prevent
     >
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-[#F6F7EE]"
+        :style="{ opacity: parchmentCover }"
+      ></div>
       <DrawerHeader
         class="relative z-10 flex w-full flex-row items-center justify-between px-3 !py-0"
       >
@@ -277,42 +318,16 @@ const isAddAnotherTimeDisabled = computed(() => {
           <X class="size-5" aria-hidden="true" />
         </Button>
 
-        <Button
+        <SaveButton
           v-show="isFull"
-          type="button"
           data-testid="save-course"
           aria-label="Save course"
           :aria-busy="saving"
+          :saving="saving"
           :disabled="saving || !canSave"
-          class="flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl bg-[#007B99] px-4 font-sans text-sm font-bold text-white shadow-[0_3px_0_#00556B] transition-all hover:bg-[#006B85] active:translate-y-0.5 active:shadow-[0_1px_0_#00556B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007B99] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:active:translate-y-0"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          class="shrink-0"
           @click="emit('save')"
-        >
-          <svg
-            v-if="saving"
-            class="h-4 w-4 animate-spin text-white"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <circle
-              class="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              stroke-width="4"
-            ></circle>
-            <path
-              class="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
-          <Save v-else class="h-4 w-4 stroke-[2.5]" aria-hidden="true" />
-          <span>{{ saving ? 'Saving...' : 'Save' }}</span>
-        </Button>
+        />
       </DrawerHeader>
 
       <div
