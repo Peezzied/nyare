@@ -635,9 +635,9 @@ onUnmounted(() => {
                 "
                 class="h-full w-full min-h-[44px] cursor-move overflow-hidden rounded-md border p-1 text-left shadow-sm transition-all active:scale-95"
                 :style="{
-                  backgroundColor: (calendarEvent as any)._raw.color.bg,
-                  borderColor: (calendarEvent as any)._raw.color.border,
-                  color: (calendarEvent as any)._raw.color.text,
+                  backgroundColor: (calendarEvent as any)._raw.color.solid,
+                  borderColor: (calendarEvent as any)._raw.color.text,
+                  color: '#fff',
                   opacity: (calendarEvent as any)._raw.dimmed ? 0.55 : 1,
                 }"
                 @click.stop="onBlockClick((calendarEvent as any)._raw)"
