@@ -156,7 +156,12 @@ const archivedCourseBadgeStyle = computed(() => {
  */
 async function checkArchivedCourse(): Promise<void> {
   const courseId = selectedCourseId.value
-  if (courseId === null || courses.value.some((course) => course.id === courseId)) {
+  if (courseId === null) {
+    return
+  }
+  // The course check needs the catalog; this dedupes with any in-flight load.
+  await loadCatalog().catch(() => {})
+  if (courses.value.some((course) => course.id === courseId)) {
     return
   }
   try {
@@ -716,10 +721,10 @@ onMounted(async () => {
     window.visualViewport.addEventListener('resize', updateViewportHeight)
     window.visualViewport.addEventListener('scroll', updateViewportHeight)
   }
-  await loadCatalog()
   if (activeNoteId.value) {
-    await loadNote(activeNoteId.value)
+    await Promise.all([loadCatalog(), loadNote(activeNoteId.value)])
   } else {
+    const catalogPromise = loadCatalog()
     // New note: props take precedence over the courseId and entryDate query params.
     if (props.initialCourseId !== null && props.initialCourseId !== undefined) {
       selectedCourseId.value = props.initialCourseId
@@ -734,6 +739,7 @@ onMounted(async () => {
     } else if (route?.query?.entryDate) {
       entryDate.value = String(route.query.entryDate)
     }
+    await catalogPromise
     await nextTick()
     initialState.value = getCurrentState()
   }

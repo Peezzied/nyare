@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, h, onMounted } from 'vue'
+import { ref, computed, h, onActivated, onMounted } from 'vue'
 import HamburgerMenu from '@/components/HamburgerMenu.vue'
 import AddFab from '@/components/AddFab.vue'
 import { Button } from '@/components/ui/button'
@@ -24,6 +24,8 @@ import { minutesToDuration } from '@/utils/duration'
 import { fromTask, toTaskRequest, type TaskFormState } from '@/utils/taskForm'
 import type { TapOriginRect } from '@/types/notesTransition'
 import type { TaskResponse, PlanCategory } from '@/types/api'
+
+defineOptions({ name: 'TodoView' })
 
 type ActiveFilter = 'ALL' | 'OVERDUE' | PlanCategory
 
@@ -214,8 +216,7 @@ async function loadData() {
   loading.value = true
   loadError.value = null
   try {
-    await catalog.loadCatalog()
-    await loadTasks()
+    await Promise.all([catalog.loadCatalog(), loadTasks()])
   } catch (err) {
     loadError.value = err instanceof Error ? err.message : 'Tasks failed to load'
   } finally {
@@ -240,6 +241,8 @@ async function toggleTask(task: TaskResponse) {
 }
 
 onMounted(loadData)
+// Cache-guarded: free on warm revisits, self-heals after cache resets.
+onActivated(loadData)
 </script>
 
 <template>

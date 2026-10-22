@@ -168,9 +168,8 @@ async function resolveTask() {
     return
   }
   try {
-    const task = await getTask(props.taskId)
     // The archive check is best-effort: a failed catalog or archive load leaves the panel writable.
-    await loadCatalog().catch(() => {})
+    const [task] = await Promise.all([getTask(props.taskId), loadCatalog().catch(() => {})])
     if (!courses.value.some((course) => course.id === task.courseId)) {
       await archive.loadArchive().catch(() => {})
     }

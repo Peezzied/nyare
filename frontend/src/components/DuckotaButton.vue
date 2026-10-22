@@ -138,6 +138,8 @@ function handleClick(event: MouseEvent) {
     <img
       :src="duckotaImg"
       :alt="label"
+      loading="eager"
+      decoding="sync"
       class="relative z-10 size-full scale-[1.17] translate-x-[-1px] translate-y-[-1.02px] object-contain pointer-events-none select-none"
       :class="{ 'animate-pulse': processing }"
     />

@@ -60,6 +60,9 @@ function begin() {
         <img
           src="@/assets/mascot/duckota_in_stone.png"
           alt="Duckota the duck mascot on a stone"
+          loading="eager"
+          fetchpriority="high"
+          decoding="sync"
           class="relative z-10 w-70 select-none sm:w-72"
         />
 

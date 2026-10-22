@@ -1,6 +1,7 @@
 import {
   inject,
   markRaw,
+  onActivated,
   provide,
   reactive,
   type Component,
@@ -39,8 +40,13 @@ export function provideShellHeader(): ShellHeaderConfig {
 export function useShellHeader(config: ShellHeaderConfig): void {
   const header = inject(shellHeaderKey, undefined)
   if (!header) return
-  header.title = config.title
-  header.left = config.left === undefined ? undefined : markRaw(config.left)
-  header.center = config.center === undefined ? undefined : markRaw(config.center)
-  header.right = config.right === undefined ? undefined : markRaw(config.right)
+  const apply = () => {
+    header.title = config.title
+    header.left = config.left === undefined ? undefined : markRaw(config.left)
+    header.center = config.center === undefined ? undefined : markRaw(config.center)
+    header.right = config.right === undefined ? undefined : markRaw(config.right)
+  }
+  apply()
+  // Kept-alive views re-apply their header when the tab becomes active again.
+  onActivated(apply)
 }

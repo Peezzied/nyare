@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, h, onMounted, ref } from 'vue'
+import { computed, h, onActivated, onMounted, ref } from 'vue'
 import { Search } from '@lucide/vue'
 import NoteCard from '@/components/NoteCard.vue'
 import HeaderIconButton from '@/components/HeaderIconButton.vue'
@@ -13,6 +13,8 @@ import { useNotes } from '@/composables/useNotes'
 import { useShellHeader } from '@/composables/useShellHeader'
 import { toTapOriginRect } from '@/composables/useNoteTransition'
 import { extractFirstImageUrl } from '@/utils/noteImage'
+
+defineOptions({ name: 'NotesView' })
 
 // ponytail: the search button is visual-only and has no action.
 useShellHeader({
@@ -88,10 +90,13 @@ function badgeColorFor(note: NoteSummaryResponse) {
   return getBadgeColor(note.courseId)
 }
 
-onMounted(async () => {
-  await catalog.loadCatalog()
-  await loadNotes(true)
-})
+async function loadData() {
+  await Promise.all([catalog.loadCatalog(), loadNotes()])
+}
+
+onMounted(loadData)
+// Cache-guarded: free on warm revisits, self-heals after cache resets.
+onActivated(loadData)
 </script>
 
 <template>
@@ -154,7 +159,6 @@ onMounted(async () => {
       :note-id="modalNoteId"
       :origin-rect="modalOrigin"
       @close="modalOpen = false"
-      @saved="loadNotes(true)"
     />
   </div>
 </template>

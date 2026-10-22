@@ -4,6 +4,9 @@ import { nextTick, onUnmounted, ref, useId, watch } from 'vue'
 import duckotaFeedback from '@/assets/mascot/duckota_feedback.png'
 import { cn } from '@/lib/utils'
 
+// Warm the 112 KB mascot PNG at module setup so every hosted dialog opens with the art ready.
+new Image().src = duckotaFeedback
+
 interface Props {
   /** Dialog visibility. Bind it with v-model:open. */
   open?: boolean

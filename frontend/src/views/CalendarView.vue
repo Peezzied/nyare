@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, h, onMounted, ref } from 'vue'
+import { computed, h, onActivated, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { tasksApi } from '@/api/tasks'
 import { useAcademicEvents } from '@/composables/useAcademicEvents'
@@ -30,6 +30,8 @@ import ViewModeToggle from '@/components/day-view/ViewModeToggle.vue'
 import WeekCalendar from '@/components/day-view/WeekCalendar.vue'
 import WeekHeaderRow from '@/components/day-view/WeekHeaderRow.vue'
 
+defineOptions({ name: 'CalendarView' })
+
 // Defaults to today, in the day view
 const selectedDate = ref(new Date())
 const viewMode = ref<CalendarViewMode>('day')
@@ -45,16 +47,16 @@ const loadError = ref<string | null>(null)
 async function loadData() {
   loadError.value = null
   try {
-    await catalog.loadCatalog()
-    await Promise.all([loadTasks(), loadEvents()])
+    await Promise.all([catalog.loadCatalog(), loadTasks(), loadEvents(), loadNotes()])
   } catch (error) {
     loadError.value = error instanceof Error ? error.message : 'Calendar data failed to load'
     console.warn('[DayView] API error loading tasks/events', error)
   }
-  await loadNotes()
 }
 
 onMounted(loadData)
+// Cache-guarded: free on warm revisits, self-heals after cache resets.
+onActivated(loadData)
 
 const headerTitle = computed(() => {
   if (viewMode.value === 'day') return formatDateHeader(selectedDate.value)

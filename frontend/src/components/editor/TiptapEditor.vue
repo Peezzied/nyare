@@ -66,7 +66,7 @@ const editor = useEditor({
     Image.configure({
       allowBase64: false,
       HTMLAttributes: {
-        class: 'rounded-lg max-w-full h-auto my-3 shadow-xs',
+        class: 'rounded-lg max-w-full h-auto min-h-32 my-3 shadow-xs',
       },
     }),
     Placeholder.configure({

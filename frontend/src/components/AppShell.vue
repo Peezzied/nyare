@@ -185,6 +185,16 @@ function onKeepRunning(event: MouseEvent): void {
 
 onMounted(() => {
   planner.refresh().catch(() => {})
+  const prefetchViews = () => {
+    void import('@/views/CalendarView.vue')
+    void import('@/views/TodoView.vue')
+    void import('@/views/NotesView.vue')
+  }
+  if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+    ;(window as unknown as { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(prefetchViews)
+  } else {
+    setTimeout(prefetchViews, 300)
+  }
 })
 </script>
 
@@ -212,7 +222,11 @@ onMounted(() => {
     </AppHeader>
 
     <main class="relative min-h-0 flex-1">
-      <RouterView />
+      <RouterView v-slot="{ Component }">
+        <KeepAlive :include="['TodoView', 'CalendarView', 'NotesView']">
+          <component :is="Component" />
+        </KeepAlive>
+      </RouterView>
       <div class="absolute bottom-4 left-5 z-20">
         <div aria-live="polite">
           <Transition name="duckota-bubble">
