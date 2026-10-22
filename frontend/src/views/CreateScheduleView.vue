@@ -86,9 +86,10 @@ const {
   loadCatalog,
   deleteCourse,
 } = useCatalog()
-const { draftCourses, stageCourse, unstageCourse, resetDrafts, flush } = useCourseDrafts()
+const { draftCourses, draftSchedules, stageCourse, unstageCourse, resetDrafts, flush } =
+  useCourseDrafts()
 const { user } = useAuth()
-const { studentName, isNameValid } = useOnboarding()
+const { studentName, isNameValid, setSavedSummary } = useOnboarding()
 
 const catalogAvailable = ref(true)
 const showSubmitConfirm = ref(false)
@@ -108,8 +109,7 @@ const editors = ref<CourseEditor[]>(
 const activeEditorId = ref(editors.value[0]!.id)
 
 const activeEditor = computed(
-  () =>
-    editors.value.find((e) => e.id === activeEditorId.value) ?? editors.value[0]!,
+  () => editors.value.find((e) => e.id === activeEditorId.value) ?? editors.value[0]!,
 )
 
 const courseName = computed({
@@ -432,6 +432,7 @@ const previewBlocks = computed(() => {
 function handleSelectSlot(slot: PendingSlot) {
   pendingSlot.value = slot
   isOpen.value = true
+  setStage('partial')
 
   const existingBlock = pendingBlockId.value
     ? blocks.value.find((b) => b.id === pendingBlockId.value)
@@ -905,6 +906,7 @@ async function saveAll() {
   }
 
   saving.value = true
+  const firstSetup = !user.value
 
   try {
     for (const editor of touched) {
@@ -921,6 +923,14 @@ async function saveAll() {
       setSessionUser(sessionUser)
     }
 
+    // The recap slip reads real numbers, so capture the draft counts before
+    // flush() unstages them.
+    const summaryCourses = draftCourses.value.map((c) => ({
+      name: c.name,
+      colorId: c.colorId,
+    }))
+    const classBlocks = draftSchedules.value.length
+
     const created = await flush()
     for (const { tempId, course } of created) {
       const editor = editors.value.find((e) => e.id === tempId)
@@ -928,6 +938,11 @@ async function saveAll() {
         editor.persistedId = course.id
       }
       emit('created', course.id)
+    }
+
+    // First setup celebrates on its own screen; mid-app adds keep the toast.
+    if (firstSetup) {
+      setSavedSummary({ courses: summaryCourses, classBlocks })
     }
 
     toastSuccess(
@@ -942,7 +957,7 @@ async function saveAll() {
     saving.value = false
   }
 
-  router.replace('/calendar')
+  router.replace(firstSetup ? '/setup-complete' : '/calendar')
 }
 
 function retryFailed() {
@@ -975,9 +990,7 @@ defineExpose({
 <template>
   <div class="relative h-[100svh] w-full overflow-hidden bg-[#F6F7EE]">
     <!-- Background Week Calendar Preview -->
-    <div
-      class="absolute inset-x-0 top-[100px] z-0 bottom-[calc(4rem+env(safe-area-inset-bottom))]"
-    >
+    <div class="absolute inset-x-0 top-[100px] z-0 bottom-[calc(4rem+env(safe-area-inset-bottom))]">
       <WeekPreview
         :blocks="previewBlocks"
         :bottom-clearance="isOpen && stage === 'partial' ? 210 : 0"
@@ -987,18 +1000,9 @@ defineExpose({
       />
     </div>
 
-    <!-- Top navigation: onboarding steps centered above the title row -->
+    <!-- Top navigation: actions and onboarding steps above the title row -->
     <header ref="topBarEl" class="absolute inset-x-0 top-0 z-40 px-3 pt-2">
-      <div class="flex justify-center">
-        <StepProgress
-          :active-step="3"
-          :step-labels="ONBOARDING_STEP_LABELS"
-          interactive
-          @select="onStepSelect"
-        />
-      </div>
-
-      <div class="relative flex h-12 items-center justify-between">
+      <div class="relative flex items-center justify-between">
         <Button
           type="button"
           variant="ghost"
@@ -1010,12 +1014,13 @@ defineExpose({
           <ArrowLeft class="h-5 w-5 stroke-[2.5]" aria-hidden="true" />
         </Button>
 
-        <h1
-          class="min-w-0 flex-1 truncate px-2 text-center text-2xl font-bold text-[#1E293B]"
-          style="font-family: 'Quicksand', sans-serif"
-        >
-          Create a Schedule
-        </h1>
+        <StepProgress
+          class="absolute left-1/2 -translate-x-1/2"
+          :active-step="3"
+          :step-labels="ONBOARDING_STEP_LABELS"
+          interactive
+          @select="onStepSelect"
+        />
 
         <Button
           type="button"
@@ -1052,6 +1057,15 @@ defineExpose({
           <Check v-else class="h-4 w-4 stroke-[2.5]" aria-hidden="true" />
           <span>{{ saving ? 'Saving...' : 'Submit' }}</span>
         </Button>
+      </div>
+
+      <div class="flex h-12 items-center justify-center">
+        <h1
+          class="min-w-0 flex-1 truncate px-2 text-center text-2xl font-bold text-[#1E293B]"
+          style="font-family: 'Quicksand', sans-serif"
+        >
+          Create a Schedule
+        </h1>
       </div>
     </header>
 
@@ -1190,11 +1204,7 @@ defineExpose({
       </button>
     </footer>
 
-    <DialogShell
-      v-model:open="showSubmitConfirm"
-      title="Submit your schedule?"
-      :busy="saving"
-    >
+    <DialogShell v-model:open="showSubmitConfirm" title="Submit your schedule?" :busy="saving">
       <p
         class="mt-2 text-sm text-[#7B8B97]"
         style="font-family: 'Inter', sans-serif; font-weight: 400"

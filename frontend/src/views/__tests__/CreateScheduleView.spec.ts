@@ -328,7 +328,13 @@ describe('CreateScheduleView', () => {
     expect(authApi.register).toHaveBeenCalledWith({ username: 'Alice' })
     expect(authApi.login).toHaveBeenCalledWith({ username: 'existing_student' })
     expect(coursesApi.create).toHaveBeenCalledWith({ name: 'Math', color: 'tomato' })
-    expect(replace).toHaveBeenCalledWith('/calendar')
+
+    // First setup lands on the celebration with the real saved counts.
+    expect(useOnboarding().savedSummary.value).toEqual({
+      courses: [{ name: 'Math', colorId: 'tomato' }],
+      classBlocks: 1,
+    })
+    expect(replace).toHaveBeenCalledWith('/setup-complete')
   })
 
   it('redirects a sessionless visitor without a welcome name back to welcome', async () => {
