@@ -21,6 +21,8 @@ import group.four.nyare.nyare.repository.ScheduleRepository;
 import group.four.nyare.nyare.repository.TaskRepository;
 import group.four.nyare.nyare.service.ProcessListener;
 import group.four.nyare.nyare.service.StudyPlannerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +46,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class StudyPlannerServiceImpl implements StudyPlannerService {
+
+    private static final Logger log = LoggerFactory.getLogger(StudyPlannerServiceImpl.class);
 
     /**
      * Hard cap on persisted AI image descriptions. The image system prompt already
@@ -159,13 +163,19 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
     }
 
     private ProcessSummaryResponse processDirtyNotes(List<Note> dirtyNotes, Long userId, ProcessListener listener) {
+        long startedAt = System.nanoTime();
+
         SortedMap<LocalDate, List<Note>> notesByDate = new TreeMap<>();
         for (Note note : dirtyNotes) {
             LocalDate noteDate = note.getEntryDate() != null ? note.getEntryDate() : LocalDate.now();
             notesByDate.computeIfAbsent(noteDate, k -> new ArrayList<>()).add(note);
         }
 
+        log.info("[AI AUDIT - PROCESS TRIGGERED] UserId: {} | Notes: {} | Dates: {} | Courses: {}",
+                userId, dirtyNotes.size(), formatDateRange(notesByDate), formatCourseNames(dirtyNotes));
+
         int totalTasksCreated = 0;
+        int totalTasksPromoted = 0;
         int totalEventsCreated = 0;
         int totalContextsCreated = 0;
         Set<Long> affectedCourseIds = new TreeSet<>();
@@ -178,11 +188,6 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
             listener.onDateStarted(entry.getKey(), index, total);
 
             List<Note> dateNotes = entry.getValue();
-
-            // Delete uncompleted previous items linked to notes for this date
-            taskRepository.deleteByNoteInAndStatusNot(dateNotes, TaskStatus.COMPLETED);
-            academicEventRepository.deleteByNoteIn(dateNotes);
-            academicContextRepository.deleteByNoteIn(dateNotes);
 
             // Discover and update note images
             Map<UUID, List<Image>> noteImages = processAndPersistNoteImages(dateNotes);
@@ -227,23 +232,61 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
                     .collect(Collectors.toMap(Task::getId, t -> t, (a, b) -> a));
 
             List<Task> tasksToSave = new ArrayList<>();
+            Set<String> seenTaskKeys = new HashSet<>();
+
             for (StudyPlannerEngine.ExtractedTask item : extracted.tasks()) {
                 if (item.title() == null || item.title().isBlank()) {
                     continue;
                 }
-                if (item.isPromotion()) {
-                    Task existing = item.taskId() != null ? taskMap.get(item.taskId()) : null;
-                    if (existing != null) {
-                        existing.setScheduledDate(item.scheduledDate());
-                        if (item.estimatedMinutes() != null && item.estimatedMinutes() > 0) {
-                            existing.setDuration(Duration.ofMinutes(item.estimatedMinutes()));
+
+                Note note = item.noteId() != null ? noteMap.get(item.noteId()) : null;
+                Task existing = null;
+
+                if (item.taskId() != null) {
+                    existing = taskMap.get(item.taskId());
+                } else {
+                    // Match against existing open tasks by course and title semantics (exact or token overlap)
+                    Long courseId = note != null && note.getCourse() != null ? note.getCourse().getId() : null;
+                    if (courseId != null) {
+                        for (Task t : existingTasks) {
+                            if (t.getCourse() != null && courseId.equals(t.getCourse().getId())
+                                    && isSimilarTitle(t.getTitle(), item.title())) {
+                                existing = t;
+                                break;
+                            }
                         }
+                    }
+                }
+
+                if (existing != null) {
+                    String taskKey = existing.getId().toString();
+                    if (!seenTaskKeys.add(taskKey)) {
+                        continue;
+                    }
+                    boolean modified = false;
+                    if (item.scheduledDate() != null && !item.scheduledDate().equals(existing.getScheduledDate())) {
+                        existing.setScheduledDate(item.scheduledDate());
+                        modified = true;
+                    }
+                    if (item.estimatedMinutes() != null && item.estimatedMinutes() > 0) {
+                        Duration newDuration = Duration.ofMinutes(item.estimatedMinutes());
+                        if (!newDuration.equals(existing.getDuration())) {
+                            existing.setDuration(newDuration);
+                            modified = true;
+                        }
+                    }
+                    if (modified) {
                         tasksToSave.add(existing);
                     }
-                } else {
-                    Note note = item.noteId() != null ? noteMap.get(item.noteId()) : null;
+                } else if (item.isNewTask()) {
                     Course course = note != null ? note.getCourse() : null;
                     if (course == null) continue;
+
+                    String taskKey = course.getId() + ":" + item.title().trim().toLowerCase();
+                    if (!seenTaskKeys.add(taskKey)) {
+                        continue;
+                    }
+
                     Task task = new Task(course, item.title());
                     task.setNote(note);
                     task.setDescription(item.description());
@@ -256,6 +299,8 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
             }
 
             List<AcademicEvent> eventsToSave = new ArrayList<>();
+            Set<String> seenEventKeys = new HashSet<>();
+
             for (StudyPlannerEngine.ExtractedEvent item : extracted.events()) {
                 if (item.title() == null || item.title().isBlank() || item.deadline() == null) {
                     continue;
@@ -263,10 +308,36 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
                 Note note = item.noteId() != null ? noteMap.get(item.noteId()) : null;
                 Course course = note != null ? note.getCourse() : null;
                 if (course == null) continue;
-                eventsToSave.add(new AcademicEvent(course, note, item.title(), item.description(), item.deadline()));
+
+                String eventKey = course.getId() + ":" + item.title().trim().toLowerCase();
+                if (!seenEventKeys.add(eventKey)) {
+                    continue;
+                }
+
+                // Check against existing events for the course
+                AcademicEvent existing = null;
+                for (AcademicEvent e : existingEvents) {
+                    if (e.getCourse() != null && course.getId().equals(e.getCourse().getId())
+                            && isSimilarTitle(e.getTitle(), item.title())) {
+                        existing = e;
+                        break;
+                    }
+                }
+
+                if (existing != null) {
+                    // If deadline is different, update existing event (FR-010)
+                    if (!item.deadline().equals(existing.getDeadline())) {
+                        existing.setDeadline(item.deadline());
+                        eventsToSave.add(existing);
+                    }
+                } else {
+                    eventsToSave.add(new AcademicEvent(course, note, item.title(), item.description(), item.deadline()));
+                }
             }
 
             List<AcademicContext> contextsToSave = new ArrayList<>();
+            Set<String> seenContextKeys = new HashSet<>();
+
             for (StudyPlannerEngine.ExtractedContext item : extracted.contexts()) {
                 if (item.value() == null || item.value().isBlank()) {
                     continue;
@@ -274,10 +345,26 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
                 Note note = item.noteId() != null ? noteMap.get(item.noteId()) : null;
                 Course course = note != null ? note.getCourse() : null;
                 if (course == null) continue;
-                contextsToSave.add(new AcademicContext(course, note, item.value()));
+
+                String contextKey = course.getId() + ":" + item.value().trim().toLowerCase();
+                if (!seenContextKeys.add(contextKey)) {
+                    continue;
+                }
+
+                // Check against existing contexts for the course
+                boolean alreadyExists = existingContexts.stream().anyMatch(c ->
+                        c.getCourse() != null && course.getId().equals(c.getCourse().getId())
+                                && c.getValue() != null
+                                && c.getValue().trim().equalsIgnoreCase(item.value().trim()));
+
+                if (!alreadyExists) {
+                    contextsToSave.add(new AcademicContext(course, note, item.value()));
+                }
             }
 
             long newTaskCount = tasksToSave.stream().filter(t -> t.getId() == null).count();
+            long promotedCount = tasksToSave.stream().filter(t -> t.getId() != null).count();
+            long newEventCount = eventsToSave.stream().filter(e -> e.getId() == null).count();
 
             taskRepository.saveAll(tasksToSave);
             academicEventRepository.saveAll(eventsToSave);
@@ -288,13 +375,37 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
             noteRepository.saveAll(dateNotes);
 
             totalTasksCreated += (int) newTaskCount;
-            totalEventsCreated += eventsToSave.size();
+            totalTasksPromoted += (int) promotedCount;
+            totalEventsCreated += (int) newEventCount;
             totalContextsCreated += contextsToSave.size();
             affectedCourseIds.addAll(dateCourseIds);
         }
 
-        return new ProcessSummaryResponse(totalTasksCreated, totalEventsCreated, totalContextsCreated,
-                affectedCourseIds.stream().sorted().toList());
+        ProcessSummaryResponse summary = new ProcessSummaryResponse(totalTasksCreated, totalTasksPromoted,
+                totalEventsCreated, totalContextsCreated, affectedCourseIds.stream().sorted().toList());
+        log.info("[AI AUDIT - PROCESS COMPLETED] UserId: {} | Tasks: {} | Promoted: {} | Events: {} | Contexts: {} | Courses: {} | DurationMs: {}",
+                userId, totalTasksCreated, totalTasksPromoted, totalEventsCreated, totalContextsCreated,
+                summary.getAffectedCourseIds(), (System.nanoTime() - startedAt) / 1_000_000);
+        return summary;
+    }
+
+    private static String formatDateRange(SortedMap<LocalDate, List<Note>> notesByDate) {
+        if (notesByDate.isEmpty()) {
+            return "none";
+        }
+        return notesByDate.size() == 1
+                ? notesByDate.firstKey().toString()
+                : notesByDate.firstKey() + ".." + notesByDate.lastKey() + " (" + notesByDate.size() + ")";
+    }
+
+    private static String formatCourseNames(List<Note> notes) {
+        String names = notes.stream()
+                .filter(n -> n.getCourse() != null && n.getCourse().getName() != null)
+                .map(n -> n.getCourse().getName())
+                .distinct()
+                .sorted()
+                .collect(Collectors.joining(", "));
+        return names.isEmpty() ? "none" : names;
     }
 
     private Map<UUID, List<Image>> processAndPersistNoteImages(List<Note> dirtyNotes) {
@@ -382,6 +493,36 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
             }
         }
         return result;
+    }
+
+    /**
+     * Determines if two titles in the same course describe the same academic item.
+     * Checks exact equality (case-insensitive) or significant word-token overlap.
+     */
+    static boolean isSimilarTitle(String a, String b) {
+        if (a == null || b == null) return false;
+        String cleanA = a.trim();
+        String cleanB = b.trim();
+        if (cleanA.equalsIgnoreCase(cleanB)) return true;
+
+        Set<String> stopWords = Set.of("for", "the", "a", "an", "to", "in", "on", "of", "and", "or", "with", "sa", "ang", "mga", "last", "lesson", "notes");
+        Set<String> wordsA = Arrays.stream(cleanA.toLowerCase().split("[^a-zA-Z0-9]+"))
+                .filter(w -> !w.isBlank() && !stopWords.contains(w))
+                .collect(Collectors.toSet());
+        Set<String> wordsB = Arrays.stream(cleanB.toLowerCase().split("[^a-zA-Z0-9]+"))
+                .filter(w -> !w.isBlank() && !stopWords.contains(w))
+                .collect(Collectors.toSet());
+
+        if (wordsA.isEmpty() || wordsB.isEmpty()) return false;
+
+        // Count overlapping significant words
+        long overlap = wordsA.stream().filter(wordsB::contains).count();
+        if (overlap >= 2) return true;
+
+        // If both mention a key action/topic like "quiz", "midterm", "exam", "lab", "project", "homework", "problem"
+        Set<String> keyMarkers = Set.of("quiz", "midterm", "exam", "lab", "project", "homework", "assignment");
+        boolean sharesKeyMarker = wordsA.stream().anyMatch(w -> keyMarkers.contains(w) && wordsB.contains(w));
+        return sharesKeyMarker && overlap >= 1;
     }
 
     /**
