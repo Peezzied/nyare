@@ -58,6 +58,30 @@ describe('OnboardingSuccessView', () => {
     expect(mockReplace).toHaveBeenCalledWith('/calendar')
   })
 
+  it('reveals the calendar through a circular wipe when view transitions exist', async () => {
+    const startViewTransition = vi.fn<(update: () => Promise<void>) => void>((update) => {
+      void update()
+    })
+    Object.defineProperty(document, 'startViewTransition', {
+      value: startViewTransition,
+      configurable: true,
+    })
+    const wrapper = mount(OnboardingSuccessView, { props: { initialRevealed: true } })
+
+    try {
+      await wrapper.find('button[aria-label="Go to your calendar"]').trigger('click')
+      await flushPromises()
+
+      expect(startViewTransition).toHaveBeenCalled()
+      expect(mockReplace).toHaveBeenCalledWith('/calendar')
+      // Keyboard-style clicks carry no coordinates, so the wipe anchors to the CTA center.
+      expect(document.documentElement.getAttribute('style')).toContain('--wipe-x')
+    } finally {
+      delete (document as { startViewTransition?: unknown }).startViewTransition
+      document.documentElement.removeAttribute('style')
+    }
+  })
+
   it('renders the celebration directly when already revealed', () => {
     const wrapper = mount(OnboardingSuccessView, { props: { initialRevealed: true } })
 

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, useTemplateRef } from 'vue'
+import { computed, nextTick, ref, useTemplateRef } from 'vue'
 import { useRouter } from 'vue-router'
 import TactileButton from '@/components/TactileButton.vue'
 import { useOnboarding } from '@/composables/useOnboarding'
 import { useAuth } from '@/composables/useAuth'
+import { isReducedMotion } from '@/composables/useNoteTransition'
 import { COURSE_PALETTE_24 } from '@/constants/palette'
 
 const props = withDefaults(defineProps<{ initialRevealed?: boolean }>(), {
@@ -41,8 +42,24 @@ function reveal() {
   }, 900)
 }
 
-function enterCalendar() {
-  void router.replace('/calendar')
+// The CTA is the aperture: the calendar snapshot arrives inside a circle that
+// opens from the press point. Browsers without view transitions and
+// reduced-motion users take the plain route swap.
+function enterCalendar(event: MouseEvent) {
+  if (typeof document.startViewTransition !== 'function' || isReducedMotion()) {
+    void router.replace('/calendar')
+    return
+  }
+  // Keyboard and assistive clicks carry 0,0 coordinates; aim at the CTA center.
+  const rect = (ctaRef.value as { $el?: HTMLElement } | null)?.$el?.getBoundingClientRect()
+  const x = event.clientX || (rect ? rect.left + rect.width / 2 : window.innerWidth / 2)
+  const y = event.clientY || (rect ? rect.top + rect.height / 2 : window.innerHeight / 2)
+  document.documentElement.style.setProperty('--wipe-x', `${x}px`)
+  document.documentElement.style.setProperty('--wipe-y', `${y}px`)
+  document.startViewTransition(async () => {
+    await router.replace('/calendar')
+    await nextTick()
+  })
 }
 
 const CONFETTI = [
