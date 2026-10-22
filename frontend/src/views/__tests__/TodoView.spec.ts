@@ -1,6 +1,6 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { nextTick } from 'vue'
-import { mount, flushPromises } from '@vue/test-utils'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { nextTick, reactive } from 'vue'
+import { enableAutoUnmount, mount, flushPromises } from '@vue/test-utils'
 import TodoView from '../TodoView.vue'
 import TaskContainerModal from '@/components/tasks/TaskContainerModal.vue'
 import TaskRow from '@/components/TaskRow.vue'
@@ -10,9 +10,33 @@ import { useTasks } from '@/composables/useTasks'
 import { useToasts } from '@/composables/useToasts'
 import type { TaskResponse } from '@/types/api'
 
+const mockPush = vi.fn<(location: unknown) => Promise<void>>(() => Promise.resolve())
+const mockReplace = vi.fn<(location: unknown) => Promise<void>>(() => Promise.resolve())
+const mockBack = vi.fn<() => void>()
+const mockRoute = reactive({
+  name: 'tasks',
+  params: {} as Record<string, string>,
+  query: {} as Record<string, string>,
+})
+
 vi.mock('vue-router', () => ({
-  useRouter: () => ({ push: vi.fn<() => Promise<void>>() }),
+  useRouter: () => ({ push: mockPush, replace: mockReplace, back: mockBack }),
+  useRoute: () => mockRoute,
 }))
+
+// Stale mounted views share the module-level morph store; unmount every
+// wrapper so only the live view consumes the next tap-origin rect.
+enableAutoUnmount(afterEach)
+
+/** Resets the route stub and navigation spies between tests. */
+function resetRoute() {
+  mockPush.mockClear()
+  mockReplace.mockClear()
+  mockBack.mockClear()
+  mockRoute.name = 'tasks'
+  mockRoute.params = {}
+  mockRoute.query = {}
+}
 
 const rowTask: TaskResponse = {
   id: 'task-row-1',
@@ -44,6 +68,7 @@ function isoDate(offsetDays: number): string {
 describe('TodoView FAB', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
+    resetRoute()
     useCatalog().resetCatalog()
     useTasks().resetTasks()
     vi.spyOn(coursesApi, 'list').mockResolvedValue([
@@ -67,11 +92,16 @@ describe('TodoView FAB', () => {
     expect(fab.find('svg').exists()).toBe(true)
   })
 
-  it('captures the FAB rect and opens the create modal on tap', async () => {
+  it('routes to task-new on tap and morphs from the FAB rect', async () => {
     const wrapper = mountView()
     await flushPromises()
 
     await wrapper.get('[data-testid="tasks-fab"]').trigger('click')
+    expect(mockPush).toHaveBeenCalledWith({ name: 'task-new' })
+
+    // The router resolves to task-new; the overlay opens and consumes the rect.
+    mockRoute.name = 'task-new'
+    await nextTick()
 
     const modal = wrapper.findComponent(TaskContainerModal)
     expect(modal.props('isOpen')).toBe(true)
@@ -80,25 +110,21 @@ describe('TodoView FAB', () => {
   })
 
   it('ignores a second tap while the container is open', async () => {
+    mockRoute.name = 'task-new'
     const wrapper = mountView()
     await flushPromises()
 
-    const fab = wrapper.get('[data-testid="tasks-fab"]')
-    await fab.trigger('click')
+    await wrapper.get('[data-testid="tasks-fab"]').trigger('click')
 
-    const modal = wrapper.findComponent(TaskContainerModal)
-    const firstOrigin = modal.props('originRect')
-
-    await fab.trigger('click')
-
-    expect(modal.props('isOpen')).toBe(true)
-    expect(modal.props('originRect')).toBe(firstOrigin)
+    expect(mockPush).not.toHaveBeenCalled()
+    expect(wrapper.findComponent(TaskContainerModal).props('isOpen')).toBe(true)
   })
 })
 
 describe('TodoView row tap', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
+    resetRoute()
     useCatalog().resetCatalog()
     useTasks().resetTasks()
     vi.spyOn(coursesApi, 'list').mockResolvedValue([
@@ -108,16 +134,33 @@ describe('TodoView row tap', () => {
     vi.spyOn(tasksApi, 'list').mockResolvedValue([rowTask])
   })
 
-  it('opens the modal with the tapped task and its row rect', async () => {
+  it('routes to the task detail and morphs from the row rect', async () => {
     const wrapper = mountView()
     await flushPromises()
 
     await wrapper.findComponent(TaskRow).trigger('click')
+    expect(mockPush).toHaveBeenCalledWith({ name: 'task-detail', params: { id: 'task-row-1' } })
+
+    // The router resolves to task-detail; the overlay opens and consumes the rect.
+    mockRoute.name = 'task-detail'
+    mockRoute.params = { id: 'task-row-1' }
+    await nextTick()
 
     const modal = wrapper.findComponent(TaskContainerModal)
     expect(modal.props('isOpen')).toBe(true)
     expect(modal.props('taskId')).toBe('task-row-1')
     expect(modal.props('originRect')).not.toBeNull()
+  })
+
+  it('opens the modal on the task-detail route without a tap rect', async () => {
+    mockRoute.name = 'task-detail'
+    mockRoute.params = { id: 'task-row-1' }
+    const wrapper = mountView()
+    await flushPromises()
+
+    const modal = wrapper.findComponent(TaskContainerModal)
+    expect(modal.props('isOpen')).toBe(true)
+    expect(modal.props('taskId')).toBe('task-row-1')
   })
 
   it('expands a partly visible row from its visible part', async () => {
@@ -139,6 +182,9 @@ describe('TodoView row tap', () => {
     } as DOMRect)
 
     await row.trigger('click')
+    mockRoute.name = 'task-detail'
+    mockRoute.params = { id: 'task-row-1' }
+    await nextTick()
 
     const modal = wrapper.findComponent(TaskContainerModal)
     expect(modal.props('originRect')).toEqual({
@@ -161,6 +207,7 @@ describe('TodoView row tap', () => {
     await flushPromises()
 
     expect(updateStatus).toHaveBeenCalledWith('task-row-1', 'COMPLETED')
+    expect(mockPush).not.toHaveBeenCalled()
     expect(wrapper.findComponent(TaskContainerModal).props('isOpen')).toBe(false)
   })
 
@@ -180,6 +227,7 @@ describe('TodoView row tap', () => {
 describe('TodoView load failure', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
+    resetRoute()
     useCatalog().resetCatalog()
     useTasks().resetTasks()
     vi.spyOn(coursesApi, 'list').mockResolvedValue([])
@@ -209,6 +257,7 @@ describe('TodoView load failure', () => {
 describe('TodoView dismissal', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
+    resetRoute()
     useCatalog().resetCatalog()
     useTasks().resetTasks()
     vi.spyOn(coursesApi, 'list').mockResolvedValue([
@@ -219,6 +268,8 @@ describe('TodoView dismissal', () => {
   })
 
   it('keeps the scroll position and active filter after an open and dismiss cycle', async () => {
+    mockRoute.name = 'task-detail'
+    mockRoute.params = { id: 'task-row-1' }
     const wrapper = mountView()
     await flushPromises()
 
@@ -230,12 +281,16 @@ describe('TodoView dismissal', () => {
     const scrollEl = list.element as HTMLElement
     scrollEl.scrollTop = 240
 
-    await wrapper.findComponent(TaskRow).trigger('click')
-    await flushPromises()
     expect(wrapper.findComponent(TaskContainerModal).props('isOpen')).toBe(true)
 
+    // A close with no list entry behind it replaces the route with /tasks.
     wrapper.findComponent(TaskContainerModal).vm.$emit('close')
     await flushPromises()
+
+    expect(mockReplace).toHaveBeenCalledWith({ name: 'tasks' })
+    mockRoute.name = 'tasks'
+    mockRoute.params = {}
+    await nextTick()
 
     expect(wrapper.findComponent(TaskContainerModal).props('isOpen')).toBe(false)
     expect(scrollEl.scrollTop).toBe(240)
@@ -265,6 +320,7 @@ describe('TodoView Overdue filter', () => {
 
   beforeEach(() => {
     vi.restoreAllMocks()
+    resetRoute()
     useCatalog().resetCatalog()
     useTasks().resetTasks()
     vi.spyOn(coursesApi, 'list').mockResolvedValue([

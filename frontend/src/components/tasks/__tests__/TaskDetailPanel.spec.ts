@@ -23,6 +23,21 @@ const catalogState = vi.hoisted(() => ({
   courses: [{ id: 1, name: 'CS 201' }] as { id: number; name: string; color?: string | null }[],
 }))
 
+const notesMock = vi.hoisted(() => ({
+  notes: [] as { id: string; title: string; courseId: number; entryDate: string }[],
+}))
+
+vi.mock('@/composables/useNotes', () => ({
+  useNotes: () => ({
+    notes: {
+      get value() {
+        return notesMock.notes
+      },
+    },
+    loadNotes: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),
+  }),
+}))
+
 vi.mock('@/composables/useTasks', () => ({
   useTasks: () => ({
     tasks: {
@@ -83,7 +98,7 @@ const savedTask: TaskResponse = {
 
 function mountPanel(props: Partial<{ taskId: string | null }> = {}) {
   return mount(TaskDetailPanel, {
-    props: { taskId: null, showContent: true, showControls: true, embedded: true, ...props },
+    props: { taskId: null, showContent: true, showControls: true, ...props },
   })
 }
 
@@ -263,6 +278,9 @@ describe('TaskDetailPanel view mode', () => {
     tasksMock.updateTaskStatus.mockReset()
     tasksMock.deleteTask.mockReset()
     catalogState.courses = [{ id: 1, name: 'CS 201' }]
+    notesMock.notes = [
+      { id: 'note-9', title: 'Lecture 7', courseId: 1, entryDate: '2026-10-18' },
+    ]
   })
 
   afterEach(() => {
@@ -318,6 +336,14 @@ describe('TaskDetailPanel view mode', () => {
 
   it('hides the source note row when the task has no noteId', async () => {
     tasksMock.tasks = [{ ...viewTask, noteId: null }]
+    const wrapper = mountPanel({ taskId: 'task-1' })
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="task-source-note"]').exists()).toBe(false)
+  })
+
+  it('hides the source note row when the linked note was deleted', async () => {
+    notesMock.notes = []
     const wrapper = mountPanel({ taskId: 'task-1' })
     await flushPromises()
 

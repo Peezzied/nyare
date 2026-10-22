@@ -17,6 +17,7 @@ import SaveButton from '@/components/SaveButton.vue'
 import { ApiError } from '@/api'
 import { useCatalog } from '@/composables/useCatalog'
 import { useArchive } from '@/composables/useArchive'
+import { useNotes } from '@/composables/useNotes'
 import { useTasks } from '@/composables/useTasks'
 import { minutesToDuration } from '@/utils/duration'
 import { URGENCY_COLORS, formatDuration, getTaskUrgency } from '@/utils/taskUrgency'
@@ -37,14 +38,11 @@ interface Props {
   showContent?: boolean
   /** Reveals the save action and description zone. */
   showControls?: boolean
-  /** True inside the container modal, false on the direct-link route. */
-  embedded?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   showContent: true,
   showControls: true,
-  embedded: false,
 })
 
 const emit = defineEmits<{
@@ -55,6 +53,7 @@ const emit = defineEmits<{
 
 const { courses, schedules, loadCatalog } = useCatalog()
 const archive = useArchive()
+const { notes, loadNotes } = useNotes()
 const { getTask, createTask, updateTask, updateTaskStatus, resetTasks } = useTasks()
 
 const DURATION_PRESETS = [15, 30, 45, 60, 90, 120, 180] as const
@@ -87,6 +86,12 @@ const archivedCourseName = computed(
 const archivedCourseBadgeStyle = computed(() => {
   const badge = archive.courseColor(loadedTask.value?.courseId)
   return { backgroundColor: badge.bg, color: badge.text, borderColor: badge.border }
+})
+
+/** The backend keeps `noteId` on the task after the note is deleted; the link shows only while the note still resolves in the notes cache. */
+const sourceNoteId = computed(() => {
+  const id = loadedTask.value?.noteId
+  return id && notes.value.some((note) => note.id === id) ? id : null
 })
 
 const dirty = computed(() => formIsDirty(form, loadedTask.value))
@@ -246,6 +251,7 @@ function handleRetry() {
 
 onMounted(() => {
   void loadCatalog()
+  void loadNotes()
   void resolveTask()
 })
 </script>
@@ -455,8 +461,8 @@ onMounted(() => {
 
       <!-- Source zone: only when the task came from a note -->
       <a
-        v-if="loadedTask?.noteId"
-        :href="`/notes/${loadedTask.noteId}`"
+        v-if="sourceNoteId"
+        :href="`/notes/${sourceNoteId}`"
         data-testid="task-source-note"
         class="mt-4 flex min-h-11 items-center gap-3 rounded-2xl bg-white px-3 text-sm font-semibold text-(--color-text-main)"
         :class="controlsStaggerClass"

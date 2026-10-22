@@ -92,7 +92,6 @@ function onDeleted(task: TaskResponse) {
         :task-id="taskId"
         :show-content="showContent"
         :show-controls="showControls"
-        embedded
         @close="requestClose(true)"
         @deleted="onDeleted"
         @missing="requestClose(true)"

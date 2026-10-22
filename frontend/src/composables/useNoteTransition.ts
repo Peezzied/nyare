@@ -7,6 +7,24 @@ export const CONTENT_DELAY_MS = 100
 export const CONTROLS_DELAY_MS = 180
 export const REDUCED_MOTION_DURATION_MS = 150
 
+let pendingOrigin: TapOriginRect | null = null
+
+/**
+ * Stores the tapped element rect for the next route-driven editor open.
+ * The rect must live outside the view so a remount during navigation can
+ * still seed the expansion.
+ */
+export function setNoteMorphOrigin(rect: TapOriginRect | null): void {
+  pendingOrigin = rect
+}
+
+/** Returns the stored origin once, or null when a route open carries none. */
+export function takeNoteMorphOrigin(): TapOriginRect | null {
+  const rect = pendingOrigin
+  pendingOrigin = null
+  return rect
+}
+
 export function isReducedMotion(): boolean {
   return (
     typeof window !== 'undefined' &&
