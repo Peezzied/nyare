@@ -6,7 +6,6 @@ import { useToasts } from '@/composables/useToasts'
 import { setUnauthorizedHandler } from '@/api/client'
 import StartView from '../views/StartView.vue'
 import WelcomeView from '../views/WelcomeView.vue'
-import CreateScheduleView from '../views/CreateScheduleView.vue'
 import AccountSelectView from '../views/AccountSelectView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,7 +28,12 @@ const router = createRouter({
     {
       path: '/create-schedule',
       name: 'create-schedule',
-      component: CreateScheduleView,
+      component: () => import('@/views/CreateScheduleView.vue'),
+    },
+    {
+      path: '/setup-complete',
+      name: 'setup-complete',
+      component: () => import('@/views/OnboardingSuccessView.vue'),
     },
     {
       path: '/tasks/:id',
@@ -159,7 +163,16 @@ router.beforeEach(async (to) => {
     if (to.name === 'create-schedule') {
       return useOnboarding().isNameValid.value ? true : { name: 'welcome' }
     }
+    if (to.name === 'setup-complete') {
+      return useOnboarding().savedSummary.value ? true : { name: 'welcome' }
+    }
     return { path: '/' }
+  }
+
+  // The setup-complete celebration exists only right after a first save; any
+  // other visit (deep link, reload, account switch) lands on the app home.
+  if (to.name === 'setup-complete') {
+    return useOnboarding().savedSummary.value ? true : { name: 'calendar' }
   }
 
   // Onboarding completion is derived from owned courses: an account with at
