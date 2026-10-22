@@ -8,6 +8,14 @@
 
 **Input**: User description: "Apply all diagnosed perceived-performance findings: faster page navigation (concurrent data loading, deferred heavy modules, preserved view state, no redundant list reloads) and instant mascot imagery in dialogs."
 
+## Clarifications
+
+### Session 2026-10-22
+
+- Q: Should this spec patch all loading problems of the app? → A: Yes — every screen and every loading stall, including secondary and drawer surfaces, not only the three primary sections
+- Q: Which images must this feature make load instantly? → A: All bundled app imagery plus user-attached note images
+- Q: Where should the timing targets in the success criteria be measured? → A: Production build only
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Instant Return to a Section (Priority: P1)
@@ -69,31 +77,34 @@ A student triggers any confirmation dialog that shows the Duckota mascot (submit
 
 ### Functional Requirements
 
-- **FR-001**: When the student revisits a primary section within the same session, the system MUST display the section's last-loaded content immediately without re-requesting data already held in memory.
-- **FR-002**: When the student navigates to a primary section for the first time in a session, the system MUST request all independent data that section requires concurrently, not in a serial sequence.
+- **FR-001**: When the student revisits any screen within the same session, the system MUST display that screen's last-loaded content immediately without re-requesting data already held in memory.
+- **FR-002**: When the student navigates to any screen for the first time in a session, the system MUST request all independent data that screen requires concurrently, not in a serial sequence.
 - **FR-003**: A route change to a gated section MUST NOT wait behind more than one dependent data round-trip when the target section performs the same request itself.
-- **FR-004**: The system MUST defer loading of capabilities that only specific surfaces require — the schedule onboarding preview, the rich-text note editor, and the week calendar engine — until the student reaches a surface that needs them. The initial screen MUST NOT pay their load cost.
-- **FR-005**: Before any mascot-bearing dialog can first open, the system MUST have the mascot artwork already fetched so it renders in the same instant as the dialog.
+- **FR-004**: The system MUST defer loading of capabilities that only specific surfaces require — the schedule onboarding preview, the rich-text note editor, the week calendar engine, and any comparable heavy capability — until the student reaches a surface that needs them. The initial screen MUST NOT pay their load cost.
+- **FR-005**: Before any surface that displays bundled artwork can first present — mascot-bearing dialogs, onboarding, decorative art — the system MUST have that artwork already fetched so it renders in the same instant as its host.
 - **FR-006**: Saving an existing entity MUST NOT trigger a reload of its collection when the save response already describes the stored record.
-- **FR-007**: Primary section views MUST preserve their rendered state across tab switches so visually expensive surfaces do not reconstruct on every visit.
-- **FR-008**: When a data request fails or the backend is unreachable, navigation MUST still resolve promptly to the section's error or empty state.
+- **FR-007**: Screens MUST preserve their rendered state across in-app navigation so visually expensive surfaces do not reconstruct on every visit.
+- **FR-008**: When a data request fails or the backend is unreachable, navigation MUST still resolve promptly to the screen's error or empty state.
 - **FR-009**: All caching and concurrency changes MUST preserve the existing freshness contract: mutation responses update local state, and planner runs invalidate affected course data exactly as they do today.
+- **FR-010**: Images attached to notes MUST render without visible pop-in or layout shift when their containing card or editor presents; images not yet fetched MUST occupy reserved space until ready.
 
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
 
-- **SC-001**: Switching between the three primary sections presents usable content in under 0.5 seconds on the target mobile viewport, 95% of the time, after each section's first visit.
-- **SC-002**: First visit to any primary section or detail surface presents usable content in under 2 seconds against a local backend on a standard development machine.
-- **SC-003**: Mascot artwork is visible at dialog-open time in 100% of dialog opens after the app's initial load completes; zero observed pop-ins.
+- **SC-001**: Navigating to any previously visited screen presents usable content in under 0.5 seconds on the target mobile viewport, 95% of the time, measured on a production build.
+- **SC-002**: First visit to any screen, including secondary and detail surfaces, presents usable content in under 2 seconds on a production build served locally against a local backend on a standard development machine.
+- **SC-003**: All bundled imagery is visible at the moment its host surface presents — 100% of first opens after initial load, zero observed pop-ins — and note-attached images never cause a visible layout shift or late flicker.
 - **SC-004**: The start screen becomes interactive without fetching any resources exclusive to the note editor, schedule preview, or calendar engine surfaces.
 - **SC-005**: All existing user flows (tri-state planner, notes, tasks, events, Process runs) behave identically to before; the existing acceptance suite passes unchanged.
 
 ## Assumptions
 
 - The backend runs on the same machine or a low-latency network; the targets assume local-development latency, not remote hosting.
+- Timing targets are measured against a production build served locally, not the development server; dev-mode compilation overhead is out of scope.
 - The existing cache invalidation contract stays authoritative: mutation responses update local state, and Process runs refetch only affected courses.
 - Session-scoped caches still reset on account switch and sign-out.
-- Mascot artwork remains PNG for this feature; shrinking or re-encoding the image files is optional polish and not required to meet the instant-display criterion.
+- Bundled artwork stays in its current formats for this feature; shrinking or re-encoding image files is optional polish and not required to meet the instant-display criterion.
+- Explicit long-running operations the student starts deliberately — the Process planner run and image uploads — are not "loading stalls"; they keep their existing progress feedback and are out of scope.
 - No new user-facing functionality ships in this feature; it only removes waits the current implementation introduces.
 - The feature is frontend-only; no backend or API contract changes are expected.
