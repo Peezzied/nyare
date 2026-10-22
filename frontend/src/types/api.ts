@@ -259,6 +259,7 @@ export interface ProcessProgressEvent {
 /** Payload of the SSE `done` event with the counts of entities that Process created. */
 export interface ProcessSummaryResponse {
   readonly tasksCreated: number
+  readonly tasksPromoted?: number
   readonly eventsCreated: number
   readonly contextsCreated: number
   /**

@@ -540,12 +540,11 @@ describe('NoteEditor.vue', () => {
     expect(root.exists()).toBe(true)
     expect(root.classes()).toContain('flex')
     expect(root.classes()).toContain('flex-col')
-    expect(root.classes()).toContain('overflow-hidden')
+    expect(root.classes()).toContain('overflow-y-auto')
 
     const main = wrapper.find('main')
     expect(main.exists()).toBe(true)
     expect(main.classes()).toContain('flex-1')
-    expect(main.classes()).toContain('min-h-0')
     expect(main.classes()).toContain('w-full')
   })
 
@@ -1079,7 +1078,7 @@ describe('NoteEditor.vue', () => {
     editWrapper.unmount()
   })
 
-  it('stages the delete on confirm and restores the note when the toast dismisses', async () => {
+  it('stages the delete on confirm and commits it when the toast dismisses', async () => {
     const wrapper = await seedAndMountDeletable()
 
     const dialog = document.body.querySelector('[data-testid="delete-note-dialog"]')
@@ -1099,6 +1098,28 @@ describe('NoteEditor.vue', () => {
     const toast = useToasts().toasts.value.find((t) => t.title === 'Note deleted')
     expect(toast).toBeDefined()
     useToasts().dismissToast(toast!.id)
+    await flushPromises()
+    expect(notesApi.delete).toHaveBeenCalledWith('note-del-1')
+    expect(useNotes().notes.value.some((n) => n.id === 'note-del-1')).toBe(false)
+
+    wrapper.unmount()
+  })
+
+  it('restores the note on Undo and skips the API delete', async () => {
+    const wrapper = await seedAndMountDeletable()
+
+    const confirm = document.body.querySelector<HTMLButtonElement>(
+      '[data-testid="confirm-delete-button"]',
+    )!
+    confirm.click()
+    await flushPromises()
+
+    const toast = useToasts().toasts.value.find((t) => t.title === 'Note deleted')
+    expect(toast).toBeDefined()
+    toast!.action!.onClick()
+    useToasts().dismissToast(toast!.id)
+    await flushPromises()
+
     expect(useNotes().notes.value[0]?.id).toBe('note-del-1')
     expect(notesApi.delete).not.toHaveBeenCalled()
 

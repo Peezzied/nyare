@@ -388,8 +388,8 @@ onMounted(() => {
         style="font-family: 'Inter', sans-serif; font-weight: 400"
       >
         You will be signed out of
-        <strong class="text-[#334155]">{{ sessionUser?.username }}</strong> first. The account
-        stays on this list and you can sign back in anytime.
+        <strong class="text-[#334155]">{{ sessionUser?.username }}</strong> first. The account stays
+        on this list and you can sign back in anytime.
       </p>
 
       <template #actions="{ disabled, dismiss }">

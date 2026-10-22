@@ -2,7 +2,11 @@ import { reactive } from 'vue'
 import type { DayOfWeek } from '@/types/api'
 import type { DraftCourse, DraftSchedule } from '@/composables/useCourseDrafts'
 import { COURSE_PALETTE_24 } from '@/constants/palette'
-import { createBlock, syncScheduleDrafts, type TimeBlockDraft } from '@/components/TimeBlockCard.vue'
+import {
+  createBlock,
+  syncScheduleDrafts,
+  type TimeBlockDraft,
+} from '@/components/TimeBlockCard.vue'
 import type { PendingSlot } from '@/utils/weekPreview'
 
 export interface CourseEditor {
@@ -163,9 +167,7 @@ export function isEditorDirty(editor: CourseEditor): boolean {
 export function isEditorTouched(editor: CourseEditor): boolean {
   return (
     editor.name.trim().length > 0 ||
-    editor.blocks.some(
-      (b) => b.selectedDays.length > 0 || b.startTime !== '' || b.endTime !== '',
-    )
+    editor.blocks.some((b) => b.selectedDays.length > 0 || b.startTime !== '' || b.endTime !== '')
   )
 }
 

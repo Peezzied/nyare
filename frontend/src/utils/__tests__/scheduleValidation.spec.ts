@@ -314,9 +314,7 @@ describe('findEditorConflict', () => {
   it('detects a duplicate course name from the catalog', () => {
     const editor = makeEditor({
       name: 'cs 101',
-      blocks: [
-        makeBlock({ selectedDays: ['TUESDAY'], startTime: '13:00', endTime: '14:00' }),
-      ],
+      blocks: [makeBlock({ selectedDays: ['TUESDAY'], startTime: '13:00', endTime: '14:00' })],
     })
 
     expect(findEditorConflict(editor, catalogCourses, catalogSchedules)).toBe(
@@ -327,9 +325,7 @@ describe('findEditorConflict', () => {
   it('detects a clash with another course schedule', () => {
     const editor = makeEditor({
       name: 'New Course',
-      blocks: [
-        makeBlock({ selectedDays: ['MONDAY'], startTime: '09:30', endTime: '10:30' }),
-      ],
+      blocks: [makeBlock({ selectedDays: ['MONDAY'], startTime: '09:30', endTime: '10:30' })],
     })
 
     expect(findEditorConflict(editor, catalogCourses, catalogSchedules)).toBe(
@@ -341,9 +337,7 @@ describe('findEditorConflict', () => {
     const editor = makeEditor({
       name: 'CS 101',
       persistedId: 1,
-      blocks: [
-        makeBlock({ selectedDays: ['MONDAY'], startTime: '09:30', endTime: '10:30' }),
-      ],
+      blocks: [makeBlock({ selectedDays: ['MONDAY'], startTime: '09:30', endTime: '10:30' })],
     })
 
     expect(findEditorConflict(editor, catalogCourses, catalogSchedules)).toBeNull()
@@ -376,9 +370,7 @@ describe('findEditorConflict', () => {
   it('returns null when the editor has no conflict', () => {
     const editor = makeEditor({
       name: 'New Course',
-      blocks: [
-        makeBlock({ selectedDays: ['MONDAY'], startTime: '11:00', endTime: '12:00' }),
-      ],
+      blocks: [makeBlock({ selectedDays: ['MONDAY'], startTime: '11:00', endTime: '12:00' })],
     })
 
     expect(findEditorConflict(editor, catalogCourses, catalogSchedules)).toBeNull()

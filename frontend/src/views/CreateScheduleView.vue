@@ -489,7 +489,7 @@ function handleMoveBlock(blockId: string, fromDay: DayOfWeek, slot: PendingSlot)
 
 function handleSelectBlock(blockId: string) {
   isOpen.value = true
-  setStage('partial')
+  setStage('full')
 
   const [editorId, innerBlockId] = blockId.split('/')
   if (editorId && innerBlockId) {
@@ -834,6 +834,7 @@ async function saveCourse() {
   try {
     stageEditor(editor)
     toastSuccess('Course kept for this session. Use Submit to save it to your account.')
+    closeDrawer()
   } catch (error) {
     toastError(errorMessage(error))
   } finally {

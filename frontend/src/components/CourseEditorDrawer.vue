@@ -116,8 +116,7 @@ function sampleParchment() {
   if (sheetEl) {
     const translateY = new DOMMatrixReadOnly(getComputedStyle(sheetEl).transform).m42
     const travel = sheetEl.offsetHeight - Number.parseFloat(SNAP_PARTIAL)
-    parchmentCover.value =
-      travel > 0 ? Math.min(1, Math.max(0, translateY / travel)) : 0
+    parchmentCover.value = travel > 0 ? Math.min(1, Math.max(0, translateY / travel)) : 0
   }
   parchmentRaf = requestAnimationFrame(sampleParchment)
 }

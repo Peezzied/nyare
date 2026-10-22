@@ -4,15 +4,7 @@
 // over 240ms, ephemeral history state for device back gestures, reduced motion
 // falls back to an opacity crossfade.
 import { onUnmounted, ref } from 'vue'
-import {
-  CircleAlert,
-  CircleCheck,
-  CircleSlash,
-  CircleX,
-  Inbox,
-  LoaderCircle,
-  X,
-} from '@lucide/vue'
+import { CircleAlert, CircleCheck, CircleSlash, CircleX, Inbox, LoaderCircle, X } from '@lucide/vue'
 import type { TapOriginRect } from '@/types/notesTransition'
 import { useContainerMorph } from '@/composables/useNoteTransition'
 import { useNotifications } from '@/composables/useNotifications'
@@ -141,9 +133,13 @@ function detail(record: ProcessNotification): string {
         ? `Reading notes for ${formatEntryDate(record.progress.date)} — ${record.progress.index} of ${record.progress.total}`
         : 'Starting…'
     case 'done': {
+      const taskPart =
+        (record.summary?.tasksPromoted ?? 0) > 0
+          ? `${record.summary?.tasksCreated ?? 0} tasks (${record.summary?.tasksPromoted} promoted)`
+          : `${record.summary?.tasksCreated ?? 0} tasks`
       const parts = [
         `${record.noteCount} notes`,
-        `${record.summary?.tasksCreated ?? 0} tasks`,
+        taskPart,
         `${record.summary?.eventsCreated ?? 0} events`,
         `${record.summary?.contextsCreated ?? 0} context`,
       ]
@@ -241,11 +237,7 @@ function stamp(record: ProcessNotification): string {
           class="relative min-h-0 flex-1 overflow-y-auto px-4 py-4 transition-opacity duration-200"
           :class="showContent ? 'opacity-100' : 'opacity-0'"
         >
-          <TransitionGroup
-            tag="ul"
-            name="notification-item"
-            class="relative flex flex-col gap-3"
-          >
+          <TransitionGroup tag="ul" name="notification-item" class="relative flex flex-col gap-3">
             <li v-for="record in notifications.records.value" :key="record.id">
               <button
                 type="button"

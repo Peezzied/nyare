@@ -141,7 +141,7 @@ const PILL_MIN_HEIGHT_PX = 44
 const PILL_HANDLE_OVERHANG = 8
 
 function minBlockMinutes(): number {
-  return Math.ceil((PILL_MIN_HEIGHT_PX / getHourHeight()) * 60 / 15) * 15
+  return Math.ceil(((PILL_MIN_HEIGHT_PX / getHourHeight()) * 60) / 15) * 15
 }
 
 /**
@@ -247,8 +247,7 @@ const calendarApp = createCalendar({
 
 const origRender = calendarApp.render.bind(calendarApp)
 calendarApp.render = (el: HTMLElement | null) => {
-  const target =
-    el ?? areaRef.value?.querySelector<HTMLElement>('.sx-vue-calendar-wrapper') ?? null
+  const target = el ?? areaRef.value?.querySelector<HTMLElement>('.sx-vue-calendar-wrapper') ?? null
   if (target) {
     const queue: Array<() => void> = []
     syncQueue = queue
@@ -329,9 +328,7 @@ function setupCalendarDom() {
 
 // Events refresh in place; the calendar is never remounted, so the scroll
 // container and its position survive every update.
-const seenBlocks = new Map(
-  props.blocks.map((b) => [b.id, `${b.startTime}-${b.endTime}`]),
-)
+const seenBlocks = new Map(props.blocks.map((b) => [b.id, `${b.startTime}-${b.endTime}`]))
 
 /** Scrolls the grid so a block stays above anything covering the scroller's bottom edge. */
 function revealBlock(block: PreviewBlock) {

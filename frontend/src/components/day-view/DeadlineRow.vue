@@ -29,9 +29,7 @@ const surfaceStyle = computed(() =>
     : { backgroundColor: courseColor.value.solid, borderColor: courseColor.value.text },
 )
 
-const meta = computed(() =>
-  [props.courseName, props.row.timeLabel].filter(Boolean).join(' · '),
-)
+const meta = computed(() => [props.courseName, props.row.timeLabel].filter(Boolean).join(' · '))
 
 function handleClick(e: MouseEvent) {
   emit('select', (e.currentTarget as HTMLElement).getBoundingClientRect())

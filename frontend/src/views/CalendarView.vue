@@ -6,6 +6,7 @@ import { useAcademicEvents } from '@/composables/useAcademicEvents'
 import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
 import { useTasks } from '@/composables/useTasks'
+import { useUndoableEventDelete } from '@/composables/useUndoableEventDelete'
 import { useShellHeader } from '@/composables/useShellHeader'
 import type { CalendarViewMode, DayEvent } from '@/types/calendar'
 import type { CalendarItemDetailView, LinkedNoteRef } from '@/types/calendarItemDetail'
@@ -40,6 +41,7 @@ const catalog = useCatalog()
 // Shared caches: a Process run refetches them and the calendar follows.
 const { tasks, loadTasks } = useTasks()
 const { events, loadEvents } = useAcademicEvents()
+const { deleteEventWithUndo } = useUndoableEventDelete()
 // The shared notes cache never rejects, so a notes failure cannot hide the calendar.
 const { notes, loadNotes } = useNotes()
 const loadError = ref<string | null>(null)
@@ -178,6 +180,23 @@ function openLinkedNote(note: LinkedNoteRef) {
   router.push({ name: 'note-edit', params: { id: note.id } })
 }
 
+/** Routes to the task in the To-do view, which opens its detail overlay there. */
+function openTaskInTodo(taskId: string) {
+  isDetailOpen.value = false
+  router.push({ name: 'task-detail', params: { id: taskId } })
+}
+
+/** Deletes the open event through the undo toast after the modal closes. */
+function onEventDeleted() {
+  const item = detailItem.value
+  isDetailOpen.value = false
+  if (item?.kind !== 'event') return
+  const event = events.value.find((candidate) => candidate.id === item.id)
+  if (event) {
+    deleteEventWithUndo(event)
+  }
+}
+
 /** Opens a new note prefilled with the class's course and meeting day. */
 function addNote() {
   const item = detailItem.value
@@ -309,7 +328,9 @@ useShellHeader({
       @close="closeDetail"
       @open-note="openLinkedNote"
       @add-note="addNote"
+      @open-task="openTaskInTodo"
       @complete-task="completeTask"
+      @deleted="onEventDeleted"
     />
 
     <!-- A failed complete write keeps the prior state and shows the error here -->

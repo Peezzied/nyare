@@ -9,6 +9,7 @@ import Placeholder from '@tiptap/extension-placeholder'
 import { AlertCircle } from '@lucide/vue'
 import TiptapToolbar from './TiptapToolbar.vue'
 import { imagesApi } from '@/api/images'
+import { caretScrollDelta } from '@/utils/caretFollow'
 import type { ImageUploadResponse } from '@/types/api'
 
 interface Props {
@@ -42,6 +43,7 @@ const emit = defineEmits<{
 
 const isUploading = ref(false)
 const internalError = ref<string | null>(null)
+const footerRef = ref<HTMLElement | null>(null)
 
 const activeError = computed(() => props.errorMessage ?? internalError.value)
 
@@ -54,7 +56,7 @@ const editor = useEditor({
   editable: props.editable,
   editorProps: {
     attributes: {
-      class: 'font-secondary outline-none focus:outline-none min-h-full min-h-[300px]',
+      class: 'font-secondary outline-none focus:outline-none min-h-full min-h-[300px] break-words',
     },
   },
   extensions: [
@@ -77,7 +79,28 @@ const editor = useEditor({
     const html = ed.getHTML()
     emit('update:modelValue', html)
   },
+  onTransaction: () => {
+    keepCaretVisible()
+  },
 })
+
+/** Scrolls the ancestor scrollport so the caret line stays clear of the sticky header and footer. */
+function keepCaretVisible() {
+  const view = editor.value?.view
+  if (!view || !view.editable || !view.hasFocus() || !view.state.selection.empty) {
+    return
+  }
+  const scroller = view.dom.closest<HTMLElement>('[data-note-scrollport]')
+  if (!scroller) {
+    return
+  }
+  const bounds = scroller.getBoundingClientRect()
+  const header = scroller.querySelector('header')
+  const top = header ? Math.max(bounds.top, header.getBoundingClientRect().bottom) : bounds.top
+  const bottom = footerRef.value ? footerRef.value.getBoundingClientRect().top : bounds.bottom
+  const caret = view.coordsAtPos(view.state.selection.head)
+  scroller.scrollTop += caretScrollDelta(caret.top, caret.bottom, top, bottom)
+}
 
 // The parent echoes each emitted HTML back through modelValue. Skip equal values so
 // setContent does not reset the cursor. The replace transaction skips history and the
@@ -143,7 +166,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="font-secondary flex flex-col flex-1 min-h-0 w-full bg-[#FDFEF7] transition-colors overflow-hidden"
+    class="font-secondary flex flex-col flex-1 w-full bg-[#FDFEF7] transition-colors"
     :class="{ 'opacity-60 cursor-not-allowed select-none': !editable }"
   >
     <div
@@ -173,9 +196,9 @@ onBeforeUnmount(() => {
     </div>
 
     <div
-      class="flex-1 min-h-0 overflow-y-auto px-4 py-3"
+      class="flex-1 px-4 py-3"
       :class="{ 'pointer-events-none': !editable }"
-      data-testid="editor-scroll-container"
+      data-testid="editor-content"
     >
       <EditorContent
         :editor="editor"
@@ -183,17 +206,20 @@ onBeforeUnmount(() => {
       />
     </div>
 
-    <!-- Optional row between the content and the toolbar. NoteEditor puts its status bar here. -->
-    <slot name="status-bar" />
+    <!-- Status bar plus toolbar pin to the viewport bottom while the page scrolls. -->
+    <div ref="footerRef" data-testid="editor-footer" class="sticky bottom-0 z-10 shrink-0">
+      <!-- Optional row between the content and the toolbar. NoteEditor puts its status bar here. -->
+      <slot name="status-bar" />
 
-    <TiptapToolbar
-      :editor="editor"
-      :disabled="!editable || isUploading"
-      class="shrink-0 mt-auto w-full"
-      :class="toolbarClass"
-      @upload-image="handleUploadImage"
-      @upload-error="handleUploadError"
-    />
+      <TiptapToolbar
+        :editor="editor"
+        :disabled="!editable || isUploading"
+        class="w-full"
+        :class="toolbarClass"
+        @upload-image="handleUploadImage"
+        @upload-error="handleUploadError"
+      />
+    </div>
   </div>
 </template>
 

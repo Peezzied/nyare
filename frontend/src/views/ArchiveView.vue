@@ -155,10 +155,7 @@ onMounted(load)
 </script>
 
 <template>
-  <div
-    data-testid="archive-page"
-    class="relative h-full overflow-y-auto bg-app-bg px-4 pb-8 pt-4"
-  >
+  <div data-testid="archive-page" class="relative h-full overflow-y-auto bg-app-bg px-4 pb-8 pt-4">
     <p
       v-if="loading"
       data-testid="archive-loading"
@@ -179,12 +176,7 @@ onMounted(load)
       </Button>
     </div>
 
-    <TransitionGroup
-      v-else
-      tag="ul"
-      name="archive-row"
-      class="relative flex flex-col gap-4"
-    >
+    <TransitionGroup v-else tag="ul" name="archive-row" class="relative flex flex-col gap-4">
       <li v-for="course in archive.archivedCourses.value" :key="course.id">
         <Card
           as="article"

@@ -82,7 +82,7 @@ const DaySwiperStub = defineComponent({
 const EventDetailModalStub = defineComponent({
   name: 'EventDetailModal',
   props: { isOpen: Boolean, originRect: Object, item: Object },
-  emits: ['close', 'open-note', 'add-note', 'complete-task'],
+  emits: ['close', 'open-note', 'add-note', 'open-task', 'complete-task'],
   template: '<div />',
 })
 
@@ -263,6 +263,18 @@ describe('CalendarView detail', () => {
     await nextTick()
 
     expect(mocks.push).toHaveBeenCalledWith({ name: 'note-edit', params: { id: 'note-1' } })
+    expect(wrapper.findComponent(EventDetailModalStub).props('isOpen')).toBe(false)
+  })
+
+  it('routes to the task detail route on open-task', async () => {
+    const wrapper = mountContainer()
+    await flushPromises()
+    await openTaskDetail(wrapper)
+
+    wrapper.findComponent(EventDetailModalStub).vm.$emit('open-task', 'task-1')
+    await nextTick()
+
+    expect(mocks.push).toHaveBeenCalledWith({ name: 'task-detail', params: { id: 'task-1' } })
     expect(wrapper.findComponent(EventDetailModalStub).props('isOpen')).toBe(false)
   })
 

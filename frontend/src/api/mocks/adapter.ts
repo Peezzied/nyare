@@ -2,6 +2,7 @@ import { setMockHandler } from '@/api/client'
 import { createInitialFixtures, type FixtureState } from './fixtures'
 import { getPlanCategory } from '@/utils/planCategory'
 import { toNoteSummary } from '@/utils/noteSummary'
+import { uuid } from '@/utils/uuid'
 import type {
   ProblemDetail,
   UserResponse,
@@ -373,9 +374,7 @@ export function mockRouter(
   const courseArchiveMatch = pathname.match(/^\/api\/courses\/(\d+)\/(archive|unarchive)$/)
   if (method === 'POST' && courseArchiveMatch?.[1]) {
     const id = Number(courseArchiveMatch[1])
-    const index = state.courses.findIndex(
-      (c) => c.id === id && c.userId === state.currentUser?.id,
-    )
+    const index = state.courses.findIndex((c) => c.id === id && c.userId === state.currentUser?.id)
     if (index === -1) {
       return notFound(`Course not found with ID: ${id}`)
     }
@@ -500,7 +499,7 @@ export function mockRouter(
     const now = new Date().toISOString()
     const today = now.slice(0, 10)
     const newNote: NoteResponse = {
-      id: `note-${crypto.randomUUID()}`,
+      id: `note-${uuid()}`,
       courseId: req.courseId,
       title: req.title?.trim() ? req.title.trim() : 'Untitled Note',
       content: req.content,
@@ -603,7 +602,7 @@ export function mockRouter(
     const scheduledDate = req.scheduledDate ?? null
     const duration = req.duration ?? null
     const newTask: TaskResponse = {
-      id: `task-${crypto.randomUUID()}`,
+      id: `task-${uuid()}`,
       courseId: req.courseId,
       noteId: null,
       title: req.title,
@@ -731,7 +730,7 @@ export function mockRouter(
     }
     const now = new Date().toISOString()
     const newEvent: AcademicEventResponse = {
-      id: `event-${crypto.randomUUID()}`,
+      id: `event-${uuid()}`,
       courseId: req.courseId,
       noteId: req.noteId ?? null,
       title: req.title,
@@ -814,7 +813,7 @@ export function mockRouter(
       }
     }
 
-    const id = crypto.randomUUID()
+    const id = uuid()
     const now = new Date().toISOString()
     const isTestEnv = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test'
     let url = `/api/images/${id}`

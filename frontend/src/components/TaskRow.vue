@@ -137,28 +137,45 @@ function onRowClick() {
       @pointerup="onPointerEnd"
       @pointercancel="onPointerCancel"
     >
-      <div v-if="!readonly" class="flex h-11 w-11 shrink-0 items-center justify-center" data-swipe-exclude @click.stop>
-        <Checkbox :model-value="done" :aria-label="`Mark ${task.title} as completed`"
-          @update:model-value="emit('toggle')" />
+      <div
+        v-if="!readonly"
+        class="flex h-11 w-11 shrink-0 items-center justify-center"
+        data-swipe-exclude
+        @click.stop
+      >
+        <Checkbox
+          :model-value="done"
+          :aria-label="`Mark ${task.title} as completed`"
+          @update:model-value="emit('toggle')"
+        />
       </div>
 
       <div class="flex min-w-0 flex-1 flex-col gap-1 mr-2">
-
-        <span class="text-base leading-snug font-semibold text-(--color-text-main)" :class="{ 'line-through': done }">
+        <span
+          class="text-base leading-snug font-semibold text-(--color-text-main)"
+          :class="{ 'line-through': done }"
+        >
           {{ task.title }}
         </span>
-        <span class="flex min-w-0 items-center gap-1.5 text-[10px] tracking-wider uppercase"
-          :style="{ color: catalog.courseColor(task.courseId).text }">
-          <span class="font-semibold size-1.5 shrink-0 rounded-full" aria-hidden="true"
-            :style="{ backgroundColor: catalog.courseColor(task.courseId).solid }" />
+        <span
+          class="flex min-w-0 items-center gap-1.5 text-[10px] tracking-wider uppercase"
+          :style="{ color: catalog.courseColor(task.courseId).text }"
+        >
+          <span
+            class="font-semibold size-1.5 shrink-0 rounded-full"
+            aria-hidden="true"
+            :style="{ backgroundColor: catalog.courseColor(task.courseId).solid }"
+          />
           <span class="font-medium truncate font-secondary">{{ courseName }}</span>
         </span>
         <span v-if="time" class="text-xs text-(--color-text-muted)">{{ time }}</span>
       </div>
 
       <div class="flex shrink-0 items-center gap-2.5">
-        <span v-if="formatDuration(task.duration)"
-          class="flex h-8 items-center text-sm font-secondary text-(--color-primary)">
+        <span
+          v-if="formatDuration(task.duration)"
+          class="flex h-8 items-center text-sm font-secondary text-(--color-primary)"
+        >
           {{ formatDuration(task.duration) }}
         </span>
         <div v-if="dueDate" class="relative flex size-8 shrink-0 items-center justify-center">

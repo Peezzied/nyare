@@ -62,8 +62,9 @@ function formatDeadlineLabel(deadline: string): string {
 
 /**
  * Links a note identifier to its cached note. Returns `null` for a missing or
- * empty identifier (FR-018). A missing cache entry keeps the link usable with
- * a `null` title.
+ * empty identifier (FR-018). A `noteId` absent from the cached notes list is
+ * a dangling reference — the backend keeps it after the note is deleted — so
+ * the link is dropped instead of rendered dead.
  */
 function resolveNote(
   noteId: string | null | undefined,
@@ -71,7 +72,7 @@ function resolveNote(
 ): LinkedNoteRef | null {
   if (!noteId) return null
   const cached = notes.find((note) => note.id === noteId)
-  return { id: noteId, title: cached ? cached.title : null }
+  return cached ? { id: noteId, title: cached.title } : null
 }
 
 /** Journal entries of the class's course written on the meeting day. */

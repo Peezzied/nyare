@@ -7,6 +7,7 @@ import { computed, ref, watch } from 'vue'
 import DialogShell from '@/components/ui/DialogShell.vue'
 import { resetProcess } from '@/composables/useProcess'
 import type { UseProcess } from '@/composables/useProcess'
+import type { ProcessNotification } from '@/composables/useNotifications'
 import { useAcademicEvents } from '@/composables/useAcademicEvents'
 import { usePlannerStatus } from '@/composables/usePlannerStatus'
 import { useTasks } from '@/composables/useTasks'
@@ -22,8 +23,10 @@ const props = withDefaults(
     proc: UseProcess
     /** Set when reopening from a notification so the terminal run state stays. */
     preserveRun?: boolean
+    /** A finished record tapped in the center. Overrides proc-derived terminal phases. */
+    record?: ProcessNotification | null
   }>(),
-  { open: false, preserveRun: false },
+  { open: false, preserveRun: false, record: null },
 )
 
 const emit = defineEmits<{
@@ -52,6 +55,18 @@ const showMore = ref(false)
 type Phase = 'confirm' | 'running' | 'done' | 'cancelled' | 'error'
 
 const phase = computed<Phase>(() => {
+  const record = props.record
+  if (record) {
+    if (record.status === 'done') {
+      return 'done'
+    }
+    if (record.status === 'error') {
+      return 'error'
+    }
+    // cancelled, saved-after-cancel, or a stale running record: the backend
+    // cancels a disconnected run at the next checkpoint.
+    return 'cancelled'
+  }
   if (running.value) {
     return 'running'
   }
@@ -89,7 +104,16 @@ const pendingDates = computed(() =>
   (pendingStatus.value?.dirtyDates ?? []).map(formatEntryDate).join(', '),
 )
 
-const processedNotes = computed(() => runStatus.value?.pendingNotes ?? [])
+// A tapped record supplies its own summary, error, and note list; a live
+// run falls back to the proc refs.
+const runSummary = computed(() => props.record?.summary ?? summary.value)
+const runError = computed(() => props.record?.error ?? error.value)
+const savedRun = computed(
+  () => props.record?.status === 'saved-after-cancel' || savedAfterCancel.value,
+)
+const processedNotes = computed(
+  () => props.record?.pendingNotes ?? runStatus.value?.pendingNotes ?? [],
+)
 const processedIds = computed(() => new Set(processedNotes.value.map((n) => n.id)))
 
 // Process links each created task and event to its source note, so the
@@ -216,16 +240,20 @@ watch(
     <div v-else-if="phase === 'done'" class="mt-2">
       <p class="text-sm text-[#7B8B97]" style="font-family: 'Inter', sans-serif; font-weight: 400">
         Duckota processed {{ processedNotes.length }} notes and created
-        {{ summary?.tasksCreated ?? 0 }} tasks, {{ summary?.eventsCreated ?? 0 }} events, and
-        {{ summary?.contextsCreated ?? 0 }} context items.
+        {{ runSummary?.tasksCreated ?? 0 }} tasks<template
+          v-if="(runSummary?.tasksPromoted ?? 0) > 0"
+        >
+          ({{ runSummary?.tasksPromoted }} promoted)</template
+        >, {{ runSummary?.eventsCreated ?? 0 }} events, and
+        {{ runSummary?.contextsCreated ?? 0 }} context items.
       </p>
       <p
-        v-if="error"
+        v-if="runError"
         role="alert"
         class="mt-2 text-sm font-medium text-[#DC2626]"
         style="font-family: 'Inter', sans-serif; font-weight: 400"
       >
-        {{ error }}
+        {{ runError }}
       </p>
 
       <div
@@ -330,7 +358,7 @@ watch(
 
     <div v-else-if="phase === 'cancelled'" class="mt-2">
       <p
-        v-if="savedAfterCancel"
+        v-if="savedRun"
         class="text-sm text-[#7B8B97]"
         style="font-family: 'Inter', sans-serif; font-weight: 400"
       >
@@ -351,7 +379,7 @@ watch(
         class="text-sm font-medium text-[#DC2626]"
         style="font-family: 'Inter', sans-serif; font-weight: 400"
       >
-        {{ error }}
+        {{ runError }}
       </p>
     </div>
 

@@ -32,7 +32,10 @@ function discardDialog(wrapper: ReturnType<typeof mount>) {
 async function clickDialogButton(wrapper: ReturnType<typeof mount>, label: string) {
   const dialog = discardDialog(wrapper)
   expect(dialog?.props('open')).toBe(true)
-  await dialog!.findAll('button').find((button) => button.text() === label)!.trigger('click')
+  await dialog!
+    .findAll('button')
+    .find((button) => button.text() === label)!
+    .trigger('click')
   await flushPromises()
 }
 
@@ -772,19 +775,19 @@ describe('CreateScheduleView', () => {
     expect(vm.blocks[0]!.endTime).toBe('12:00')
   })
 
-  it('opens sheet in partial mode on selectBlock without starting a new class time', async () => {
+  it('opens sheet in full mode on selectBlock without starting a new class time', async () => {
     const wrapper = mount(CreateScheduleView, {
-      props: { initialStage: 'full' },
+      props: { initialStage: 'partial' },
       global: { plugins: [router] },
     })
     await router.isReady()
-    expect((wrapper.vm as unknown as ExposedScheduleView).stage).toBe('full')
+    expect((wrapper.vm as unknown as ExposedScheduleView).stage).toBe('partial')
 
     const weekPreview = wrapper.findComponent({ name: 'WeekPreview' })
     await weekPreview.vm.$emit('selectBlock', 'block-0')
     await flushPromises()
 
-    expect((wrapper.vm as unknown as ExposedScheduleView).stage).toBe('partial')
+    expect((wrapper.vm as unknown as ExposedScheduleView).stage).toBe('full')
     expect((wrapper.vm as unknown as ExposedScheduleView).pendingSlot).toBeNull()
   })
 
@@ -1100,7 +1103,10 @@ describe('CreateScheduleView', () => {
       .find((dialog) => dialog.props('title') === 'Remove course?')
     expect(removeDialog?.props('open')).toBe(true)
 
-    await removeDialog!.findAll('button').find((b) => b.text() === 'Remove')!.trigger('click')
+    await removeDialog!
+      .findAll('button')
+      .find((b) => b.text() === 'Remove')!
+      .trigger('click')
     await flushPromises()
 
     expect(wrapper.findAll('[data-testid="course-chip"]')).toHaveLength(1)
@@ -1139,6 +1145,8 @@ describe('CreateScheduleView', () => {
     expect(toastTitles('success')).toContain(
       'Course kept for this session. Use Submit to save it to your account.',
     )
+    expect((wrapper.vm as unknown as ExposedScheduleView).isOpen).toBe(false)
+    expect(discardDialog(wrapper)?.props('open')).toBe(false)
 
     // Math was reverted to an untouched editor; Submit flushes only History
     await submitAll(wrapper)

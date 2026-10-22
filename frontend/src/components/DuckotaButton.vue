@@ -122,7 +122,8 @@ function handleClick(event: MouseEvent) {
           background: rainbowGradient,
           animationDuration: '3s',
           mask: 'radial-gradient(circle, transparent calc(100% - 3px), black calc(100% - 3px))',
-          WebkitMask: 'radial-gradient(circle, transparent calc(100% - 3px), black calc(100% - 3px))',
+          WebkitMask:
+            'radial-gradient(circle, transparent calc(100% - 3px), black calc(100% - 3px))',
         }"
         aria-hidden="true"
       />

@@ -16,7 +16,11 @@ function initState() {
     <Variant title="Kinds">
       <div class="flex items-start justify-center gap-16 p-8 pt-24">
         <div class="relative flex flex-col items-center gap-2">
-          <DuckotaBubble kind="info" title="Duckota is on it" detail="Reading your pending notes." />
+          <DuckotaBubble
+            kind="info"
+            title="Duckota is on it"
+            detail="Reading your pending notes."
+          />
           <span class="text-xs text-slate-500">info</span>
         </div>
         <div class="relative flex flex-col items-center gap-2">
@@ -55,11 +59,7 @@ function initState() {
       </template>
 
       <template #controls="{ state }">
-        <HstSelect
-          v-model="state.kind"
-          title="Kind"
-          :options="['info', 'success', 'error']"
-        />
+        <HstSelect v-model="state.kind" title="Kind" :options="['info', 'success', 'error']" />
         <HstText v-model="state.title" title="Title" />
         <HstText v-model="state.detail" title="Detail" />
       </template>

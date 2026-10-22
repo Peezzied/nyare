@@ -51,10 +51,7 @@ describe('diffSchedules', () => {
 
   it('creates rows that have no existing counterpart', () => {
     const existing = [existingRow(1, 'MONDAY', '09:00', '10:00')]
-    const desired = [
-      desiredRow('MONDAY', '09:00', '10:00'),
-      desiredRow('FRIDAY', '15:00', '16:00'),
-    ]
+    const desired = [desiredRow('MONDAY', '09:00', '10:00'), desiredRow('FRIDAY', '15:00', '16:00')]
 
     const result = diffSchedules(existing, desired)
 

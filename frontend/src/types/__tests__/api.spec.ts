@@ -197,12 +197,14 @@ describe('API Types Contract', () => {
     }
     const processSummary: ProcessSummaryResponse = {
       tasksCreated: 3,
+      tasksPromoted: 1,
       eventsCreated: 1,
       contextsCreated: 2,
     }
 
     expect(image.size).toBe(204800)
     expect(processSummary.tasksCreated).toBe(3)
+    expect(processSummary.tasksPromoted).toBe(1)
   })
 
   it('validates enum union assignments', () => {

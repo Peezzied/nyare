@@ -153,9 +153,7 @@ describe('ArchivedCourseView', () => {
     await flushPromises()
 
     expect(mockLoadCourseContent).toHaveBeenCalledWith(1)
-    expect(wrapper.get('[data-testid="archived-course-meta"]').text()).toContain(
-      'Archived Oct 01',
-    )
+    expect(wrapper.get('[data-testid="archived-course-meta"]').text()).toContain('Archived Oct 01')
     expect(wrapper.get('[data-testid="archived-course-meta"]').text()).toContain('Read-only')
 
     const times = wrapper.findAll('[data-testid="archived-course-time"]')
@@ -170,9 +168,9 @@ describe('ArchivedCourseView', () => {
     expect(wrapper.get('[data-testid="archived-course-events"]').text()).toContain('Midterm exam')
 
     // Read-only snapshot: the task row hides its status checkbox and swipe actions.
-    expect(
-      wrapper.find('[data-testid="archived-course-tasks"] [role="checkbox"]').exists(),
-    ).toBe(false)
+    expect(wrapper.find('[data-testid="archived-course-tasks"] [role="checkbox"]').exists()).toBe(
+      false,
+    )
     expect(wrapper.find('[data-swipe-exclude]').exists()).toBe(false)
   })
 

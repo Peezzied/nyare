@@ -3,6 +3,7 @@ import { mount, flushPromises } from '@vue/test-utils'
 import ProcessDialog from '../ProcessDialog.vue'
 import { useAcademicEvents } from '@/composables/useAcademicEvents'
 import { useProcess } from '@/composables/useProcess'
+import type { ProcessNotification } from '@/composables/useNotifications'
 import { useTasks } from '@/composables/useTasks'
 import { resetAllCaches } from '@/composables/createCache'
 import { academicEventsApi, studyPlannerApi, tasksApi } from '@/api'
@@ -174,5 +175,81 @@ describe('ProcessDialog', () => {
     expect(details.text()).toContain('Graph walkthrough')
     expect(details.text()).toContain('Review trees')
     expect(details.text()).toContain('Midterm')
+  })
+
+  function finishedRecord(status: ProcessNotification['status']): ProcessNotification {
+    return {
+      id: 'rec-1',
+      status,
+      startedAt: '2026-10-20T09:00:00Z',
+      finishedAt: '2026-10-20T09:01:00Z',
+      noteCount: 2,
+      courseNames: ['CS101'],
+      dirtyDates: ['2026-10-01'],
+      pendingNotes: statusPayload.pendingNotes,
+      summary: status === 'done' ? summaryPayload : undefined,
+      error: status === 'error' ? 'Stream broke' : undefined,
+      read: true,
+    }
+  }
+
+  it('renders a done record tapped in the center without live run state', async () => {
+    // given
+    const proc = useProcess()
+    const wrapper = mount(ProcessDialog, {
+      props: { open: true, proc, record: finishedRecord('done') },
+    })
+    await flushPromises()
+
+    // then
+    const dialog = wrapper.get('[role="dialog"]')
+    expect(dialog.text()).toContain('Process complete')
+    expect(dialog.text()).toContain('1 tasks')
+    expect(dialog.text()).not.toContain('Process pending notes?')
+  })
+
+  it('renders promoted tasks in summary when tasksPromoted is greater than zero', async () => {
+    // given
+    const proc = useProcess()
+    const record = {
+      ...finishedRecord('done'),
+      summary: { ...summaryPayload, tasksCreated: 2, tasksPromoted: 1 },
+    }
+    const wrapper = mount(ProcessDialog, {
+      props: { open: true, proc, record },
+    })
+    await flushPromises()
+
+    // then
+    const dialog = wrapper.get('[role="dialog"]')
+    expect(dialog.text()).toContain('2 tasks (1 promoted)')
+  })
+
+  it('renders an error record tapped in the center', async () => {
+    // given
+    const proc = useProcess()
+    const wrapper = mount(ProcessDialog, {
+      props: { open: true, proc, record: finishedRecord('error') },
+    })
+    await flushPromises()
+
+    // then
+    const dialog = wrapper.get('[role="dialog"]')
+    expect(dialog.text()).toContain('Process failed')
+    expect(dialog.text()).toContain('Stream broke')
+  })
+
+  it('renders a saved-after-cancel record tapped in the center', async () => {
+    // given
+    const proc = useProcess()
+    const wrapper = mount(ProcessDialog, {
+      props: { open: true, proc, record: finishedRecord('saved-after-cancel') },
+    })
+    await flushPromises()
+
+    // then
+    const dialog = wrapper.get('[role="dialog"]')
+    expect(dialog.text()).toContain('Process stopped')
+    expect(dialog.text()).toContain('saved its changes')
   })
 })

@@ -96,7 +96,7 @@ function dayAriaLabel(day: { date: Date; untimed: UntimedDayItem[] }) {
           {{ dayName(day.date) }}
         </span>
         <span
-          class="mt-0.5 flex size-9 items-center justify-center rounded-full text-xl font-bold "
+          class="mt-0.5 flex size-9 items-center justify-center rounded-full text-xl font-bold"
           :class="day.key === todayKey ? 'bg-[#0E7490] text-white' : 'text-stone-700'"
         >
           {{ day.date.getDate() }}

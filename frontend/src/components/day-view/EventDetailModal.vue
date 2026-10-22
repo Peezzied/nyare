@@ -29,7 +29,9 @@ const emit = defineEmits<{
   (e: 'close'): void
   (e: 'open-note', note: LinkedNoteRef): void
   (e: 'add-note'): void
+  (e: 'open-task', taskId: string): void
   (e: 'complete-task', taskId: string): void
+  (e: 'deleted'): void
 }>()
 
 const {
@@ -120,7 +122,9 @@ const detailTitle = computed(() => {
           :item="item"
           @open-note="emit('open-note', $event)"
           @add-note="emit('add-note')"
+          @open-task="emit('open-task', $event)"
           @complete-task="emit('complete-task', $event)"
+          @deleted="emit('deleted')"
         />
       </div>
     </div>
