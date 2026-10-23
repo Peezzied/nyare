@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.controller;
 
+import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.dto.ImageUploadResponse;
 import group.four.nyare.nyare.model.Image;
 import group.four.nyare.nyare.service.ImageService;
@@ -28,21 +29,23 @@ import java.util.concurrent.TimeUnit;
 public class ImageController {
 
     private final ImageService imageService;
+    private final SessionContext sessionContext;
 
-    public ImageController(ImageService imageService) {
+    public ImageController(ImageService imageService, SessionContext sessionContext) {
         this.imageService = imageService;
+        this.sessionContext = sessionContext;
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ImageUploadResponse> uploadImage(@RequestParam("file") MultipartFile file) {
-        ImageUploadResponse response = imageService.uploadImage(file);
+        ImageUploadResponse response = imageService.uploadImage(file, sessionContext.requireUserId());
         URI location = URI.create(response.getUrl());
         return ResponseEntity.created(location).body(response);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<byte[]> getImage(@PathVariable UUID id) {
-        Image image = imageService.getImage(id);
+        Image image = imageService.getImage(id, sessionContext.requireUserId());
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(image.getContentType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + (image.getFilename() != null ? image.getFilename() : id.toString()) + "\"")
@@ -52,7 +55,7 @@ public class ImageController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteImage(@PathVariable UUID id) {
-        imageService.deleteImage(id);
+        imageService.deleteImage(id, sessionContext.requireUserId());
         return ResponseEntity.noContent().build();
     }
 }

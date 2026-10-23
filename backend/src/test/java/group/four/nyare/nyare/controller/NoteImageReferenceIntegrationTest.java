@@ -62,14 +62,14 @@ class NoteImageReferenceIntegrationTest {
     @Test
     @DisplayName("note image references are validated against stored images")
     void createNote_imageReferences_validatesAgainstStoredImages() throws Exception {
-        // given: a persisted image with a known UUID
-        Image image = imageRepository.save(new Image(new byte[]{1, 2, 3}, "image/png", "slide.png", 3L));
-        UUID existingImageId = image.getId();
-
         // given: a user + course, logged in for a session
         User user = userRepository.save(new User("ref_user"));
         Course course = courseRepository.save(new Course("CS 1", "Intro", user));
         MockHttpSession session = login("ref_user");
+
+        // given: a persisted image owned by that user with a known UUID
+        Image image = imageRepository.save(new Image(new byte[]{1, 2, 3}, "image/png", "slide.png", 3L, user));
+        UUID existingImageId = image.getId();
 
         // when/then: dangling reference -> 400 RFC 7807
         UUID randomImageId = UUID.randomUUID();

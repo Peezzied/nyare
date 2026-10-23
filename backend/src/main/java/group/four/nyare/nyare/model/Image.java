@@ -8,6 +8,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.annotation.CreatedDate;
@@ -46,6 +48,11 @@ public class Image {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    // Nullable so ddl-auto=update can add user_id to existing dev databases. Rows without an owner stay unreachable.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
@@ -53,11 +60,12 @@ public class Image {
     protected Image() {
     }
 
-    public Image(byte[] data, String contentType, String filename, long size) {
+    public Image(byte[] data, String contentType, String filename, long size, User user) {
         this.data = data;
         this.contentType = contentType;
         this.filename = filename;
         this.size = size;
+        this.user = user;
     }
 
     public UUID getId() {
@@ -94,6 +102,14 @@ public class Image {
 
     public void setSize(long size) {
         this.size = size;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getDescription() {

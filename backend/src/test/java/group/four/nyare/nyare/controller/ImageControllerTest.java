@@ -1,8 +1,11 @@
 package group.four.nyare.nyare.controller;
 
+import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.dto.ImageUploadResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.mock.web.MockHttpSession;
 import group.four.nyare.nyare.model.Image;
+import group.four.nyare.nyare.model.User;
 import group.four.nyare.nyare.service.ImageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +41,15 @@ class ImageControllerTest {
     @MockitoBean
     private JpaMetamodelMappingContext jpaMappingContext;
 
+    @MockitoBean
+    private SessionContext sessionContext;
+
     private static final Long USER_ID = 1L;
+
+    @BeforeEach
+    void stubSession() {
+        when(sessionContext.requireUserId()).thenReturn(USER_ID);
+    }
 
     private MockHttpSession mockSession() {
         MockHttpSession session = new MockHttpSession();
@@ -50,7 +61,7 @@ class ImageControllerTest {
     void uploadImage_returns201AndLocationHeader() throws Exception {
         UUID id = UUID.randomUUID();
         ImageUploadResponse response = new ImageUploadResponse(id, "/api/images/" + id, "image/png", 100L, Instant.now());
-        when(imageService.uploadImage(any())).thenReturn(response);
+        when(imageService.uploadImage(any(), any())).thenReturn(response);
 
         MockMultipartFile file = new MockMultipartFile("file", "test.png", "image/png", new byte[]{1, 2, 3});
 
@@ -64,8 +75,8 @@ class ImageControllerTest {
     @Test
     void getImage_returns200AndCacheHeader() throws Exception {
         UUID id = UUID.randomUUID();
-        Image image = new Image(new byte[]{1, 2, 3}, "image/png", "test.png", 3L);
-        when(imageService.getImage(id)).thenReturn(image);
+        Image image = new Image(new byte[]{1, 2, 3}, "image/png", "test.png", 3L, new User("owner"));
+        when(imageService.getImage(id, USER_ID)).thenReturn(image);
 
         mockMvc.perform(get("/api/images/{id}", id).session(mockSession()))
                 .andExpect(status().isOk())
@@ -76,11 +87,11 @@ class ImageControllerTest {
     @Test
     void deleteImage_returns204() throws Exception {
         UUID id = UUID.randomUUID();
-        doNothing().when(imageService).deleteImage(id);
+        doNothing().when(imageService).deleteImage(id, USER_ID);
 
         mockMvc.perform(delete("/api/images/{id}", id).session(mockSession()))
                 .andExpect(status().isNoContent());
 
-        verify(imageService).deleteImage(id);
+        verify(imageService).deleteImage(id, USER_ID);
     }
 }

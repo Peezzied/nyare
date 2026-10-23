@@ -12,25 +12,28 @@ import java.util.UUID;
 public interface ImageService {
 
     /**
-     * Stores an uploaded image binary and returns metadata.
+     * Stores an uploaded image binary under the given owner and returns metadata.
      *
-     * @param file the uploaded multipart file
+     * @param file   the uploaded multipart file
+     * @param userId the session user identifier that owns the image
      * @return image upload response with URL
      */
-    ImageUploadResponse uploadImage(MultipartFile file);
+    ImageUploadResponse uploadImage(MultipartFile file, Long userId);
 
     /**
-     * Retrieves an image entity by ID.
+     * Retrieves an image entity by ID scoped to the owner.
      *
-     * @param id the image UUID
+     * @param id     the image UUID
+     * @param userId the session user identifier
      * @return the image entity
      */
-    Image getImage(UUID id);
+    Image getImage(UUID id, Long userId);
 
     /**
-     * Deletes an image by ID.
+     * Deletes an image by ID scoped to the owner.
      *
-     * @param id the image UUID
+     * @param id     the image UUID
+     * @param userId the session user identifier
      */
-    void deleteImage(UUID id);
+    void deleteImage(UUID id, Long userId);
 }

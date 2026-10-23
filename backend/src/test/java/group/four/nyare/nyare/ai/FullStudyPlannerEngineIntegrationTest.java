@@ -223,11 +223,11 @@ public class FullStudyPlannerEngineIntegrationTest {
 
         // given: persisted images without descriptions, referenced by fresh notes
         byte[] slideBytes = createSyntheticNoteImage("CS201 Algorithm: Binary Tree Traversal. Submit problem set Friday.");
-        Image slideImage = imageRepository.save(new Image(slideBytes, "image/png", "slide.png", slideBytes.length));
+        Image slideImage = imageRepository.save(new Image(slideBytes, "image/png", "slide.png", slideBytes.length, user));
         assertThat(slideImage.getDescription()).isNull();
 
         byte[] noticeBytes = createSyntheticNoteImage("Important: Submit Lab Report 3 before Friday midnight.");
-        Image noticeImage = imageRepository.save(new Image(noticeBytes, "image/png", "notice.png", noticeBytes.length));
+        Image noticeImage = imageRepository.save(new Image(noticeBytes, "image/png", "notice.png", noticeBytes.length, user));
 
         Note oopNote = noteRepository.save(new Note(oop, "kailangan ko tapusin yung uml class diagram asap "
                 + "para sa lab report due friday.\n\n![Lab Notice](/api/images/" + noticeImage.getId() + ")"));
@@ -305,7 +305,7 @@ public class FullStudyPlannerEngineIntegrationTest {
     }
 
     private static Image transientImage(byte[] data) {
-        Image image = new Image(data, "image/png", "synthetic.png", data.length);
+        Image image = new Image(data, "image/png", "synthetic.png", data.length, null);
         ReflectionTestUtils.setField(image, "id", UUID.randomUUID());
         return image;
     }
