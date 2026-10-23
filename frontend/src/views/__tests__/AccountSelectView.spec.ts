@@ -3,6 +3,7 @@ import { mount, flushPromises } from '@vue/test-utils'
 import AccountSelectView from '../AccountSelectView.vue'
 import { authApi } from '@/api'
 import { setSessionUser, useAuth } from '@/composables/useAuth'
+import { resetRouteWipe } from '@/composables/useRouteWipe'
 import type { LoginRequest, UserRequest, UserResponse } from '@/types/api'
 
 const mockPush = vi.fn<(path: string) => Promise<void> | void>()
@@ -28,6 +29,7 @@ vi.mock('@/api', () => ({
 describe('AccountSelectView', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    resetRouteWipe()
   })
 
   it('renders loading skeletons on mount', async () => {
@@ -148,7 +150,8 @@ describe('AccountSelectView', () => {
     await flushPromises()
 
     expect(authApi.login).toHaveBeenCalledWith({ username: 'Carol' })
-    expect(mockPush).toHaveBeenCalledWith('/')
+    // The route swap waits for the wipe disc to cover the viewport first.
+    await vi.waitFor(() => expect(mockPush).toHaveBeenCalledWith('/'))
   })
 
   it('handles manage mode and account deletion with confirmation', async () => {
