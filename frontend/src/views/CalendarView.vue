@@ -1,16 +1,24 @@
 <script setup lang="ts">
-import { computed, h, onActivated, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, h, onActivated, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { academicEventsApi } from '@/api/academicEvents'
+import type { AcademicEventListParams } from '@/api/academicEvents'
 import { tasksApi } from '@/api/tasks'
 import { useAcademicEvents } from '@/composables/useAcademicEvents'
 import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
 import { useTasks } from '@/composables/useTasks'
 import { useUndoableEventDelete } from '@/composables/useUndoableEventDelete'
+import { useServerSearch } from '@/composables/useServerSearch'
 import { useShellHeader } from '@/composables/useShellHeader'
 import type { CalendarViewMode, DayEvent } from '@/types/calendar'
-import type { CalendarItemDetailView, LinkedNoteRef } from '@/types/calendarItemDetail'
+import type {
+  CalendarItemDetailView,
+  CalendarItemKind,
+  LinkedNoteRef,
+} from '@/types/calendarItemDetail'
 import type { TapOriginRect } from '@/types/notesTransition'
+import { setNoteMorphOrigin, takeNoteMorphOrigin } from '@/composables/useNoteTransition'
 import type { AcademicEventResponse } from '@/types/api'
 import { buildCalendarItemDetail } from '@/utils/calendarItemDetail'
 import { toDateKey } from '@/utils/dayKey'
@@ -23,9 +31,11 @@ import { formatWeekTitle, weekDates } from '@/utils/weekDays'
 import DateTitlePicker from '@/components/day-view/DateTitlePicker.vue'
 import DeadlinesView from '@/components/day-view/DeadlinesView.vue'
 import EventDetailModal from '@/components/day-view/EventDetailModal.vue'
+import FilterSheet, { type ListFilters } from '@/components/FilterSheet.vue'
 import HamburgerMenu from '@/components/HamburgerMenu.vue'
 import DaySwiper from '@/components/day-view/DaySwiper.vue'
 import ScheduleCalendar from '@/components/day-view/ScheduleCalendar.vue'
+import SearchBar from '@/components/SearchBar.vue'
 import TodayButton from '@/components/day-view/TodayButton.vue'
 import ViewModeToggle from '@/components/day-view/ViewModeToggle.vue'
 import WeekCalendar from '@/components/day-view/WeekCalendar.vue'
@@ -82,8 +92,48 @@ function setViewMode(mode: CalendarViewMode) {
 // ---- Back-to-today pill: hidden while today is on screen ----
 const now = useNow()
 
-// The deadlines list is anchored to now; it needs no date navigation.
-const deadlineSections = computed(() => deriveDeadlineSections(events.value, now.value))
+const query = ref('')
+const filters = ref<ListFilters>({})
+const filterSheetOpen = ref(false)
+const filtersActive = computed(() => Object.keys(filters.value).length > 0)
+const searchParams = computed<AcademicEventListParams | null>(() => {
+  const q = query.value.trim()
+  const { courseId, from, to } = filters.value
+  if (q === '' && !filtersActive.value) {
+    return null
+  }
+  return {
+    ...(q && { q }),
+    ...(courseId && { courseId }),
+    ...(from && { from }),
+    ...(to && { to }),
+  }
+})
+const { results: searchResults, error: searchError, retry: retrySearch } = useServerSearch(
+  academicEventsApi.list,
+  searchParams,
+)
+
+// Mirrors cache writes into an active search list: saved events refresh in
+// place, deleted events drop out, and events the cache never held keep their
+// search copy so a failed list load does not blank a working search.
+// ponytail: undo restores a deleted event into the cache but not this list.
+watch(events, (list, prev) => {
+  if (searchResults.value === null) {
+    return
+  }
+  const byId = new Map(list.map((e) => [e.id, e]))
+  const prevIds = new Set(prev.map((e) => e.id))
+  searchResults.value = searchResults.value
+    .filter((e) => byId.has(e.id) || !prevIds.has(e.id))
+    .map((e) => byId.get(e.id) ?? e)
+})
+
+// The deadlines list is anchored to now; it needs no date navigation. An
+// active search replaces the shared cache without writing to it.
+const deadlineSections = computed(() =>
+  deriveDeadlineSections(searchResults.value ?? events.value, now.value),
+)
 
 function getCourseName(courseId: number): string {
   const found = catalog.courses.value.find((c) => c.id === courseId)
@@ -126,70 +176,121 @@ function hasItemsOn(date: Date) {
 // The container owns the modal so it survives a day/week switch.
 const router = useRouter()
 
-const detailItem = ref<CalendarItemDetailView | null>(null)
-const detailOriginRect = ref<TapOriginRect | null>(null)
-const isDetailOpen = ref(false)
+const route = useRoute()
 const detailError = ref<string | null>(null)
 
-function openDetail(item: CalendarItemDetailView, originRect: DOMRect | null) {
+// The detail overlay is route-driven: `?item=task:<id>`, `?item=event:<id>`,
+// or `?item=class:<scheduleId>:<yyyy-mm-dd>`. The query entry is the back-trail,
+// so returning from a child route (task, note) reopens the detail on its own.
+const detailItem = computed<CalendarItemDetailView | null>(() =>
+  resolveDetailItem(route.name === 'calendar' ? route.query.item : null),
+)
+const isDetailOpen = computed(() => detailItem.value !== null)
+const detailOriginRect = ref<TapOriginRect | null>(null)
+
+// Consume the stored tap rect exactly when the overlay opens, so a reopen
+// after a child route (no tap rect left) falls back to the fade.
+watch(
+  isDetailOpen,
+  (open) => {
+    if (open) {
+      detailOriginRect.value = takeNoteMorphOrigin()
+    }
+  },
+  { immediate: true },
+)
+
+function resolveDetailItem(param: unknown): CalendarItemDetailView | null {
+  if (typeof param !== 'string') return null
+  const [kind, id, date] = param.split(':')
+  if (!id) return null
+  if (kind === 'task') {
+    const task = tasks.value.find((candidate) => candidate.id === id)
+    return task ? buildCalendarItemDetail(task, 'task', notes.value) : null
+  }
+  if (kind === 'event') {
+    const event = events.value.find((candidate) => candidate.id === id)
+    return event ? buildCalendarItemDetail(event, 'event', notes.value) : null
+  }
+  if (kind === 'class' && date) {
+    const [year, month, day] = date.split('-').map(Number)
+    if (!year || !month || !day) return null
+    const dayEvent = expandSchedulesForDate(
+      new Date(year, month - 1, day),
+      catalog.schedules.value,
+      catalog.courses.value,
+    ).find((candidate) => candidate.id === id)
+    return dayEvent ? buildCalendarItemDetail(dayEvent, 'class', notes.value) : null
+  }
+  return null
+}
+
+function openDetail(
+  kind: CalendarItemKind,
+  id: string,
+  entryDate: string | null,
+  originRect: DOMRect | null,
+) {
   detailError.value = null
-  detailItem.value = item
-  detailOriginRect.value = originRect
-    ? {
-        top: originRect.top,
-        left: originRect.left,
-        width: originRect.width,
-        height: originRect.height,
-        // DOMRect carries no corner radius; the calendar cards all use 16px.
-        borderRadius: '16px',
-      }
-    : null
-  isDetailOpen.value = true
+  setNoteMorphOrigin(
+    originRect
+      ? {
+          top: originRect.top,
+          left: originRect.left,
+          width: originRect.width,
+          height: originRect.height,
+          // DOMRect carries no corner radius; the calendar cards all use 16px.
+          borderRadius: '16px',
+        }
+      : null,
+  )
+  const item = kind === 'class' ? `class:${id}:${entryDate}` : `${kind}:${id}`
+  void router.push({ name: 'calendar', query: { item } })
 }
 
 /** Opens the detail view for a class meeting (FR-006). */
 function openClassDetail(event: DayEvent, originRect: DOMRect) {
-  openDetail(buildCalendarItemDetail(event, 'class', notes.value), originRect)
+  openDetail('class', event.id, event.start.split(' ')[0] ?? null, originRect)
 }
 
 /** Opens the detail view for a tapped task (FR-006) or event (FR-007) chip. */
 function openUntimedDetail(item: UntimedDayItem, originRect: DOMRect | null) {
-  const task = tasks.value.find((candidate) => candidate.id === item.id)
-  if (task) {
-    openDetail(buildCalendarItemDetail(task, 'task', notes.value), originRect)
-    return
-  }
-  const academicEvent = events.value.find((candidate) => candidate.id === item.id)
-  if (academicEvent) {
-    openDetail(buildCalendarItemDetail(academicEvent, 'event', notes.value), originRect)
-  }
+  openDetail(item.category, item.id, null, originRect)
 }
 
 /** Opens the detail view for a tapped deadline row (FR-007). */
 function openEventDetail(event: AcademicEventResponse, originRect: DOMRect | null) {
-  openDetail(buildCalendarItemDetail(event, 'event', notes.value), originRect)
+  openDetail('event', event.id, null, originRect)
 }
 
 function closeDetail() {
-  isDetailOpen.value = false
+  // The modal's ephemeral entry was already popped by the dismiss; this back
+  // removes the `?item` route entry below it. A deep link has no back entry.
+  if (window.history.state?.back) {
+    router.back()
+  } else {
+    void router.replace({ name: 'calendar' })
+  }
 }
 
-/** Opens the note editor route for the linked note (FR-009, FR-015). */
+/** Opens the note editor route for the linked note (FR-009, FR-015).
+ *  Replaces the open modal's ephemeral entry; the `?item` entry below is the
+ *  back target, so returning from the note reopens this detail. */
 function openLinkedNote(note: LinkedNoteRef) {
-  isDetailOpen.value = false
-  router.push({ name: 'note-edit', params: { id: note.id } })
+  router.replace({ name: 'note-open', params: { id: note.id } })
 }
 
-/** Routes to the task in the To-do view, which opens its detail overlay there. */
+/** Routes to the task in the To-do view, which opens its detail overlay there.
+ *  Replaces the open modal's ephemeral entry; the `?item` entry below is the
+ *  back target, so returning from the task reopens this detail. */
 function openTaskInTodo(taskId: string) {
-  isDetailOpen.value = false
-  router.push({ name: 'task-detail', params: { id: taskId } })
+  router.replace({ name: 'task-detail', params: { id: taskId } })
 }
 
 /** Deletes the open event through the undo toast after the modal closes. */
 function onEventDeleted() {
   const item = detailItem.value
-  isDetailOpen.value = false
+  closeDetail()
   if (item?.kind !== 'event') return
   const event = events.value.find((candidate) => candidate.id === item.id)
   if (event) {
@@ -197,12 +298,13 @@ function onEventDeleted() {
   }
 }
 
-/** Opens a new note prefilled with the class's course and meeting day. */
+/** Opens a new note prefilled with the class's course and meeting day.
+ *  Replaces the open modal's ephemeral entry; the `?item` entry below is the
+ *  back target, so returning from the editor reopens this detail. */
 function addNote() {
   const item = detailItem.value
   if (!item?.entryDate) return
-  isDetailOpen.value = false
-  router.push({ name: 'note-new', query: { courseId: item.courseId, entryDate: item.entryDate } })
+  router.replace({ name: 'note-new', query: { courseId: item.courseId, entryDate: item.entryDate } })
 }
 
 /**
@@ -216,12 +318,6 @@ async function completeTask(taskId: string) {
   try {
     const saved = await tasksApi.updateStatus(taskId, 'COMPLETED')
     tasks.value = tasks.value.map((candidate) => (candidate.id === saved.id ? saved : candidate))
-    if (detailItem.value?.task?.id === saved.id) {
-      detailItem.value = {
-        ...detailItem.value,
-        task: { id: saved.id, completed: saved.status === 'COMPLETED' },
-      }
-    }
     detailError.value = null
   } catch (error) {
     // Keep the prior state and tell the student the write failed.
@@ -306,14 +402,50 @@ useShellHeader({
         </template>
       </DaySwiper>
 
-      <DeadlinesView
-        v-else
-        key="deadlines"
-        :sections="deadlineSections"
-        :course-name="getCourseName"
-        @select="openEventDetail"
-        @select-day="openDay"
-      />
+      <div v-else key="deadlines" class="flex h-full flex-col">
+        <template v-if="searchError">
+          <SearchBar
+            v-model="query"
+            placeholder="Search deadlines…"
+            :filters-active="filtersActive"
+            @filter="filterSheetOpen = true"
+          />
+          <div
+            role="alert"
+            class="mx-4 mt-3 flex items-center justify-between gap-3 rounded-xl bg-[#DC2626] px-4 py-2 text-sm font-bold text-white"
+          >
+            <span>{{ searchError }}</span>
+            <button type="button" class="rounded-lg bg-white/20 px-3 py-1" @click="retrySearch">
+              Retry
+            </button>
+          </div>
+        </template>
+        <FilterSheet
+          v-model:open="filterSheetOpen"
+          v-model="filters"
+          :courses="catalog.courses.value"
+          :show-status="false"
+        />
+        <DeadlinesView
+          v-if="!searchError"
+          class="min-h-0 flex-1"
+          :sections="deadlineSections"
+          :course-name="getCourseName"
+          :searching="searchResults !== null"
+          @select="openEventDetail"
+          @select-day="openDay"
+        >
+          <template #top>
+            <SearchBar
+              v-model="query"
+              placeholder="Search deadlines…"
+              class="-mx-4"
+              :filters-active="filtersActive"
+              @filter="filterSheetOpen = true"
+            />
+          </template>
+        </DeadlinesView>
+      </div>
     </Transition>
 
     <TodayButton v-if="viewMode !== 'deadlines' && !isShowingToday" @jump="goToday" />
