@@ -19,7 +19,6 @@ import { ApiError } from '@/api'
 import { useCatalog } from '@/composables/useCatalog'
 import { useArchive } from '@/composables/useArchive'
 import { useNotes } from '@/composables/useNotes'
-import { setNoteMorphOrigin, toTapOriginRect } from '@/composables/useNoteTransition'
 import { useTasks } from '@/composables/useTasks'
 import { minutesToDuration } from '@/utils/duration'
 import { URGENCY_COLORS, formatDuration, getTaskUrgency } from '@/utils/taskUrgency'
@@ -97,15 +96,14 @@ const sourceNoteId = computed(() => {
   return id && notes.value.some((note) => note.id === id) ? id : null
 })
 
-/** Opens the source note through the note-edit route so the editor morph can play. */
+/** Opens the source note in the note route; the editor fades in over the detail.
+ *  Replaces the open modal's ephemeral history entry so back returns here. */
 function openSourceNote(event: MouseEvent) {
-  const el = event.currentTarget as Element | null
-  setNoteMorphOrigin(el ? toTapOriginRect(el) : null)
   if (!router) {
     return
   }
   event.preventDefault()
-  void router.push({ name: 'note-edit', params: { id: sourceNoteId.value } })
+  void router.replace({ name: 'note-open', params: { id: sourceNoteId.value } })
 }
 
 const dirty = computed(() => formIsDirty(form, loadedTask.value))
@@ -476,7 +474,7 @@ onMounted(() => {
       <!-- Source zone: only when the task came from a note -->
       <a
         v-if="sourceNoteId"
-        :href="`/notes/${sourceNoteId}`"
+        :href="`/note/${sourceNoteId}`"
         data-testid="task-source-note"
         class="mt-4 flex min-h-11 items-center gap-3 rounded-2xl bg-white px-3 text-sm font-semibold text-(--color-text-main)"
         :class="controlsStaggerClass"

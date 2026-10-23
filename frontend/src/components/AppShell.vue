@@ -228,6 +228,10 @@ onMounted(() => {
     void import('@/views/CalendarView.vue')
     void import('@/views/TodoView.vue')
     void import('@/views/NotesView.vue')
+    // Warm the direct note route and its editor chunk so the morph starts
+    // without a lazy-import wait.
+    void import('@/views/NoteOpenView.vue')
+    void import('@/views/NoteEditor.vue')
   }
   if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
     ;(window as unknown as { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(

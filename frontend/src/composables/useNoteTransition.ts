@@ -94,7 +94,10 @@ export function toTapOriginRect(el: Element): TapOriginRect {
 export interface ContainerMorphOptions {
   /** Whether the overlay is open. Re-evaluated whenever the source changes. */
   isOpen: () => boolean
-  /** Viewport geometry of the element that triggered the expansion. */
+  /**
+   * Viewport geometry of the element that triggered the expansion. When null,
+   * the overlay uses the opacity crossfade instead of a spatial morph.
+   */
   originRect: () => TapOriginRect | null
   /** Marker stored in the ephemeral history entry, e.g. 'nyareNoteModal'. */
   historyKey: string
@@ -113,7 +116,7 @@ export interface ContainerMorphOptions {
  * Shared container-transform choreography for overlay modals: expands from the
  * tapped rect over 320ms, contracts back over 240ms, keeps an ephemeral history
  * entry for device back gestures, locks body scroll, and falls back to a 150ms
- * opacity crossfade under reduced motion.
+ * opacity crossfade under reduced motion or when no origin rect exists.
  */
 export function useContainerMorph(options: ContainerMorphOptions) {
   const rootRef = ref<HTMLElement | null>(null)
@@ -166,7 +169,9 @@ export function useContainerMorph(options: ContainerMorphOptions) {
     }
 
     clearAllTimers()
-    reduced.value = isReducedMotion()
+    // No origin rect means nothing to morph from, so open (and later close)
+    // use the same 150ms opacity crossfade as reduced motion.
+    reduced.value = isReducedMotion() || options.originRect() === null
     closeReduced.value = false
     phase.value = 'expanding'
     isTransitioning.value = false

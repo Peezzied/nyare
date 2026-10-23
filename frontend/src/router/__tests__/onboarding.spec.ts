@@ -77,7 +77,7 @@ describe('router onboarding gate', () => {
     studentName.value = ''
   })
 
-  it.each(['/calendar', '/tasks', '/notes', '/notes/new', '/tasks/task-1'])(
+  it.each(['/calendar', '/tasks', '/notes', '/notes/new', '/note/note-1', '/tasks/task-1'])(
     'redirects a courseless session on %s to welcome',
     async (path) => {
       ensureSession.mockResolvedValue(sessionUser)

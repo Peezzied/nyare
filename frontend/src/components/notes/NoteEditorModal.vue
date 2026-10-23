@@ -91,7 +91,9 @@ const {
       "
       :style="cardStyle"
     >
+      <!-- Mounts once the container settles so the editor's setup cannot drop morph frames. -->
       <NoteEditor
+        v-if="phase !== 'expanding'"
         ref="editorRef"
         :key="sessionKey"
         embedded
