@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mount, flushPromises } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 import OnboardingSuccessView from '../OnboardingSuccessView.vue'
 import { useOnboarding } from '@/composables/useOnboarding'
+import { resetRouteWipe } from '@/composables/useRouteWipe'
 
 const mockReplace = vi.fn<(path: string) => Promise<void> | void>()
 
@@ -25,6 +26,7 @@ function seedSummary() {
 describe('OnboardingSuccessView', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    resetRouteWipe()
     useOnboarding().resetOnboarding()
     seedSummary()
   })
@@ -53,33 +55,17 @@ describe('OnboardingSuccessView', () => {
     expect(wrapper.find('section.slip-away').exists()).toBe(true)
 
     await wrapper.find('button[aria-label="Go to your calendar"]').trigger('click')
-    await flushPromises()
-
-    expect(mockReplace).toHaveBeenCalledWith('/calendar')
+    await vi.waitFor(() => expect(mockReplace).toHaveBeenCalledWith('/calendar'))
   })
 
-  it('reveals the calendar through a circular wipe when view transitions exist', async () => {
-    const startViewTransition = vi.fn<(update: () => Promise<void>) => void>((update) => {
-      void update()
-    })
-    Object.defineProperty(document, 'startViewTransition', {
-      value: startViewTransition,
-      configurable: true,
-    })
+  it('covers the screen before the calendar route swaps', async () => {
     const wrapper = mount(OnboardingSuccessView, { props: { initialRevealed: true } })
 
-    try {
-      await wrapper.find('button[aria-label="Go to your calendar"]').trigger('click')
-      await flushPromises()
+    await wrapper.find('button[aria-label="Go to your calendar"]').trigger('click')
 
-      expect(startViewTransition).toHaveBeenCalled()
-      expect(mockReplace).toHaveBeenCalledWith('/calendar')
-      // Keyboard-style clicks carry no coordinates, so the wipe anchors to the CTA center.
-      expect(document.documentElement.getAttribute('style')).toContain('--wipe-x')
-    } finally {
-      delete (document as { startViewTransition?: unknown }).startViewTransition
-      document.documentElement.removeAttribute('style')
-    }
+    // The route swap waits for the disc to cover the viewport first.
+    expect(mockReplace).not.toHaveBeenCalled()
+    await vi.waitFor(() => expect(mockReplace).toHaveBeenCalledWith('/calendar'))
   })
 
   it('renders the celebration directly when already revealed', () => {

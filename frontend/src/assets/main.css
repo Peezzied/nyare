@@ -243,22 +243,3 @@
 .sx__slide-right {
   animation: none !important;
 }
-
-/* Onboarding → calendar wipe: the celebration snapshot stays put while the
-   incoming calendar opens through a circle anchored at the CTA press point. */
-::view-transition-old(root) {
-  animation: none;
-}
-
-::view-transition-new(root) {
-  animation: calendar-wipe 650ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-@keyframes calendar-wipe {
-  from {
-    clip-path: circle(0px at var(--wipe-x, 50%) var(--wipe-y, 50%));
-  }
-  to {
-    clip-path: circle(150% at var(--wipe-x, 50%) var(--wipe-y, 50%));
-  }
-}

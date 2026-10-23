@@ -201,7 +201,7 @@ function stamp(record: ProcessNotification): string {
     >
       <div class="flex h-full flex-col">
         <header
-          class="flex h-14 shrink-0 items-center justify-between border-b-[3px] border-app-border px-3 transition-opacity duration-200"
+          class="flex h-14 shrink-0 items-center justify-between border-b-[3px] bg-nav-bg px-3 transition-opacity duration-200"
           :class="showControls ? 'opacity-100' : 'opacity-0'"
         >
           <button

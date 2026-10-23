@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, h, onActivated, onMounted, watch } from 'vue'
+import { ref, computed, h, nextTick, onActivated, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import HamburgerMenu from '@/components/HamburgerMenu.vue'
 import AddFab from '@/components/AddFab.vue'
@@ -148,6 +148,44 @@ const filters: { key: ActiveFilter; label: string }[] = [
   { key: 'BACKLOG', label: 'Backlog' },
 ]
 
+const tabEls = new Map<ActiveFilter, HTMLElement>()
+
+function setTabEl(key: ActiveFilter, el: unknown) {
+  if (el instanceof HTMLElement) {
+    tabEls.set(key, el)
+  } else {
+    tabEls.delete(key)
+  }
+}
+
+function selectFilter(key: ActiveFilter, focus = false) {
+  activeFilter.value = key
+  void nextTick(() => {
+    const el = tabEls.get(key)
+    if (focus) {
+      el?.focus()
+    }
+    el?.scrollIntoView({
+      inline: 'center',
+      block: 'nearest',
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    })
+  })
+}
+
+function onTabKeydown(event: KeyboardEvent, key: ActiveFilter) {
+  const delta = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0
+  if (!delta) {
+    return
+  }
+  event.preventDefault()
+  const index = filters.findIndex((f) => f.key === key)
+  const next = filters[(index + delta + filters.length) % filters.length]
+  if (next) {
+    selectFilter(next.key, true)
+  }
+}
+
 function getCourseName(courseId: number): string {
   const found = catalog.courses.value.find((c) => c.id === courseId)
   return found?.name ?? `Course ${courseId}`
@@ -240,32 +278,38 @@ onActivated(loadData)
 
 <template>
   <div class="relative flex h-full flex-col bg-(--color-app-bg) text-(--color-text-main)">
-    <div class="min-h-0 flex-1 overflow-y-auto pb-26">
-      <div class="overflow-x-auto px-4 pt-3 pb-2" style="scrollbar-width: none">
-        <div
-          class="mx-auto inline-flex w-max rounded-full border border-(--color-app-border) bg-(--color-card) p-1"
-          role="tablist"
-          aria-label="Filter tasks by category"
+    <div
+      class="shrink-0 overflow-x-auto px-4 pt-3 pb-3 [&::-webkit-scrollbar]:hidden"
+      style="scrollbar-width: none"
+    >
+      <div
+        class="mx-auto inline-flex w-max items-center gap-1 rounded-full border border-[#D5EBF1] bg-[#F0F8FA] p-1 shadow-[inset_0_1px_3px_rgba(0,75,99,0.1)]"
+        role="tablist"
+        aria-label="Filter tasks by category"
+      >
+        <button
+          v-for="f in filters"
+          :key="f.key"
+          :ref="(el) => setTabEl(f.key, el)"
+          role="tab"
+          type="button"
+          :aria-selected="activeFilter === f.key"
+          :tabindex="activeFilter === f.key ? 0 : -1"
+          class="h-11 rounded-full px-4 text-sm font-bold whitespace-nowrap transition-[background-color,color,box-shadow,translate] duration-150 focus-visible:ring-2 focus-visible:ring-(--color-primary)/50 focus-visible:outline-none"
+          :class="
+            activeFilter === f.key
+              ? 'bg-(--color-primary) text-white shadow-[0_2px_0_var(--color-primary-bevel)] active:translate-y-0.5 active:shadow-[0_1px_0_var(--color-primary-bevel)]'
+              : 'text-(--color-primary-bevel) hover:bg-white/70 active:bg-white'
+          "
+          @click="selectFilter(f.key)"
+          @keydown="onTabKeydown($event, f.key)"
         >
-          <button
-            v-for="f in filters"
-            :key="f.key"
-            role="tab"
-            type="button"
-            :aria-selected="activeFilter === f.key"
-            class="rounded-full px-4 py-1.5 text-sm font-semibold transition-colors"
-            :class="
-              activeFilter === f.key
-                ? 'bg-(--color-primary) text-white'
-                : 'text-(--color-text-muted)'
-            "
-            @click="activeFilter = f.key"
-          >
-            {{ f.label }}
-          </button>
-        </div>
+          {{ f.label }}
+        </button>
       </div>
+    </div>
 
+    <div class="min-h-0 flex-1 overflow-y-auto pb-26">
       <p v-if="loading" class="py-8 text-center text-(--color-text-muted)">Loading tasks…</p>
 
       <div v-else-if="loadError" class="flex flex-col items-center gap-3 py-12">
