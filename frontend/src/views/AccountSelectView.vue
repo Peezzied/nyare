@@ -16,11 +16,13 @@ import { authApi } from '@/api'
 import DialogShell from '@/components/ui/DialogShell.vue'
 import { Button } from '@/components/ui/button'
 import { endSession, setSessionUser, useAuth } from '@/composables/useAuth'
+import { useRouteWipe } from '@/composables/useRouteWipe'
 import type { UserResponse } from '@/types/api'
 import duckotaCasual from '@/assets/mascot/duckota_casual.png'
 
 const router = useRouter()
 const { user: sessionUser } = useAuth()
+const { wipeTo } = useRouteWipe()
 
 function handleBack(): void {
   if (typeof window !== 'undefined' && window.history.length > 1) {
@@ -74,16 +76,25 @@ async function loadUsers(): Promise<void> {
   }
 }
 
-async function selectAccount(user: UserResponse): Promise<void> {
+async function selectAccount(user: UserResponse, event: MouseEvent): Promise<void> {
   if (isManageMode.value || authenticatingId.value !== null) {
     return
+  }
+  // Capture the portal origin before the first await, while currentTarget lives.
+  const target = event.currentTarget instanceof HTMLElement ? event.currentTarget : null
+  const rect = target?.getBoundingClientRect()
+  const at = {
+    x: event.clientX || (rect ? rect.left + rect.width / 2 : window.innerWidth / 2),
+    y: event.clientY || (rect ? rect.top + rect.height / 2 : window.innerHeight / 2),
   }
   authenticatingId.value = user.id
   errorMessage.value = null
   try {
     const sessionUser = await authApi.login({ username: user.username })
     setSessionUser(sessionUser)
-    await router.push('/')
+    // The disc swallows the picker only after a successful sign-in; a failure
+    // must leave the error message visible with no cover.
+    await wipeTo('/', at, 'push')
   } catch (err: unknown) {
     authenticatingId.value = null
     errorMessage.value = err instanceof Error ? err.message : 'Failed to sign in. Please try again.'
@@ -309,7 +320,7 @@ onMounted(() => {
                 ? 'bg-transparent'
                 : 'hover:bg-[#E3E7DC] active:bg-[#D9DDD1] cursor-pointer',
             ]"
-            @click="selectAccount(user)"
+            @click="selectAccount(user, $event)"
           >
             <!-- Account Identicon and Username -->
             <div class="flex items-center gap-3.5 min-w-0">

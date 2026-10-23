@@ -42,7 +42,8 @@ function reveal() {
 }
 
 // The CTA is the portal: a cyan disc grows from the press point until it
-// swallows the screen, then the calendar appears underneath.
+// swallows the screen, then a matching hole opens at the same point to
+// reveal the calendar.
 function enterCalendar(event: MouseEvent) {
   // Keyboard and assistive clicks carry 0,0 coordinates; aim at the CTA center.
   const rect = (ctaRef.value as { $el?: HTMLElement } | null)?.$el?.getBoundingClientRect()
