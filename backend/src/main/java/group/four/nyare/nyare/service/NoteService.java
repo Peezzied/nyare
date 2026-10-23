@@ -5,6 +5,7 @@ import group.four.nyare.nyare.dto.NoteResponse;
 import group.four.nyare.nyare.dto.NoteSummaryResponse;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,10 +32,14 @@ public interface NoteService {
      *
      * @param courseId the optional course ID to filter by
      * @param archived {@code true} to list notes of archived courses, {@code false} for active courses
+     * @param q        optional case-insensitive substring matched against title and content
+     * @param from     optional inclusive lower bound on {@code entryDate}
+     * @param to       optional inclusive upper bound on {@code entryDate}
      * @return list of note summaries, newest first
      * @throws ResourceNotFoundException if the specified course does not exist
      */
-    List<NoteSummaryResponse> listNotes(Long userId, Long courseId, Boolean archived);
+    List<NoteSummaryResponse> listNotes(Long userId, Long courseId, Boolean archived,
+                                        String q, LocalDate from, LocalDate to);
 
     /**
      * Retrieves a single note owned by the session user.

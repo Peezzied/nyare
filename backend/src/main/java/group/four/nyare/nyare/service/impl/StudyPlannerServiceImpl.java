@@ -199,11 +199,13 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
                     .map(n -> n.getCourse().getId())
                     .collect(Collectors.toSet());
 
-            List<Task> existingTasks = taskRepository.findAllFiltered(userId, null, null, null, false).stream()
+            List<Task> existingTasks = taskRepository.findAllFiltered(userId, null, null, null, false,
+                    null, null, null).stream()
                     .filter(t -> t.getStatus() != TaskStatus.COMPLETED)
                     .toList();
             List<AcademicEvent> existingEvents =
-                    academicEventRepository.findAllFiltered(userId, null, true, LocalDateTime.now(), false);
+                    academicEventRepository.findAllFiltered(userId, null, true, LocalDateTime.now(), false,
+                            null, null, null);
             List<AcademicContext> existingContexts = dateCourseIds.isEmpty()
                     ? Collections.emptyList()
                     : academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(dateCourseIds);

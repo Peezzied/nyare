@@ -54,10 +54,10 @@ class AcademicEventRepositoryTest {
         );
 
         List<AcademicEvent> user1Events = academicEventRepository.findAllFiltered(
-                user1.getId(), null, null, null, false
+                user1.getId(), null, null, null, false, null, null, null
         );
         List<AcademicEvent> user2Events = academicEventRepository.findAllFiltered(
-                user2.getId(), null, null, null, false
+                user2.getId(), null, null, null, false, null, null, null
         );
 
         assertThat(user1Events).extracting(AcademicEvent::getId).containsExactly(event1.getId());
@@ -85,19 +85,19 @@ class AcademicEventRepositoryTest {
         );
 
         List<AcademicEvent> allUser1Events = academicEventRepository.findAllFiltered(
-                user1.getId(), null, null, now, false
+                user1.getId(), null, null, now, false, null, null, null
         );
         assertThat(allUser1Events).extracting(AcademicEvent::getId)
                 .containsExactly(pastEvent.getId(), upcomingEvent1.getId(), upcomingEvent2.getId());
 
         List<AcademicEvent> upcomingUser1Events = academicEventRepository.findAllFiltered(
-                user1.getId(), null, true, now, false
+                user1.getId(), null, true, now, false, null, null, null
         );
         assertThat(upcomingUser1Events).extracting(AcademicEvent::getId)
                 .containsExactly(upcomingEvent1.getId(), upcomingEvent2.getId());
 
         List<AcademicEvent> upcomingCourse1Events = academicEventRepository.findAllFiltered(
-                user1.getId(), course1.getId(), true, now, false
+                user1.getId(), course1.getId(), true, now, false, null, null, null
         );
         assertThat(upcomingCourse1Events).extracting(AcademicEvent::getId)
                 .containsExactly(upcomingEvent1.getId());

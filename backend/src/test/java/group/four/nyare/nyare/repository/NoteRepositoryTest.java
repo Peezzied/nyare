@@ -81,11 +81,11 @@ class NoteRepositoryTest {
         Note note1b = noteRepository.save(new Note(course1b, "Note 1B"));
         Note note2 = noteRepository.save(new Note(course2, "Note 2"));
 
-        List<Note> user1AllNotes = noteRepository.findAllFiltered(user1.getId(), null, false);
+        List<Note> user1AllNotes = noteRepository.findAllFiltered(user1.getId(), null, false, null, null, null);
         assertThat(user1AllNotes).extracting(Note::getId).containsExactlyInAnyOrder(note1a.getId(), note1b.getId());
         assertThat(user1AllNotes).extracting(Note::getId).doesNotContain(note2.getId());
 
-        List<Note> user1Course1Notes = noteRepository.findAllFiltered(user1.getId(), course1.getId(), false);
+        List<Note> user1Course1Notes = noteRepository.findAllFiltered(user1.getId(), course1.getId(), false, null, null, null);
         assertThat(user1Course1Notes).extracting(Note::getId).containsExactly(note1a.getId());
     }
 
@@ -109,8 +109,8 @@ class NoteRepositoryTest {
         Note note = noteRepository.save(new Note(course1, "Note on soon-archived course"));
         course1.setArchivedAt(LocalDateTime.now());
 
-        List<Note> activeNotes = noteRepository.findAllFiltered(user1.getId(), null, false);
-        List<Note> archivedNotes = noteRepository.findAllFiltered(user1.getId(), null, true);
+        List<Note> activeNotes = noteRepository.findAllFiltered(user1.getId(), null, false, null, null, null);
+        List<Note> archivedNotes = noteRepository.findAllFiltered(user1.getId(), null, true, null, null, null);
 
         assertThat(activeNotes).extracting(Note::getId).doesNotContain(note.getId());
         assertThat(archivedNotes).extracting(Note::getId).containsExactly(note.getId());

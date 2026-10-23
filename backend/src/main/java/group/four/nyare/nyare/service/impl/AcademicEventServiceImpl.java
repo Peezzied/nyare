@@ -14,6 +14,7 @@ import group.four.nyare.nyare.service.AcademicEventService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -57,9 +58,17 @@ public class AcademicEventServiceImpl implements AcademicEventService {
     }
 
     @Override
-    public List<AcademicEventResponse> listEvents(Long userId, Long courseId, Boolean upcoming, Boolean archived) {
+    public List<AcademicEventResponse> listEvents(Long userId, Long courseId, Boolean upcoming, Boolean archived,
+                                                  String q, LocalDate from, LocalDate to) {
+        if (from != null && to != null && from.isAfter(to)) {
+            throw new BadRequestException("from must not be after to");
+        }
+        String pattern = (q == null || q.isBlank()) ? null : '%' + q.toLowerCase() + '%';
         LocalDateTime now = LocalDateTime.now();
-        return academicEventRepository.findAllFiltered(userId, courseId, upcoming, now, archived)
+        LocalDateTime fromBound = from != null ? from.atStartOfDay() : null;
+        LocalDateTime toBound = to != null ? to.plusDays(1).atStartOfDay() : null;
+        return academicEventRepository.findAllFiltered(userId, courseId, upcoming, now, archived,
+                pattern, fromBound, toBound)
                 .stream()
                 .map(this::toResponse)
                 .toList();

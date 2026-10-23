@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,9 +47,12 @@ public class NoteController {
     @GetMapping
     public ResponseEntity<List<NoteSummaryResponse>> listNotes(
             @RequestParam(required = false) Long courseId,
-            @RequestParam(defaultValue = "false") Boolean archived) {
+            @RequestParam(defaultValue = "false") Boolean archived,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) LocalDate from,
+            @RequestParam(required = false) LocalDate to) {
         Long userId = sessionContext.requireUserId();
-        List<NoteSummaryResponse> notes = noteService.listNotes(userId, courseId, archived);
+        List<NoteSummaryResponse> notes = noteService.listNotes(userId, courseId, archived, q, from, to);
         return ResponseEntity.ok(notes);
     }
 

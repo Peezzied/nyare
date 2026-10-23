@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,9 +48,12 @@ public class TaskController {
             @RequestParam(required = false) Long courseId,
             @RequestParam(required = false) TaskStatus status,
             @RequestParam(required = false) Boolean scheduled,
-            @RequestParam(defaultValue = "false") Boolean archived) {
+            @RequestParam(defaultValue = "false") Boolean archived,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) LocalDate from,
+            @RequestParam(required = false) LocalDate to) {
         Long userId = sessionContext.requireUserId();
-        List<TaskResponse> tasks = taskService.listTasks(userId, courseId, status, scheduled, archived);
+        List<TaskResponse> tasks = taskService.listTasks(userId, courseId, status, scheduled, archived, q, from, to);
         return ResponseEntity.ok(tasks);
     }
 

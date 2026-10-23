@@ -32,6 +32,9 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
      * @param userId   mandatory user identifier
      * @param courseId optional course identifier
      * @param archived course archive filter: {@code true} for archived courses, {@code false} for active courses
+     * @param q        optional lowercase LIKE pattern matched against title and content
+     * @param from     optional inclusive lower bound on {@code entryDate}
+     * @param to       optional inclusive upper bound on {@code entryDate}
      * @return matching notes ordered newest first
      */
     @Query("""
@@ -40,12 +43,17 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
               AND (:courseId IS NULL OR n.course.id = :courseId)
               AND ((:archived = true AND n.course.archivedAt IS NOT NULL)
                    OR (:archived = false AND n.course.archivedAt IS NULL))
+              AND (:q IS NULL OR LOWER(n.title) LIKE :q OR LOWER(n.content) LIKE :q)
+              AND (:from IS NULL OR n.entryDate >= :from) AND (:to IS NULL OR n.entryDate <= :to)
             ORDER BY n.createdAt DESC
             """)
     List<Note> findAllFiltered(
             @Param("userId") Long userId,
             @Param("courseId") Long courseId,
-            @Param("archived") Boolean archived
+            @Param("archived") Boolean archived,
+            @Param("q") String q,
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to
     );
 
     /**

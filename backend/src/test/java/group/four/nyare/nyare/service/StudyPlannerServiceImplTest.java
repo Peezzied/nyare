@@ -185,8 +185,8 @@ class StudyPlannerServiceImplTest {
         // Note repository returns notes out of order; service groups and sorts chronologically
         when(noteRepository.findDirtyNotes(USER_ID, false)).thenReturn(List.of(noteDay2, noteDay1));
 
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
 
@@ -235,8 +235,8 @@ class StudyPlannerServiceImplTest {
         Course course = courseWithId(1L, "CS101");
         Note note = new Note(course, "Content", LocalDate.of(2026, 10, 1));
         when(noteRepository.findDirtyNotes(USER_ID, false)).thenReturn(List.of(note));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
@@ -262,8 +262,8 @@ class StudyPlannerServiceImplTest {
         Course course = courseWithId(1L, "CS101");
         Note note = noteWithCourse(course);
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
@@ -275,7 +275,7 @@ class StudyPlannerServiceImplTest {
 
         service.processNotes(DATE, USER_ID);
 
-        verify(taskRepository).findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false));
+        verify(taskRepository).findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull());
         verify(scheduleRepository).findAllFiltered(eq(USER_ID), isNull(), eq(false));
     }
 
@@ -287,8 +287,8 @@ class StudyPlannerServiceImplTest {
         Note n1 = noteWithCourse(c1);
         Note n2 = noteWithCourse(c2);
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(n1, n2));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
@@ -309,7 +309,7 @@ class StudyPlannerServiceImplTest {
         Course course = courseWithId(1L, "CS101");
         Note note = noteWithCourse(course);
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
@@ -320,7 +320,7 @@ class StudyPlannerServiceImplTest {
         when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
 
         ArgumentCaptor<LocalDateTime> nowCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), nowCaptor.capture(), eq(false))).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), nowCaptor.capture(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
 
         LocalDateTime before = LocalDateTime.now();
         service.processNotes(DATE, USER_ID);
@@ -335,8 +335,8 @@ class StudyPlannerServiceImplTest {
         Course course = courseWithId(1L, "CS101");
         Note note = noteWithCourse(course);
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
@@ -365,8 +365,8 @@ class StudyPlannerServiceImplTest {
                 null, taskId, null, "Existing Study Task", null, LocalDate.of(2026, 9, 30), 60);
 
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of(existingTask));
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of(existingTask));
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
@@ -394,14 +394,14 @@ class StudyPlannerServiceImplTest {
         note.setContent("Check lecture slide ![slide](/api/images/" + imageId + ")");
         ReflectionTestUtils.setField(note, "id", noteId);
 
-        Image image = new Image(new byte[]{1, 2}, "image/png", "slide.png", 2L);
+        Image image = new Image(new byte[]{1, 2}, "image/png", "slide.png", 2L, null);
         ReflectionTestUtils.setField(image, "id", imageId);
 
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
         when(imageRepository.findAllById(anySet())).thenReturn(List.of(image));
         when(imageAiProcessor.describeImage(any(), any())).thenReturn("Binary tree diagram");
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(any())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
@@ -427,7 +427,7 @@ class StudyPlannerServiceImplTest {
         note.setContent("Check lecture slide ![slide](/api/images/" + imageId + ")");
         ReflectionTestUtils.setField(note, "id", noteId);
 
-        Image image = new Image(new byte[]{1, 2}, "image/png", "slide.png", 2L);
+        Image image = new Image(new byte[]{1, 2}, "image/png", "slide.png", 2L, null);
         ReflectionTestUtils.setField(image, "id", imageId);
 
         String longDescription = "Important fact. ".repeat(50);
@@ -435,8 +435,8 @@ class StudyPlannerServiceImplTest {
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
         when(imageRepository.findAllById(anySet())).thenReturn(List.of(image));
         when(imageAiProcessor.describeImage(any(), any())).thenReturn(longDescription);
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(any())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
@@ -462,14 +462,14 @@ class StudyPlannerServiceImplTest {
         note.setContent("Check diagram ![slide](/api/images/" + imageId + ")");
         ReflectionTestUtils.setField(note, "id", noteId);
 
-        Image image = new Image(new byte[]{1, 2}, "image/png", "slide.png", 2L);
+        Image image = new Image(new byte[]{1, 2}, "image/png", "slide.png", 2L, null);
         ReflectionTestUtils.setField(image, "id", imageId);
         image.setDescription("Existing description");
 
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
         when(imageRepository.findAllById(anySet())).thenReturn(List.of(image));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(any())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
@@ -494,11 +494,11 @@ class StudyPlannerServiceImplTest {
         note.setContent("Images: ![img1](/api/images/" + imgId1 + ") ![img2](/api/images/" + imgId2 + ") ![img3](/api/images/" + imgId3 + ")");
         ReflectionTestUtils.setField(note, "id", noteId);
 
-        Image img1 = new Image(new byte[]{1}, "image/png", "img1.png", 1L);
+        Image img1 = new Image(new byte[]{1}, "image/png", "img1.png", 1L, null);
         ReflectionTestUtils.setField(img1, "id", imgId1);
-        Image img2 = new Image(new byte[]{2}, "image/png", "img2.png", 1L);
+        Image img2 = new Image(new byte[]{2}, "image/png", "img2.png", 1L, null);
         ReflectionTestUtils.setField(img2, "id", imgId2);
-        Image img3 = new Image(new byte[]{3}, "image/png", "img3.png", 1L);
+        Image img3 = new Image(new byte[]{3}, "image/png", "img3.png", 1L, null);
         ReflectionTestUtils.setField(img3, "id", imgId3);
 
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
@@ -506,8 +506,8 @@ class StudyPlannerServiceImplTest {
         when(imageAiProcessor.describeImage(eq(img1.getData()), eq(img1.getContentType()))).thenReturn("Description 1");
         when(imageAiProcessor.describeImage(eq(img2.getData()), eq(img2.getContentType()))).thenReturn("Description 2");
         when(imageAiProcessor.describeImage(eq(img3.getData()), eq(img3.getContentType()))).thenReturn("Description 3");
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(any())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
@@ -541,8 +541,8 @@ class StudyPlannerServiceImplTest {
                 List.of(), List.of(), List.of(), Map.of(noteId, "  Derivatives and Integrals  "));
 
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
@@ -575,8 +575,8 @@ class StudyPlannerServiceImplTest {
                 List.of(), List.of(), List.of(), Map.of(noteId, "AI Replacement Title"));
 
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
@@ -623,8 +623,8 @@ class StudyPlannerServiceImplTest {
         Course course = courseWithId(1L, "CS101");
         Note note = noteWithCourse(course);
         when(noteRepository.findDirtyNotes(USER_ID, false)).thenReturn(List.of(note));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
 
@@ -664,8 +664,8 @@ class StudyPlannerServiceImplTest {
         Note noteDay2 = new Note(course, "Day 2 content", day2);
 
         when(noteRepository.findDirtyNotes(USER_ID, false)).thenReturn(List.of(noteDay1, noteDay2));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
@@ -712,8 +712,8 @@ class StudyPlannerServiceImplTest {
                 List.of(candidateTask), List.of(), List.of());
 
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of(existingTask));
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of(existingTask));
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
@@ -762,8 +762,8 @@ class StudyPlannerServiceImplTest {
                 List.of(candidateTask), List.of(), List.of());
 
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of(existingTask));
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of(existingTask));
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
@@ -802,8 +802,8 @@ class StudyPlannerServiceImplTest {
                 List.of(), List.of(candidateEvent), List.of());
 
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of(existingEvent));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of(existingEvent));
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
@@ -842,8 +842,8 @@ class StudyPlannerServiceImplTest {
                 List.of(), List.of(), List.of(candidateContext));
 
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of(existingContext));
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
@@ -885,8 +885,8 @@ class StudyPlannerServiceImplTest {
                 List.of(task1, task2), List.of(), List.of());
 
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note1, note2));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
@@ -924,8 +924,8 @@ class StudyPlannerServiceImplTest {
                 List.of(candidateTask), List.of(), List.of());
 
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of(backlogTask));
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of(backlogTask));
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
@@ -971,8 +971,8 @@ class StudyPlannerServiceImplTest {
                 List.of(candidateTask), List.of(), List.of());
 
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of(scheduledTask));
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of(scheduledTask));
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
@@ -1012,8 +1012,8 @@ class StudyPlannerServiceImplTest {
                 List.of(), List.of(candidateEvent), List.of());
 
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of(existingEvent));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of(existingEvent));
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
@@ -1052,8 +1052,8 @@ class StudyPlannerServiceImplTest {
                 List.of(candidateTask), List.of(), List.of());
 
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of(manualTask));
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of(manualTask));
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
@@ -1090,8 +1090,8 @@ class StudyPlannerServiceImplTest {
                 List.of(), List.of(candidateEvent), List.of());
 
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false))).thenReturn(List.of());
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of(manualEvent));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of(manualEvent));
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
@@ -1147,9 +1147,9 @@ class StudyPlannerServiceImplTest {
                 List.of(candidate1, candidate2, candidate3, candidate4), List.of(), List.of());
 
         when(noteRepository.findDirtyNotes(eq(USER_ID), eq(DATE), eq(false))).thenReturn(List.of(note));
-        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false)))
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull()))
                 .thenReturn(List.of(existingTask1, existingTask2, existingTask3));
-        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false))).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);

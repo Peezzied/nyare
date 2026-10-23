@@ -149,7 +149,7 @@ The client caches courses and schedules inside `useCatalog`.
 The client refetches courses or schedules only after catalogue mutations.
 Developers must filter collections on the server with backend query parameters.
 The client must not request full entity collections when server query parameters exist.
-The backend exposes no date range query parameters.
+The backend exposes date range query parameters (from, to) on task, note, and event list endpoints.
 The client filters calendar dates and deadline windows in memory from cached collections.
 After planner execution, the client refetches tasks and academic events only for courses in `affectedCourseIds`.
 If the planner summary shows positive item counts without course identifiers, the client queries all tasks and events.

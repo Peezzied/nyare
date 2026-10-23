@@ -14,6 +14,7 @@ import group.four.nyare.nyare.service.TaskService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,8 +52,13 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponse> listTasks(Long userId, Long courseId, TaskStatus status, Boolean scheduled, Boolean archived) {
-        return taskRepository.findAllFiltered(userId, courseId, status, scheduled, archived)
+    public List<TaskResponse> listTasks(Long userId, Long courseId, TaskStatus status, Boolean scheduled,
+                                        Boolean archived, String q, LocalDate from, LocalDate to) {
+        if (from != null && to != null && from.isAfter(to)) {
+            throw new BadRequestException("from must not be after to");
+        }
+        String pattern = (q == null || q.isBlank()) ? null : '%' + q.toLowerCase() + '%';
+        return taskRepository.findAllFiltered(userId, courseId, status, scheduled, archived, pattern, from, to)
                 .stream()
                 .map(this::toResponse)
                 .toList();

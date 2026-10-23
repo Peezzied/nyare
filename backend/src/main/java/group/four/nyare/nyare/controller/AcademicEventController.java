@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,10 +51,13 @@ public class AcademicEventController {
     public ResponseEntity<List<AcademicEventResponse>> listEvents(
             @RequestParam(required = false) Long courseId,
             @RequestParam(required = false) Boolean upcoming,
-            @RequestParam(defaultValue = "false") Boolean archived
+            @RequestParam(defaultValue = "false") Boolean archived,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) LocalDate from,
+            @RequestParam(required = false) LocalDate to
     ) {
         Long userId = sessionContext.requireUserId();
-        return ResponseEntity.ok(academicEventService.listEvents(userId, courseId, upcoming, archived));
+        return ResponseEntity.ok(academicEventService.listEvents(userId, courseId, upcoming, archived, q, from, to));
     }
 
 
