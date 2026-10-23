@@ -4,7 +4,7 @@ import NoteEditor from '../NoteEditor.vue'
 import TiptapEditor from '@/components/editor/TiptapEditor.vue'
 import CoursePickerDialog from '@/components/CoursePickerDialog.vue'
 import { notesApi } from '@/api/notes'
-import { coursesApi, schedulesApi, studyPlannerApi } from '@/api'
+import { coursesApi, schedulesApi, studyPlannerApi, imagesApi } from '@/api'
 import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
 import { useProcess, resetProcess } from '@/composables/useProcess'
@@ -265,6 +265,74 @@ describe('NoteEditor.vue', () => {
       }),
     )
     expect(mockRouter.back).toHaveBeenCalled()
+  })
+
+  it('deletes a persisted image removed from the content after a successful save', async () => {
+    mockRoute.params = { id: 'note-uuid-image-1' }
+    const imageId = '11111111-2222-3333-4444-555555555555'
+
+    const existingNote: NoteResponse = {
+      id: 'note-uuid-image-1',
+      courseId: 1,
+      title: 'Slide notes',
+      content: `See ![slide](/api/images/${imageId})`,
+      entryDate: '2026-10-20',
+      createdAt: '2026-10-20T00:00:00Z',
+      updatedAt: '2026-10-20T00:00:00Z',
+    }
+    vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
+    vi.mocked(notesApi.update).mockResolvedValueOnce({
+      ...existingNote,
+      content: 'See text only',
+    })
+    const deleteSpy = vi.spyOn(imagesApi, 'delete').mockResolvedValue()
+
+    const wrapper = mount(NoteEditor)
+    await flushPromises()
+
+    const tiptap = wrapper.findComponent(TiptapEditor)
+    await tiptap.vm.$emit('update:modelValue', '<p>See text only</p>')
+    await flushPromises()
+
+    await wrapper.find('[data-testid="save-button"]').trigger('click')
+    await flushPromises()
+
+    expect(notesApi.update).toHaveBeenCalledTimes(1)
+    expect(deleteSpy).toHaveBeenCalledWith(imageId)
+  })
+
+  it('keeps a persisted image that stays in the saved content', async () => {
+    mockRoute.params = { id: 'note-uuid-image-2' }
+    const imageId = '11111111-2222-3333-4444-555555555555'
+
+    const existingNote: NoteResponse = {
+      id: 'note-uuid-image-2',
+      courseId: 1,
+      title: 'Slide notes',
+      content: `See ![slide](/api/images/${imageId})`,
+      entryDate: '2026-10-20',
+      createdAt: '2026-10-20T00:00:00Z',
+      updatedAt: '2026-10-20T00:00:00Z',
+    }
+    vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
+    vi.mocked(notesApi.update).mockResolvedValueOnce({
+      ...existingNote,
+      content: `See ![slide](/api/images/${imageId}) and more`,
+    })
+    const deleteSpy = vi.spyOn(imagesApi, 'delete').mockResolvedValue()
+
+    const wrapper = mount(NoteEditor)
+    await flushPromises()
+
+    const tiptap = wrapper.findComponent(TiptapEditor)
+    await tiptap.vm.$emit('update:modelValue', `<p>See <img src="/api/images/${imageId}"> and more</p>`)
+    await flushPromises()
+
+    await wrapper.find('[data-testid="save-button"]').trigger('click')
+    await flushPromises()
+
+    expect(notesApi.update).toHaveBeenCalledTimes(1)
+    expect(deleteSpy).not.toHaveBeenCalled()
   })
 
   it('adopts the AI-generated title when a Process run completes while the note is open', async () => {

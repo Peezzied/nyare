@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Full-screen journal note editor for /notes/new and /notes/:id. An id route param selects edit mode.
+// Full-screen journal note editor for /notes/new, /notes/:id, and /note/:id. An id route param selects edit mode.
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import {
@@ -23,6 +23,7 @@ import SaveButton from '@/components/SaveButton.vue'
 import { Button } from '@/components/ui/button'
 import TiptapEditor from '@/components/editor/TiptapEditor.vue'
 import { useNotes, isUntitledTitle } from '@/composables/useNotes'
+import { imagesApi } from '@/api/images'
 import { useProcess } from '@/composables/useProcess'
 import { useToasts } from '@/composables/useToasts'
 import { useCatalog } from '@/composables/useCatalog'
@@ -346,6 +347,9 @@ const errorMessage = ref<string | null>(null)
 // This blocks references to images that were never uploaded.
 const knownImageUrls = ref(new Set<string>())
 
+// URLs uploaded during this editor session. Candidates for cleanup when the save leaves them unreferenced.
+const sessionImageUrls = new Set<string>()
+
 // Initialize known images from initial props
 if (props.validImageUrls.length > 0) {
   for (const url of props.validImageUrls) {
@@ -407,6 +411,7 @@ function onEditorContentChange(newHtml: string) {
 function onImageUploaded(response: ImageUploadResponse) {
   if (response?.url) {
     knownImageUrls.value.add(response.url)
+    sessionImageUrls.add(response.url)
   }
 }
 
@@ -597,6 +602,21 @@ async function saveNote() {
     }
     lastProcessedAt.value = savedNote.lastProcessedAt ?? null
     updatedAt.value = savedNote.updatedAt ?? null
+
+    // Deleted image nodes can return through undo or a discarded save, so their rows are deleted
+    // only after the save commits. Removal failures leave orphan rows and need no user feedback.
+    const savedImageUrls = new Set(extractImageUrls(savedNote.content ?? ''))
+    const cleanupCandidates = new Set([
+      ...extractImageUrls(initialState.value.content),
+      ...sessionImageUrls,
+    ])
+    for (const url of cleanupCandidates) {
+      if (url.startsWith('/api/images/') && !savedImageUrls.has(url)) {
+        void imagesApi.delete(url.slice('/api/images/'.length)).catch(() => {})
+      }
+    }
+    sessionImageUrls.clear()
+
     initialState.value = {
       title: trimmedTitle,
       courseId: savedNote.courseId ?? null,

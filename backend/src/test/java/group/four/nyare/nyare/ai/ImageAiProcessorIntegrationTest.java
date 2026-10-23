@@ -99,7 +99,7 @@ public class ImageAiProcessorIntegrationTest {
 
         // Given: Create synthetic image with handwritten note text
         byte[] imageBytes = createSyntheticNoteImage("Important: Submit Lab Report 3 before Friday midnight.");
-        Image image = new Image(imageBytes, "image/png", "lab3_notice.png", imageBytes.length);
+        Image image = new Image(imageBytes, "image/png", "lab3_notice.png", imageBytes.length, user);
         // description is intentionally null
         Image savedImage = imageRepository.save(image);
         assertThat(savedImage.getDescription()).isNull();
