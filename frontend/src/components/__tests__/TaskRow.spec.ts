@@ -28,7 +28,7 @@ describe('TaskRow due date icon and overlay label', () => {
     useCatalog().resetCatalog()
   })
 
-  it('renders a Sun icon and colorized "Today" badge in ocean cyan when task is due today', () => {
+  it('renders a Sun icon and a "Today" overlay badge when task is due today', () => {
     const task = createSampleTask({ scheduledDate: '2026-10-21' })
     const wrapper = mount(TaskRow, {
       props: {
@@ -39,21 +39,20 @@ describe('TaskRow due date icon and overlay label', () => {
       },
     })
 
-    const badge = wrapper.find('.rounded-full.bg-slate-900\\/90')
+    const badge = wrapper.find('.rounded-full.bg-slate-900\\/45')
     expect(badge.exists()).toBe(true)
     expect(badge.text()).toBe('Today')
     expect(badge.classes()).toContain('absolute')
     expect(badge.classes()).toContain('-bottom-1')
-    expect(badge.classes()).toContain('border-sky-500/30')
-    expect((badge.element as HTMLElement).style.color).toBe('rgb(56, 189, 248)')
+    expect(badge.classes()).toContain('text-white')
 
     const svg = wrapper.find('.size-6')
     expect(svg.exists()).toBe(true)
     expect(svg.find('circle').exists()).toBe(true)
-    expect((svg.element as SVGElement).style.color).toBe('rgb(0, 164, 200)')
+    expect((svg.element as SVGElement).style.color).toBe('var(--color-urgency-red)')
   })
 
-  it('renders a Calendar icon and colorized date badge for future date', () => {
+  it('renders a Calendar icon and date badge for a future date', () => {
     const task = createSampleTask({ scheduledDate: '2026-10-25' })
     const wrapper = mount(TaskRow, {
       props: {
@@ -64,18 +63,17 @@ describe('TaskRow due date icon and overlay label', () => {
       },
     })
 
-    const badge = wrapper.find('.rounded-full.bg-slate-900\\/90')
+    const badge = wrapper.find('.rounded-full.bg-slate-900\\/45')
     expect(badge.exists()).toBe(true)
     expect(badge.text()).toBe('10/25')
-    expect(badge.classes()).toContain('border-emerald-500/30')
-    expect((badge.element as HTMLElement).style.color).toBe('rgb(52, 211, 153)')
+    expect(badge.classes()).toContain('text-white')
 
     const svg = wrapper.find('.size-6')
     expect(svg.exists()).toBe(true)
-    expect((svg.element as SVGElement).style.color).toBe('rgb(16, 185, 129)')
+    expect((svg.element as SVGElement).style.color).toBe('var(--color-urgency-green)')
   })
 
-  it('renders a Calendar icon and colorized coral red badge for overdue date', () => {
+  it('renders a Calendar icon and date badge for an overdue date', () => {
     const task = createSampleTask({ scheduledDate: '2026-10-19' })
     const wrapper = mount(TaskRow, {
       props: {
@@ -86,13 +84,13 @@ describe('TaskRow due date icon and overlay label', () => {
       },
     })
 
-    const badge = wrapper.find('.rounded-full.bg-slate-900\\/90')
+    const badge = wrapper.find('.rounded-full.bg-slate-900\\/45')
     expect(badge.exists()).toBe(true)
-    expect(badge.classes()).toContain('border-red-500/30')
-    expect((badge.element as HTMLElement).style.color).toBe('rgb(248, 113, 113)')
+    expect(badge.text()).toBe('10/19')
+    expect(badge.classes()).toContain('text-white')
 
     const svg = wrapper.find('.size-6')
-    expect((svg.element as SVGElement).style.color).toBe('rgb(239, 68, 68)')
+    expect((svg.element as SVGElement).style.color).toBe('var(--color-urgency-red)')
   })
 
   it('renders no overlay badge when dueDate is null', () => {
@@ -106,7 +104,7 @@ describe('TaskRow due date icon and overlay label', () => {
       },
     })
 
-    const badge = wrapper.find('.rounded-full.bg-slate-900\\/90')
+    const badge = wrapper.find('.rounded-full.bg-slate-900\\/45')
     expect(badge.exists()).toBe(false)
   })
 
