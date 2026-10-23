@@ -3,7 +3,7 @@ import {
   markRaw,
   onActivated,
   provide,
-  reactive,
+  shallowReactive,
   type Component,
   type InjectionKey,
   type MaybeRefOrGetter,
@@ -28,7 +28,9 @@ export const shellHeaderKey: InjectionKey<ShellHeaderConfig> = Symbol('shellHead
 
 /** Creates and provides the header state. AppShell calls this once. */
 export function provideShellHeader(): ShellHeaderConfig {
-  const header = reactive<ShellHeaderConfig>({ title: '' })
+  // shallowReactive: views store refs/getters in `title`; deep reactive would
+  // unwrap them so later writes sink into the old ref instead of replacing it.
+  const header = shallowReactive<ShellHeaderConfig>({ title: '' })
   provide(shellHeaderKey, header)
   return header
 }
