@@ -2,6 +2,7 @@ package group.four.nyare.nyare.ai;
 
 import group.four.nyare.nyare.ai.parser.CsvParser;
 import group.four.nyare.nyare.ai.parser.StubReferenceCodec;
+import group.four.nyare.nyare.ai.parser.TitleSimilarityMatcher;
 import group.four.nyare.nyare.ai.prompt.TaggedPromptBuilder;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.model.AcademicContext;
@@ -219,7 +220,7 @@ public class StudyPlannerEngine {
 
         Prompt prompt = builder.buildPrompt();
 
-        PlannerAuditRecords.LlmPayload raw = callWithTimeout(noteIdMap, imageIdMap, imageNoteMap, imageDescriptionMap, prompt);
+        PlannerAuditRecords.LlmPayload raw = callWithTimeout(noteIdMap, imageIdMap, imageNoteMap, imageDescriptionMap, existingTasks, prompt);
 
         return raw != null ? decodeReferences(raw, noteCodec, existingTasks) : emptyExtractedData();
     }
@@ -246,7 +247,17 @@ public class StudyPlannerEngine {
             Map<String, UUID> imageIdMap,
             Map<String, UUID> imageNoteMap,
             Map<String, String> imageDescriptionMap,
+            List<Task> existingTasks,
             Prompt prompt) {
+        Map<String, UUID> existingTaskTitles = new HashMap<>();
+        if (existingTasks != null) {
+            for (Task t : existingTasks) {
+                if (t.getId() != null && t.getTitle() != null && !t.getTitle().isBlank()) {
+                    existingTaskTitles.put(t.getTitle().trim(), t.getId());
+                }
+            }
+        }
+
         if (aiTimeoutMs <= 0) {
             return chatClient.prompt(prompt)
                     .advisors(a -> {
@@ -254,6 +265,7 @@ public class StudyPlannerEngine {
                         a.param("imageIdMap", imageIdMap);
                         a.param("imageNoteMap", imageNoteMap);
                         a.param("imageDescriptionMap", imageDescriptionMap);
+                        a.param("existingTasks", existingTaskTitles);
                     })
                     .call()
                     .entity(PlannerAuditRecords.LlmPayload.class);
@@ -265,6 +277,7 @@ public class StudyPlannerEngine {
                     a.param("imageIdMap", imageIdMap);
                     a.param("imageNoteMap", imageNoteMap);
                     a.param("imageDescriptionMap", imageDescriptionMap);
+                    a.param("existingTasks", existingTaskTitles);
                 })
                 .call()
                 .entity(PlannerAuditRecords.LlmPayload.class),
@@ -416,7 +429,7 @@ public class StudyPlannerEngine {
             if (taskId == null && existingTasks != null && t.title() != null) {
                 for (Task existing : existingTasks) {
                     if (existing.getId() != null && existing.getTitle() != null
-                            && existing.getTitle().trim().equalsIgnoreCase(t.title().trim())) {
+                            && TitleSimilarityMatcher.isSimilar(existing.getTitle(), t.title())) {
                         taskId = existing.getId();
                         break;
                     }

@@ -2,6 +2,7 @@ package group.four.nyare.nyare.service.impl;
 
 import group.four.nyare.nyare.ai.ImageAiProcessor;
 import group.four.nyare.nyare.ai.StudyPlannerEngine;
+import group.four.nyare.nyare.ai.parser.TitleSimilarityMatcher;
 import group.four.nyare.nyare.dto.PlannerStatusResponse;
 import group.four.nyare.nyare.dto.ProcessSummaryResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
@@ -250,7 +251,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
                     if (courseId != null) {
                         for (Task t : existingTasks) {
                             if (t.getCourse() != null && courseId.equals(t.getCourse().getId())
-                                    && isSimilarTitle(t.getTitle(), item.title())) {
+                                    && TitleSimilarityMatcher.isSimilar(t.getTitle(), item.title())) {
                                 existing = t;
                                 break;
                             }
@@ -318,7 +319,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
                 AcademicEvent existing = null;
                 for (AcademicEvent e : existingEvents) {
                     if (e.getCourse() != null && course.getId().equals(e.getCourse().getId())
-                            && isSimilarTitle(e.getTitle(), item.title())) {
+                            && TitleSimilarityMatcher.isSimilar(e.getTitle(), item.title())) {
                         existing = e;
                         break;
                     }
@@ -497,32 +498,10 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
 
     /**
      * Determines if two titles in the same course describe the same academic item.
-     * Checks exact equality (case-insensitive) or significant word-token overlap.
+     * Delegates to {@link TitleSimilarityMatcher#isSimilar(String, String)}.
      */
     static boolean isSimilarTitle(String a, String b) {
-        if (a == null || b == null) return false;
-        String cleanA = a.trim();
-        String cleanB = b.trim();
-        if (cleanA.equalsIgnoreCase(cleanB)) return true;
-
-        Set<String> stopWords = Set.of("for", "the", "a", "an", "to", "in", "on", "of", "and", "or", "with", "sa", "ang", "mga", "last", "lesson", "notes");
-        Set<String> wordsA = Arrays.stream(cleanA.toLowerCase().split("[^a-zA-Z0-9]+"))
-                .filter(w -> !w.isBlank() && !stopWords.contains(w))
-                .collect(Collectors.toSet());
-        Set<String> wordsB = Arrays.stream(cleanB.toLowerCase().split("[^a-zA-Z0-9]+"))
-                .filter(w -> !w.isBlank() && !stopWords.contains(w))
-                .collect(Collectors.toSet());
-
-        if (wordsA.isEmpty() || wordsB.isEmpty()) return false;
-
-        // Count overlapping significant words
-        long overlap = wordsA.stream().filter(wordsB::contains).count();
-        if (overlap >= 2) return true;
-
-        // If both mention a key action/topic like "quiz", "midterm", "exam", "lab", "project", "homework", "problem"
-        Set<String> keyMarkers = Set.of("quiz", "midterm", "exam", "lab", "project", "homework", "assignment");
-        boolean sharesKeyMarker = wordsA.stream().anyMatch(w -> keyMarkers.contains(w) && wordsB.contains(w));
-        return sharesKeyMarker && overlap >= 1;
+        return TitleSimilarityMatcher.isSimilar(a, b);
     }
 
     /**
