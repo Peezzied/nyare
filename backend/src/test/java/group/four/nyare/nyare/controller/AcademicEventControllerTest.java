@@ -14,6 +14,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -71,7 +72,8 @@ class AcademicEventControllerTest {
     @DisplayName("listEvents with session user passes userId to service")
     void listEvents_withSessionUser_passesUserIdToService() throws Exception {
         // given
-        when(academicEventService.listEvents(eq(USER_ID), any(), any(), any())).thenReturn(List.of(sampleEvent));
+        when(academicEventService.listEvents(eq(USER_ID), any(), any(), any(), any(), any(), any()))
+                .thenReturn(List.of(sampleEvent));
 
         // when & then
         mockMvc.perform(get("/api/academic-events").session(mockSession()))
@@ -79,6 +81,26 @@ class AcademicEventControllerTest {
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].title").value("Midterm Exam"));
 
-        verify(academicEventService).listEvents(USER_ID, null, null, false);
+        verify(academicEventService).listEvents(USER_ID, null, null, false, null, null, null);
+    }
+
+    @Test
+    @DisplayName("listEvents binds q, from, and to request params")
+    void listEvents_withSearchParams_passesParamsToService() throws Exception {
+        // given
+        when(academicEventService.listEvents(eq(USER_ID), any(), any(), any(), any(), any(), any()))
+                .thenReturn(List.of(sampleEvent));
+
+        // when & then
+        mockMvc.perform(get("/api/academic-events")
+                        .param("q", "midterm")
+                        .param("from", "2026-10-01")
+                        .param("to", "2026-10-31")
+                        .session(mockSession()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1));
+
+        verify(academicEventService).listEvents(USER_ID, null, null, false, "midterm",
+                LocalDate.of(2026, 10, 1), LocalDate.of(2026, 10, 31));
     }
 }

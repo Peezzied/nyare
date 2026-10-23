@@ -5,6 +5,7 @@ import group.four.nyare.nyare.dto.AcademicEventResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,9 +37,13 @@ public interface AcademicEventService {
      * @param upcoming optional filter: {@code true} for events with deadlines in the future,
      *                 or {@code null} for all events
      * @param archived {@code true} to list events of archived courses, {@code false} for active courses
+     * @param q        optional case-insensitive substring matched against title and description
+     * @param from     optional inclusive lower bound on {@code deadline}
+     * @param to       optional inclusive upper bound on {@code deadline}
      * @return list of matching academic events ordered by deadline ascending
      */
-    List<AcademicEventResponse> listEvents(Long userId, Long courseId, Boolean upcoming, Boolean archived);
+    List<AcademicEventResponse> listEvents(Long userId, Long courseId, Boolean upcoming, Boolean archived,
+                                           String q, LocalDate from, LocalDate to);
 
     /**
      * Retrieves a single academic event owned by the session user.

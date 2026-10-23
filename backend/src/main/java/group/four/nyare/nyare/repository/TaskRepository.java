@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,6 +35,9 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
      * @param status    optional task status
      * @param scheduled optional scheduling filter
      * @param archived  course archive filter: {@code true} for archived courses, {@code false} for active courses
+     * @param q         optional lowercase LIKE pattern matched against title and description
+     * @param from      optional inclusive lower bound on {@code scheduledDate}
+     * @param to        optional inclusive upper bound on {@code scheduledDate}
      * @return list of matching tasks ordered by creation date descending
      */
     @Query("""
@@ -46,6 +50,8 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
                    OR (:scheduled = false AND t.scheduledDate IS NULL))
               AND ((:archived = true AND t.course.archivedAt IS NOT NULL)
                    OR (:archived = false AND t.course.archivedAt IS NULL))
+              AND (:q IS NULL OR LOWER(t.title) LIKE :q OR LOWER(t.description) LIKE :q)
+              AND (:from IS NULL OR t.scheduledDate >= :from) AND (:to IS NULL OR t.scheduledDate <= :to)
             ORDER BY t.createdAt DESC
             """)
     List<Task> findAllFiltered(
@@ -53,7 +59,10 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
             @Param("courseId") Long courseId,
             @Param("status") TaskStatus status,
             @Param("scheduled") Boolean scheduled,
-            @Param("archived") Boolean archived
+            @Param("archived") Boolean archived,
+            @Param("q") String q,
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to
     );
 
     /**

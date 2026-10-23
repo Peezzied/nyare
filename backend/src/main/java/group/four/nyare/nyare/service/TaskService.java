@@ -5,6 +5,7 @@ import group.four.nyare.nyare.dto.TaskResponse;
 import group.four.nyare.nyare.dto.TaskStatusRequest;
 import group.four.nyare.nyare.model.enums.TaskStatus;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,9 +31,13 @@ public interface TaskService {
      * @param scheduled optional scheduling filter: {@code true} for scheduled tasks,
      *                  {@code false} for unscheduled/later tasks, or {@code null} for all tasks
      * @param archived  {@code true} to list tasks of archived courses, {@code false} for active courses
+     * @param q         optional case-insensitive substring matched against title and description
+     * @param from      optional inclusive lower bound on {@code scheduledDate}
+     * @param to        optional inclusive upper bound on {@code scheduledDate}
      * @return list of matching task responses, ordered by creation date descending
      */
-    List<TaskResponse> listTasks(Long userId, Long courseId, TaskStatus status, Boolean scheduled, Boolean archived);
+    List<TaskResponse> listTasks(Long userId, Long courseId, TaskStatus status, Boolean scheduled,
+                                 Boolean archived, String q, LocalDate from, LocalDate to);
 
     /**
      * Retrieves a single task owned by the session user.

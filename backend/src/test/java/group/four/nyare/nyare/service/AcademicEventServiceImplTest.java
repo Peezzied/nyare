@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -168,13 +170,75 @@ class AcademicEventServiceImplTest {
         ReflectionTestUtils.setField(otherEvent, "id", UUID.randomUUID());
 
         ArgumentCaptor<LocalDateTime> timeCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
-        when(academicEventRepository.findAllFiltered(eq(42L), eq(1L), eq(true), timeCaptor.capture(), eq(false)))
+        when(academicEventRepository.findAllFiltered(eq(42L), eq(1L), eq(true), timeCaptor.capture(),
+                eq(false), isNull(), isNull(), isNull()))
                 .thenReturn(List.of(sampleEvent, otherEvent));
 
-        List<AcademicEventResponse> responses = academicEventService.listEvents(42L, 1L, true, false);
+        List<AcademicEventResponse> responses = academicEventService.listEvents(42L, 1L, true, false,
+                null, null, null);
 
         assertThat(responses).hasSize(2);
         assertThat(timeCaptor.getValue()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("listEvents sends a lowercase LIKE pattern to the repository when q is set")
+    void listEvents_withQuery_sendsLowercaseLikePatternToRepository() {
+        when(academicEventRepository.findAllFiltered(eq(42L), isNull(), isNull(), any(), eq(false),
+                eq("%exam%"), isNull(), isNull()))
+                .thenReturn(List.of(sampleEvent));
+
+        List<AcademicEventResponse> responses = academicEventService.listEvents(42L, null, null, false,
+                "Exam", null, null);
+
+        assertThat(responses).hasSize(1);
+        verify(academicEventRepository).findAllFiltered(eq(42L), isNull(), isNull(), any(), eq(false),
+                eq("%exam%"), isNull(), isNull());
+    }
+
+    @Test
+    @DisplayName("listEvents sends a null pattern to the repository when q is blank")
+    void listEvents_withBlankQuery_sendsNullPatternToRepository() {
+        when(academicEventRepository.findAllFiltered(eq(42L), isNull(), isNull(), any(), eq(false),
+                isNull(), isNull(), isNull()))
+                .thenReturn(List.of(sampleEvent));
+
+        List<AcademicEventResponse> responses = academicEventService.listEvents(42L, null, null, false,
+                "   ", null, null);
+
+        assertThat(responses).hasSize(1);
+        verify(academicEventRepository).findAllFiltered(eq(42L), isNull(), isNull(), any(), eq(false),
+                isNull(), isNull(), isNull());
+    }
+
+    @Test
+    @DisplayName("listEvents throws BadRequestException when from is after to")
+    void listEvents_withFromAfterTo_throwsBadRequestException() {
+        LocalDate from = LocalDate.of(2026, 10, 10);
+        LocalDate to = LocalDate.of(2026, 10, 1);
+
+        assertThatThrownBy(() -> academicEventService.listEvents(42L, null, null, false, null, from, to))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("from must not be after to");
+    }
+
+    @Test
+    @DisplayName("listEvents converts LocalDate range to exclusive day bounds")
+    void listEvents_withDateRange_sendsDayBoundsToRepository() {
+        LocalDate from = LocalDate.of(2026, 10, 1);
+        LocalDate to = LocalDate.of(2026, 10, 31);
+        LocalDateTime fromBound = LocalDateTime.of(2026, 10, 1, 0, 0);
+        LocalDateTime toBound = LocalDateTime.of(2026, 11, 1, 0, 0);
+        when(academicEventRepository.findAllFiltered(eq(42L), isNull(), isNull(), any(), eq(false),
+                isNull(), eq(fromBound), eq(toBound)))
+                .thenReturn(List.of(sampleEvent));
+
+        List<AcademicEventResponse> responses = academicEventService.listEvents(42L, null, null, false,
+                null, from, to);
+
+        assertThat(responses).hasSize(1);
+        verify(academicEventRepository).findAllFiltered(eq(42L), isNull(), isNull(), any(), eq(false),
+                isNull(), eq(fromBound), eq(toBound));
     }
 
     @Test

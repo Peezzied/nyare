@@ -87,7 +87,8 @@ class TaskControllerTest {
     @DisplayName("listTasks with session user passes userId to service")
     void listTasks_withSessionUser_passesUserIdToService() throws Exception {
         // given
-        when(taskService.listTasks(eq(USER_ID), any(), any(), any(), any())).thenReturn(List.of(sampleTask));
+        when(taskService.listTasks(eq(USER_ID), any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(List.of(sampleTask));
 
         // when & then
         mockMvc.perform(get("/api/tasks").session(mockSession()))
@@ -95,7 +96,27 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].title").value("Study Chapter 1"));
 
-        verify(taskService).listTasks(USER_ID, null, null, null, false);
+        verify(taskService).listTasks(USER_ID, null, null, null, false, null, null, null);
+    }
+
+    @Test
+    @DisplayName("listTasks binds q, from, and to request params")
+    void listTasks_withSearchParams_passesParamsToService() throws Exception {
+        // given
+        when(taskService.listTasks(eq(USER_ID), any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(List.of(sampleTask));
+
+        // when & then
+        mockMvc.perform(get("/api/tasks")
+                        .param("q", "exam")
+                        .param("from", "2026-10-01")
+                        .param("to", "2026-10-31")
+                        .session(mockSession()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1));
+
+        verify(taskService).listTasks(USER_ID, null, null, null, false, "exam",
+                LocalDate.of(2026, 10, 1), LocalDate.of(2026, 10, 31));
     }
 
     @Test

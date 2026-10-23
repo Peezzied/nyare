@@ -3,6 +3,7 @@ package group.four.nyare.nyare.service;
 import group.four.nyare.nyare.dto.TaskRequest;
 import group.four.nyare.nyare.dto.TaskResponse;
 import group.four.nyare.nyare.dto.TaskStatusRequest;
+import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.Task;
@@ -121,13 +122,51 @@ class TaskServiceImplTest {
     void listTasks_scopedToUser_returnsOnlyOwnData() {
         Task otherTask = new Task(sampleCourse, "Write report");
         ReflectionTestUtils.setField(otherTask, "id", UUID.randomUUID());
-        when(taskRepository.findAllFiltered(42L, 1L, TaskStatus.TODO, true, false))
+        when(taskRepository.findAllFiltered(42L, 1L, TaskStatus.TODO, true, false, null, null, null))
                 .thenReturn(List.of(sampleTask, otherTask));
 
-        List<TaskResponse> responses = taskService.listTasks(42L, 1L, TaskStatus.TODO, true, false);
+        List<TaskResponse> responses = taskService.listTasks(42L, 1L, TaskStatus.TODO, true, false,
+                null, null, null);
 
         assertThat(responses).hasSize(2);
-        verify(taskRepository).findAllFiltered(42L, 1L, TaskStatus.TODO, true, false);
+        verify(taskRepository).findAllFiltered(42L, 1L, TaskStatus.TODO, true, false, null, null, null);
+    }
+
+    @Test
+    @DisplayName("listTasks sends a lowercase LIKE pattern to the repository when q is set")
+    void listTasks_withQuery_sendsLowercaseLikePatternToRepository() {
+        when(taskRepository.findAllFiltered(42L, null, null, null, false, "%exam%", null, null))
+                .thenReturn(List.of(sampleTask));
+
+        List<TaskResponse> responses = taskService.listTasks(42L, null, null, null, false,
+                "Exam", null, null);
+
+        assertThat(responses).hasSize(1);
+        verify(taskRepository).findAllFiltered(42L, null, null, null, false, "%exam%", null, null);
+    }
+
+    @Test
+    @DisplayName("listTasks sends a null pattern to the repository when q is blank")
+    void listTasks_withBlankQuery_sendsNullPatternToRepository() {
+        when(taskRepository.findAllFiltered(42L, null, null, null, false, null, null, null))
+                .thenReturn(List.of(sampleTask));
+
+        List<TaskResponse> responses = taskService.listTasks(42L, null, null, null, false,
+                "   ", null, null);
+
+        assertThat(responses).hasSize(1);
+        verify(taskRepository).findAllFiltered(42L, null, null, null, false, null, null, null);
+    }
+
+    @Test
+    @DisplayName("listTasks throws BadRequestException when from is after to")
+    void listTasks_withFromAfterTo_throwsBadRequestException() {
+        LocalDate from = LocalDate.of(2026, 10, 10);
+        LocalDate to = LocalDate.of(2026, 10, 1);
+
+        assertThatThrownBy(() -> taskService.listTasks(42L, null, null, null, false, null, from, to))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("from must not be after to");
     }
 
     @Test

@@ -57,7 +57,7 @@ public class NoteServiceImpl implements NoteService {
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + request.getCourseId()));
         requireActiveCourse(course);
 
-        validateImageReferences(request.getContent());
+        validateImageReferences(request.getContent(), userId);
 
         String title;
         if (request.getTitle() != null && !request.getTitle().isBlank()) {
@@ -73,14 +73,19 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public List<NoteSummaryResponse> listNotes(Long userId, Long courseId, Boolean archived) {
+    public List<NoteSummaryResponse> listNotes(Long userId, Long courseId, Boolean archived,
+                                               String q, LocalDate from, LocalDate to) {
+        if (from != null && to != null && from.isAfter(to)) {
+            throw new BadRequestException("from must not be after to");
+        }
         if (courseId != null) {
             if (!courseRepository.existsById(courseId)) {
                 throw new ResourceNotFoundException("Course not found with ID: " + courseId);
             }
         }
 
-        return noteRepository.findAllFiltered(userId, courseId, archived)
+        String pattern = (q == null || q.isBlank()) ? null : '%' + q.toLowerCase() + '%';
+        return noteRepository.findAllFiltered(userId, courseId, archived, pattern, from, to)
                 .stream()
                 .map(this::toSummary)
                 .toList();
@@ -108,7 +113,7 @@ public class NoteServiceImpl implements NoteService {
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + request.getCourseId()));
         requireActiveCourse(course);
 
-        validateImageReferences(request.getContent());
+        validateImageReferences(request.getContent(), userId);
 
         note.setCourse(course);
         note.setContent(request.getContent());
@@ -154,12 +159,12 @@ public class NoteServiceImpl implements NoteService {
         }
     }
 
-    private void validateImageReferences(String content) {
+    private void validateImageReferences(String content, Long userId) {
         Set<UUID> referenced = ImageReferenceExtractor.extractIds(content);
         if (referenced.isEmpty()) {
             return;
         }
-        Set<UUID> existing = imageRepository.findAllById(referenced).stream()
+        Set<UUID> existing = imageRepository.findByUserIdAndIdIn(userId, referenced).stream()
                 .map(Image::getId)
                 .collect(Collectors.toSet());
         Set<UUID> missing = new LinkedHashSet<>(referenced);

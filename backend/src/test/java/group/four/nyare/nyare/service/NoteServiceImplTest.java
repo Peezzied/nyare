@@ -8,6 +8,7 @@ import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.Image;
 import group.four.nyare.nyare.model.Note;
+import group.four.nyare.nyare.model.User;
 import group.four.nyare.nyare.repository.CourseRepository;
 import group.four.nyare.nyare.repository.ImageRepository;
 import group.four.nyare.nyare.repository.NoteRepository;
@@ -57,12 +58,14 @@ class NoteServiceImplTest {
     private Course course;
     private Note note;
     private UUID noteId;
+    private User user;
 
     @BeforeEach
     void setUp() {
         course = new Course("Computer Systems", "CS intro course");
         noteId = UUID.randomUUID();
         note = new Note(course, "Study notes");
+        user = new User("note_user");
     }
 
     @Test
@@ -337,10 +340,10 @@ class NoteServiceImplTest {
     void listNotes_withCourseId_returnsSummariesForCourse() {
         // given
         when(courseRepository.existsById(1L)).thenReturn(true);
-        when(noteRepository.findAllFiltered(42L, 1L, false)).thenReturn(List.of(note));
+        when(noteRepository.findAllFiltered(42L, 1L, false, null, null, null)).thenReturn(List.of(note));
 
         // when
-        List<NoteSummaryResponse> responses = noteService.listNotes(42L, 1L, false);
+        List<NoteSummaryResponse> responses = noteService.listNotes(42L, 1L, false, null, null, null);
 
         // then
         assertThat(responses).hasSize(1);
@@ -355,7 +358,7 @@ class NoteServiceImplTest {
         when(courseRepository.existsById(999L)).thenReturn(false);
 
         // when & then
-        assertThatThrownBy(() -> noteService.listNotes(42L, 999L, false))
+        assertThatThrownBy(() -> noteService.listNotes(42L, 999L, false, null, null, null))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Course not found with ID: 999");
     }
@@ -364,14 +367,14 @@ class NoteServiceImplTest {
     void listNotes_scopedToUser_returnsOnlyOwnData() {
         // given
         Note otherNote = new Note(course, "Other notes");
-        when(noteRepository.findAllFiltered(42L, null, false)).thenReturn(List.of(note, otherNote));
+        when(noteRepository.findAllFiltered(42L, null, false, null, null, null)).thenReturn(List.of(note, otherNote));
 
         // when
-        List<NoteSummaryResponse> responses = noteService.listNotes(42L, null, false);
+        List<NoteSummaryResponse> responses = noteService.listNotes(42L, null, false, null, null, null);
 
         // then
         assertThat(responses).hasSize(2);
-        verify(noteRepository).findAllFiltered(42L, null, false);
+        verify(noteRepository).findAllFiltered(42L, null, false, null, null, null);
     }
 
     @Test
@@ -379,16 +382,58 @@ class NoteServiceImplTest {
         // given
         String longContent = "a".repeat(250);
         Note longNote = new Note(course, longContent);
-        when(noteRepository.findAllFiltered(42L, null, false)).thenReturn(List.of(longNote));
+        when(noteRepository.findAllFiltered(42L, null, false, null, null, null)).thenReturn(List.of(longNote));
 
         // when
-        List<NoteSummaryResponse> responses = noteService.listNotes(42L, null, false);
+        List<NoteSummaryResponse> responses = noteService.listNotes(42L, null, false, null, null, null);
 
         // then
         assertThat(responses).hasSize(1);
         assertThat(responses.get(0).getPreview()).hasSize(200);
         assertThat(responses.get(0).isTruncated()).isTrue();
         assertThat(responses.get(0).getContentLength()).isEqualTo(250);
+    }
+
+    @Test
+    void listNotes_withQuery_sendsLowercaseLikePatternToRepository() {
+        // given
+        when(noteRepository.findAllFiltered(42L, null, false, "%lecture%", null, null))
+                .thenReturn(List.of(note));
+
+        // when
+        List<NoteSummaryResponse> responses = noteService.listNotes(42L, null, false,
+                "Lecture", null, null);
+
+        // then
+        assertThat(responses).hasSize(1);
+        verify(noteRepository).findAllFiltered(42L, null, false, "%lecture%", null, null);
+    }
+
+    @Test
+    void listNotes_withBlankQuery_sendsNullPatternToRepository() {
+        // given
+        when(noteRepository.findAllFiltered(42L, null, false, null, null, null))
+                .thenReturn(List.of(note));
+
+        // when
+        List<NoteSummaryResponse> responses = noteService.listNotes(42L, null, false,
+                "   ", null, null);
+
+        // then
+        assertThat(responses).hasSize(1);
+        verify(noteRepository).findAllFiltered(42L, null, false, null, null, null);
+    }
+
+    @Test
+    void listNotes_withFromAfterTo_throwsBadRequestException() {
+        // given
+        LocalDate from = LocalDate.of(2026, 10, 10);
+        LocalDate to = LocalDate.of(2026, 10, 1);
+
+        // when & then
+        assertThatThrownBy(() -> noteService.listNotes(42L, null, false, null, from, to))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("from must not be after to");
     }
 
     @Test
@@ -409,12 +454,12 @@ class NoteServiceImplTest {
     @Test
     void createNote_withKnownImageReference_succeeds() {
         // given
-        Image image = new Image(new byte[]{1, 2, 3}, "image/png", "slide.png", 3L);
+        Image image = new Image(new byte[]{1, 2, 3}, "image/png", "slide.png", 3L, user);
         org.springframework.test.util.ReflectionTestUtils.setField(image, "id", UUID.randomUUID());
         UUID imageId = image.getId();
         NoteRequest request = new NoteRequest(1L, "Note with ![x](/api/images/" + imageId + ")");
         when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
-        when(imageRepository.findAllById(anySet())).thenReturn(List.of(image));
+        when(imageRepository.findByUserIdAndIdIn(any(), anySet())).thenReturn(List.of(image));
         when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
@@ -452,6 +497,6 @@ class NoteServiceImplTest {
         noteService.createNote(request, 1L);
 
         // then
-        verify(imageRepository, never()).findAllById(anySet());
+        verify(imageRepository, never()).findByUserIdAndIdIn(any(), anySet());
     }
 }

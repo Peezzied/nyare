@@ -34,6 +34,9 @@ public interface AcademicEventRepository extends JpaRepository<AcademicEvent, UU
      * @param upcoming optional upcoming filter flag
      * @param now      current timestamp boundary
      * @param archived course archive filter: {@code true} for archived courses, {@code false} for active courses
+     * @param q        optional lowercase LIKE pattern matched against title and description
+     * @param from     optional inclusive lower bound on {@code deadline}
+     * @param to       optional exclusive upper bound on {@code deadline}
      * @return list of matching events ordered by deadline ascending
      */
     @Query("""
@@ -44,6 +47,8 @@ public interface AcademicEventRepository extends JpaRepository<AcademicEvent, UU
                    OR (:upcoming = true AND e.deadline >= :now))
               AND ((:archived = true AND e.course.archivedAt IS NOT NULL)
                    OR (:archived = false AND e.course.archivedAt IS NULL))
+              AND (:q IS NULL OR LOWER(e.title) LIKE :q OR LOWER(e.description) LIKE :q)
+              AND (:from IS NULL OR e.deadline >= :from) AND (:to IS NULL OR e.deadline < :to)
             ORDER BY e.deadline ASC
             """)
     List<AcademicEvent> findAllFiltered(
@@ -51,7 +56,10 @@ public interface AcademicEventRepository extends JpaRepository<AcademicEvent, UU
             @Param("courseId") Long courseId,
             @Param("upcoming") Boolean upcoming,
             @Param("now") LocalDateTime now,
-            @Param("archived") Boolean archived
+            @Param("archived") Boolean archived,
+            @Param("q") String q,
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to
     );
 
     /**
