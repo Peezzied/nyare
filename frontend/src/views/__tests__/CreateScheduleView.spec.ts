@@ -675,7 +675,10 @@ describe('CreateScheduleView', () => {
     await timeInputs[0]!.setValue('09:00')
     await timeInputs[1]!.setValue('10:00')
 
-    expect(wrapper.find('[role="grid"]').text()).toContain('CS 101')
+    // Schedule-X paints its grid on real animation frames, outside Vue ticks.
+    await vi.waitFor(() => {
+      expect(wrapper.find('[role="grid"]').text()).toContain('CS 101')
+    })
   })
 
   it('handles empty-space tap in preview to prefill class time and set pendingSlot', async () => {
