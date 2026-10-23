@@ -2,6 +2,7 @@ package group.four.nyare.nyare.ai.advisor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import group.four.nyare.nyare.ai.parser.TitleSimilarityMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClientRequest;
@@ -49,10 +50,14 @@ public class PlannerAuditAdvisor extends SimpleLoggerAdvisor {
                     Map<String, UUID> noteIdMap = request.context() != null
                             ? (Map<String, UUID>) request.context().get("noteIdMap")
                             : null;
+                    @SuppressWarnings("unchecked")
+                    Map<String, UUID> existingTasks = request.context() != null
+                            ? (Map<String, UUID>) request.context().get("existingTasks")
+                            : null;
 
                     JsonNode root = objectMapper.readTree(content);
                     auditIgnoredNotes(root, noteIdMap);
-                    auditTasks(root, noteIdMap);
+                    auditTasks(root, noteIdMap, existingTasks);
                     auditEvents(root, noteIdMap);
                 }
             }
@@ -118,7 +123,7 @@ public class PlannerAuditAdvisor extends SimpleLoggerAdvisor {
         }
     }
 
-    private void auditTasks(JsonNode root, Map<String, UUID> noteIdMap) {
+    private void auditTasks(JsonNode root, Map<String, UUID> noteIdMap, Map<String, UUID> existingTasks) {
         JsonNode tasks = root.get("tasks");
         if (tasks != null && tasks.isArray()) {
             for (JsonNode item : tasks) {
@@ -136,6 +141,15 @@ public class PlannerAuditAdvisor extends SimpleLoggerAdvisor {
                         : "none";
 
                 String taskId = extractTaskId(item);
+                if (taskId == null && existingTasks != null && !title.isBlank()) {
+                    for (Map.Entry<String, UUID> entry : existingTasks.entrySet()) {
+                        if (TitleSimilarityMatcher.isSimilar(entry.getKey(), title)) {
+                            taskId = entry.getValue().toString();
+                            break;
+                        }
+                    }
+                }
+
                 if (taskId != null) {
                     log.info("[AI AUDIT - TASK PROMOTION] TaskId: {} | Title: \"{}\" | Scheduled: {} | Duration: {} | Rationale: {}",
                             taskId, title, scheduledDate, duration, rationale);
