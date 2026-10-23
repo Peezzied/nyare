@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
-import { defineComponent, nextTick } from 'vue'
+import { defineComponent, nextTick, reactive } from 'vue'
 import type { AcademicEventResponse, TaskResponse } from '@/types/api'
 import { toDateKey } from '@/utils/dayKey'
 import CalendarView from '../CalendarView.vue'
 
 const mocks = vi.hoisted(() => ({
   push: vi.fn<(route: unknown) => void>(),
+  replace: vi.fn<(route: unknown) => void>(),
   loadNotes: vi.fn<() => Promise<void>>(),
   loadCatalog: vi.fn<() => Promise<void>>(),
   loadTasks: vi.fn<() => Promise<void>>(),
@@ -27,7 +28,16 @@ const mocks = vi.hoisted(() => ({
   schedules: { value: [] as unknown[] },
 }))
 
-vi.mock('vue-router', () => ({ useRouter: () => ({ push: mocks.push }) }))
+const mockRoute = reactive({
+  name: 'calendar',
+  params: {} as Record<string, string>,
+  query: {} as Record<string, string>,
+})
+
+vi.mock('vue-router', () => ({
+  useRoute: () => mockRoute,
+  useRouter: () => ({ push: mocks.push, replace: mocks.replace }),
+}))
 vi.mock('@/api/tasks', () => ({
   tasksApi: { updateStatus: mocks.updateStatus },
 }))
@@ -105,6 +115,7 @@ function mountContainer() {
 
 type Wrapper = ReturnType<typeof mountContainer>
 
+// The tap only pushes the `?item` route; the modal opens once the route lands.
 async function openTaskDetail(wrapper: Wrapper) {
   wrapper.findComponent(ScheduleCalendarStub).vm.$emit(
     'select-untimed',
@@ -118,11 +129,15 @@ async function openTaskDetail(wrapper: Wrapper) {
     },
     null,
   )
+  mockRoute.query = { item: 'task:task-1' }
   await nextTick()
 }
 
 beforeEach(() => {
   vi.clearAllMocks()
+  mockRoute.name = 'calendar'
+  mockRoute.params = {}
+  mockRoute.query = {}
   mocks.tasks.value = [OPEN_TASK]
   mocks.events.value = []
   mocks.loadTasks.mockResolvedValue(undefined)
@@ -159,6 +174,11 @@ describe('CalendarView detail', () => {
       { id: 'note-1', title: 'Lecture 7', courseId: 1, entryDate: '2026-10-22' },
       { id: 'note-2', title: 'Older lecture', courseId: 1, entryDate: '2026-10-15' },
     ]
+    mocks.courses.value = [{ id: 1, name: 'CS 201' }]
+    // 2026-10-22 is a Thursday, so the expander rebuilds the class DayEvent.
+    mocks.schedules.value = [
+      { id: 1, courseId: 1, day: 'THURSDAY', startTime: '09:00:00', endTime: '10:30:00' },
+    ]
     const wrapper = mountContainer()
     await flushPromises()
 
@@ -174,6 +194,7 @@ describe('CalendarView detail', () => {
       },
       null,
     )
+    mockRoute.query = { item: 'class:1:2026-10-22' }
     await nextTick()
 
     expect(wrapper.findComponent(EventDetailModalStub).props('item')).toMatchObject({
@@ -184,6 +205,10 @@ describe('CalendarView detail', () => {
   })
 
   it('opens a new note prefilled with the class course and day on add-note', async () => {
+    mocks.courses.value = [{ id: 1, name: 'CS 201' }]
+    mocks.schedules.value = [
+      { id: 1, courseId: 1, day: 'THURSDAY', startTime: '09:00:00', endTime: '10:30:00' },
+    ]
     const wrapper = mountContainer()
     await flushPromises()
 
@@ -199,15 +224,20 @@ describe('CalendarView detail', () => {
       },
       null,
     )
+    mockRoute.query = { item: 'class:1:2026-10-22' }
     await nextTick()
 
     wrapper.findComponent(EventDetailModalStub).vm.$emit('add-note')
     await nextTick()
 
-    expect(mocks.push).toHaveBeenCalledWith({
+    expect(mocks.replace).toHaveBeenCalledWith({
       name: 'note-new',
       query: { courseId: 1, entryDate: '2026-10-22' },
     })
+
+    mockRoute.name = 'note-new'
+    mockRoute.query = {}
+    await nextTick()
     expect(wrapper.findComponent(EventDetailModalStub).props('isOpen')).toBe(false)
   })
 
@@ -262,7 +292,12 @@ describe('CalendarView detail', () => {
     })
     await nextTick()
 
-    expect(mocks.push).toHaveBeenCalledWith({ name: 'note-edit', params: { id: 'note-1' } })
+    expect(mocks.replace).toHaveBeenCalledWith({ name: 'note-open', params: { id: 'note-1' } })
+
+    // The detail stays open under the note route until the route itself changes.
+    mockRoute.name = 'note-open'
+    mockRoute.query = {}
+    await nextTick()
     expect(wrapper.findComponent(EventDetailModalStub).props('isOpen')).toBe(false)
   })
 
@@ -274,8 +309,70 @@ describe('CalendarView detail', () => {
     wrapper.findComponent(EventDetailModalStub).vm.$emit('open-task', 'task-1')
     await nextTick()
 
-    expect(mocks.push).toHaveBeenCalledWith({ name: 'task-detail', params: { id: 'task-1' } })
+    expect(mocks.replace).toHaveBeenCalledWith({ name: 'task-detail', params: { id: 'task-1' } })
+
+    mockRoute.name = 'task-detail'
+    mockRoute.query = {}
+    await nextTick()
     expect(wrapper.findComponent(EventDetailModalStub).props('isOpen')).toBe(false)
+  })
+
+  describe('route-driven detail', () => {
+    it('pushes the item query route when a chip is tapped', async () => {
+      const wrapper = mountContainer()
+      await flushPromises()
+
+      wrapper.findComponent(ScheduleCalendarStub).vm.$emit(
+        'select-untimed',
+        {
+          id: 'task-1',
+          title: 'Implement AVL Tree Rotations',
+          category: 'task',
+          courseId: 1,
+          completed: false,
+          date: '2026-10-14',
+        },
+        null,
+      )
+      await nextTick()
+
+      expect(mocks.push).toHaveBeenCalledWith({
+        name: 'calendar',
+        query: { item: 'task:task-1' },
+      })
+    })
+
+    it('reopens the detail when the route returns to the item query', async () => {
+      const wrapper = mountContainer()
+      await flushPromises()
+      await openTaskDetail(wrapper)
+      expect(wrapper.findComponent(EventDetailModalStub).props('isOpen')).toBe(true)
+
+      // Simulate the open-task handoff landing on the task route.
+      mockRoute.name = 'task-detail'
+      mockRoute.query = {}
+      await nextTick()
+      expect(wrapper.findComponent(EventDetailModalStub).props('isOpen')).toBe(false)
+
+      // Back pops the task route; the item query below reopens the detail.
+      mockRoute.name = 'calendar'
+      mockRoute.query = { item: 'task:task-1' }
+      await nextTick()
+      expect(wrapper.findComponent(EventDetailModalStub).props('isOpen')).toBe(true)
+    })
+
+    it('clears the item entry on close', async () => {
+      const wrapper = mountContainer()
+      await flushPromises()
+      await openTaskDetail(wrapper)
+
+      wrapper.findComponent(EventDetailModalStub).vm.$emit('close')
+      await nextTick()
+
+      // The test environment has no real history back entry, so the fallback
+      // strips the query instead of calling router.back().
+      expect(mocks.replace).toHaveBeenCalledWith({ name: 'calendar' })
+    })
   })
 
   it('shows an alert with retry when the calendar data fails to load', async () => {
