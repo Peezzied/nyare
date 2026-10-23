@@ -97,27 +97,27 @@ describe('NoteEditorModal', () => {
     expect(container.classes()).toContain('duration-[320ms]')
   })
 
-  it('staggers content at 100ms and controls at 180ms', async () => {
+  it('mounts the editor once the expansion settles', async () => {
     const wrapper = mountModal({ isOpen: false, noteId: 'note-1' })
     await wrapper.setProps({ isOpen: true })
     await nextTick()
 
-    const editor = () => wrapper.findComponent(NoteEditorStub)
-    expect(editor().props('showContent')).toBe(false)
-    expect(editor().props('showControls')).toBe(false)
+    // The editor stays unmounted while the container animates.
+    expect(wrapper.findComponent(NoteEditorStub).exists()).toBe(false)
 
-    await vi.advanceTimersByTimeAsync(100)
+    await vi.advanceTimersByTimeAsync(320)
     await nextTick()
-    expect(editor().props('showContent')).toBe(true)
-    expect(editor().props('showControls')).toBe(false)
 
-    await vi.advanceTimersByTimeAsync(80)
-    await nextTick()
-    expect(editor().props('showControls')).toBe(true)
+    const editor = wrapper.findComponent(NoteEditorStub)
+    expect(editor.exists()).toBe(true)
+    expect(editor.props('showContent')).toBe(true)
+    expect(editor.props('showControls')).toBe(true)
   })
 
   it('collapses back to the origin style and emits close once after 240ms', async () => {
     const wrapper = mountModal({ isOpen: true, noteId: 'note-1' })
+    await nextTick()
+    await vi.advanceTimersByTimeAsync(320)
     await nextTick()
 
     const editor = wrapper.findComponent(NoteEditorStub)
@@ -141,6 +141,8 @@ describe('NoteEditorModal', () => {
 
   it('collapses on Escape via the editor requestBack', async () => {
     const wrapper = mountModal({ isOpen: true, noteId: 'note-1' })
+    await nextTick()
+    await vi.advanceTimersByTimeAsync(320)
     await nextTick()
 
     await wrapper.get('[data-testid="note-editor-modal"]').trigger('keydown.esc')
@@ -172,6 +174,31 @@ describe('NoteEditorModal', () => {
     expect(document.body.style.overflow).toBe('')
   })
 
+  it('uses a 150ms opacity crossfade when no origin rect exists', async () => {
+    const wrapper = mountModal({ isOpen: false, noteId: 'note-1', originRect: null })
+
+    await wrapper.setProps({ isOpen: true })
+
+    // Target geometry applies immediately; the container fades instead of morphing
+    const container = wrapper.get('[data-testid="note-modal-container"]')
+    expect(container.attributes('style')).toContain('top: 0px')
+    expect(container.classes()).toContain('transition-opacity')
+    expect(container.classes()).toContain('duration-[150ms]')
+
+    await vi.advanceTimersByTimeAsync(150)
+    await nextTick()
+
+    const editor = wrapper.findComponent(NoteEditorStub)
+    expect(editor.props('showContent')).toBe(true)
+    expect(editor.props('showControls')).toBe(true)
+
+    editor.vm.$emit('close')
+    await nextTick()
+
+    await vi.advanceTimersByTimeAsync(150)
+    expect(wrapper.emitted('close')).toHaveLength(1)
+  })
+
   it('uses a 150ms opacity crossfade under reduced motion', async () => {
     mockReducedMotion(true)
     const wrapper = mountModal({ isOpen: false, noteId: 'note-1' })
@@ -183,6 +210,9 @@ describe('NoteEditorModal', () => {
     expect(container.attributes('style')).toContain('top: 0px')
     expect(container.classes()).toContain('transition-opacity')
     expect(container.classes()).toContain('duration-[150ms]')
+
+    await vi.advanceTimersByTimeAsync(150)
+    await nextTick()
 
     const editor = wrapper.findComponent(NoteEditorStub)
     expect(editor.props('showContent')).toBe(true)
