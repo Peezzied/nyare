@@ -17,6 +17,7 @@ import DeadlineRow from './DeadlineRow.vue'
 const props = defineProps<{
   sections: DeadlineSections
   courseName: (courseId: number) => string
+  searching?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -37,6 +38,7 @@ function handleSelect(event: AcademicEventResponse, originRect: DOMRect) {
 
 <template>
   <div class="h-full overflow-y-auto px-4 pb-24" data-testid="deadlines-view">
+    <slot name="top" />
     <template v-if="hasContent">
       <p v-if="sections.upcoming.length === 0" class="py-6 text-center text-(--color-text-muted)">
         No upcoming deadlines.
@@ -98,8 +100,10 @@ function handleSelect(event: AcademicEventResponse, originRect: DOMRect) {
 
     <div v-else class="flex h-full flex-col items-center justify-center gap-3 pb-16">
       <img :src="duckotaCasual" alt="" class="h-28 w-28 object-contain" />
-      <p class="text-lg font-bold text-text-main">No deadlines ahead</p>
-      <p class="text-sm text-(--color-text-muted)">
+      <p class="text-lg font-bold text-text-main">
+        {{ searching ? 'No matching deadlines' : 'No deadlines ahead' }}
+      </p>
+      <p v-if="!searching" class="text-sm text-(--color-text-muted)">
         Events from your notes and courses appear here.
       </p>
     </div>

@@ -31,6 +31,7 @@ interface MockImage {
   contentType: string
   size: number
   createdAt: string
+  userId: number | null
 }
 
 // In-memory data store. Mutations last until resetMockFixtures() or a page reload.
@@ -141,6 +142,49 @@ function matchesCourseArchived(courseId: number, archived: boolean): boolean {
 /** Mirrors the backend `requireActiveCourse` write guard on items of archived courses. */
 function courseArchived(courseId: number): boolean {
   return state.courses.some((c) => c.id === courseId && c.archivedAt != null)
+}
+
+/**
+ * Mirrors the backend `q`, `from`, `to` list filters: a lowercase substring
+ * match on the text fields plus inclusive ISO day bounds on the date field.
+ * A blank `q` is ignored, and items without a date never match a set bound.
+ * The backend wraps the raw `q` in `%` wildcards without trimming it first.
+ */
+function applySearchFilters<T>(
+  list: T[],
+  searchParams: URLSearchParams,
+  textFields: (item: T) => (string | null | undefined)[],
+  dayKey: (item: T) => string | null | undefined,
+): T[] {
+  const q = searchParams.get('q')
+  const query = q !== null && q.trim() !== '' ? q.toLowerCase() : null
+  if (query !== null) {
+    list = list.filter((item) =>
+      textFields(item).some((field) => field?.toLowerCase().includes(query)),
+    )
+  }
+  const from = searchParams.get('from')
+  if (from !== null) {
+    list = list.filter((item) => {
+      const day = dayKey(item)
+      return day != null && day >= from
+    })
+  }
+  const to = searchParams.get('to')
+  if (to !== null) {
+    list = list.filter((item) => {
+      const day = dayKey(item)
+      return day != null && day <= to
+    })
+  }
+  return list
+}
+
+/** Mirrors the backend check that rejects an inverted `from`/`to` range. */
+function invertedRange(searchParams: URLSearchParams): boolean {
+  const from = searchParams.get('from')
+  const to = searchParams.get('to')
+  return from !== null && to !== null && from > to
 }
 
 /** Stamps the session user's dirty notes as processed, like the backend Process run does. */
@@ -484,6 +528,15 @@ export function mockRouter(
       const courseId = Number(courseIdParam)
       list = list.filter((n) => n.courseId === courseId)
     }
+    if (invertedRange(searchParams)) {
+      return badRequest('from must not be after to')
+    }
+    list = applySearchFilters(
+      list,
+      searchParams,
+      (n) => [n.title, n.content],
+      (n) => n.entryDate,
+    )
     const summaries: NoteSummaryResponse[] = list.map(toNoteSummary)
     return { status: 200, data: summaries }
   }
@@ -587,6 +640,15 @@ export function mockRouter(
       const isScheduled = scheduledParam === 'true'
       list = list.filter((t) => (isScheduled ? t.scheduledDate !== null : t.scheduledDate === null))
     }
+    if (invertedRange(searchParams)) {
+      return badRequest('from must not be after to')
+    }
+    list = applySearchFilters(
+      list,
+      searchParams,
+      (t) => [t.title, t.description],
+      (t) => t.scheduledDate,
+    )
     return { status: 200, data: list }
   }
 
@@ -717,6 +779,15 @@ export function mockRouter(
       const now = new Date().toISOString()
       list = list.filter((e) => e.deadline >= now)
     }
+    if (invertedRange(searchParams)) {
+      return badRequest('from must not be after to')
+    }
+    list = applySearchFilters(
+      list,
+      searchParams,
+      (e) => [e.title, e.description],
+      (e) => e.deadline.slice(0, 10),
+    )
     return { status: 200, data: list }
   }
 
@@ -840,7 +911,7 @@ export function mockRouter(
       size: fileObj?.size || 1024,
       createdAt: now,
     }
-    images.push(img)
+    images.push({ ...img, userId: state.currentUser?.id ?? null })
     return { status: 201, data: img }
   }
 
@@ -848,14 +919,14 @@ export function mockRouter(
   if (imgMatch?.[1]) {
     const id = imgMatch[1]
     if (method === 'GET') {
-      const img = images.find((i) => i.id === id)
+      const img = images.find((i) => i.id === id && i.userId === state.currentUser?.id)
       if (!img) {
         return notFound(`Image not found with ID: ${id}`)
       }
       return { status: 200, data: img }
     }
     if (method === 'DELETE') {
-      const index = images.findIndex((i) => i.id === id)
+      const index = images.findIndex((i) => i.id === id && i.userId === state.currentUser?.id)
       if (index === -1) {
         return notFound(`Image not found with ID: ${id}`)
       }

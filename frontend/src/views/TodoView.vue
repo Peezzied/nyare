@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, h, nextTick, onActivated, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { tasksApi } from '@/api'
+import type { TaskListParams } from '@/api'
 import HamburgerMenu from '@/components/HamburgerMenu.vue'
 import AddFab from '@/components/AddFab.vue'
+import SearchBar from '@/components/SearchBar.vue'
+import FilterSheet, { type ListFilters } from '@/components/FilterSheet.vue'
 import { Button } from '@/components/ui/button'
 import {
   Accordion,
@@ -14,6 +18,7 @@ import { useCatalog } from '@/composables/useCatalog'
 import { useTasks } from '@/composables/useTasks'
 import { useToasts } from '@/composables/useToasts'
 import { useUndoableTaskDelete } from '@/composables/useUndoableTaskDelete'
+import { useServerSearch } from '@/composables/useServerSearch'
 import { getPlanCategory } from '@/utils/planCategory'
 import { useShellHeader } from '@/composables/useShellHeader'
 import {
@@ -43,6 +48,44 @@ const { tasks, loadTasks, updateTask, updateTaskStatus } = useTasks()
 const { deleteTaskWithUndo } = useUndoableTaskDelete()
 const loading = ref(true)
 const activeFilter = ref<ActiveFilter>('ALL')
+
+const query = ref('')
+const filters = ref<ListFilters>({})
+const filterSheetOpen = ref(false)
+const filtersActive = computed(() => Object.keys(filters.value).length > 0)
+const searchParams = computed<TaskListParams | null>(() => {
+  const q = query.value.trim()
+  const { courseId, from, to, status } = filters.value
+  if (q === '' && !filtersActive.value) {
+    return null
+  }
+  return {
+    ...(q && { q }),
+    ...(courseId && { courseId }),
+    ...(from && { from }),
+    ...(to && { to }),
+    ...(status && { status }),
+  }
+})
+const { results: searchResults, error: searchError, retry: retrySearch } = useServerSearch(
+  tasksApi.list,
+  searchParams,
+)
+
+// Mirrors cache writes into an active search list: saved rows refresh in
+// place, deleted rows drop out, and rows the cache never held keep their
+// search copy so a failed list load does not blank a working search.
+// ponytail: undo restores a deleted task into the cache but not this list.
+watch(tasks, (list, prev) => {
+  if (searchResults.value === null) {
+    return
+  }
+  const byId = new Map(list.map((t) => [t.id, t]))
+  const prevIds = new Set(prev.map((t) => t.id))
+  searchResults.value = searchResults.value
+    .filter((t) => byId.has(t.id) || !prevIds.has(t.id))
+    .map((t) => byId.get(t.id) ?? t)
+})
 
 // The route drives the overlay: /tasks/new creates, /tasks/:id edits, /tasks lists.
 const modalOpen = computed(() => route.name === 'task-new' || route.name === 'task-detail')
@@ -80,6 +123,10 @@ function openTaskFromRow(task: TaskResponse, event?: Event) {
 }
 
 function onModalClosed() {
+  // The morph's own pop may have already left this route; never pop twice.
+  if (!modalOpen.value) {
+    return
+  }
   if (window.history.state?.back) {
     router.back()
   } else {
@@ -140,7 +187,7 @@ function quickDelete() {
   deleteTaskWithUndo(task)
 }
 
-const filters: { key: ActiveFilter; label: string }[] = [
+const filterTabs: { key: ActiveFilter; label: string }[] = [
   { key: 'ALL', label: 'All' },
   { key: 'OVERDUE', label: 'Overdue' },
   { key: 'SCHEDULED', label: 'Scheduled' },
@@ -179,8 +226,8 @@ function onTabKeydown(event: KeyboardEvent, key: ActiveFilter) {
     return
   }
   event.preventDefault()
-  const index = filters.findIndex((f) => f.key === key)
-  const next = filters[(index + delta + filters.length) % filters.length]
+  const index = filterTabs.findIndex((f) => f.key === key)
+  const next = filterTabs[(index + delta + filterTabs.length) % filterTabs.length]
   if (next) {
     selectFilter(next.key, true)
   }
@@ -278,44 +325,120 @@ onActivated(loadData)
 
 <template>
   <div class="relative flex h-full flex-col bg-(--color-app-bg) text-(--color-text-main)">
+
     <div
-      class="shrink-0 overflow-x-auto px-4 pt-3 pb-3 [&::-webkit-scrollbar]:hidden"
+      v-if="searchResults === null && searchError === null"
+      class="shrink-0 overflow-visible mx-4 pt-3 pb-3 [&::-webkit-scrollbar]:hidden"
       style="scrollbar-width: none"
     >
       <div
-        class="mx-auto inline-flex w-max items-center gap-1 rounded-full border border-[#D5EBF1] bg-[#F0F8FA] p-1 shadow-[inset_0_1px_3px_rgba(0,75,99,0.1)]"
         role="tablist"
         aria-label="Filter tasks by category"
+        class="flex w-full items-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        <button
-          v-for="f in filters"
-          :key="f.key"
-          :ref="(el) => setTabEl(f.key, el)"
-          role="tab"
-          type="button"
-          :aria-selected="activeFilter === f.key"
-          :tabindex="activeFilter === f.key ? 0 : -1"
-          class="h-11 rounded-full px-4 text-sm font-bold whitespace-nowrap transition-[background-color,color,box-shadow,translate] duration-150 focus-visible:ring-2 focus-visible:ring-(--color-primary)/50 focus-visible:outline-none"
-          :class="
-            activeFilter === f.key
-              ? 'bg-(--color-primary) text-white shadow-[0_2px_0_var(--color-primary-bevel)] active:translate-y-0.5 active:shadow-[0_1px_0_var(--color-primary-bevel)]'
-              : 'text-(--color-primary-bevel) hover:bg-white/70 active:bg-white'
-          "
-          @click="selectFilter(f.key)"
-          @keydown="onTabKeydown($event, f.key)"
+        <div
+          role="group"
+          aria-label="Task views"
+          class="flex shrink-0 items-center gap-1 rounded-full border border-[#D5EBF1] bg-[#FDFEF7] p-1 shadow-[0_2px_0_#D5EBF1]"
         >
-          {{ f.label }}
-        </button>
+          <button
+            v-for="f in filterTabs.slice(0, 2)"
+            :key="f.key"
+            :ref="(el) => setTabEl(f.key, el)"
+            role="tab"
+            type="button"
+            :aria-selected="activeFilter === f.key"
+            :tabindex="activeFilter === f.key ? 0 : -1"
+            class="flex min-h-11 items-center justify-center rounded-full px-4 text-sm font-bold whitespace-nowrap transition-[background-color,color,box-shadow,translate] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-primary)/50"
+            :class="
+              activeFilter === f.key
+                ? 'bg-(--color-primary) text-white shadow-[0_2px_0_var(--color-primary-bevel)] active:translate-y-0.5 active:shadow-[0_1px_0_var(--color-primary-bevel)]'
+                : 'text-(--color-primary-bevel) hover:bg-white/70 active:bg-white'
+            "
+            @click="selectFilter(f.key)"
+            @keydown="onTabKeydown($event, f.key)"
+          >
+            {{ f.label }}
+          </button>
+        </div>
+        <div
+          role="group"
+          aria-label="Plan categories"
+          class="flex flex-1 items-center gap-1 rounded-full border border-[#D5EBF1] bg-[#F0F8FA] p-1 shadow-[inset_0_1px_3px_rgba(0,75,99,0.1)]"
+        >
+          <button
+            v-for="f in filterTabs.slice(2)"
+            :key="f.key"
+            :ref="(el) => setTabEl(f.key, el)"
+            role="tab"
+            type="button"
+            :aria-selected="activeFilter === f.key"
+            :tabindex="activeFilter === f.key ? 0 : -1"
+            class="flex min-h-11 flex-1 items-center justify-center rounded-full px-3 text-sm font-bold whitespace-nowrap transition-[background-color,color,box-shadow,translate] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-primary)/50"
+            :class="
+              activeFilter === f.key
+                ? 'bg-(--color-primary) text-white shadow-[0_2px_0_var(--color-primary-bevel)] active:translate-y-0.5 active:shadow-[0_1px_0_var(--color-primary-bevel)]'
+                : 'text-(--color-primary-bevel) hover:bg-white/70 active:bg-white'
+            "
+            @click="selectFilter(f.key)"
+            @keydown="onTabKeydown($event, f.key)"
+          >
+            {{ f.label }}
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="min-h-0 flex-1 overflow-y-auto pb-26">
-      <p v-if="loading" class="py-8 text-center text-(--color-text-muted)">Loading tasks…</p>
+    <FilterSheet
+      v-model:open="filterSheetOpen"
+      v-model="filters"
+      :courses="catalog.courses.value"
+      :show-status="true"
+    />
 
-      <div v-else-if="loadError" class="flex flex-col items-center gap-3 py-12">
+    <div class="min-h-0 flex-1 overflow-y-auto pb-26">
+      <SearchBar
+        v-model="query"
+        placeholder="Search tasks…"
+        :filters-active="filtersActive"
+        @filter="filterSheetOpen = true"
+      />
+      <p v-if="loading && searchResults === null" class="py-8 text-center text-(--color-text-muted)">
+        Loading tasks…
+      </p>
+
+      <div
+        v-else-if="loadError && searchResults === null"
+        class="flex flex-col items-center gap-3 py-12"
+      >
         <p role="alert" class="text-center text-(--color-text-muted)">{{ loadError }}</p>
         <Button type="button" variant="outline" @click="loadData">Retry</Button>
       </div>
+
+      <div v-else-if="searchError" class="flex flex-col items-center gap-3 py-12">
+        <p role="alert" class="text-center text-(--color-text-muted)">{{ searchError }}</p>
+        <Button type="button" variant="outline" @click="retrySearch">Retry</Button>
+      </div>
+
+      <template v-else-if="searchResults !== null">
+        <p v-if="searchResults.length === 0" class="py-12 text-center text-(--color-text-muted)">
+          No matching tasks
+        </p>
+        <TransitionGroup v-else tag="ul" name="task-item" class="relative">
+          <TaskRow
+            v-for="task in searchResults"
+            :key="task.id"
+            :task="task"
+            :course-name="getCourseName(task.courseId)"
+            :due-date="getDueDate(task)"
+            :time="''"
+            @click="openTaskFromRow(task, $event)"
+            @keydown.enter="openTaskFromRow(task, $event)"
+            @toggle="toggleTask(task)"
+            @actions="openQuickActions(task)"
+          />
+        </TransitionGroup>
+      </template>
 
       <template v-else-if="activeFilter !== 'ALL'">
         <p v-if="flatTasks.length === 0" class="py-12 text-center text-(--color-text-muted)">

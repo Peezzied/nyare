@@ -9,6 +9,12 @@ export interface TaskListParams {
   scheduled?: boolean
   /** `true` returns tasks of archived courses only. `false` returns tasks of active courses. */
   archived?: boolean
+  /** Case-insensitive substring match on title and body. */
+  q?: string
+  /** ISO `YYYY-MM-DD` inclusive lower bound on `scheduledDate`. */
+  from?: string
+  /** ISO `YYYY-MM-DD` inclusive upper bound on `scheduledDate`. */
+  to?: string
 }
 
 /** API service for tasks. */

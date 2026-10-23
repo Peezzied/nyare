@@ -406,6 +406,126 @@ describe('Mock Adapter', () => {
     })
   })
 
+  describe('unified search and date filters', () => {
+    it('filters tasks by a title substring, case-insensitive and literal', async () => {
+      const matches = await tasksApi.list({ q: 'preview graph' })
+      expect(matches.map((t) => t.id)).toEqual(['task-cs201-graph-preview'])
+
+      const upper = await tasksApi.list({ q: 'PREVIEW GRAPH' })
+      expect(upper.map((t) => t.id)).toEqual(['task-cs201-graph-preview'])
+
+      // `q` is a literal substring, not a wildcard or regex pattern.
+      expect(await tasksApi.list({ q: '.*' })).toEqual([])
+    })
+
+    it('filters tasks by a description substring', async () => {
+      const matches = await tasksApi.list({ q: 'gaussian surfaces' })
+      expect(matches.map((t) => t.id)).toEqual(['task-phys102-lab-report'])
+    })
+
+    it('ignores a blank q on tasks', async () => {
+      const all = await tasksApi.list()
+      const blank = await tasksApi.list({ q: '   ' })
+      expect(blank.length).toBe(all.length)
+    })
+
+    it('matches the raw q without trimming, like the backend', async () => {
+      // 'task-phys102-lab-report' holds 'x' inside "experimental" and "flux".
+      const bare = await tasksApi.list({ q: 'x' })
+      expect(bare.some((t) => t.id === 'task-phys102-lab-report')).toBe(true)
+
+      // The backend wraps the raw q in %...% wildcards, so ' x ' needs the spaces.
+      const padded = await tasksApi.list({ q: ' x ' })
+      expect(padded.some((t) => t.id === 'task-phys102-lab-report')).toBe(false)
+    })
+
+    it('applies inclusive scheduledDate bounds and excludes null dates', async () => {
+      const inRange = await tasksApi.list({ from: '2026-10-10', to: '2026-10-12' })
+      expect(
+        inRange.every(
+          (t) =>
+            t.scheduledDate != null &&
+            t.scheduledDate >= '2026-10-10' &&
+            t.scheduledDate <= '2026-10-12',
+        ),
+      ).toBe(true)
+      // Both edge days are inclusive.
+      expect(inRange.some((t) => t.id === 'task-cs201-avl-impl')).toBe(true)
+      expect(inRange.some((t) => t.id === 'task-math204-pset4')).toBe(true)
+      expect(inRange.some((t) => t.id === 'task-cs201-hw1')).toBe(false)
+      // Tasks without a scheduledDate never match a set bound.
+      expect(inRange.some((t) => t.id === 'task-phys102-lab-report')).toBe(false)
+    })
+
+    it('supports an open-ended bound on tasks', async () => {
+      const open = await tasksApi.list({ from: '2026-10-21' })
+      expect(open.length).toBeGreaterThan(0)
+      expect(
+        open.every((t) => t.scheduledDate != null && t.scheduledDate >= '2026-10-21'),
+      ).toBe(true)
+      expect(open.some((t) => t.id === 'task-cs201-heap-impl')).toBe(true)
+    })
+
+    it('filters notes by title and content substrings', async () => {
+      const byTitle = await notesApi.list({ q: 'eigenvalues' })
+      expect(byTitle.map((n) => n.id)).toEqual(['note-math204-eigen'])
+
+      const byContent = await notesApi.list({ q: 'balance factor' })
+      expect(byContent.map((n) => n.id)).toEqual(['note-cs201-avl'])
+    })
+
+    it('ignores a blank q and filters notes by entryDate bounds', async () => {
+      const all = await notesApi.list()
+      const blank = await notesApi.list({ q: '  ' })
+      expect(blank.length).toBe(all.length)
+
+      const inRange = await notesApi.list({ from: '2026-10-05', to: '2026-10-06' })
+      expect(inRange.map((n) => n.id)).toEqual(['note-cs201-avl', 'note-math204-eigen'])
+
+      const openEnded = await notesApi.list({ to: '2026-10-06' })
+      expect(openEnded.every((n) => n.entryDate <= '2026-10-06')).toBe(true)
+    })
+
+    it('filters academic events by title and description substrings', async () => {
+      const byTitle = await academicEventsApi.list({ q: 'quiz 2' })
+      expect(byTitle.map((e) => e.id)).toEqual(['event-math204-quiz2'])
+
+      const byBody = await academicEventsApi.list({ q: 'hash tables' })
+      expect(byBody.map((e) => e.id)).toEqual(['event-cs201-midterm'])
+    })
+
+    it('applies inclusive bounds on the event deadline day', async () => {
+      const inRange = await academicEventsApi.list({ from: '2026-10-16', to: '2026-10-22' })
+      // The deadline is a datetime, so its day part must satisfy the bounds.
+      expect(inRange.some((e) => e.id === 'event-math204-quiz2')).toBe(true)
+      expect(inRange.some((e) => e.id === 'event-cs201-midterm')).toBe(true)
+      expect(inRange.some((e) => e.id === 'event-phys102-exam1')).toBe(false)
+      expect(
+        inRange.every(
+          (e) =>
+            e.deadline.slice(0, 10) >= '2026-10-16' && e.deadline.slice(0, 10) <= '2026-10-22',
+        ),
+      ).toBe(true)
+    })
+
+    it('rejects an inverted from/to range with 400 on all list endpoints', async () => {
+      const params = { from: '2026-10-20', to: '2026-10-10' }
+      const expectBadRange = async (call: Promise<unknown>) => {
+        await expect(call).rejects.toSatisfy((err: unknown) => {
+          expect(err).toBeInstanceOf(ApiError)
+          const apiErr = err as ApiError
+          expect(apiErr.status).toBe(400)
+          expect(apiErr.problem?.detail).toBe('from must not be after to')
+          return true
+        })
+      }
+
+      await expectBadRange(tasksApi.list(params))
+      await expectBadRange(notesApi.list(params))
+      await expectBadRange(academicEventsApi.list(params))
+    })
+  })
+
   describe('session enforcement', () => {
     it('rejects protected list calls with 401 when there is no session', async () => {
       await authApi.logout()
