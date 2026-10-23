@@ -6,6 +6,12 @@ export interface NoteListParams {
   courseId?: number
   /** `true` returns notes of archived courses only. `false` returns notes of active courses. */
   archived?: boolean
+  /** Case-insensitive substring match on title and body. */
+  q?: string
+  /** ISO `YYYY-MM-DD` inclusive lower bound on `entryDate`. */
+  from?: string
+  /** ISO `YYYY-MM-DD` inclusive upper bound on `entryDate`. */
+  to?: string
 }
 
 /** API service for course-linked journal notes. */

@@ -8,6 +8,12 @@ export interface AcademicEventListParams {
   upcoming?: boolean
   /** `true` returns events of archived courses only. `false` returns events of active courses. */
   archived?: boolean
+  /** Case-insensitive substring match on title and body. */
+  q?: string
+  /** ISO `YYYY-MM-DD` inclusive lower bound on `deadline`. */
+  from?: string
+  /** ISO `YYYY-MM-DD` inclusive upper bound on `deadline`. */
+  to?: string
 }
 
 /** API service for academic events and deadlines. */

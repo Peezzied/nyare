@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import type { ComputedRef } from 'vue'
 import { notesApi } from '@/api'
+import type { NoteListParams } from '@/api'
 import type { NoteRequest, NoteResponse, NoteSummaryResponse } from '@/types/api'
 import { createCache } from './createCache'
 import { usePlannerStatus } from './usePlannerStatus'
@@ -53,8 +54,22 @@ export interface StagedNote {
 
 // ponytail: note list cache with isolated dev/prototype fallback.
 export function useNotes() {
-  async function loadNotes(force = false): Promise<void> {
-    if (cache.loaded && !force) {
+  function loadNotes(force?: boolean): Promise<void>
+  function loadNotes(params: NoteListParams, force?: boolean): Promise<NoteSummaryResponse[]>
+  /**
+   * Loads the note list. A `params` call filters on the server, returns the
+   * fetched list, and never writes the shared refs. A call without `params`
+   * fills the cache once per intent.
+   */
+  async function loadNotes(
+    paramsOrForce?: NoteListParams | boolean,
+    force = false,
+  ): Promise<NoteSummaryResponse[] | void> {
+    if (typeof paramsOrForce === 'object') {
+      return notesApi.list(paramsOrForce)
+    }
+    const shouldForce = paramsOrForce ?? force
+    if (cache.loaded && !shouldForce) {
       return
     }
     if (cache.pending) {

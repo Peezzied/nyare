@@ -361,3 +361,63 @@ describe('TodoView Overdue filter', () => {
     expect(wrapper.findComponent(TaskRow).exists()).toBe(false)
   })
 })
+
+describe('TodoView search', () => {
+  const matchTask: TaskResponse = { ...rowTask, id: 'task-match', title: 'Study calculus' }
+
+  // Fake timers drive the 300 ms debounce in useServerSearch; under them
+  // flushPromises (setImmediate) never resolves, so tests advance the clock.
+  beforeEach(() => {
+    vi.restoreAllMocks()
+    resetRoute()
+    useCatalog().resetCatalog()
+    useTasks().resetTasks()
+    vi.useFakeTimers()
+    vi.spyOn(coursesApi, 'list').mockResolvedValue([
+      { id: 1, name: 'CS 201', description: null, userId: 1 },
+    ])
+    vi.spyOn(schedulesApi, 'list').mockResolvedValue([])
+    vi.spyOn(tasksApi, 'list').mockImplementation((params) =>
+      Promise.resolve(params?.q ? [matchTask] : [rowTask]),
+    )
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('queries the server after 300 ms and restores the cached list when cleared', async () => {
+    const wrapper = mountView()
+    await vi.advanceTimersByTimeAsync(0)
+
+    const input = wrapper.get('input[aria-label="Search"]')
+    await input.setValue('study')
+    await vi.advanceTimersByTimeAsync(300)
+
+    expect(tasksApi.list).toHaveBeenCalledWith({ q: 'study' })
+    expect(
+      wrapper.findAllComponents(TaskRow).map((row) => row.props('task').id),
+    ).toEqual(['task-match'])
+
+    await input.setValue('')
+    await vi.advanceTimersByTimeAsync(300)
+
+    expect(
+      wrapper.findAllComponents(TaskRow).map((row) => row.props('task').id),
+    ).toEqual(['task-row-1'])
+  })
+
+  it('shows an empty state when no task matches', async () => {
+    const wrapper = mountView()
+    await vi.advanceTimersByTimeAsync(0)
+
+    vi.mocked(tasksApi.list).mockImplementation((params) =>
+      Promise.resolve(params?.q ? [] : [rowTask]),
+    )
+    await wrapper.get('input[aria-label="Search"]').setValue('zzz')
+    await vi.advanceTimersByTimeAsync(300)
+
+    expect(wrapper.text()).toContain('No matching tasks')
+    expect(wrapper.findComponent(TaskRow).exists()).toBe(false)
+  })
+})

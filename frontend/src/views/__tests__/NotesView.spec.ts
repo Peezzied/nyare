@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { defineComponent, h, reactive, toValue } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import { routerKey, routeLocationKey } from 'vue-router'
@@ -103,6 +103,10 @@ describe('NotesView', () => {
     mockRoute.name = 'notes'
     mockRoute.params = {}
     mockRoute.query = {}
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it('renders cards in the grid', async () => {
@@ -289,18 +293,31 @@ describe('NotesView', () => {
     expect(list).toHaveBeenCalledTimes(1)
   })
 
-  it('performs no action on the top bar search click', async () => {
+  // Fake timers drive the 300 ms debounce in useServerSearch; under them
+  // flushPromises (setImmediate) never resolves, so the test advances the clock.
+  it('queries the server after 300 ms and restores the cached list when cleared', async () => {
+    vi.useFakeTimers()
     mockCatalog()
-    const list = vi.spyOn(notesApi, 'list').mockResolvedValue([summary])
+    const matching: NoteSummaryResponse = { ...summary, id: 'note-9', title: 'Calculus drill' }
+    const list = vi.spyOn(notesApi, 'list').mockImplementation((params) =>
+      Promise.resolve(params?.q ? [matching] : [summary]),
+    )
 
     const wrapper = mountView()
-    await flushPromises()
+    await vi.advanceTimersByTimeAsync(0)
 
-    await wrapper.get('[data-testid="topbar-search"]').trigger('click')
-    await flushPromises()
+    const input = wrapper.get('input[aria-label="Search"]')
+    await input.setValue('calc')
+    await vi.advanceTimersByTimeAsync(300)
 
-    expect(list).toHaveBeenCalledTimes(1)
-    expect(wrapper.find('[data-testid="notes-grid"]').exists()).toBe(true)
+    expect(list).toHaveBeenCalledWith({ q: 'calc' })
+    expect(wrapper.text()).toContain('Calculus drill')
+    expect(wrapper.text()).not.toContain('Lecture 7')
+
+    await input.setValue('')
+    await vi.advanceTimersByTimeAsync(300)
+
+    expect(wrapper.text()).toContain('Lecture 7')
   })
 
   it('opens the account menu from the top bar menu button', async () => {
