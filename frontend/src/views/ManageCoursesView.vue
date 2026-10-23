@@ -641,7 +641,7 @@ onMounted(load)
 <template>
   <div
     data-testid="manage-courses-page"
-    class="relative h-full overflow-y-auto bg-app-bg px-4 pb-8 pt-4"
+    class="relative h-full overflow-y-auto bg-app-bg px-4 pb-24 pt-4"
   >
     <p
       v-if="loading"

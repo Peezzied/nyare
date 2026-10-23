@@ -34,7 +34,7 @@ const emit = defineEmits<{
 <template>
   <header
     ref="headerEl"
-    class="relative flex shrink-0 items-center justify-between border-b border-[#CBD5E1]/60 bg-[#F5F6EE] px-4 pt-3 pb-3"
+    class="relative flex shrink-0 items-center justify-between border-b border-[#CBD5E1]/60 bg-[#F5F6EE] px-4 py-2 mb-4"
   >
     <button
       type="button"
