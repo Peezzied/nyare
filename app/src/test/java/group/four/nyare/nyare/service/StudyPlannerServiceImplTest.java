@@ -9,6 +9,7 @@ import group.four.nyare.nyare.ai.observability.event.LifecycleState;
 import group.four.nyare.nyare.ai.observability.event.TriggerSource;
 import group.four.nyare.nyare.dto.PlannerStatusResponse;
 import group.four.nyare.nyare.dto.ProcessSummaryResponse;
+import group.four.nyare.nyare.event.PlanningProgressEvent;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.model.AcademicContext;
 import group.four.nyare.nyare.model.AcademicEvent;
@@ -293,8 +294,9 @@ class StudyPlannerServiceImplTest {
         service.processNotes(USER_ID);
 
         ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
-        verify(eventPublisher, times(2)).publishEvent(captor.capture());
+        verify(eventPublisher, org.mockito.Mockito.atLeast(2)).publishEvent(captor.capture());
         List<AuditTraceEvent> events = captor.getAllValues().stream()
+                .filter(AuditTraceEvent.class::isInstance)
                 .map(AuditTraceEvent.class::cast)
                 .toList();
         assertThat(events).extracting(AuditTraceEvent::lifecycleState)
@@ -342,8 +344,12 @@ class StudyPlannerServiceImplTest {
         }
 
         ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
-        verify(eventPublisher, times(2)).publishEvent(captor.capture());
-        assertThat((AuditTraceEvent) captor.getAllValues().get(1))
+        verify(eventPublisher, org.mockito.Mockito.atLeast(2)).publishEvent(captor.capture());
+        List<AuditTraceEvent> lifecycleEvents = captor.getAllValues().stream()
+                .filter(AuditTraceEvent.class::isInstance)
+                .map(AuditTraceEvent.class::cast)
+                .toList();
+        assertThat(lifecycleEvents.get(1))
                 .extracting(AuditTraceEvent::lifecycleState)
                 .isEqualTo(LifecycleState.COMPLETED);
     }
@@ -367,8 +373,9 @@ class StudyPlannerServiceImplTest {
                 .isSameAs(failure);
 
         ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
-        verify(eventPublisher, times(2)).publishEvent(captor.capture());
+        verify(eventPublisher, org.mockito.Mockito.atLeast(2)).publishEvent(captor.capture());
         List<AuditTraceEvent> events = captor.getAllValues().stream()
+                .filter(AuditTraceEvent.class::isInstance)
                 .map(AuditTraceEvent.class::cast)
                 .toList();
         assertThat(events).extracting(AuditTraceEvent::lifecycleState)
@@ -726,26 +733,25 @@ class StudyPlannerServiceImplTest {
 
     @Test
     @DisplayName("processNotes cancelled before first date throws CancellationException and skips engine")
-    void processNotes_listenerCancelledBeforeFirstDate_throwsCancellationAndSkipsEngine() {
+    void processNotes_cancelledBeforeFirstDate_throwsCancellationAndSkipsEngine() {
         // given
         Course course = courseWithId(1L, "CS101");
         Note note = noteWithCourse(course);
         when(noteRepository.findDirtyNotes(USER_ID, false)).thenReturn(List.of(note));
 
-        ProcessListener listener = new ProcessListener() {
-            @Override
-            public boolean isCancelled() {
-                return true;
-            }
-        };
+        Thread.currentThread().interrupt();
 
-        // when/then
-        assertThatThrownBy(() -> service.processNotes(USER_ID, listener))
-                .isInstanceOf(java.util.concurrent.CancellationException.class)
-                .hasMessageContaining("Processing cancelled");
+        try {
+            // when/then
+            assertThatThrownBy(() -> service.processNotes(USER_ID))
+                    .isInstanceOf(java.util.concurrent.CancellationException.class)
+                    .hasMessageContaining("Processing cancelled");
 
-        verify(studyPlannerEngine, never()).process(any(), any(), any(), any(), any(), any());
-        verify(taskRepository, never()).saveAll(anyList());
+            verify(studyPlannerEngine, never()).process(any(), any(), any(), any(), any(), any(), anyInt());
+            verify(taskRepository, never()).saveAll(anyList());
+        } finally {
+            Thread.interrupted();
+        }
     }
 
     @Test
@@ -760,39 +766,38 @@ class StudyPlannerServiceImplTest {
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
 
-        java.util.concurrent.atomic.AtomicBoolean engineCalled = new java.util.concurrent.atomic.AtomicBoolean();
         when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt()))
                 .thenAnswer(inv -> {
-                    engineCalled.set(true);
+                    Thread.currentThread().interrupt();
                     return new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of());
                 });
 
-        ProcessListener listener = new ProcessListener() {
-            @Override
-            public boolean isCancelled() {
-                return engineCalled.get();
-            }
-        };
+        try {
+            // when/then
+            assertThatThrownBy(() -> service.processNotes(USER_ID))
+                    .isInstanceOf(java.util.concurrent.CancellationException.class)
+                    .hasMessageContaining("Processing cancelled");
 
-        // when/then
-        assertThatThrownBy(() -> service.processNotes(USER_ID, listener))
-                .isInstanceOf(java.util.concurrent.CancellationException.class)
-                .hasMessageContaining("Processing cancelled");
+            verify(taskRepository, never()).saveAll(anyList());
+            verify(academicEventRepository, never()).saveAll(anyList());
+            verify(academicContextRepository, never()).saveAll(anyList());
+            verify(noteRepository, never()).saveAll(anyList());
 
-        verify(taskRepository, never()).saveAll(anyList());
-        verify(academicEventRepository, never()).saveAll(anyList());
-        verify(academicContextRepository, never()).saveAll(anyList());
-        verify(noteRepository, never()).saveAll(anyList());
-
-        ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
-        verify(eventPublisher, times(2)).publishEvent(captor.capture());
-        assertThat(captor.getAllValues().stream().map(AuditTraceEvent.class::cast).toList())
-                .extracting(AuditTraceEvent::lifecycleState)
-                .containsExactly(LifecycleState.STARTED, LifecycleState.CANCELLED);
+            ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
+            verify(eventPublisher, times(3)).publishEvent(captor.capture());
+            assertThat(captor.getAllValues().stream()
+                    .filter(AuditTraceEvent.class::isInstance)
+                    .map(AuditTraceEvent.class::cast)
+                    .toList())
+                    .extracting(AuditTraceEvent::lifecycleState)
+                    .containsExactly(LifecycleState.STARTED, LifecycleState.CANCELLED);
+        } finally {
+            Thread.interrupted();
+        }
     }
 
     @Test
-    @DisplayName("processNotes reports onDateStarted progress per date in chronological order")
+    @DisplayName("processNotes reports progress events per date in chronological order")
     void processNotes_multipleDates_reportsProgressPerDateInOrder() {
         // given
         Course course = courseWithId(1L, "CS101");
@@ -813,15 +818,21 @@ class StudyPlannerServiceImplTest {
         when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
         when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
 
-        ProcessListener listener = org.mockito.Mockito.mock(ProcessListener.class);
-
         // when
-        service.processNotes(USER_ID, listener);
+        service.processNotes(USER_ID);
 
         // then
-        InOrder inOrder = inOrder(listener);
-        inOrder.verify(listener).onDateStarted(day1, 1, 2);
-        inOrder.verify(listener).onDateStarted(day2, 2, 2);
+        ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
+        verify(eventPublisher, org.mockito.Mockito.atLeastOnce()).publishEvent(captor.capture());
+        List<PlanningProgressEvent> progressEvents = captor.getAllValues().stream()
+                .filter(PlanningProgressEvent.class::isInstance)
+                .map(PlanningProgressEvent.class::cast)
+                .toList();
+
+        assertThat(progressEvents).containsExactly(
+                new PlanningProgressEvent(USER_ID, day1, 1, 2),
+                new PlanningProgressEvent(USER_ID, day2, 2, 2)
+        );
     }
 
     // --- Deduplication & Enrichment Tests (012-ai-extraction-dedup) ---

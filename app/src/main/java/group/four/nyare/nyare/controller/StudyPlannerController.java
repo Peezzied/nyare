@@ -3,10 +3,11 @@ package group.four.nyare.nyare.controller;
 import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.dto.PlannerStatusResponse;
 import group.four.nyare.nyare.dto.ProcessSummaryResponse;
+import group.four.nyare.nyare.event.PlanningProgressEvent;
 import group.four.nyare.nyare.exception.BadRequestException;
-import group.four.nyare.nyare.service.ProcessListener;
 import group.four.nyare.nyare.service.StudyPlannerService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.EventListener;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +41,7 @@ public class StudyPlannerController {
     // transaction, so a status call during a run would starve. The committed state
     // cannot change mid-run, so the pre-flight snapshot answers /status identically.
     private final Map<Long, PlannerStatusResponse> activeRuns = new ConcurrentHashMap<>();
+    private final Map<Long, SseEmitter> activeEmitters = new ConcurrentHashMap<>();
 
     public StudyPlannerController(
             StudyPlannerService studyPlannerService,
@@ -48,6 +50,27 @@ public class StudyPlannerController {
         this.studyPlannerService = studyPlannerService;
         this.sessionContext = sessionContext;
         this.sseHeartbeatMs = sseHeartbeatMs;
+    }
+
+    /**
+     * Listens for planning progress events and forwards them to the active SSE emitter.
+     *
+     * @param event the planning progress domain event
+     */
+    @EventListener
+    public void onProgress(PlanningProgressEvent event) {
+        if (event == null || event.userId() == null) {
+            return;
+        }
+        SseEmitter emitter = activeEmitters.get(event.userId());
+        if (emitter != null) {
+            try {
+                emitter.send(SseEmitter.event().name("progress").data(OBJECT_MAPPER.writeValueAsString(
+                        Map.of("date", event.date().toString(), "index", event.index(), "total", event.total()))));
+            } catch (IOException | IllegalStateException ex) {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
     /**
@@ -81,34 +104,14 @@ public class StudyPlannerController {
         // 0 disables the async timeout (servlet spec): the run is bounded by the
         // per-call AI timeouts and cancelled when the client disconnects.
         SseEmitter emitter = new SseEmitter(0L);
-        AtomicBoolean cancelled = new AtomicBoolean();
+        activeEmitters.put(userId, emitter);
 
-        emitter.onCompletion(() -> cancelled.set(true));
-        emitter.onError(ex -> cancelled.set(true));
-
-        ProcessListener listener = new ProcessListener() {
-            @Override
-            public boolean isCancelled() {
-                return cancelled.get();
-            }
-
-            @Override
-            public void onDateStarted(LocalDate date, int index, int total) {
-                try {
-                    emitter.send(SseEmitter.event().name("progress").data(OBJECT_MAPPER.writeValueAsString(
-                            Map.of("date", date.toString(), "index", index, "total", total))));
-                } catch (IOException | IllegalStateException ex) {
-                    cancelled.set(true);
-                }
-            }
-        };
-
-        Thread.ofVirtual().start(() -> {
-            Thread heartbeat = startHeartbeat(emitter, cancelled);
+        Thread worker = Thread.ofVirtual().start(() -> {
+            Thread heartbeat = startHeartbeat(emitter, Thread.currentThread());
             try {
                 emitter.send(SseEmitter.event().name("init").data(OBJECT_MAPPER.writeValueAsString(status)));
 
-                ProcessSummaryResponse result = studyPlannerService.processNotes(userId, listener);
+                ProcessSummaryResponse result = studyPlannerService.processNotes(userId);
                 emitter.send(SseEmitter.event().name("done").data(OBJECT_MAPPER.writeValueAsString(result)));
             } catch (CancellationException ex) {
                 // Run cancelled and rolled back; the finally block closes the stream.
@@ -127,10 +130,14 @@ public class StudyPlannerController {
                         "detail", ex.getMessage() != null ? ex.getMessage() : "Unknown error"));
             } finally {
                 activeRuns.remove(userId);
+                activeEmitters.remove(userId, emitter);
                 heartbeat.interrupt();
                 completeQuietly(emitter);
             }
         });
+
+        emitter.onCompletion(worker::interrupt);
+        emitter.onError(ex -> worker.interrupt());
 
         return emitter;
     }
@@ -140,17 +147,17 @@ public class StudyPlannerController {
      * detect a client disconnect when a write fails, so periodic writes are required
      * for cancellation on disconnect to work.
      */
-    private Thread startHeartbeat(SseEmitter emitter, AtomicBoolean cancelled) {
+    private Thread startHeartbeat(SseEmitter emitter, Thread worker) {
         return Thread.ofVirtual().start(() -> {
             try {
-                while (!cancelled.get()) {
+                while (!worker.isInterrupted()) {
                     Thread.sleep(sseHeartbeatMs);
                     emitter.send(SseEmitter.event().comment("ping"));
                 }
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
             } catch (IOException | IllegalStateException ex) {
-                cancelled.set(true);
+                worker.interrupt();
             }
         });
     }
