@@ -84,7 +84,7 @@ describe('TodoView FAB', () => {
 
     const fab = wrapper.get('[data-testid="tasks-fab"]')
     expect(fab.attributes('aria-label')).toBe('Add task')
-    expect(fab.classes()).toContain('bg-[#00A4C8]')
+    expect(fab.classes()).toContain('bg-primary')
     expect(fab.classes()).toContain('rounded-2xl')
     expect(fab.classes()).toContain('size-14')
     expect(fab.classes()).toContain('right-4')

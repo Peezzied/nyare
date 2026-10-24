@@ -1,7 +1,7 @@
 import type { DayOfWeek } from '@/types/api'
 import type { TimeBlockDraft } from '@/components/TimeBlockCard.vue'
 import { WEEKDAYS } from '@/components/TimeBlockCard.vue'
-import type { CoursePaletteColor } from '@/constants/palette'
+import type { CoursePaletteColor } from '@/utils/courseColors'
 import { getHourHeight } from '@/utils/calendarStyle'
 
 export interface PreviewBlock {

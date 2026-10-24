@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import type { TimeBlockDraft } from '@/components/TimeBlockCard.vue'
-import type { CoursePaletteColor } from '@/constants/palette'
+import { COURSE_COLORS } from '@/utils/courseColors'
 import {
   derivePreviewBlocks,
   slotFromOffset,
@@ -10,14 +10,7 @@ import {
   minutesFromOffsetY,
 } from '@/utils/weekPreview'
 
-const sampleColor: CoursePaletteColor = {
-  id: 'tomato',
-  name: 'Tomato',
-  solid: '#D50000',
-  bg: '#FFEBEE',
-  text: '#B71C1C',
-  border: '#EF9A9A',
-}
+const sampleColor = COURSE_COLORS[0]!
 
 const HOUR_HEIGHT_VAR = '--calendar-hour-height'
 

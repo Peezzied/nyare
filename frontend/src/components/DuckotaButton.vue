@@ -3,7 +3,7 @@
 // AppShell renders it as the floating Process trigger.
 import { computed } from 'vue'
 import duckotaImg from '@/assets/mascot/duckota_in_button.png'
-import { COURSE_PALETTE_24 } from '@/constants/palette'
+import { COURSE_PALETTE_24 } from '@/utils/courseColors'
 
 export interface DuckotaButtonProps {
   /** Visual style: tactile has a solid drop shadow, floating has a soft shadow, plain has no shadow. */
@@ -45,7 +45,7 @@ const RAINBOW_COURSE_IDS = [
 
 const rainbowGradient = computed(() => {
   const colors = RAINBOW_COURSE_IDS.map(
-    (id) => COURSE_PALETTE_24.find((c) => c.id === id)?.solid ?? '#00A4C8',
+    (id) => COURSE_PALETTE_24.find((c) => c.id === id)?.solid ?? 'var(--color-primary)',
   )
   return `conic-gradient(from 0deg, ${colors.join(', ')})`
 })
@@ -75,7 +75,7 @@ const variantClasses = computed(() => {
 const badgeColorClasses = computed(() => {
   switch (props.badgeColor) {
     case 'primary':
-      return 'bg-[#00A4C8] text-white'
+      return 'bg-primary text-white'
     case 'warning':
       return 'bg-amber-500 text-white'
     case 'destructive':
@@ -99,7 +99,7 @@ function handleClick(event: MouseEvent) {
     :aria-label="label"
     :aria-disabled="disabled || processing"
     :disabled="disabled || processing"
-    class="relative inline-flex items-center justify-center rounded-full bg-[#E5EDF2] border-[#616161] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#00A4C8] cursor-pointer transition-all duration-200 ease-out"
+    class="relative inline-flex items-center justify-center rounded-full bg-[#E5EDF2] border-[#616161] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary cursor-pointer transition-all duration-200 ease-out"
     :class="[SIZE_CLASSES, variantClasses]"
     @click="handleClick"
   >

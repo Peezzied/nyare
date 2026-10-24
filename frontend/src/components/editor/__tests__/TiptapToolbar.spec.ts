@@ -172,7 +172,7 @@ describe('TiptapToolbar', () => {
 
     const boldButton = wrapper.find('button[aria-label="Bold"]')
     expect(boldButton.attributes('aria-pressed')).toBe('true')
-    expect(boldButton.classes()).toContain('bg-[#E8F6FA]')
+    expect(boldButton.classes()).toContain('bg-ocean-soft')
 
     const italicButton = wrapper.find('button[aria-label="Italic"]')
     expect(italicButton.attributes('aria-pressed')).toBe('false')
@@ -309,14 +309,14 @@ describe('TiptapToolbar', () => {
     const undoButton = wrapper.find('button[aria-label="Undo"]')
     const redoButton = wrapper.find('button[aria-label="Redo"]')
 
-    expect(undoButton.classes()).toContain('text-[#00A4C8]')
-    expect(undoButton.classes()).toContain('bg-[#00A4C8]/10')
-    expect(undoButton.classes()).toContain('border-[#00A4C8]/30')
+    expect(undoButton.classes()).toContain('text-primary')
+    expect(undoButton.classes()).toContain('bg-primary/10')
+    expect(undoButton.classes()).toContain('border-primary/30')
     expect(undoButton.classes()).not.toContain('opacity-30')
 
-    expect(redoButton.classes()).toContain('text-[#00A4C8]')
-    expect(redoButton.classes()).toContain('bg-[#00A4C8]/10')
-    expect(redoButton.classes()).toContain('border-[#00A4C8]/30')
+    expect(redoButton.classes()).toContain('text-primary')
+    expect(redoButton.classes()).toContain('bg-primary/10')
+    expect(redoButton.classes()).toContain('border-primary/30')
     expect(redoButton.classes()).not.toContain('opacity-30')
   })
 

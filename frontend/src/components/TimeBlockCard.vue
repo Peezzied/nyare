@@ -140,20 +140,20 @@ function handleToggleDay(day: DayOfWeek) {
   <Card
     as="article"
     data-testid="time-block-card"
-    class="flex min-w-0 flex-col gap-4 rounded-2xl border bg-[#FDFEF7] p-4 shadow-[0_4px_0_#D5EBF1] transition-all duration-200 sm:p-5"
+    class="flex min-w-0 flex-col gap-4 rounded-2xl border bg-card p-4 shadow-stationery transition-all duration-200 sm:p-5"
     :class="
       status === 'failed'
-        ? 'border-red-300 ring-2 ring-red-100 shadow-[0_4px_0_#FECACA]'
-        : 'border-[#C2E8F1] hover:border-[#90D5E7]'
+        ? 'border-destructive-line ring-2 ring-destructive-soft shadow-stationery-error'
+        : 'border-border-cyan hover:border-primary'
     "
   >
     <!-- Card header with soft ocean surface and clock icon -->
     <CardHeader
-      class="flex flex-row items-center justify-between gap-3 rounded-xl bg-[#E8F6FA] px-3.5 min-h-12 py-1"
+      class="flex flex-row items-center justify-between gap-3 rounded-xl bg-ocean-soft px-3.5 min-h-12 py-1"
     >
       <div class="flex min-w-0 flex-1 items-center gap-2">
-        <Clock class="h-4 w-4 shrink-0 text-[#007B99]" aria-hidden="true" />
-        <CardTitle class="min-w-0 font-sans text-sm font-bold text-[#1E293B]">
+        <Clock class="h-4 w-4 shrink-0 text-primary-bevel" aria-hidden="true" />
+        <CardTitle class="min-w-0 font-sans text-sm font-bold text-heading">
           Time block {{ index + 1 }}
         </CardTitle>
       </div>
@@ -162,14 +162,14 @@ function handleToggleDay(day: DayOfWeek) {
         <Badge
           v-if="status === 'saving'"
           variant="outline"
-          class="border-sky-200 bg-[#E1F5FE] px-2.5 py-0.5 text-xs font-semibold text-[#0277BD]"
+          class="border-secondary-border bg-ocean-soft px-2.5 py-0.5 text-xs font-semibold text-primary-bevel"
         >
           Saving
         </Badge>
         <Badge
           v-else-if="status === 'failed'"
           variant="destructive"
-          class="border-red-200 bg-[#FFEBEE] px-2.5 py-0.5 text-xs font-semibold text-[#B71C1C]"
+          class="border-destructive-line bg-destructive-soft px-2.5 py-0.5 text-xs font-semibold text-destructive-hover"
         >
           Failed
         </Badge>
@@ -193,7 +193,7 @@ function handleToggleDay(day: DayOfWeek) {
     <CardContent class="space-y-4 p-0">
       <!-- Weekday selector with explicit label -->
       <div class="space-y-1.5">
-        <Label class="block font-sans text-xs font-bold tracking-wider text-[#475569] uppercase">
+        <Label class="block font-sans text-xs font-bold tracking-wider text-text-soft uppercase">
           Repeat on
         </Label>
         <ToggleGroup
@@ -215,11 +215,11 @@ function handleToggleDay(day: DayOfWeek) {
             :aria-pressed="block.selectedDays.includes(weekday.value)"
             :aria-label="weekday.value"
             :disabled="isCardDisabled || props.unavailableDays.includes(weekday.value)"
-            class="mx-auto flex aspect-square h-11 w-11 min-w-0 items-center justify-center rounded-full border p-0 text-xs font-bold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+            class="mx-auto flex aspect-square h-11 w-11 min-w-0 items-center justify-center rounded-full border p-0 text-xs font-bold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
             :class="
               block.selectedDays.includes(weekday.value)
-                ? '!border-[#006077] !bg-[#007B99] !text-white shadow-[0_2px_0_#00556B] hover:!bg-[#006B85]'
-                : '!border-[#C2E8F1] !bg-[#FDFEF7] !text-[#1E293B] shadow-[0_2px_0_#D5EBF1] hover:!border-[#00A4C8] hover:!bg-[#E1F5FE]'
+                ? '!border-primary-deep !bg-primary-bevel !text-white shadow-day-toggle-active hover:!bg-primary-deep'
+                : '!border-border-cyan !bg-card !text-heading shadow-day-toggle hover:!border-primary hover:!bg-ocean-soft'
             "
             @click="handleToggleDay(weekday.value)"
           >
@@ -233,7 +233,7 @@ function handleToggleDay(day: DayOfWeek) {
         <div class="min-w-0 space-y-1.5">
           <Label
             :for="`start-time-${block.id}`"
-            class="block font-sans text-xs font-bold tracking-wider text-[#475569] uppercase"
+            class="block font-sans text-xs font-bold tracking-wider text-text-soft uppercase"
           >
             Start time
           </Label>
@@ -243,7 +243,7 @@ function handleToggleDay(day: DayOfWeek) {
             type="time"
             required
             :disabled="isCardDisabled"
-            class="h-12 w-full min-w-0 rounded-xl border border-[#C2E8F1] bg-[#F4F9FA] px-3 font-sans text-base font-bold text-[#1E293B] shadow-2xs transition-colors hover:border-[#00A4C8] focus-visible:border-[#00A4C8] focus-visible:bg-[#FDFEF7] focus-visible:ring-2 focus-visible:ring-[#00A4C8]/30 disabled:cursor-not-allowed disabled:bg-slate-100"
+            class="h-12 w-full min-w-0 rounded-xl border border-border-cyan bg-field px-3 font-sans text-base font-bold text-heading shadow-2xs transition-colors hover:border-primary focus-visible:border-primary focus-visible:bg-card focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:bg-slate-100"
             @update:model-value="emit('update:startTime', String($event))"
           />
         </div>
@@ -251,7 +251,7 @@ function handleToggleDay(day: DayOfWeek) {
         <div class="min-w-0 space-y-1.5">
           <Label
             :for="`end-time-${block.id}`"
-            class="block font-sans text-xs font-bold tracking-wider text-[#475569] uppercase"
+            class="block font-sans text-xs font-bold tracking-wider text-text-soft uppercase"
           >
             End time
           </Label>
@@ -261,7 +261,7 @@ function handleToggleDay(day: DayOfWeek) {
             type="time"
             required
             :disabled="isCardDisabled"
-            class="h-12 w-full min-w-0 rounded-xl border border-[#C2E8F1] bg-[#F4F9FA] px-3 font-sans text-base font-bold text-[#1E293B] shadow-2xs transition-colors hover:border-[#00A4C8] focus-visible:border-[#00A4C8] focus-visible:bg-[#FDFEF7] focus-visible:ring-2 focus-visible:ring-[#00A4C8]/30 disabled:cursor-not-allowed disabled:bg-slate-100"
+            class="h-12 w-full min-w-0 rounded-xl border border-border-cyan bg-field px-3 font-sans text-base font-bold text-heading shadow-2xs transition-colors hover:border-primary focus-visible:border-primary focus-visible:bg-card focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:bg-slate-100"
             @update:model-value="emit('update:endTime', String($event))"
           />
         </div>

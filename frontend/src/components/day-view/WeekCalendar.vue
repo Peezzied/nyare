@@ -6,13 +6,18 @@ import { createCalendar, createViewWeek } from '@schedule-x/calendar'
 import { createCalendarControlsPlugin } from '@schedule-x/calendar-controls'
 import { Temporal } from 'temporal-polyfill'
 import { computed, nextTick, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
-import { getHourHeight } from '../../utils/calendarStyle'
+import {
+  getGutterLeft,
+  getHourHeight,
+  scrollToNow as scrollGridToNow,
+  toMinutes,
+} from '../../utils/calendarStyle'
 import { useNow } from '../../composables/useNow'
 import type { DayEvent } from '../../types/calendar'
 import { toDateKey } from '../../utils/dayKey'
 import type { UntimedDayItem } from '../../utils/untimedItems'
 import { weekDates } from '../../utils/weekDays'
-import NowButton from './NowButton.vue'
+import FloatingJumpButton from './FloatingJumpButton.vue'
 import WeekHeaderRow from './WeekHeaderRow.vue'
 import WeekPill from './WeekPill.vue'
 
@@ -102,12 +107,6 @@ const nowTop = computed<number | null>(() => {
   return (nowMinutes.value / 60) * getHourHeight()
 })
 
-function toMinutes(dateTime: string): number {
-  const timePart = dateTime.split(' ')[1] ?? '00:00'
-  const [h = 0, m = 0] = timePart.split(':').map(Number)
-  return (h ?? 0) * 60 + (m ?? 0)
-}
-
 // ---- DOM references inside Schedule X ----
 const wrapperRef = ref<HTMLElement | null>(null)
 const areaRef = ref<HTMLElement | null>(null)
@@ -118,7 +117,7 @@ const viewHeight = ref(0)
 let scrollCleanup: (() => void) | null = null
 let resizeObserver: ResizeObserver | null = null
 
-const gutterLeft = ref(55) // width of the time axis
+const gutterLeft = ref(getGutterLeft()) // width of the time axis
 const overlay = ref({ top: 0, left: 0, width: 0 }) // the time line, relative to the grid area
 const todayColRect = ref<{ left: number; width: number } | null>(null) // today's column wash
 
@@ -159,7 +158,8 @@ function updateOverlay() {
   const a = area.getBoundingClientRect()
   const f = first.getBoundingClientRect()
   const diff = f.left - a.left
-  gutterLeft.value = Math.abs(diff - 55) <= 1 ? 55 : Math.max(Math.round(diff), 0)
+  const gutter = getGutterLeft()
+  gutterLeft.value = Math.abs(diff - gutter) <= 1 ? gutter : Math.max(Math.round(diff), 0)
 
   const todayCol = todayIndex.value >= 0 ? cols[todayIndex.value] : undefined
   const t = todayCol?.getBoundingClientRect()
@@ -291,15 +291,12 @@ function onSelectUntimed(item: UntimedDayItem, rect: DOMRect) {
 }
 
 function scrollToNow(behavior: ScrollBehavior = 'smooth') {
-  const el = scrollEl.value
-  if (!el) return
-  const hHeight = getHourHeight()
-  const firstTop =
-    allEvents.value.length > 0
-      ? Math.min(...allEvents.value.map((e) => (toMinutes(e.start) / 60) * hHeight))
-      : null
-  const target = nowTop.value ?? firstTop ?? 8 * hHeight
-  el.scrollTo({ top: Math.max(target - 120, 0), behavior })
+  scrollGridToNow({
+    scroller: scrollEl.value,
+    nowTop: nowTop.value,
+    eventStartMinutes: allEvents.value.map((e) => toMinutes(e.start)),
+    behavior,
+  })
 }
 </script>
 
@@ -344,12 +341,16 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
             width: `${overlay.width}px`,
           }"
         >
-          <div class="-ml-[5px] h-2.5 w-2.5 shrink-0 rounded-full bg-[#0E7490]" />
-          <div class="h-[2px] flex-1 bg-[#0E7490]" />
+          <div class="-ml-[5px] h-2.5 w-2.5 shrink-0 rounded-full bg-now" />
+          <div class="h-[2px] flex-1 bg-now" />
         </div>
       </div>
 
-      <NowButton v-if="nowDirection" :direction="nowDirection" @jump="scrollToNow()" />
+      <FloatingJumpButton
+        v-if="nowDirection"
+        :direction="nowDirection"
+        @jump="scrollToNow()"
+      />
     </div>
   </div>
 </template>
@@ -375,26 +376,14 @@ function scrollToNow(behavior: ScrollBehavior = 'smooth') {
   display: none !important;
 }
 
-/* Nyare canvas colour: a brighter cream sheet under the parchment chrome */
-.sx-nyare-week :deep(.sx__calendar),
-.sx-nyare-week :deep(.sx__view-container) {
-  background-color: var(--color-calendar-canvas);
-  --sx-color-background: var(--color-calendar-canvas);
-  --sx-color-outline-variant: #cbd5e1;
-  --sx-color-surface: var(--color-calendar-canvas);
-}
+/* Canvas, outline variant, and hour-label colors are set globally in main.css. */
 
 /* Grid lines: quiet warm-gray hairlines so the event colors carry the view */
 .sx-nyare-week :deep(.sx__week-grid__hour) {
-  border-top: 1px solid #cbd5e1 !important;
+  border-top: 1px solid var(--color-app-border) !important;
 }
 .sx-nyare-week :deep(.sx__time-grid-day) {
-  border-left: 1px solid #cbd5e1 !important;
-}
-
-/* Hour labels: project muted ink instead of Schedule-X's cool gray */
-.sx-nyare-week :deep(.sx__week-grid__hour-text) {
-  color: var(--color-text-muted);
+  border-left: 1px solid var(--color-app-border) !important;
 }
 
 /* Strip Schedule X's default event card so WeekPill shows as designed */

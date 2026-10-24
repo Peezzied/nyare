@@ -29,7 +29,7 @@ function handleSelectDay(date: Date) {
     <Variant title="Mobile Frame (420px)">
       <div class="p-4 flex justify-center bg-slate-200 min-h-screen">
         <div
-          class="w-full max-w-[420px] h-[780px] bg-[#F5F6EE] flex flex-col rounded-[32px] shadow-2xl border border-slate-300 overflow-hidden"
+          class="w-full max-w-[420px] h-[780px] bg-app-bg flex flex-col rounded-[32px] shadow-2xl border border-slate-300 overflow-hidden"
         >
           <WeekCalendar
             :selected-date="activeDate"
@@ -44,7 +44,7 @@ function handleSelectDay(date: Date) {
     <Variant title="Tablet / Desktop Frame (768px)">
       <div class="p-4 flex justify-center bg-slate-200 min-h-screen">
         <div
-          class="w-full max-w-[768px] h-[800px] bg-[#F5F6EE] flex flex-col rounded-2xl shadow-xl border border-slate-300 overflow-hidden"
+          class="w-full max-w-[768px] h-[800px] bg-app-bg flex flex-col rounded-2xl shadow-xl border border-slate-300 overflow-hidden"
         >
           <WeekCalendar
             :selected-date="activeDate"

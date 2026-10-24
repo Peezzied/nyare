@@ -65,7 +65,7 @@ vi.mock('@/composables/useTasks', () => ({
 
 vi.mock('@/composables/useCatalog', async () => {
   const { ref } = await import('vue')
-  const { COURSE_PALETTE_24, getCourseColor } = await import('@/constants/palette')
+  const { COURSE_PALETTE_24, getCourseColor } = await import('@/utils/courseColors')
   return {
     useCatalog: () => ({
       courses: ref(catalogState.courses),

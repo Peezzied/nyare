@@ -7,6 +7,7 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 import { isReducedMotion } from '@/composables/useNoteTransition'
 import { resolveSwipe } from '@/utils/swipeGesture'
+import HeaderIconButton from './HeaderIconButton.vue'
 
 const SETTLE_MS = 220
 const SCRIM_MS = 180
@@ -267,32 +268,31 @@ onUnmounted(() => {
 
 <template>
   <div class="shrink-0">
-    <button
-      type="button"
+    <HeaderIconButton
       aria-label="Open menu"
       aria-haspopup="dialog"
       aria-controls="nyare-hamburger-drawer"
       :aria-expanded="isOpen"
       data-testid="topbar-menu"
-      class="flex h-11 w-11 items-center justify-center rounded-lg text-text-main transition-colors hover:bg-black/5 active:bg-black/10 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
+      class="focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
       @click="toggleMenu"
     >
       <Menu class="h-6 w-6" aria-hidden="true" />
-    </button>
+    </HeaderIconButton>
 
     <div
       v-if="!isOpen"
       data-testid="menu-edge-swipe"
       aria-hidden="true"
-      class="fixed inset-y-0 left-0 z-[95] w-4 touch-pan-y select-none"
+      class="fixed inset-y-0 left-0 z-morph w-4 touch-pan-y select-none"
       @pointerdown="beginGesture('open', $event)"
     />
 
     <Teleport to="body">
-      <div v-if="mounted" class="pointer-events-none fixed inset-0 z-[100]">
+      <div v-if="mounted" class="pointer-events-none fixed inset-0 z-wipe">
         <button
           type="button"
-          class="absolute inset-0 h-full w-full bg-black/40"
+          class="absolute inset-0 h-full w-full bg-scrim"
           :style="scrimStyle"
           aria-label="Close menu"
           data-testid="hamburger-backdrop"
@@ -316,7 +316,7 @@ onUnmounted(() => {
             <span
               aria-label="Nyare logo"
               data-testid="nyare-wordmark"
-              class="font-logo text-4xl font-bold leading-none tracking-tight text-[#00A4C8]"
+              class="font-logo text-4xl font-bold leading-none tracking-tight text-primary"
             >
               'Nyare
             </span>
@@ -339,7 +339,7 @@ onUnmounted(() => {
                   :src="avatarSrc"
                   :alt="`${displayName} profile picture`"
                   data-testid="menu-profile-avatar"
-                  class="h-12 w-12 shrink-0 rounded-full border border-app-border bg-white object-cover"
+                  class="h-12 w-12 shrink-0 rounded-full border border-app-border bg-card object-cover"
                 />
                 <div class="min-w-0 flex-1">
                   <p class="text-xs font-semibold uppercase tracking-wider text-text-muted">

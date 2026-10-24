@@ -4,7 +4,7 @@ import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
 import ArchivedCourseView from '../ArchivedCourseView.vue'
 import AppHeader from '@/components/AppHeader.vue'
 import { provideShellHeader } from '@/composables/useShellHeader'
-import { COURSE_PALETTE_24, getCourseColor } from '@/constants/palette'
+import { COURSE_PALETTE_24, getCourseColor } from '@/utils/courseColors'
 import type { ArchivedCourseContent } from '@/composables/useArchive'
 import type { CourseResponse } from '@/types/api'
 

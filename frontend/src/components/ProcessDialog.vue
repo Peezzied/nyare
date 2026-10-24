@@ -4,6 +4,7 @@
 // the streamed progress visible, then summarizes the run. A Show more
 // toggle lists the processed notes, created tasks, and created events.
 import { computed, ref, watch } from 'vue'
+import { Button } from '@/components/ui/button'
 import DialogShell from '@/components/ui/DialogShell.vue'
 import { resetProcess } from '@/composables/useProcess'
 import type { UseProcess } from '@/composables/useProcess'
@@ -176,69 +177,46 @@ watch(
 <template>
   <DialogShell :open="open" :title="title" @update:open="emit('update:open', $event)">
     <div v-if="phase === 'confirm'" class="mt-2">
-      <p class="text-sm text-[#7B8B97]" style="font-family: 'Inter', sans-serif; font-weight: 400">
+      <p class="font-secondary text-sm text-text-muted">
         Duckota reads the pending journal notes and updates the study plan.
       </p>
-      <dl
-        v-if="pendingCount > 0"
-        class="mt-3 space-y-2 text-sm"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
-      >
+      <dl v-if="pendingCount > 0" class="mt-3 space-y-2 font-secondary text-sm">
         <div class="flex gap-2">
-          <dt class="font-semibold text-[#334155]">Notes</dt>
-          <dd class="text-[#7B8B97]">{{ pendingCount }}</dd>
+          <dt class="font-semibold text-text-main">Notes</dt>
+          <dd class="text-text-muted">{{ pendingCount }}</dd>
         </div>
         <div v-if="pendingCourses" class="flex gap-2">
-          <dt class="font-semibold text-[#334155]">Courses</dt>
-          <dd class="text-[#7B8B97]">{{ pendingCourses }}</dd>
+          <dt class="font-semibold text-text-main">Courses</dt>
+          <dd class="text-text-muted">{{ pendingCourses }}</dd>
         </div>
         <div v-if="pendingDates" class="flex gap-2">
-          <dt class="font-semibold text-[#334155]">Dates</dt>
-          <dd class="text-[#7B8B97]">{{ pendingDates }}</dd>
+          <dt class="font-semibold text-text-main">Dates</dt>
+          <dd class="text-text-muted">{{ pendingDates }}</dd>
         </div>
       </dl>
-      <p
-        v-else
-        class="mt-3 text-sm text-[#7B8B97]"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
-      >
+      <p v-else class="mt-3 font-secondary text-sm text-text-muted">
         No notes wait for processing.
       </p>
     </div>
 
     <div v-else-if="phase === 'running'" class="mt-2">
-      <p
-        v-if="cancelled"
-        class="text-sm text-[#334155]"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
-      >
+      <p v-if="cancelled" class="font-secondary text-sm text-text-main">
         Stopping after the current step…
       </p>
-      <p
-        v-else-if="progress"
-        class="text-sm text-[#334155]"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
-      >
+      <p v-else-if="progress" class="font-secondary text-sm text-text-main">
         Reading notes for {{ formatEntryDate(progress.date) }} — {{ progress.index }} of
         {{ progress.total }}.
       </p>
-      <p
-        v-else
-        class="text-sm text-[#334155]"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
-      >
+      <p v-else class="font-secondary text-sm text-text-main">
         Starting…
       </p>
-      <p
-        class="mt-1 text-sm text-[#7B8B97]"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
-      >
+      <p class="mt-1 font-secondary text-sm text-text-muted">
         Duckota extracts tasks, events, and context.
       </p>
     </div>
 
     <div v-else-if="phase === 'done'" class="mt-2">
-      <p class="text-sm text-[#7B8B97]" style="font-family: 'Inter', sans-serif; font-weight: 400">
+      <p class="font-secondary text-sm text-text-muted">
         Duckota processed {{ processedNotes.length }} notes and created
         {{ runSummary?.tasksCreated ?? 0 }} tasks<template
           v-if="(runSummary?.tasksPromoted ?? 0) > 0"
@@ -250,8 +228,7 @@ watch(
       <p
         v-if="runError"
         role="alert"
-        class="mt-2 text-sm font-medium text-[#DC2626]"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
+        class="mt-2 font-secondary text-sm font-medium text-destructive"
       >
         {{ runError }}
       </p>
@@ -259,31 +236,26 @@ watch(
       <div
         v-if="showMore"
         data-testid="process-details"
-        class="mt-3 max-h-56 space-y-3 overflow-y-auto border-t border-[#CBD5E1] pt-3"
+        class="mt-3 max-h-56 space-y-3 overflow-y-auto border-t border-app-border pt-3"
       >
         <section>
-          <h3
-            class="text-xs font-semibold tracking-wide text-[#7B8B97] uppercase"
-            style="font-family: 'Quicksand', sans-serif; font-weight: 600"
-          >
+          <h3 class="font-sans text-xs font-semibold tracking-wide text-text-muted uppercase">
             Notes
           </h3>
           <ul class="mt-1 space-y-1">
             <li
               v-for="note in processedNotes"
               :key="note.id"
-              class="text-sm text-[#334155]"
-              style="font-family: 'Inter', sans-serif; font-weight: 400"
+              class="font-secondary text-sm text-text-main"
             >
               {{ note.title || 'Untitled note' }}
-              <span class="text-[#7B8B97]">
+              <span class="text-text-muted">
                 · {{ note.courseName }} · {{ formatEntryDate(note.entryDate) }}
               </span>
             </li>
             <li
               v-if="!processedNotes.length"
-              class="text-sm text-[#7B8B97]"
-              style="font-family: 'Inter', sans-serif; font-weight: 400"
+              class="font-secondary text-sm text-text-muted"
             >
               No notes processed.
             </li>
@@ -291,18 +263,14 @@ watch(
         </section>
 
         <section>
-          <h3
-            class="text-xs font-semibold tracking-wide text-[#7B8B97] uppercase"
-            style="font-family: 'Quicksand', sans-serif; font-weight: 600"
-          >
+          <h3 class="font-sans text-xs font-semibold tracking-wide text-text-muted uppercase">
             Tasks
           </h3>
           <ul class="mt-1 space-y-1">
             <li
               v-for="task in createdTasks"
               :key="task.id"
-              class="flex items-center gap-2 text-sm text-[#334155]"
-              style="font-family: 'Inter', sans-serif; font-weight: 400"
+              class="flex items-center gap-2 font-secondary text-sm text-text-main"
             >
               <span
                 class="h-3 w-3 shrink-0 rounded-full border border-white/60 shadow-sm"
@@ -310,12 +278,11 @@ watch(
                 aria-hidden="true"
               />
               <span>{{ task.title }}</span>
-              <span v-if="taskMeta(task)" class="text-[#7B8B97]">{{ taskMeta(task) }}</span>
+              <span v-if="taskMeta(task)" class="text-text-muted">{{ taskMeta(task) }}</span>
             </li>
             <li
               v-if="!createdTasks.length"
-              class="text-sm text-[#7B8B97]"
-              style="font-family: 'Inter', sans-serif; font-weight: 400"
+              class="font-secondary text-sm text-text-muted"
             >
               No new tasks.
             </li>
@@ -323,18 +290,14 @@ watch(
         </section>
 
         <section>
-          <h3
-            class="text-xs font-semibold tracking-wide text-[#7B8B97] uppercase"
-            style="font-family: 'Quicksand', sans-serif; font-weight: 600"
-          >
+          <h3 class="font-sans text-xs font-semibold tracking-wide text-text-muted uppercase">
             Events
           </h3>
           <ul class="mt-1 space-y-1">
             <li
               v-for="event in createdEvents"
               :key="event.id"
-              class="flex items-center gap-2 text-sm text-[#334155]"
-              style="font-family: 'Inter', sans-serif; font-weight: 400"
+              class="flex items-center gap-2 font-secondary text-sm text-text-main"
             >
               <span
                 class="h-3 w-3 shrink-0 rounded-full border border-white/60 shadow-sm"
@@ -342,12 +305,11 @@ watch(
                 aria-hidden="true"
               />
               <span>{{ event.title }}</span>
-              <span class="text-[#7B8B97]">{{ formatDeadline(event.deadline) }}</span>
+              <span class="text-text-muted">{{ formatDeadline(event.deadline) }}</span>
             </li>
             <li
               v-if="!createdEvents.length"
-              class="text-sm text-[#7B8B97]"
-              style="font-family: 'Inter', sans-serif; font-weight: 400"
+              class="font-secondary text-sm text-text-muted"
             >
               No new events.
             </li>
@@ -357,107 +319,94 @@ watch(
     </div>
 
     <div v-else-if="phase === 'cancelled'" class="mt-2">
-      <p
-        v-if="savedRun"
-        class="text-sm text-[#7B8B97]"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
-      >
+      <p v-if="savedRun" class="font-secondary text-sm text-text-muted">
         The run saved its changes before Duckota stopped.
       </p>
-      <p
-        v-else
-        class="text-sm text-[#7B8B97]"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
-      >
+      <p v-else class="font-secondary text-sm text-text-muted">
         Duckota stopped the run. Pending notes stay unprocessed.
       </p>
     </div>
 
     <div v-else class="mt-2">
-      <p
-        role="alert"
-        class="text-sm font-medium text-[#DC2626]"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
-      >
+      <p role="alert" class="font-secondary text-sm font-medium text-destructive">
         {{ runError }}
       </p>
     </div>
 
     <template #actions="{ dismiss }">
       <template v-if="phase === 'confirm'">
-        <button
-          type="button"
-          class="min-h-[44px] rounded-xl border-b-4 border-[#CBD5E1] bg-[#E2E8F0] px-4 py-2.5 text-sm font-semibold text-[#334155] transition-all duration-75 hover:bg-[#D7DEE8] focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 focus-visible:outline-none active:translate-y-1 active:border-b-0 disabled:cursor-not-allowed disabled:opacity-60"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
-          @click="dismiss"
-        >
+        <Button type="button" variant="tactile-secondary" size="touch" @click="dismiss">
           Back
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           data-testid="process-confirm"
+          variant="tactile"
+          size="touch"
+          class="px-5"
           :disabled="!pendingCount"
-          class="min-h-[44px] rounded-xl border-b-4 border-[#007B99] bg-[#00A4C8] px-5 py-2.5 text-sm font-bold text-white transition-all duration-75 hover:bg-[#0090B0] focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 focus-visible:outline-none active:translate-y-1 active:border-b-0 disabled:cursor-not-allowed disabled:opacity-60"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
           @click="confirm"
         >
           Process
-        </button>
+        </Button>
       </template>
 
       <template v-else-if="phase === 'running'">
-        <button
+        <Button
           type="button"
           data-testid="process-cancel"
+          variant="tactile-secondary"
+          size="touch"
           :disabled="cancelled"
-          class="min-h-[44px] rounded-xl border-b-4 border-[#CBD5E1] bg-[#E2E8F0] px-4 py-2.5 text-sm font-semibold text-[#334155] transition-all duration-75 hover:bg-[#D7DEE8] focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 focus-visible:outline-none active:translate-y-1 active:border-b-0 disabled:cursor-not-allowed disabled:opacity-60"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
           @click="cancelRun"
         >
           Cancel run
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           data-testid="process-minimize"
-          class="min-h-[44px] rounded-xl border-b-4 border-[#007B99] bg-[#00A4C8] px-5 py-2.5 text-sm font-bold text-white transition-all duration-75 hover:bg-[#0090B0] focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 focus-visible:outline-none active:translate-y-1 active:border-b-0 disabled:cursor-not-allowed disabled:opacity-60"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          variant="tactile"
+          size="touch"
+          class="px-5"
           @click="keepRunning($event, dismiss)"
         >
           Keep running
-        </button>
+        </Button>
       </template>
 
       <template v-else-if="phase === 'done'">
-        <button
+        <Button
           type="button"
           data-testid="process-show-more"
-          class="min-h-[44px] rounded-xl border-b-4 border-[#CBD5E1] bg-[#E2E8F0] px-4 py-2.5 text-sm font-semibold text-[#334155] transition-all duration-75 hover:bg-[#D7DEE8] focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 focus-visible:outline-none active:translate-y-1 active:border-b-0 disabled:cursor-not-allowed disabled:opacity-60"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
+          variant="tactile-secondary"
+          size="touch"
           @click="showMore = !showMore"
         >
           {{ showMore ? 'Show less' : 'Show more' }}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           data-testid="process-close"
-          class="min-h-[44px] rounded-xl border-b-4 border-[#007B99] bg-[#00A4C8] px-5 py-2.5 text-sm font-bold text-white transition-all duration-75 hover:bg-[#0090B0] focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 focus-visible:outline-none active:translate-y-1 active:border-b-0 disabled:cursor-not-allowed disabled:opacity-60"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          variant="tactile"
+          size="touch"
+          class="px-5"
           @click="dismiss"
         >
           Done
-        </button>
+        </Button>
       </template>
 
-      <button
+      <Button
         v-else
         type="button"
         data-testid="process-close"
-        class="min-h-[44px] rounded-xl border-b-4 border-[#007B99] bg-[#00A4C8] px-5 py-2.5 text-sm font-bold text-white transition-all duration-75 hover:bg-[#0090B0] focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 focus-visible:outline-none active:translate-y-1 active:border-b-0 disabled:cursor-not-allowed disabled:opacity-60"
-        style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+        variant="tactile"
+        size="touch"
+        class="px-5"
         @click="dismiss"
       >
         Close
-      </button>
+      </Button>
     </template>
   </DialogShell>
 </template>

@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 import type { DayOfWeek } from '@/types/api'
 import type { DraftCourse, DraftSchedule } from '@/composables/useCourseDrafts'
-import { COURSE_PALETTE_24 } from '@/constants/palette'
+import { COURSE_PALETTE_24 } from '@/utils/courseColors'
 import {
   createBlock,
   syncScheduleDrafts,

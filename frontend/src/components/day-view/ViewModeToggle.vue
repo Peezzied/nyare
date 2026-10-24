@@ -92,7 +92,7 @@ function choose(mode: CalendarViewMode) {
         <span class="min-w-0 flex-1 truncate">{{ option.label }}</span>
         <Check
           v-if="option.mode === props.mode"
-          class="h-4 w-4 shrink-0 text-(--color-primary)"
+          class="h-4 w-4 shrink-0 text-primary"
           :stroke-width="3"
           aria-hidden="true"
         />

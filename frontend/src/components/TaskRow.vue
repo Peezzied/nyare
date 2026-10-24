@@ -110,22 +110,22 @@ function onRowClick() {
 
 <template>
   <li
-    class="relative mx-4 border-b border-(--color-app-border) transition-opacity last:border-b-0"
+    class="relative mx-4 border-b border-app-border transition-opacity last:border-b-0"
     :class="{ 'opacity-50': done }"
   >
     <div
       v-if="!readonly"
       aria-hidden="true"
-      class="absolute inset-y-0 right-0 flex w-24 items-center justify-end gap-3 bg-[#FEF9E7] px-3"
+      class="absolute inset-y-0 right-0 flex w-24 items-center justify-end gap-3 bg-warn-bg px-3"
       :style="{ opacity: Math.min(1, -swipeX / 24) }"
     >
-      <Calendar class="size-5 text-[#B78103]" />
-      <Clock class="size-5 text-[#B78103]" />
-      <Trash2 class="size-5 text-[#B78103]" />
+      <Calendar class="size-5 text-warn" />
+      <Clock class="size-5 text-warn" />
+      <Trash2 class="size-5 text-warn" />
     </div>
 
     <div
-      class="relative flex cursor-pointer items-center gap-3 bg-(--color-app-bg) py-4"
+      class="relative flex cursor-pointer items-center gap-3 bg-app-bg py-4"
       :class="dragging ? '' : 'transition-transform duration-200 ease-out'"
       :style="{ transform: `translateX(${swipeX}px)`, touchAction: 'pan-y' }"
       role="button"
@@ -152,7 +152,7 @@ function onRowClick() {
 
       <div class="flex min-w-0 flex-1 flex-col gap-1 mr-2">
         <span
-          class="text-base leading-snug font-semibold text-(--color-text-main)"
+          class="text-base leading-snug font-semibold text-text-main"
           :class="{ 'line-through': done }"
         >
           {{ task.title }}
@@ -168,13 +168,13 @@ function onRowClick() {
           />
           <span class="font-medium truncate font-secondary">{{ courseName }}</span>
         </span>
-        <span v-if="time" class="text-xs text-(--color-text-muted)">{{ time }}</span>
+        <span v-if="time" class="text-xs text-text-muted">{{ time }}</span>
       </div>
 
       <div class="flex shrink-0 items-center gap-2.5">
         <span
           v-if="formatDuration(task.duration)"
-          class="flex h-8 items-center text-sm font-secondary text-(--color-primary)"
+          class="flex h-8 items-center text-sm font-secondary text-primary"
         >
           {{ formatDuration(task.duration) }}
         </span>

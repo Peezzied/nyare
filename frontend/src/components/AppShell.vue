@@ -288,9 +288,13 @@ onMounted(() => {
 
     <main class="relative min-h-0 flex-1">
       <RouterView v-slot="{ Component }">
-        <KeepAlive :include="['TodoView', 'CalendarView', 'NotesView']">
-          <component :is="Component" />
-        </KeepAlive>
+        <!-- Same-component routes (/tasks/:id, /notes/:id) swap no vnode, so
+             the pop only fires when a real page opens. -->
+        <Transition name="page-pop" appear>
+          <KeepAlive :include="['TodoView', 'CalendarView', 'NotesView']">
+            <component :is="Component" />
+          </KeepAlive>
+        </Transition>
       </RouterView>
       <div class="absolute bottom-4 left-5 z-20">
         <div aria-live="polite">
@@ -334,7 +338,7 @@ onMounted(() => {
         :is-open="isGlobalNoteOpen"
         :note-id="globalNoteId"
         :origin-rect="null"
-        class="z-[60]"
+        class="z-sheet"
         @close="closeGlobalNote"
       />
       <img
@@ -404,7 +408,56 @@ onMounted(() => {
   opacity: 0;
 }
 
+/* Pages spring in with the same overshoot as the Duckota bubble: one bounce,
+   then settle. Keyframe-driven like route-fade in App.vue so a stalled rAF
+   class swap can never leave the view hidden. `to` omits transform so no
+   containing block persists for fixed-position children. */
+.page-pop-enter-active,
+.page-pop-appear-active {
+  animation: page-pop-in 340ms cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+/* The leaving page lifts out of flow and fades over the incoming pop. */
+.page-pop-leave-active {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  animation: page-pop-out 120ms ease-in both;
+}
+
+@keyframes page-pop-in {
+  from {
+    transform: translateY(14px) scale(0.96);
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes page-pop-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-pop-fade {
+  from {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .page-pop-enter-active,
+  .page-pop-appear-active {
+    animation: page-pop-fade 140ms ease-out both;
+  }
+
+  .page-pop-leave-active {
+    animation-duration: 90ms;
+  }
+
   .duckota-bubble-enter-active,
   .duckota-bubble-leave-active {
     transition-duration: 80ms;

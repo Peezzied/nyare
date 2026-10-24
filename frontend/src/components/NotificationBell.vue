@@ -53,7 +53,7 @@ watch(
     aria-live="polite"
     :aria-label="running ? 'Processing notes — open notifications' : 'Open notifications'"
     data-testid="notifications-button"
-    class="relative flex h-11 w-11 items-center justify-center rounded-lg text-text-main transition-colors hover:bg-black/5 focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 focus-visible:outline-none active:bg-black/10"
+    class="relative flex h-11 w-11 items-center justify-center rounded-lg text-text-main transition-colors hover:bg-black/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none active:bg-black/10"
     @click="emit('open', $event)"
   >
     <span class="relative inline-flex">
@@ -62,7 +62,7 @@ watch(
         <span
           v-if="running"
           data-testid="notifications-running-badge"
-          class="h-2.5 w-2.5 rounded-full bg-[#00A4C8] ring-2 ring-white animate-pulse"
+          class="h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-white animate-pulse"
         />
         <span
           v-if="unread > 0"

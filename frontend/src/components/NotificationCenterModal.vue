@@ -10,6 +10,8 @@ import { useContainerMorph } from '@/composables/useNoteTransition'
 import { useNotifications } from '@/composables/useNotifications'
 import type { ProcessNotification, ProcessNotificationStatus } from '@/composables/useNotifications'
 import { formatEntryDate } from '@/utils/noteDate'
+import { statusColor } from '@/utils/statusColors'
+import HeaderIconButton from './HeaderIconButton.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -96,21 +98,6 @@ function statusIcon(status: ProcessNotificationStatus) {
   }
 }
 
-function statusColor(status: ProcessNotificationStatus): string {
-  switch (status) {
-    case 'running':
-      return '#00A4C8'
-    case 'done':
-      return '#0B8043'
-    case 'cancelled':
-      return '#7B8B97'
-    case 'saved-after-cancel':
-      return '#B78103'
-    case 'error':
-      return '#DC2626'
-  }
-}
-
 function headline(record: ProcessNotification): string {
   switch (record.status) {
     case 'running':
@@ -178,7 +165,7 @@ function stamp(record: ProcessNotification): string {
   >
     <!-- Background layer: subtle dark scrim -->
     <div
-      class="absolute inset-0 bg-black/20 transition-opacity duration-300"
+      class="absolute inset-0 bg-scrim transition-opacity duration-300"
       :class="isExpanded ? 'opacity-100' : 'opacity-0'"
       @click="dismiss(true)"
     />
@@ -187,7 +174,7 @@ function stamp(record: ProcessNotification): string {
     <div
       ref="containerRef"
       data-testid="notification-center-container"
-      class="fixed overflow-hidden bg-[#F5F6EE] will-change-[top,left,width,height,border-radius]"
+      class="fixed overflow-hidden bg-app-bg will-change-[top,left,width,height,border-radius]"
       :class="
         fadeMode
           ? ['transition-opacity duration-[150ms]', isExpanded ? 'opacity-100' : 'opacity-0']
@@ -208,29 +195,21 @@ function stamp(record: ProcessNotification): string {
             v-if="notifications.records.value.length > 0"
             type="button"
             data-testid="notification-clear"
-            class="flex h-11 items-center justify-center rounded-lg px-2 text-sm font-semibold transition-colors hover:bg-black/5 active:bg-black/10"
-            :class="clearArmed ? 'text-[#DC2626]' : 'text-text-muted'"
-            style="font-family: 'Quicksand', sans-serif; font-weight: 600"
+            class="flex h-11 items-center justify-center rounded-lg px-2 font-sans text-sm font-semibold transition-colors hover:bg-black/5 active:bg-black/10"
+            :class="clearArmed ? 'text-destructive' : 'text-text-muted'"
             @click="onClear"
           >
             {{ clearArmed ? 'Clear all' : 'Clear' }}
           </button>
           <span v-else class="w-11" aria-hidden="true" />
-          <h2
-            class="text-xl font-bold text-text-main"
-            style="font-family: 'Quicksand', sans-serif; font-weight: 700"
-          >
-            Notifications
-          </h2>
-          <button
-            type="button"
+          <h2 class="font-sans text-xl font-bold text-text-main">Notifications</h2>
+          <HeaderIconButton
             aria-label="Close notifications"
             data-testid="notification-center-close"
-            class="flex h-11 w-11 items-center justify-center rounded-lg text-text-main transition-colors hover:bg-black/5 active:bg-black/10"
             @click="requestClose(true)"
           >
             <X class="h-6 w-6" />
-          </button>
+          </HeaderIconButton>
         </header>
 
         <div
@@ -254,10 +233,7 @@ function stamp(record: ProcessNotification): string {
                 />
                 <span class="min-w-0 flex-1">
                   <span class="flex items-center gap-2">
-                    <span
-                      class="text-sm font-semibold text-text-main"
-                      style="font-family: 'Quicksand', sans-serif; font-weight: 600"
-                    >
+                    <span class="font-sans text-sm font-semibold text-text-main">
                       {{ headline(record) }}
                     </span>
                     <span
@@ -266,23 +242,16 @@ function stamp(record: ProcessNotification): string {
                       aria-label="Unread"
                     />
                   </span>
-                  <span
-                    class="mt-0.5 block text-sm text-text-muted"
-                    style="font-family: 'Inter', sans-serif; font-weight: 400"
-                  >
+                  <span class="mt-0.5 block font-secondary text-sm text-text-muted">
                     {{ detail(record) }}
                   </span>
                   <span
                     v-if="record.courseNames.length"
-                    class="mt-0.5 block text-xs text-text-muted"
-                    style="font-family: 'Inter', sans-serif; font-weight: 400"
+                    class="mt-0.5 block font-secondary text-xs text-text-muted"
                   >
                     {{ record.courseNames.join(', ') }}
                   </span>
-                  <span
-                    class="mt-1 block text-xs text-text-muted"
-                    style="font-family: 'Inter', sans-serif; font-weight: 400"
-                  >
+                  <span class="mt-1 block font-secondary text-xs text-text-muted">
                     {{ stamp(record) }}
                   </span>
                 </span>
@@ -297,9 +266,7 @@ function stamp(record: ProcessNotification): string {
               class="mt-16 flex flex-col items-center gap-3 text-text-muted"
             >
               <Inbox class="h-10 w-10" aria-hidden="true" />
-              <p class="text-sm" style="font-family: 'Inter', sans-serif; font-weight: 400">
-                No activity yet.
-              </p>
+              <p class="font-secondary text-sm">No activity yet.</p>
             </div>
           </Transition>
         </div>

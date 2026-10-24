@@ -50,6 +50,37 @@ Theme Mode: **Light mode only** for the initial MVP. Dark mode is deferred.
 | `--color-text-soft` | `#527A8C` | Muted steel-ocean secondary body text (note previews) |
 | `--color-text-muted` | `#7B8B97` | Secondary text, date subtitles, and field placeholders |
 | `--color-border` | `#CBD5E1` | Card dividers, input borders, and sheet separators |
+| `--color-ocean-soft` | `#E8F6FA` | Soft ocean surface tint for block headers, active states, and secondary ocean buttons |
+| `--color-field` | `#F0F8FA` | Recessed ocean tint for resting form inputs |
+| `--color-border-soft` | `#D5EBF1` | 1px stroke on form inputs and stationery cards |
+| `--color-border-cyan` | `#C2E8F1` | Alternate cyan stroke (time blocks, drawers) |
+| `--color-secondary-border` | `#BCE3ED` | Border for secondary ocean buttons |
+| `--color-bevel-secondary` | `#B0DBE5` | Bevel shadow under secondary ocean buttons |
+| `--color-primary-hover` | `#0090B0` | Canonical hover shade of Ocean Cyan |
+| `--color-primary-deep` | `#00556B` | Sunken bevel on active day toggles and save headers |
+| `--color-now` | `#0E7490` | Today indicator and jump-to-now floating buttons |
+| `--color-heading` | `#1E293B` | Bold heading and card title text |
+| `--color-destructive` | `#DC2626` | Destructive action face |
+| `--color-destructive-hover` | `#B91C1C` | Destructive hover and ghost-delete icon text |
+| `--color-destructive-bevel` | `#991B1B` | Bevel under destructive buttons |
+| `--color-ghost` | `#E2E8F0` | Neutral tactile button face |
+| `--color-ghost-hover` | `#D7DEE8` | Neutral tactile button hover |
+| `--color-skeleton-hi` | `#ECEFE6` | Loading skeleton light tone |
+| `--color-skeleton` | `#DCE0D5` | Loading skeleton mid tone |
+| `--color-skeleton-lo` | `#D5D9CE` | Loading skeleton dark tone |
+| `--color-scrim` | `rgb(0 0 0 / 0.4)` | Dialog and drawer backdrop scrim |
+
+### Shadow Utilities (`--shadow-*` tokens → `shadow-*` classes)
+
+| Utility | Value | Usage |
+| :--- | :--- | :--- |
+| `shadow-bevel` / `shadow-bevel-press` | `0 3px 0` / `0 1px 0` `#007B99` | Primary tactile buttons (rest / pressed) |
+| `shadow-bevel-secondary` / `-press` | `0 3px 0` / `0 1px 0` `#B0DBE5` | Secondary ocean buttons |
+| `shadow-bevel-ghost` | `0 3px 0` `#CBD5E1` | Neutral tactile buttons |
+| `shadow-bevel-destructive` | `0 4px 0` `#991B1B` | Destructive tactile buttons |
+| `shadow-stationery` | `0 4px 0` `#D5EBF1` | Physical stationery cards (TimeBlockCard, Course Details) |
+| `shadow-day-toggle` / `-active` | `0 2px 0` `#D5EBF1` / `#00556B` | Circular day toggles (rest / active) |
+| `shadow-toast` | `0 8px 24px rgba(0,0,0,.12)` | Toast shelf cards |
 
 ### 3D Tactile Button Specification
 Buttons use a physical offset border or bevel shadow to match the friendly Duolingo aesthetic:

@@ -77,7 +77,7 @@ const holeStyle = computed(() => {
 .disc {
   position: absolute;
   border-radius: 9999px;
-  background: #00a4c8;
+  background: var(--color-primary);
   animation: disc-grow cubic-bezier(0.5, 0, 0.9, 0.4) both;
 }
 
@@ -96,7 +96,7 @@ const holeStyle = computed(() => {
   height: 0;
   border-radius: 9999px;
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 0 200vmax #00a4c8;
+  box-shadow: 0 0 0 200vmax var(--color-primary);
   transition-property: width, height;
   transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }

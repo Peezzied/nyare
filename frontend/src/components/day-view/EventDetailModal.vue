@@ -91,7 +91,7 @@ const detailTitle = computed(() => {
     <div
       ref="containerRef"
       data-testid="detail-modal-container"
-      class="fixed bg-[#F5F6EE] overflow-hidden flex flex-col z-10 will-change-[top,left,width,height,border-radius]"
+      class="fixed bg-app-bg overflow-hidden flex flex-col z-10 will-change-[top,left,width,height,border-radius]"
       :class="
         fadeMode
           ? ['transition-opacity duration-[150ms]', isExpanded ? 'opacity-100' : 'opacity-0']

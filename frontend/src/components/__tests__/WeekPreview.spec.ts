@@ -2,16 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import WeekPreview from '@/components/WeekPreview.vue'
 import type { PreviewBlock } from '@/utils/weekPreview'
-import type { CoursePaletteColor } from '@/constants/palette'
+import { COURSE_COLORS } from '@/utils/courseColors'
 
-const sampleColor: CoursePaletteColor = {
-  id: 'tomato',
-  name: 'Tomato',
-  solid: '#D50000',
-  bg: '#FFEBEE',
-  text: '#B71C1C',
-  border: '#EF9A9A',
-}
+const sampleColor = COURSE_COLORS[0]!
 
 describe('WeekPreview.vue', () => {
   it('renders the seven weekday labels and no date numbers', () => {

@@ -22,7 +22,7 @@ const forwarded = useForwardPropsEmits(props, emits)
   <CheckboxRoot
     v-bind="forwarded"
     :class="[
-      'peer flex h-6 w-6 shrink-0 items-center justify-center rounded-[4px] border-2 border-[var(--color-primary)] bg-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[var(--color-primary)] data-[state=checked]:text-white',
+      'peer flex h-6 w-6 shrink-0 items-center justify-center rounded-[4px] border-2 border-primary bg-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-white',
       props.class,
     ]"
   >

@@ -13,7 +13,7 @@ export const toggleVariants = cva(
         outline:
           'gap-2 rounded-md border border-input bg-transparent shadow-xs hover:bg-accent hover:text-accent-foreground data-[state=on]:bg-accent data-[state=on]:text-accent-foreground',
         circle:
-          'aspect-square rounded-full border-2 border-[#C2E8F1] bg-[#F8FAFC] text-[#334155] hover:bg-[#E1F5FE] data-[state=on]:border-[#00A4C8] data-[state=on]:bg-[#00A4C8] data-[state=on]:text-white data-[state=on]:shadow-sm p-0 font-semibold focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2',
+          'aspect-square rounded-full border-2 border-border-cyan bg-field text-text-main hover:bg-ocean-soft data-[state=on]:border-primary data-[state=on]:bg-primary data-[state=on]:text-white data-[state=on]:shadow-sm p-0 font-semibold focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
       },
       size: {
         default: 'h-9 px-2 min-w-9',

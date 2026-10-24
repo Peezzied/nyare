@@ -6,6 +6,7 @@
 import { computed, ref } from 'vue'
 import { CircleCheck, CircleX, Info, LoaderCircle, X } from '@lucide/vue'
 import { resolveDismissSwipe } from '@/utils/swipeGesture'
+import { statusColor } from '@/utils/statusColors'
 import type { Toast, ToastKind } from '@/composables/useToasts'
 
 const props = defineProps<{ toast: Toast }>()
@@ -26,14 +27,7 @@ function icon(kind: ToastKind) {
 }
 
 function iconColor(kind: ToastKind): string {
-  switch (kind) {
-    case 'success':
-      return '#0B8043'
-    case 'error':
-      return '#DC2626'
-    default:
-      return '#00A4C8'
-  }
+  return statusColor(kind)
 }
 
 const DRAG_START_PX = 6
@@ -123,7 +117,7 @@ function onActionClick() {
 <template>
   <div
     data-testid="toast"
-    class="pointer-events-auto flex w-full max-w-[340px] cursor-pointer gap-3 rounded-2xl border border-(--color-app-border) bg-(--color-card) p-3.5 text-left shadow-[0_8px_24px_rgba(0,0,0,0.12)] select-none"
+    class="pointer-events-auto flex w-full max-w-[340px] cursor-pointer gap-3 rounded-2xl border border-app-border bg-card p-3.5 text-left shadow-toast select-none"
     :class="[
       toast.detail ? 'items-start' : 'items-center',
       dragging ? '' : 'transition-[transform,opacity] duration-200 ease-out',
@@ -147,12 +141,12 @@ function onActionClick() {
       aria-hidden="true"
     />
     <span class="min-w-0 flex-1">
-      <span class="block font-sans text-sm font-semibold text-(--color-text-main)">
+      <span class="block font-sans text-sm font-semibold text-text-main">
         {{ toast.title }}
       </span>
       <span
         v-if="toast.detail"
-        class="mt-0.5 block font-secondary text-xs text-(--color-text-muted)"
+        class="mt-0.5 block font-secondary text-xs text-text-muted"
       >
         {{ toast.detail }}
       </span>
@@ -161,7 +155,7 @@ function onActionClick() {
       <button
         type="button"
         data-testid="toast-action"
-        class="min-h-11 cursor-pointer rounded-lg px-3 font-sans text-sm font-bold text-[#007B99] transition-colors hover:bg-[#E8F6FA] focus-visible:ring-2 focus-visible:ring-[#00A4C8]/60 focus-visible:outline-none"
+        class="min-h-11 cursor-pointer rounded-lg px-3 font-sans text-sm font-bold text-primary-bevel transition-colors hover:bg-ocean-soft focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:outline-none"
         @click.stop="onActionClick"
         @pointerdown.stop
       >
@@ -171,7 +165,7 @@ function onActionClick() {
         type="button"
         aria-label="Dismiss"
         data-testid="toast-dismiss"
-        class="flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-full text-(--color-text-muted) transition-colors hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-[#00A4C8]/60 focus-visible:outline-none"
+        class="flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-full text-text-muted transition-colors hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:outline-none"
         @click.stop="emit('dismiss')"
         @pointerdown.stop
       >

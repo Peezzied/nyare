@@ -32,7 +32,7 @@ const currentDate = ref(wednesdayDate)
     <Variant title="Wednesday (Classes + Tasks)">
       <div class="p-4 flex justify-center bg-slate-200 min-h-screen">
         <div
-          class="w-full max-w-[420px] h-[780px] bg-[#F5F6EE] flex flex-col rounded-[32px] shadow-2xl border border-slate-300 overflow-hidden"
+          class="w-full max-w-[420px] h-[780px] bg-app-bg flex flex-col rounded-[32px] shadow-2xl border border-slate-300 overflow-hidden"
         >
           <ScheduleCalendar
             :events="wednesdayEvents"
@@ -46,7 +46,7 @@ const currentDate = ref(wednesdayDate)
     <Variant title="Thursday (Design Layout)">
       <div class="p-4 flex justify-center bg-slate-200 min-h-screen">
         <div
-          class="w-full max-w-[420px] h-[780px] bg-[#F5F6EE] flex flex-col rounded-[32px] shadow-2xl border border-slate-300 overflow-hidden"
+          class="w-full max-w-[420px] h-[780px] bg-app-bg flex flex-col rounded-[32px] shadow-2xl border border-slate-300 overflow-hidden"
         >
           <ScheduleCalendar
             :events="thursdayEvents"
@@ -60,7 +60,7 @@ const currentDate = ref(wednesdayDate)
     <Variant title="Empty Day (Sunday)">
       <div class="p-4 flex justify-center bg-slate-200 min-h-screen">
         <div
-          class="w-full max-w-[420px] h-[780px] bg-[#F5F6EE] flex flex-col rounded-[32px] shadow-2xl border border-slate-300 overflow-hidden"
+          class="w-full max-w-[420px] h-[780px] bg-app-bg flex flex-col rounded-[32px] shadow-2xl border border-slate-300 overflow-hidden"
         >
           <ScheduleCalendar
             :events="sundayEvents"
@@ -74,7 +74,7 @@ const currentDate = ref(wednesdayDate)
     <Variant title="Expanded Container (Tablet)">
       <div class="p-4 flex justify-center bg-slate-200 min-h-screen">
         <div
-          class="w-full max-w-2xl h-[800px] bg-[#F5F6EE] flex flex-col rounded-2xl shadow-xl border border-slate-300 overflow-hidden"
+          class="w-full max-w-2xl h-[800px] bg-app-bg flex flex-col rounded-2xl shadow-xl border border-slate-300 overflow-hidden"
         >
           <ScheduleCalendar
             :events="wednesdayEvents"

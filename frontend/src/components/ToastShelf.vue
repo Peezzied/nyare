@@ -14,7 +14,7 @@ const shelfTop = computed(() => `${topBarInset.value + 8}px`)
 
 <template>
   <div
-    class="pointer-events-none fixed inset-x-0 z-[60] flex flex-col items-center gap-2 px-4 transition-[top] duration-200"
+    class="pointer-events-none fixed inset-x-0 z-sheet flex flex-col items-center gap-2 px-4 transition-[top] duration-200"
     :style="{ top: shelfTop }"
     aria-live="polite"
   >

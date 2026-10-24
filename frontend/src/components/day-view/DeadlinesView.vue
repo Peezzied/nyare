@@ -4,7 +4,7 @@
 import { computed } from 'vue'
 import { ChevronRight } from '@lucide/vue'
 import type { AcademicEventResponse } from '@/types/api'
-import type { DeadlineDaySection, DeadlineSections } from '@/utils/deadlineSections'
+import type { DeadlineSections } from '@/utils/deadlineSections'
 import {
   Accordion,
   AccordionContent,
@@ -40,13 +40,13 @@ function handleSelect(event: AcademicEventResponse, originRect: DOMRect) {
   <div class="h-full overflow-y-auto px-4 pb-24" data-testid="deadlines-view">
     <slot name="top" />
     <template v-if="hasContent">
-      <p v-if="sections.upcoming.length === 0" class="py-6 text-center text-(--color-text-muted)">
+      <p v-if="sections.upcoming.length === 0" class="py-6 text-center text-text-muted">
         No upcoming deadlines.
       </p>
       <section v-for="day in sections.upcoming" :key="day.dateKey" class="mt-4 first:mt-6">
         <button
           type="button"
-          class="flex h-11 w-full items-center justify-between rounded-lg px-2 text-left text-sm font-bold text-(--color-text-muted) transition-colors hover:bg-black/5"
+          class="flex h-11 w-full items-center justify-between rounded-lg px-2 text-left text-sm font-bold text-text-muted transition-colors hover:bg-black/5"
           :aria-label="`Show ${day.label} in day view`"
           @click="emit('select-day', day.date)"
         >
@@ -67,7 +67,7 @@ function handleSelect(event: AcademicEventResponse, originRect: DOMRect) {
       <Accordion v-if="pastCount > 0" type="single" collapsible class="mt-8">
         <AccordionItem value="past" class="border-b-0">
           <AccordionTrigger
-            class="px-2 py-3 text-sm font-bold text-(--color-text-muted) hover:no-underline"
+            class="px-2 py-3 text-sm font-bold text-text-muted hover:no-underline"
           >
             Past · {{ pastCount }}
           </AccordionTrigger>
@@ -75,7 +75,7 @@ function handleSelect(event: AcademicEventResponse, originRect: DOMRect) {
             <section v-for="day in sections.past" :key="day.dateKey" class="mt-2 first:mt-0">
               <button
                 type="button"
-                class="flex h-11 w-full items-center justify-between rounded-lg px-2 text-left text-sm font-bold text-(--color-text-muted) transition-colors hover:bg-black/5"
+                class="flex h-11 w-full items-center justify-between rounded-lg px-2 text-left text-sm font-bold text-text-muted transition-colors hover:bg-black/5"
                 :aria-label="`Show ${day.label} in day view`"
                 @click="emit('select-day', day.date)"
               >
@@ -103,7 +103,7 @@ function handleSelect(event: AcademicEventResponse, originRect: DOMRect) {
       <p class="text-lg font-bold text-text-main">
         {{ searching ? 'No matching deadlines' : 'No deadlines ahead' }}
       </p>
-      <p v-if="!searching" class="text-sm text-(--color-text-muted)">
+      <p v-if="!searching" class="text-sm text-text-muted">
         Events from your notes and courses appear here.
       </p>
     </div>

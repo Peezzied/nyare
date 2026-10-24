@@ -17,9 +17,15 @@ export const buttonVariants = cva(
         ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 hover:underline',
         tactile:
-          'rounded-xl bg-[#00A4C8] font-bold text-white shadow-[0_3px_0_0_#007B99] hover:bg-[#0093B4] active:translate-y-0.5 active:shadow-[0_1px_0_#007B99] disabled:shadow-none',
+          'rounded-xl bg-primary font-bold text-white shadow-bevel hover:bg-primary-hover active:translate-y-0.5 active:shadow-bevel-press disabled:shadow-none',
         'tactile-destructive':
-          'rounded-xl bg-[#DC2626] font-bold text-white shadow-[0_4px_0_0_#991B1B] hover:bg-[#B91C1C] active:translate-y-1 active:shadow-none disabled:shadow-none',
+          'rounded-xl bg-destructive font-bold text-white shadow-bevel-destructive hover:bg-destructive-hover active:translate-y-1 active:shadow-none disabled:shadow-none',
+        'tactile-secondary':
+          'rounded-xl bg-ghost font-bold text-text-main shadow-bevel-ghost hover:bg-ghost-hover active:translate-y-0.5 active:shadow-none disabled:shadow-none',
+        'tactile-ocean':
+          'rounded-xl border border-secondary-border bg-ocean-soft font-bold text-primary-bevel shadow-bevel-secondary hover:bg-field active:translate-y-0.5 active:shadow-bevel-secondary-press disabled:shadow-none',
+        'ghost-destructive':
+          'rounded-xl font-bold text-destructive-hover hover:bg-black/5 active:bg-black/10',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',

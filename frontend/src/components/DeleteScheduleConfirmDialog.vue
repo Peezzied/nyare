@@ -3,6 +3,7 @@ import { ref, watch } from 'vue'
 import { schedulesApi } from '@/api'
 import { ApiError } from '@/api/client'
 import { useCatalog } from '@/composables/useCatalog'
+import { Button } from '@/components/ui/button'
 import DialogShell from '@/components/ui/DialogShell.vue'
 
 export interface DeleteScheduleTarget {
@@ -71,10 +72,7 @@ async function confirm() {
     @update:open="emit('update:open', $event)"
     @cancel="emit('cancel')"
   >
-    <p
-      class="mt-2 text-sm text-[#7B8B97]"
-      style="font-family: 'Inter', sans-serif; font-weight: 400"
-    >
+    <p class="mt-2 font-secondary text-sm text-text-muted">
       Are you sure you want to delete the schedule:
     </p>
 
@@ -85,10 +83,7 @@ async function confirm() {
         :style="{ backgroundColor: catalog.courseColor(schedule.courseId).solid }"
         aria-hidden="true"
       />
-      <span
-        class="text-sm font-semibold text-[#334155]"
-        style="font-family: 'Quicksand', sans-serif; font-weight: 600"
-      >
+      <span class="font-sans text-sm font-semibold text-text-main">
         {{ schedule?.name ?? '' }}
       </span>
     </div>
@@ -96,33 +91,33 @@ async function confirm() {
     <p
       v-if="errorMessage"
       role="alert"
-      class="mt-3 text-sm font-medium text-[#DC2626]"
-      style="font-family: 'Inter', sans-serif; font-weight: 400"
+      class="mt-3 font-secondary text-sm font-medium text-destructive"
     >
       {{ errorMessage }}
     </p>
 
     <template #actions="{ disabled, dismiss }">
-      <button
+      <Button
         type="button"
+        variant="tactile-secondary"
+        size="touch"
         :disabled="disabled"
-        class="min-h-[44px] rounded-xl border-b-4 border-[#CBD5E1] bg-[#E2E8F0] px-4 py-2.5 text-sm font-semibold text-[#334155] transition-all duration-75 hover:bg-[#D7DEE8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:border-b-0 active:translate-y-1 disabled:cursor-not-allowed disabled:opacity-60"
-        style="font-family: 'Quicksand', sans-serif; font-weight: 600"
         @click="dismiss"
       >
         Back
-      </button>
+      </Button>
 
-      <button
+      <Button
         type="button"
+        variant="tactile-destructive"
+        size="touch"
+        class="px-5"
         :disabled="!schedule || disabled"
         :aria-busy="isDeleting"
-        class="min-h-[44px] rounded-xl border-b-4 border-[#991B1B] bg-[#DC2626] px-5 py-2.5 text-sm font-bold text-white transition-all duration-75 hover:bg-[#B91C1C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626] focus-visible:ring-offset-2 active:border-b-0 active:translate-y-1 disabled:cursor-not-allowed disabled:opacity-60"
-        style="font-family: 'Quicksand', sans-serif; font-weight: 700"
         @click="confirm"
       >
         CONFIRM
-      </button>
+      </Button>
     </template>
   </DialogShell>
 </template>

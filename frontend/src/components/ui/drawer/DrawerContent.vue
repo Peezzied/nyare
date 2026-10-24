@@ -97,7 +97,7 @@ function onHandleClick() {
       }"
       :class="
         cn(
-          'group/drawer-content fixed z-50 flex flex-col bg-[#FDFEF7] border-[#C2E8F1] shadow-2xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform',
+          'group/drawer-content fixed z-50 flex flex-col bg-popover border-border-cyan shadow-2xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform',
           'data-[state=open]:animate-in data-[state=closed]:animate-out',
           'data-[swipe-direction=up]:inset-x-0 data-[swipe-direction=up]:top-0 data-[swipe-direction=up]:mb-24 data-[swipe-direction=up]:max-h-[80vh] data-[swipe-direction=up]:rounded-b-lg data-[swipe-direction=up]:data-[state=open]:slide-in-from-top data-[swipe-direction=up]:data-[state=closed]:slide-out-to-top',
           'data-[swipe-direction=down]:inset-x-0 data-[swipe-direction=down]:bottom-0 data-[swipe-direction=down]:h-[100dvh] sm:data-[swipe-direction=down]:max-w-[440px] sm:data-[swipe-direction=down]:mx-auto',
@@ -121,7 +121,7 @@ function onHandleClick() {
         @keydown.enter.space.prevent="onHandleClick"
       >
         <DrawerHandle
-          class="bg-[#CBD5E1] mx-auto h-1.5 w-12 shrink-0 rounded-full cursor-grab active:cursor-grabbing hover:bg-[#94A3B8] transition-colors pointer-events-none"
+          class="bg-app-border mx-auto h-1.5 w-12 shrink-0 rounded-full cursor-grab active:cursor-grabbing hover:bg-muted-foreground transition-colors pointer-events-none"
         />
       </div>
       <slot />

@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { defineComponent, nextTick, ref } from 'vue'
+import { defineComponent, nextTick, ref, type Ref } from 'vue'
 import { mount } from '@vue/test-utils'
+import type { AnimationPhase } from '@/types/notesTransition'
 import {
   calculateTargetStyle,
   getOriginStyle,
@@ -181,8 +182,8 @@ describe('useNoteTransition', () => {
       const isParentOpen = ref(true)
       const isChildOpen = ref(false)
 
-      let parentPhase: any
-      let childPhase: any
+      let parentPhase!: Ref<AnimationPhase>
+      let childPhase!: Ref<AnimationPhase>
 
       const ParentComp = defineComponent({
         setup() {

@@ -30,21 +30,21 @@ const emits = defineEmits<{
       <Input
         :model-value="modelValue"
         :placeholder="placeholder ?? 'Search…'"
-        class="pl-10 pr-12 py-2 h-11 rounded-xl border-0 bg-white text-text-main placeholder-text-(--color-text-muted) shadow-none focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-[#00A4C8]/30 outline-none"
+        class="pl-10 pr-12 py-2 h-11 rounded-xl border-0 bg-card text-text-main placeholder:text-text-muted shadow-none focus-visible:bg-card focus-visible:ring-2 focus-visible:ring-primary/30 outline-none"
         aria-label="Search"
         @update:model-value="emits('update:modelValue', String($event))"
       />
       <button
         v-if="showFilter"
         type="button"
-        class="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-xl text-(--color-primary-bevel) transition-colors hover:bg-[#E8F6FA] active:bg-[#D5EBF1] focus-visible:ring-2 focus-visible:ring-[#00A4C8]/50 focus-visible:outline-none"
+        class="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-xl text-primary-bevel transition-colors hover:bg-ocean-soft active:bg-border-soft focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
         aria-label="Filter"
         @click="emits('filter')"
       >
         <SlidersHorizontal class="h-5 w-5" aria-hidden="true" />
         <span
           v-if="filtersActive"
-          class="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-(--color-primary)"
+          class="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary"
           aria-hidden="true"
         />
       </button>

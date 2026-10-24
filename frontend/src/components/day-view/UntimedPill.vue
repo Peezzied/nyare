@@ -25,7 +25,7 @@ const courseColor = computed(() => catalog.courseColor(props.item.courseId))
 const surfaceClasses = computed(() =>
   props.item.category === 'event'
     ? 'border-2 text-white'
-    : 'bg-white border border-[#CBD5E1] text-[#334155]',
+    : 'bg-white border border-app-border text-text-main',
 )
 
 const surfaceStyle = computed(() =>
@@ -47,10 +47,10 @@ const surfaceStyle = computed(() =>
   >
     <span
       v-if="props.item.category === 'task'"
-      class="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 border-[#94A3B8]"
+      class="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 border-text-muted"
       aria-hidden="true"
     >
-      <Check v-if="props.item.completed" class="h-3.5 w-3.5 text-[#334155]" :stroke-width="3" />
+      <Check v-if="props.item.completed" class="h-3.5 w-3.5 text-text-main" :stroke-width="3" />
     </span>
     <Flag v-else class="h-3.5 w-3.5 shrink-0" :stroke-width="2.5" aria-hidden="true" />
     <span class="min-w-0 flex-1 truncate font-semibold">{{ props.item.title }}</span>

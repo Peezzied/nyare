@@ -12,13 +12,13 @@ defineProps<{
   >
     <!-- Dot at left edge of the grid -->
     <div
-      class="absolute left-0 w-3.5 h-3.5 rounded-full bg-[#0E7490] translate-x-[-7px] shrink-0"
+      class="absolute left-0 w-3.5 h-3.5 rounded-full bg-now translate-x-[-7px] shrink-0"
     />
     <!-- Horizontal indicator line -->
-    <div class="h-[2px] bg-[#0E7490] flex-1" />
+    <div class="h-[2px] bg-now flex-1" />
     <!-- What's on right now -->
     <span
-      class="ml-1 shrink-0 rounded-full bg-[#0E7490] px-2 py-0.5 text-[11px] font-bold text-white shadow"
+      class="ml-1 shrink-0 rounded-full bg-now px-2 py-0.5 text-[11px] font-bold text-white shadow"
     >
       {{ label }}
     </span>

@@ -19,7 +19,7 @@ const emit = defineEmits<{
   <button
     type="button"
     :aria-label="label"
-    class="group absolute right-4 bottom-4 z-10 flex size-14 cursor-pointer items-center justify-center rounded-2xl bg-[#00A4C8] text-white shadow-[0_4px_0_#007B99,0_10px_16px_-6px_rgba(0,90,110,0.35)] transition-[transform,box-shadow,background-color] duration-150 ease-out hover:-translate-y-0.5 hover:bg-[#0093B4] hover:shadow-[0_6px_0_#007B99,0_14px_20px_-6px_rgba(0,90,110,0.4)] focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 focus-visible:outline-none active:translate-y-1 active:shadow-[0_0px_0_#007B99,0_4px_8px_-4px_rgba(0,90,110,0.3)] motion-reduce:transition-none"
+    class="group absolute right-4 bottom-4 z-10 flex size-14 cursor-pointer items-center justify-center rounded-2xl bg-primary text-white shadow-[0_4px_0_var(--color-primary-bevel),0_10px_16px_-6px_rgba(0,90,110,0.35)] transition-[transform,box-shadow,background-color] duration-150 ease-out hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-[0_6px_0_var(--color-primary-bevel),0_14px_20px_-6px_rgba(0,90,110,0.4)] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none active:translate-y-1 active:shadow-[0_0px_0_var(--color-primary-bevel),0_4px_8px_-4px_rgba(0,90,110,0.3)] motion-reduce:transition-none"
     @click="emit('click', $event)"
   >
     <Plus
