@@ -8,12 +8,12 @@ This guide explains how to run the headless end-to-end flow harness to verify th
 ## Prerequisites
 
 1. **Backend Server Running on Port 8080**:
-   - In `backend/`:
+   - In `app/`:
      ```bash
      SPRING_DATASOURCE_URL="jdbc:sqlite:flow_test.db" ./gradlew bootRun
      ```
-   - Must be running with the default profile (`dev,google`) and valid `GOOGLE_API_KEY` in `backend/.env`.
-   - The server uses a throwaway SQLite database file `flow_test.db` created in the `backend/` directory.
+   - Must be running with the default profile (`dev,google`) and valid `GOOGLE_API_KEY` in `app/.env`.
+   - The server uses a throwaway SQLite database file `flow_test.db` created in the `app/` directory.
    - **When finished, the developer deletes `flow_test.db` manually.**
 
 2. **Frontend Dependencies**:

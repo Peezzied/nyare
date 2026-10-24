@@ -196,7 +196,7 @@ The component is reusable across views. If it is opened without a valid selected
 ### Assumptions
 
 - The first reference image provides parent/UI context only; this feature does not implement or modify the surrounding schedule interface.
-- Backend schedule deletion is exposed by `DELETE /api/schedules/{id}` (verified in `backend/src/main/java/.../controller/ScheduleController.java`).
+- Backend schedule deletion is exposed by `DELETE /api/schedules/{id}` (verified in `app/src/main/java/.../controller/ScheduleController.java`).
 - The parent owns selection state and will supply the selected schedule target and any associated course lookup.
 - The selected display name may be a course name (for example, `OOP`) because `ScheduleResponse` does not include a course name. The parent is expected to resolve and pass it.
 - Verified against frontend source: `schedulesApi.delete(id)` exists in `frontend/src/api/schedules.ts`.

@@ -8,7 +8,7 @@
 ## Automated checks
 
 ```bash
-# backend/
+# app/
 ./gradlew test --tests "group.four.nyare.nyare.service.impl.CourseServiceImplTest"
 ./gradlew test --tests "group.four.nyare.nyare.controller.CourseControllerTest"
 

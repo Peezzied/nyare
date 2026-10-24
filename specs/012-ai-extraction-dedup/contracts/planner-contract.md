@@ -27,7 +27,7 @@ X-User-Id: <user-id> (or session context)
 
 ## 2. LLM Prompt & Schema Contract
 
-### Prompt Template (`backend/src/main/resources/planner_sys-prompt.st`)
+### Prompt Template (`app/src/main/resources/planner_sys-prompt.st`)
 - **Matching Rules**:
   - The model must check `{tasks}`, `{events}`, and `{contexts}` before generating new items.
   - If a task exists in `{tasks}` for the same course:

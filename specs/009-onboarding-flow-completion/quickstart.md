@@ -4,7 +4,7 @@ Contracts: [contracts/onboarding-api.md](contracts/onboarding-api.md). Data: [da
 
 ## Prerequisites
 
-- Backend running on `:8080` (`./gradlew bootRun` in `backend/`), frontend on `:5173` (`npm run dev` in `frontend/`).
+- Backend running on `:8080` (`./gradlew bootRun` in `app/`), frontend on `:5173` (`npm run dev` in `frontend/`).
 - To exercise account creation, unset `VITE_DEV_USER` in `frontend/.env` (dev mode blocks Add account by design). Restart Vite.
 
 ## Automated checks
@@ -15,7 +15,7 @@ npx vitest run src/router src/composables/__tests__/useAuth.spec.ts src/composab
 npm run type-check
 npm run lint:oxlint
 
-# backend/ (one test at a time)
+# app/ (one test at a time)
 ./gradlew test --tests "group.four.nyare.nyare.service.UserServiceImplTest"
 ./gradlew test --tests "group.four.nyare.nyare.controller.UserControllerTest"
 ```

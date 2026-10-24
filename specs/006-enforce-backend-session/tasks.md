@@ -11,7 +11,7 @@ description: "Task list for Enforce Backend Session"
 
 **Tests**: Included. The constitution requires evidence-first verification. Write each test first and confirm it fails.
 
-**Organization**: Tasks group by user story. Backend paths start with `backend/src/main/java/group/four/nyare/nyare/` (shortened to `B/`) and `backend/src/test/java/group/four/nyare/nyare/` (shortened to `BT/`). Frontend paths start with `frontend/src/` (shortened to `F/`).
+**Organization**: Tasks group by user story. Backend paths start with `app/src/main/java/group/four/nyare/nyare/` (shortened to `B/`) and `app/src/test/java/group/four/nyare/nyare/` (shortened to `BT/`). Frontend paths start with `frontend/src/` (shortened to `F/`).
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -20,7 +20,7 @@ description: "Task list for Enforce Backend Session"
 
 ## Verification rules
 
-- Run `./gradlew compileJava` and single test classes in `backend/`. Run `./gradlew build` only at the end if needed.
+- Run `./gradlew compileJava` and single test classes in `app/`. Run `./gradlew build` only at the end if needed.
 - Run backend integration tests one at a time. Ask the user before the next one.
 - Run `npm run type-check`, `npm run lint:oxlint`, and `npx vitest run <file>` in `frontend/`.
 - Do not commit. Keep changes in the working tree.
@@ -29,8 +29,8 @@ description: "Task list for Enforce Backend Session"
 
 ## Phase 1: Setup
 
-- [ ] T001 Confirm a clean baseline: run `./gradlew test --tests "group.four.nyare.nyare.controller.CourseControllerTest"` in `backend/` and `npx vitest run src/api src/router src/composables` in `frontend/`. Record the pass or fail result in the task notes.
-- [x] T002 Add `spring.mvc.problemdetails.enabled=true` to the committed config template `backend/src/main/resources/application.properties.example` (if it exists) and to the local `backend/src/main/resources/application.properties`. Do not commit local `application*.properties` files.
+- [ ] T001 Confirm a clean baseline: run `./gradlew test --tests "group.four.nyare.nyare.controller.CourseControllerTest"` in `app/` and `npx vitest run src/api src/router src/composables` in `frontend/`. Record the pass or fail result in the task notes.
+- [x] T002 Add `spring.mvc.problemdetails.enabled=true` to the committed config template `app/src/main/resources/application.properties.example` (if it exists) and to the local `app/src/main/resources/application.properties`. Do not commit local `application*.properties` files.
 
 ---
 
@@ -145,9 +145,9 @@ description: "Task list for Enforce Backend Session"
 
 ## Phase 7: Polish and Cross-Cutting
 
-- [x] T044 [P] Update `AGENTS.md` (repo root) and `backend/AGENTS.md`: add one line that protected `/api/**` paths need a session and answer 401, and that services scope by session user ID.
+- [x] T044 [P] Update `AGENTS.md` (repo root) and `app/AGENTS.md`: add one line that protected `/api/**` paths need a session and answer 401, and that services scope by session user ID.
 - [x] T045 [P] Update `frontend/AGENTS.md` Backend Integration section with one line on the unauthorized handler in `client.ts` and the router.
-- [x] T046 [P] Update `docs/system-workflows.md` and `backend/docs/conventions/controllers-and-rest.md` status matrix: add 401 for protected calls and 404 for other-owner records.
+- [x] T046 [P] Update `docs/system-workflows.md` and `app/docs/conventions/controllers-and-rest.md` status matrix: add 401 for protected calls and 404 for other-owner records.
 - [x] T047 Write the breaking-change notes into `specs/006-enforce-backend-session/plan.md` under the existing table if implementation found extra changes (FR-013).
 - [x] T048 Run `npm run lint` and `npm run format` in `frontend/`. Review the diff for unrelated changes.
 - [x] T049 Run the full quickstart scenarios 1-6 in `specs/006-enforce-backend-session/quickstart.md`. Record command output as evidence. Ask the user before the second integration test.

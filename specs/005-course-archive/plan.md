@@ -30,7 +30,7 @@ Application and presentation layers connect in one direction: view -> composable
 
 **Target Platform**: Mobile-first web, 390 px width.
 
-**Project Type**: Web application (`frontend/` + `backend/`).
+**Project Type**: Web application (`frontend/` + `app/`).
 
 **Performance Goals**: Archive and unarchive show in the UI with no list refetch of courses.
 
@@ -122,7 +122,7 @@ specs/005-course-archive/
 ### Source Code
 
 ```text
-backend/src/main/java/group/four/nyare/nyare/
+app/src/main/java/group/four/nyare/nyare/
 ├── model/Course.java                          # + archivedAt
 ├── dto/CourseResponse.java                    # + archivedAt
 ├── dto/UnarchiveRequest.java                  # new: courseIds

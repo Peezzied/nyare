@@ -27,7 +27,7 @@ Technical approach (grounded in `dr-jskill`, Spring Boot 4 practice, and Vue bes
 
 **Target Platform**: Spring Boot server on port 8080. Mobile-first web client.
 
-**Project Type**: web application (`backend/` and `frontend/`)
+**Project Type**: web application (`app/` and `frontend/`)
 
 **Performance Goals**: The session check adds one in-memory attribute read per request. No extra database call.
 
@@ -70,7 +70,7 @@ specs/006-enforce-backend-session/
 ### Source Code (repository root)
 
 ```text
-backend/
+app/
 ├── src/main/java/group/four/nyare/nyare/
 │   ├── config/
 │   │   ├── SessionContext.java            # add requireUserId()
@@ -92,7 +92,7 @@ frontend/
 └── src/**/__tests__/                      # login first or expect 401
 ```
 
-**Structure Decision**: Reuse the existing `backend/` and `frontend/` split. Add one new Java class (`SessionInterceptor`). Change the rest in place.
+**Structure Decision**: Reuse the existing `app/` and `frontend/` split. Add one new Java class (`SessionInterceptor`). Change the rest in place.
 
 ## Breaking Changes and Frontend Reconciliation
 

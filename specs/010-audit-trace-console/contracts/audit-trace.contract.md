@@ -2,7 +2,7 @@
 
 **Feature**: `010-audit-trace-console` | **Date**: 2026-10-24
 
-These endpoints and server-rendered views exist exclusively in the development environment (`backend/src/dev`) and are mounted under `/dev/audit-trace/**`.
+These endpoints and server-rendered views exist exclusively in the development environment (`app/src/dev`) and are mounted under `/dev/audit-trace/**`.
 
 ---
 

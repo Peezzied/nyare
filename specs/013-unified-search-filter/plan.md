@@ -20,7 +20,7 @@ Port the `SearchBar.vue` component from PR #45 into the current branch and make 
 
 **Target Platform**: Mobile-first web (390 px baseline), backend on port 8080
 
-**Project Type**: Web application (`backend/` + `frontend/`)
+**Project Type**: Web application (`app/` + `frontend/`)
 
 **Performance Goals**: Search lookups feel instant (<2 s perceived on hundreds of rows); one request per typing pause, not per keystroke
 
@@ -63,12 +63,12 @@ specs/013-unified-search-filter/
 ### Source Code (repository root)
 
 ```text
-backend/src/main/java/group/four/nyare/nyare/
+app/src/main/java/group/four/nyare/nyare/
 ├── controller/   # TaskController, NoteController, AcademicEventController (+q/from/to params)
 ├── service/      # TaskService, NoteService, AcademicEventService signatures + impls
 └── repository/   # TaskRepository, NoteRepository, AcademicEventRepository findAllFiltered
 
-backend/src/test/java/group/four/nyare/nyare/
+app/src/test/java/group/four/nyare/nyare/
 ├── service/impl/ # param passthrough + blank-q normalization tests
 └── controller/   # @WebMvcTest: q/from/to binding + 400 on inverted range
 

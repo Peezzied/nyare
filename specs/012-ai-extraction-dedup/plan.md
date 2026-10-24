@@ -53,7 +53,7 @@ specs/012-ai-extraction-dedup/
 ### Source Code (repository root)
 
 ```text
-backend/
+app/
 ├── src/main/resources/
 │   └── planner_sys-prompt.st                       # Updated system prompt with deduplication rules
 ├── src/main/java/group/four/nyare/nyare/

@@ -75,7 +75,7 @@ Modify:
 - `frontend/src/views/__tests__/ScheduleView.spec.ts`
 
 No changes in this phase:
-- `backend/**`
+- `app/**`
 - database files
 - `frontend/src/router/index.ts`
 - `frontend/src/api/courses.ts`

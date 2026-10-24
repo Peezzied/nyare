@@ -60,16 +60,17 @@ Use Vue composables with `ref` or `reactive` to manage application state.
 Do not install Pinia.
 The project does not require external state libraries.
 
-## Backend Integration
+## App Integration
 
-The backend server runs on port 8080.
+The app server runs on port 8080 and serves the compiled frontend SPA from `app/src/main/resources/static`. The frontend build (`npm run build`) writes the bundle to that directory.
+
 Configure `server.proxy` in `vite.config.ts` to route `/api` requests to `http://localhost:8080`.
 Use the native `fetch` function for REST endpoints.
-Use `fetch` with a `ReadableStream` reader to receive Server-Sent Events from `POST /api/study-planner/process` (`EventSource` supports `GET` only). Pass an `AbortSignal` to `streamProcess`/`process` to cancel a run; the backend then stops at the next checkpoint and rolls back. Navigation does not cancel a run. Only an explicit `cancel()` or a session reset does. After a cancel, `useProcess` rechecks `GET /api/study-planner/status`; a run that committed anyway sets `savedAfterCancel` and calls `onSavedAfterCancel` for a full tasks and events refetch.
+Use `fetch` with a `ReadableStream` reader to receive Server-Sent Events from `POST /api/study-planner/process` (`EventSource` supports `GET` only). Pass an `AbortSignal` to `streamProcess`/`process` to cancel a run; the app then stops at the next checkpoint and rolls back. Navigation does not cancel a run. Only an explicit `cancel()` or a session reset does. After a cancel, `useProcess` rechecks `GET /api/study-planner/status`; a run that committed anyway sets `savedAfterCancel` and calls `onSavedAfterCancel` for a full tasks and events refetch.
 A protected `401` during use calls the registered unauthorized handler (`setUnauthorizedHandler` in `src/api/client.ts`), which clears session state and navigates to route `start`. Calls to `/api/users/me` and `/api/users/login` do not call the handler.
 Do not install Axios.
 
-## Backend Roundtrip Conventions
+## App Roundtrip Conventions
 
 Reduce HTTP roundtrips. Load each list once per intent.
 

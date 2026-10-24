@@ -11,7 +11,7 @@ description: "Task list for Onboarding Flow Completion"
 
 **Tests**: Spec implies coverage via existing suites; test-update tasks are included where behavior changes. New backend tests follow `method_condition_expected` + `// given/when/then`.
 
-**Paths**: `backend/` = `backend/src/main/java/group/four/nyare/nyare/...`; `frontend/` = `frontend/src/...`
+**Paths**: `app/` = `app/src/main/java/group/four/nyare/nyare/...`; `frontend/` = `frontend/src/...`
 
 ## Phase 1: Setup
 
@@ -23,17 +23,17 @@ No setup tasks — all infrastructure exists.
 
 **Purpose**: The `onboarded` flag and completion endpoint block US1 (router gating needs the flag) and US3 (writes the flag). US2 is frontend-only and is NOT blocked — it may run in parallel with this phase.
 
-- [x] T001 [P] Add `onboarded` field to `User` entity in `backend/model/User.java`: `@Column(nullable = false, columnDefinition = "boolean default true") private Boolean onboarded` with getter/setter (DDL default `true` migrates existing rows to onboarded per FR-006)
-- [x] T002 [P] Add `onboarded` field to `UserResponse` in `backend/dto/UserResponse.java`: constructor param + getter/setter, serialized on every user-returning endpoint
-- [x] T003 Add `existsByUserId(Long userId)` to `backend/repository/CourseRepository.java`
-- [x] T004 Declare `UserResponse completeOnboarding(Long userId)` in `backend/service/UserService.java` with Javadoc (idempotent; `BadRequestException` when user owns no course; `ResourceNotFoundException` when user missing)
-- [x] T005 Implement `completeOnboarding` in `backend/service/impl/UserServiceImpl.java`: `@Transactional`, load user or throw `ResourceNotFoundException`, if already onboarded return as-is, else require `courseRepository.existsByUserId(userId)` else `BadRequestException("Add at least one course before completing onboarding")`, set `onboarded = true`, save, return `toResponse`. Also: `createUser` sets `onboarded = false` explicitly; `toResponse` maps `user.getOnboarded()`
-- [x] T006 Add `POST /api/users/me/onboarding/complete` to `backend/controller/UserController.java`: session self-check identical to `getCurrentUser` (401 without session), resolves `SESSION_USER_ID`, calls `userService.completeOnboarding(userId)`, returns `ResponseEntity.ok(...)`
-- [x] T007 Seed `dev_student` as onboarded in `backend/src/main/resources/data.sql`: add `onboarded` to the users INSERT columns with value `1`
+- [x] T001 [P] Add `onboarded` field to `User` entity in `app/model/User.java`: `@Column(nullable = false, columnDefinition = "boolean default true") private Boolean onboarded` with getter/setter (DDL default `true` migrates existing rows to onboarded per FR-006)
+- [x] T002 [P] Add `onboarded` field to `UserResponse` in `app/dto/UserResponse.java`: constructor param + getter/setter, serialized on every user-returning endpoint
+- [x] T003 Add `existsByUserId(Long userId)` to `app/repository/CourseRepository.java`
+- [x] T004 Declare `UserResponse completeOnboarding(Long userId)` in `app/service/UserService.java` with Javadoc (idempotent; `BadRequestException` when user owns no course; `ResourceNotFoundException` when user missing)
+- [x] T005 Implement `completeOnboarding` in `app/service/impl/UserServiceImpl.java`: `@Transactional`, load user or throw `ResourceNotFoundException`, if already onboarded return as-is, else require `courseRepository.existsByUserId(userId)` else `BadRequestException("Add at least one course before completing onboarding")`, set `onboarded = true`, save, return `toResponse`. Also: `createUser` sets `onboarded = false` explicitly; `toResponse` maps `user.getOnboarded()`
+- [x] T006 Add `POST /api/users/me/onboarding/complete` to `app/controller/UserController.java`: session self-check identical to `getCurrentUser` (401 without session), resolves `SESSION_USER_ID`, calls `userService.completeOnboarding(userId)`, returns `ResponseEntity.ok(...)`
+- [x] T007 Seed `dev_student` as onboarded in `app/src/main/resources/data.sql`: add `onboarded` to the users INSERT columns with value `1`
 - [x] T008 [P] Add `onboarded: boolean` to `UserResponse` in `frontend/src/types/api.ts`
 - [x] T009 [P] Add `completeOnboarding()` to `authApi` in `frontend/src/api/auth.ts`: `POST /api/users/me/onboarding/complete`, returns `UserResponse`
 - [x] T010 Extend `useAuth` in `frontend/src/composables/useAuth.ts`: add `completeOnboarding(): Promise<UserResponse>` that calls `authApi.completeOnboarding()` then `setSessionUser(result)`; expose `isOnboarded` computed (`user.value?.onboarded === true`)
-- [x] T011 Backend unit tests in `backend/src/test/java/group/four/nyare/nyare/service/UserServiceImplTest.java`: `completeOnboarding_userNotOnboardedWithCourse_marksOnboarded`, `completeOnboarding_alreadyOnboarded_returnsUnchanged`, `completeOnboarding_noCourses_throwsBadRequest`, `completeOnboarding_missingUser_throwsNotFound`; and `UserControllerTest.java`: `completeOnboarding_noSession_returns401`, `completeOnboarding_withSession_returns200`
+- [x] T011 Backend unit tests in `app/src/test/java/group/four/nyare/nyare/service/UserServiceImplTest.java`: `completeOnboarding_userNotOnboardedWithCourse_marksOnboarded`, `completeOnboarding_alreadyOnboarded_returnsUnchanged`, `completeOnboarding_noCourses_throwsBadRequest`, `completeOnboarding_missingUser_throwsNotFound`; and `UserControllerTest.java`: `completeOnboarding_noSession_returns401`, `completeOnboarding_withSession_returns200`
 - [x] T012 Register draft reset on session clear in `frontend/src/composables/useCourseDrafts.ts`: use `createCache(() => { draftCourses.value = []; draftSchedules.value = [] })` so `clearSessionUser()`/`resetAllCaches()` empties drafts (FR-017)
 
 **Checkpoint**: `onboarded` readable from `/me`, writable via complete endpoint. US2 work may proceed in parallel throughout.
@@ -91,7 +91,7 @@ No setup tasks — all infrastructure exists.
 
 - [x] T401 Fix client/server username-length mismatch in `frontend/src/views/AccountSelectView.vue` line ~112: `trimmed.length < 3` to match backend `@Size(min = 3)` — prevents a 400 on 2-char usernames
 - [x] T402 Remove stale `userId` fallback comment on `coursesApi.list` in `frontend/src/api/courses.ts` (backend ignores the param)
-- [x] T403 Run `npm run type-check`, `npm run lint:oxlint`, and targeted `npx vitest run` for touched specs in `frontend/`; `./gradlew test --tests "group.four.nyare.nyare.service.UserServiceImplTest" --tests "group.four.nyare.nyare.controller.UserControllerTest"` in `backend/` (one integration-style test class at a time)
+- [x] T403 Run `npm run type-check`, `npm run lint:oxlint`, and targeted `npx vitest run` for touched specs in `frontend/`; `./gradlew test --tests "group.four.nyare.nyare.service.UserServiceImplTest" --tests "group.four.nyare.nyare.controller.UserControllerTest"` in `app/` (one integration-style test class at a time)
 - [x] T404 Run `quickstart.md` manual scenarios 1–7 against a live dev backend
 
 ---

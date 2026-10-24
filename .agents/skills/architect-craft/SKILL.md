@@ -7,7 +7,7 @@ description: Design or review Nyare architecture. Integrate domain invariants wi
 
 ## Overview
 
-Architect Craft define system architecture rules for Nyare. Unify Superpowers planning, core domain invariants, and [`man-spring`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/backend/.agents/skills/man-spring/SKILL.md) backend standards.
+Architect Craft define system architecture rules for Nyare. Unify Superpowers planning, core domain invariants, and [`man-spring`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/app/.agents/skills/man-spring/SKILL.md) backend standards.
 
 Enforce boundaries, ubiquitous language, and patterns. Stop over-engineering.
 
@@ -44,7 +44,7 @@ Follow Superpowers lifecycle:
 
 ## Foundation 2: Spring Boot & Spring AI Standards (`man-spring`)
 
-Use [`man-spring`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/backend/.agents/skills/man-spring/SKILL.md) for Spring Boot and Spring AI standards:
+Use [`man-spring`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/app/.agents/skills/man-spring/SKILL.md) for Spring Boot and Spring AI standards:
 
 1. **Modern Runtime & Framework**:
    - Java 25, Spring Boot 4.x (`webmvc`, `data-jpa`, `validation`).

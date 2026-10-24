@@ -16,7 +16,7 @@
 
 ## Path Conventions
 
-- Backend: `backend/src/main/java/group/four/nyare/nyare/`, tests under `backend/src/test/java/group/four/nyare/nyare/`
+- Backend: `app/src/main/java/group/four/nyare/nyare/`, tests under `app/src/test/java/group/four/nyare/nyare/`
 - Frontend: `frontend/src/`, specs under `__tests__/` siblings
 
 ---
@@ -35,13 +35,13 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [x] T002 [P] Add `:q` + `:from`/`:to` clauses to `findAllFiltered` in `backend/src/main/java/group/four/nyare/nyare/repository/TaskRepository.java`: `AND (:q IS NULL OR LOWER(t.title) LIKE :q OR LOWER(t.description) LIKE :q)` and `AND (:from IS NULL OR t.scheduledDate >= :from) AND (:to IS NULL OR t.scheduledDate <= :to)`; extend method signature with `String q`, `LocalDate from`, `LocalDate to` and update Javadoc
-- [x] T003 [P] Same clauses in `backend/src/main/java/group/four/nyare/nyare/repository/NoteRepository.java` on `n.title` + `n.content` and `n.entryDate`
-- [x] T004 [P] Same clauses in `backend/src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java` on `e.title` + `e.description` and `e.deadline` — `from`/`to` arrive as `LocalDateTime` bounds computed by the service
-- [x] T005 [P] Wire `q`/`from`/`to` through `backend/src/main/java/group/four/nyare/nyare/service/TaskService.java`, `service/impl/TaskServiceImpl.java`, `controller/TaskController.java`: `@RequestParam(required = false)` params, blank/whitespace `q` normalized to `null`, `q` lowercased and wrapped as `'%'+q+'%'` in the service, `from > to` throws `BadRequestException`
+- [x] T002 [P] Add `:q` + `:from`/`:to` clauses to `findAllFiltered` in `app/src/main/java/group/four/nyare/nyare/repository/TaskRepository.java`: `AND (:q IS NULL OR LOWER(t.title) LIKE :q OR LOWER(t.description) LIKE :q)` and `AND (:from IS NULL OR t.scheduledDate >= :from) AND (:to IS NULL OR t.scheduledDate <= :to)`; extend method signature with `String q`, `LocalDate from`, `LocalDate to` and update Javadoc
+- [x] T003 [P] Same clauses in `app/src/main/java/group/four/nyare/nyare/repository/NoteRepository.java` on `n.title` + `n.content` and `n.entryDate`
+- [x] T004 [P] Same clauses in `app/src/main/java/group/four/nyare/nyare/repository/AcademicEventRepository.java` on `e.title` + `e.description` and `e.deadline` — `from`/`to` arrive as `LocalDateTime` bounds computed by the service
+- [x] T005 [P] Wire `q`/`from`/`to` through `app/src/main/java/group/four/nyare/nyare/service/TaskService.java`, `service/impl/TaskServiceImpl.java`, `controller/TaskController.java`: `@RequestParam(required = false)` params, blank/whitespace `q` normalized to `null`, `q` lowercased and wrapped as `'%'+q+'%'` in the service, `from > to` throws `BadRequestException`
 - [x] T006 [P] Same wiring for `NoteService.java`, `NoteServiceImpl.java`, `NoteController.java`
 - [x] T007 [P] Same wiring for `AcademicEventService.java`, `AcademicEventServiceImpl.java`, `AcademicEventController.java`; service converts `LocalDate from`→`from.atStartOfDay()`, `to`→`to.plusDays(1).atStartOfDay()` (exclusive) before calling the repository
-- [x] T008 Extend backend tests under `backend/src/test/java/group/four/nyare/nyare/`: service impl tests for param passthrough + blank-`q` normalization + inverted-range 400; `@WebMvcTest` controller tests for `q`/`from`/`to` binding. Naming: `method_condition_expected`, AssertJ, `// given/when/then`. Run ONE test method at a time
+- [x] T008 Extend backend tests under `app/src/test/java/group/four/nyare/nyare/`: service impl tests for param passthrough + blank-`q` normalization + inverted-range 400; `@WebMvcTest` controller tests for `q`/`from`/`to` binding. Naming: `method_condition_expected`, AssertJ, `// given/when/then`. Run ONE test method at a time
 - [x] T009 [P] Add `q?: string`, `from?: string`, `to?: string` (ISO `YYYY-MM-DD`) to `TaskListParams` in `frontend/src/api/tasks.ts`, `NoteListParams` in `frontend/src/api/notes.ts`, `AcademicEventListParams` in `frontend/src/api/academicEvents.ts`
 - [x] T010 Mirror the filters in `frontend/src/api/mocks/adapter.ts`: lowercase `includes` on the same fields, inclusive date bounds, `from`>`to` → 400 via existing `badRequest()`; add cases to `frontend/src/api/mocks/__tests__/adapter.spec.ts`
 - [x] T011 Create `frontend/src/composables/useServerSearch.ts`: `useServerSearch<T, P>(fetcher: (p: P) => Promise<T[]>, params: ComputedRef<P | null>)` → `{ results: Ref<T[] | null>, pending: Ref<boolean>, error: Ref<string | null> }`; `watchDebounced` (300 ms) on `params`; `null` → `results = null`, inactive; latest-call-wins staleness guard. Add `frontend/src/composables/__tests__/useServerSearch.spec.ts`

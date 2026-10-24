@@ -1,0 +1,13 @@
+# Example template — copy to application-groq.properties for local dev (real file is gitignored).
+# Groq Cloud Provider Configuration (via Spring AI OpenAI Client)
+spring.ai.model.chat=openai
+
+spring.ai.openai.base-url=https://api.groq.com/openai/v1
+spring.ai.openai.api-key=${GROQ_API_KEY:}
+spring.ai.openai.chat.options.model=qwen/qwen3.8-27b
+spring.ai.openai.chat.options.temperature=${nyare.ai.temperature}
+spring.ai.openai.chat.options.top-p=${nyare.ai.top-p}
+spring.ai.openai.chat.options.max-tokens=${nyare.ai.max-tokens}
+
+# Placeholder so unused Google SDK auto-configurations initialize cleanly
+spring.ai.google.genai.api-key=${GOOGLE_API_KEY:google-disabled}

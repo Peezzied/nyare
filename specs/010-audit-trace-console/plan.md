@@ -6,7 +6,7 @@
 
 ## Summary
 
-Build an in-service developer audit trace console for Nyare that lives strictly inside the backend using Thymeleaf. Rather than scraping terminal logs or intercepting console output, the system taps directly into `PlannerAuditAdvisor`, `StudyPlannerServiceImpl`, and core entity mutation services via Spring's `ApplicationEventPublisher`. The dev implementation resides in the `backend/src/dev` sourceSet under package `group.four.nyare.nyare.dev` and templates in `src/dev/resources/templates/dev/`, with Thymeleaf added via `devImplementation`. The frontend remains 100% untouched. The console retains 500 in-memory events, tracks initiating user ID and trigger source (`WEB_SESSION`, `SYSTEM_JOB`), captures CRUD mutations and tombstones, streams live audits and lifecycle boundaries over SSE, captures unhandled exceptions with root-cause diagnostics, and walks database relations across Course, Note, Task, AcademicEvent, and Image records.
+Build an in-service developer audit trace console for Nyare that lives strictly inside the backend using Thymeleaf. Rather than scraping terminal logs or intercepting console output, the system taps directly into `PlannerAuditAdvisor`, `StudyPlannerServiceImpl`, and core entity mutation services via Spring's `ApplicationEventPublisher`. The dev implementation resides in the `app/src/dev` sourceSet under package `group.four.nyare.nyare.dev` and templates in `src/dev/resources/templates/dev/`, with Thymeleaf added via `devImplementation`. The frontend remains 100% untouched. The console retains 500 in-memory events, tracks initiating user ID and trigger source (`WEB_SESSION`, `SYSTEM_JOB`), captures CRUD mutations and tombstones, streams live audits and lifecycle boundaries over SSE, captures unhandled exceptions with root-cause diagnostics, and walks database relations across Course, Note, Task, AcademicEvent, and Image records.
 
 ## Technical Context
 
@@ -35,7 +35,7 @@ Build an in-service developer audit trace console for Nyare that lives strictly 
 | **VII. Ponytail Minimalism & Native Features** | **PASS** | No new production dependencies added. Thymeleaf scoped to `devImplementation`. Reuses Spring `ApplicationEventPublisher` and native SSE `SseEmitter`. |
 | **VIII. Evidence-First Verification & Surgical Edits** | **PASS** | Production service modifications are surgical (event publishing hooks only). Dev code resides in `src/dev`. |
 | **IX. Domain Rule Alignment** | **PASS** | Adheres to Nyare 24-color course palette and entity relationships. |
-| **X. Dev Rules vs Presentation Separation** | **PASS** | **Exemplary compliance**: Frontend remains 100% clean and production-pure with zero dev views or route guards. The dev dashboard lives strictly inside `backend/src/dev`. |
+| **X. Dev Rules vs Presentation Separation** | **PASS** | **Exemplary compliance**: Frontend remains 100% clean and production-pure with zero dev views or route guards. The dev dashboard lives strictly inside `app/src/dev`. |
 
 ## Project Structure
 
@@ -57,7 +57,7 @@ specs/010-audit-trace-console/
 ### Source Code Layout
 
 ```text
-backend/
+app/
 ├── build.gradle                                     # Adds devImplementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 ├── src/main/java/group/four/nyare/nyare/
 │   ├── ai/
