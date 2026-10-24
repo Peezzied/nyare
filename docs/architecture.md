@@ -204,8 +204,9 @@ flowchart LR
 
 - Event types live in `ai.observability.event`: `AuditTraceEvent`, `AuditCategory`, `AuditSeverity`, `TraceKind`, `TriggerSource`, `MutationAction`, `LifecycleState`, `ErrorDiagnostic`.
 - Every domain service and the planner lifecycle publish events.
-- The console, sink, stream, and walker live only in `src/dev`. They do not ship in the production JAR.
-- Run it with `./gradlew devRun`. Open `http://localhost:8080/dev/observability`.
+- The console, sink, stream, and walker live in `src/dev`, gated by `@Profile("dev | observability")`. `bootJar` bundles the dev source set, but the beans stay inert unless the profile is active.
+- In the packaged JAR, set `observability.enabled=true` in `nyare.properties` (or tick the launcher checkbox). The `observability` profile does not run the `dev.sql` seed fixtures.
+- Run it with `./gradlew devRun`, enable observability in the launcher (or pass `--spring.profiles.active=dev,google` for the seed fixtures). Open `http://localhost:8080/dev/observability`.
 - The sink keeps events in memory only. Nothing persists.
 
 ---

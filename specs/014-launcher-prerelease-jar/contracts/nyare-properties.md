@@ -28,6 +28,9 @@ server.port=8080
 
 # Automatically launch default system browser upon successful server startup
 browser.auto-open=true
+
+# Enable the dev audit trace console at /dev/observability (default: false)
+observability.enabled=false
 ```
 
 ## Mapping to Spring Boot Properties
@@ -36,8 +39,9 @@ When launching Spring Boot, the launcher translates `nyare.properties` keys into
 
 | `nyare.properties` Key | Spring Property Equivalent | Value Transformation |
 | :--- | :--- | :--- |
-| `ai.provider=google` | `spring.profiles.active` | Appends `google` profile (`dev,google`) |
-| `ai.provider=groq` | `spring.profiles.active` | Appends `groq` profile (`dev,groq`) |
+| `ai.provider=google` | `spring.profiles.active` | Appends `google` profile |
+| `ai.provider=groq` | `spring.profiles.active` | Appends `groq` profile |
+| `observability.enabled=true` | `spring.profiles.active` | Prepends `observability` profile (e.g. `observability,google`) |
 | `google.api.key=<key>` | `spring.ai.google.genai.api-key` | `<key>` (or `google-disabled` if blank) |
 | `groq.api.key=<key>` | `spring.ai.openai.api-key` | `<key>` (or `groq-disabled` if blank) |
 | `server.port=<port>` | `server.port` | `<port>` |

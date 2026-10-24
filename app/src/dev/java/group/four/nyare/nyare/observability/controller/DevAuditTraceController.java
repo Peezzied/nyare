@@ -10,6 +10,7 @@ import group.four.nyare.nyare.observability.dto.TraceNodeStubDto;
 import group.four.nyare.nyare.observability.service.DevAuditTraceService;
 import group.four.nyare.nyare.observability.stream.DevAuditTraceStream;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +29,7 @@ import java.util.UUID;
  * view plus the JSON endpoints the inspector pane calls when the user selects
  * an audit entry or a record reference. Read-only; dev-sourceSet only.
  */
+@Profile("dev | observability")
 @Controller
 @RequestMapping("/dev/observability")
 public class DevAuditTraceController {

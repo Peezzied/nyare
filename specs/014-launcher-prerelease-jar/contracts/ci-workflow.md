@@ -31,9 +31,9 @@ permissions:
    - Copies `application*.properties.example` to `application*.properties` in `app/src/main/resources` and `app/src/test/resources`.
 7. **Make Wrapper Executable**: `chmod +x app/gradlew`
 8. **Unit Tests**:
-   - `cd backend && ./gradlew test --tests "*Test" --tests "!*IntegrationTest"`
+   - `cd app && ./gradlew test -PexcludeIntegrationTests`
 9. **Package Executable JAR**:
-   - `cd backend && ./gradlew bootJar -x test`
+   - `cd app && ./gradlew bootJar -x test`
 10. **Locate and Normalize Artifact**:
     - Discards `*-plain.jar` and `*-javadoc.jar`.
     - If `TAG` is available: copies bootJar to `nyare-${TAG}.jar`.

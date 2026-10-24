@@ -79,7 +79,7 @@ app/
 
 frontend/
 ├── package.json                                # Frontend build scripts
-└── vite.config.ts                              # Configured to output to backend static/
+└── vite.config.ts                              # Configured to output to app static/
 
 .github/
 └── workflows/

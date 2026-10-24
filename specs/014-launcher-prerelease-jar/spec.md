@@ -109,7 +109,7 @@ A developer publishes a pre-release on the source repository. An automated conti
 
 ### Key Entities
 
-- **LauncherConfiguration**: Represents stored runtime properties (`ai.provider`, `google.api.key`, `groq.api.key`, `server.port`, `browser.auto-open`).
+- **LauncherConfiguration**: Represents stored runtime properties (`ai.provider`, `google.api.key`, `groq.api.key`, `server.port`, `browser.auto-open`, `observability.enabled`).
 - **ServerInstance**: Represents the active lifecycle state of the embedded web application context (STOPPED, STARTING, RUNNING).
 - **ConsoleStream**: Represents the intercepted log buffer streamed to the visual log component.
 - **ReleaseArtifact**: The standalone, cross-platform executable file bundling the user interface, server runtime, and static assets.
