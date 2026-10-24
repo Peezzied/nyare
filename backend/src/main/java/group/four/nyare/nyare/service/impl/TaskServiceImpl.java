@@ -1,19 +1,33 @@
 package group.four.nyare.nyare.service.impl;
 
+import group.four.nyare.nyare.ai.event.AuditCategory;
+import group.four.nyare.nyare.ai.event.AuditSeverity;
+import group.four.nyare.nyare.ai.event.AuditTraceEvent;
+import group.four.nyare.nyare.ai.event.MutationAction;
+import group.four.nyare.nyare.ai.event.TraceKind;
+import group.four.nyare.nyare.ai.event.TriggerSource;
 import group.four.nyare.nyare.dto.TaskRequest;
 import group.four.nyare.nyare.dto.TaskResponse;
 import group.four.nyare.nyare.dto.TaskStatusRequest;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
+import group.four.nyare.nyare.model.Note;
 import group.four.nyare.nyare.model.Task;
+import group.four.nyare.nyare.model.User;
 import group.four.nyare.nyare.model.enums.TaskStatus;
 import group.four.nyare.nyare.repository.CourseRepository;
 import group.four.nyare.nyare.repository.TaskRepository;
 import group.four.nyare.nyare.service.TaskService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -22,13 +36,18 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class TaskServiceImpl implements TaskService {
 
+    private static final Logger log = LoggerFactory.getLogger(TaskServiceImpl.class);
+
     private final TaskRepository taskRepository;
     private final CourseRepository courseRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public TaskServiceImpl(TaskRepository taskRepository,
-                           CourseRepository courseRepository) {
+                           CourseRepository courseRepository,
+                           ApplicationEventPublisher eventPublisher) {
         this.taskRepository = taskRepository;
         this.courseRepository = courseRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -48,6 +67,8 @@ public class TaskServiceImpl implements TaskService {
         }
 
         Task savedTask = taskRepository.save(task);
+        publishMutation(MutationAction.CREATE, savedTask, userId,
+                "Task created: '" + savedTask.getTitle() + "'");
         return toResponse(savedTask);
     }
 
@@ -87,6 +108,8 @@ public class TaskServiceImpl implements TaskService {
             task.setStatus(request.getStatus());
         }
 
+        publishMutation(MutationAction.UPDATE, task, userId,
+                "Task updated: '" + task.getTitle() + "'");
         return toResponse(task);
     }
 
@@ -97,6 +120,8 @@ public class TaskServiceImpl implements TaskService {
         requireActiveCourse(task.getCourse());
         task.setStatus(request.getStatus());
 
+        publishMutation(MutationAction.UPDATE, task, userId,
+                "Task status changed to " + task.getStatus() + ": '" + task.getTitle() + "'");
         return toResponse(task);
     }
 
@@ -106,6 +131,52 @@ public class TaskServiceImpl implements TaskService {
         Task task = findTaskOrThrow(id, userId);
         requireActiveCourse(task.getCourse());
         taskRepository.delete(task);
+        publishMutation(MutationAction.DELETE, task, userId,
+                "Task deleted: '" + task.getTitle() + "'");
+    }
+
+    /**
+     * Publishes a {@link AuditCategory#DATA_MUTATION} trace event for a task
+     * mutation. Listener failures are swallowed: dev tooling must never break
+     * a mutation.
+     */
+    private void publishMutation(MutationAction action, Task task, Long userId, String summary) {
+        try {
+            Course course = task.getCourse();
+            User user = course != null ? course.getUser() : null;
+            Note note = task.getNote();
+            AuditTraceEvent event = new AuditTraceEvent(
+                    UUID.randomUUID(), Instant.now(), AuditCategory.DATA_MUTATION, AuditSeverity.INFO,
+                    summary, userId, user != null ? user.getUsername() : null,
+                    TriggerSource.WEB_SESSION, action, TraceKind.task,
+                    String.valueOf(task.getId()), summary,
+                    null, note != null ? note.getId() : null, task.getId(), null, null,
+                    course != null ? course.getId() : null,
+                    null, null, null, null, null, null);
+            // Defer until afterCommit so a commit-time rollback cannot leave a
+            // phantom mutation event in the dev trace feed.
+            if (TransactionSynchronizationManager.isSynchronizationActive()) {
+                TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        publishEvent(event);
+                    }
+                });
+            } else {
+                publishEvent(event);
+            }
+        } catch (Exception e) {
+            log.warn("Audit trace listener failed for task {} event: {}", action, e.getMessage());
+        }
+    }
+
+    private void publishEvent(AuditTraceEvent event) {
+        try {
+            eventPublisher.publishEvent(event);
+        } catch (Exception e) {
+            log.warn("Audit trace listener failed for {} {} event: {}",
+                    event.entityKind(), event.mutationAction(), e.getMessage());
+        }
     }
 
     private Task findTaskOrThrow(UUID id, Long userId) {

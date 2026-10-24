@@ -23,6 +23,10 @@ sourceSets {
         compileClasspath += sourceSets.main.output
         runtimeClasspath += sourceSets.main.output
     }
+    test {
+        compileClasspath += sourceSets.dev.output
+        runtimeClasspath += sourceSets.dev.output
+    }
 }
 
 configurations {
@@ -43,6 +47,7 @@ dependencies {
     implementation 'org.hibernate.orm:hibernate-community-dialects'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     developmentOnly "me.paulschwarz:springboot4-dotenv"
+    devImplementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     testImplementation "me.paulschwarz:springboot4-dotenv"
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
@@ -64,7 +69,7 @@ tasks.register('devRun', org.springframework.boot.gradle.tasks.run.BootRun) {
     group = 'application'
     description = 'Run the application with the nyare.dev fixtures'
     mainClass = 'group.four.nyare.nyare.NyareApplication'
-    classpath = sourceSets.main.runtimeClasspath + configurations.developmentOnly + sourceSets.dev.output
+    classpath = sourceSets.main.runtimeClasspath + configurations.developmentOnly + sourceSets.dev.runtimeClasspath
     dependsOn tasks.named('devClasses')
 }
 

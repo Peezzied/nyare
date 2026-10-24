@@ -1,34 +1,53 @@
 package group.four.nyare.nyare.service.impl;
 
+import group.four.nyare.nyare.ai.event.AuditCategory;
+import group.four.nyare.nyare.ai.event.AuditSeverity;
+import group.four.nyare.nyare.ai.event.AuditTraceEvent;
+import group.four.nyare.nyare.ai.event.MutationAction;
+import group.four.nyare.nyare.ai.event.TraceKind;
+import group.four.nyare.nyare.ai.event.TriggerSource;
 import group.four.nyare.nyare.dto.ScheduleRequest;
 import group.four.nyare.nyare.dto.ScheduleResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.Schedule;
+import group.four.nyare.nyare.model.User;
 import group.four.nyare.nyare.repository.CourseRepository;
 import group.four.nyare.nyare.repository.ScheduleRepository;
 import group.four.nyare.nyare.service.ScheduleService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 public class ScheduleServiceImpl implements ScheduleService {
 
+    private static final Logger log = LoggerFactory.getLogger(ScheduleServiceImpl.class);
+
     private final ScheduleRepository scheduleRepository;
     private final CourseRepository courseRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public ScheduleServiceImpl(ScheduleRepository scheduleRepository,
-                               CourseRepository courseRepository) {
+                               CourseRepository courseRepository,
+                               ApplicationEventPublisher eventPublisher) {
         this.scheduleRepository = scheduleRepository;
         this.courseRepository = courseRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -45,6 +64,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 request.getStartTime(), request.getEndTime());
 
         Schedule saved = scheduleRepository.save(schedule);
+        publishMutation(MutationAction.CREATE, saved, userId, "Schedule created: " + describe(saved));
         return toResponse(saved);
     }
 
@@ -90,6 +110,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         schedule.setStartTime(request.getStartTime());
         schedule.setEndTime(request.getEndTime());
 
+        publishMutation(MutationAction.UPDATE, schedule, userId, "Schedule updated: " + describe(schedule));
         return toResponse(schedule);
     }
 
@@ -100,6 +121,57 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .orElseThrow(() -> new ResourceNotFoundException("Schedule not found with ID: " + id));
         requireActiveCourse(schedule.getCourse());
         scheduleRepository.delete(schedule);
+        publishMutation(MutationAction.DELETE, schedule, userId, "Schedule deleted: " + describe(schedule));
+    }
+
+    private static String describe(Schedule schedule) {
+        Course course = schedule.getCourse();
+        String name = course != null ? course.getName() : "?";
+        return "'" + name + " " + schedule.getDay() + " "
+                + schedule.getStartTime() + "-" + schedule.getEndTime() + "'";
+    }
+
+    /**
+     * Publishes a {@link AuditCategory#DATA_MUTATION} trace event for a
+     * schedule mutation. Listener failures are swallowed: dev tooling must
+     * never break a mutation.
+     */
+    private void publishMutation(MutationAction action, Schedule schedule, Long userId, String summary) {
+        try {
+            Course course = schedule.getCourse();
+            User user = course != null ? course.getUser() : null;
+            AuditTraceEvent event = new AuditTraceEvent(
+                    UUID.randomUUID(), Instant.now(), AuditCategory.DATA_MUTATION, AuditSeverity.INFO,
+                    summary, userId, user != null ? user.getUsername() : null,
+                    TriggerSource.WEB_SESSION, action, TraceKind.schedule,
+                    String.valueOf(schedule.getId()), summary,
+                    null, null, null, null, null,
+                    course != null ? course.getId() : null,
+                    null, null, null, null, null, null);
+            // Defer until afterCommit so a commit-time rollback cannot leave a
+            // phantom mutation event in the dev trace feed.
+            if (TransactionSynchronizationManager.isSynchronizationActive()) {
+                TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        publishEvent(event);
+                    }
+                });
+            } else {
+                publishEvent(event);
+            }
+        } catch (Exception e) {
+            log.warn("Audit trace listener failed for schedule {} event: {}", action, e.getMessage());
+        }
+    }
+
+    private void publishEvent(AuditTraceEvent event) {
+        try {
+            eventPublisher.publishEvent(event);
+        } catch (Exception e) {
+            log.warn("Audit trace listener failed for {} {} event: {}",
+                    event.entityKind(), event.mutationAction(), e.getMessage());
+        }
     }
 
     private void requireActiveCourse(Course course) {

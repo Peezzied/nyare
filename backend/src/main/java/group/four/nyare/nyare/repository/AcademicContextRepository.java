@@ -41,6 +41,16 @@ public interface AcademicContextRepository extends JpaRepository<AcademicContext
     List<AcademicContext> findByCourseIdOrderByCreatedAtDesc(Long courseId);
 
     /**
+     * Retrieves all context records extracted from the given source note,
+     * ordered by creation timestamp descending. Used by the dev audit trace
+     * console for relation walking.
+     *
+     * @param noteId the source note identifier
+     * @return context records attached to the note ordered by createdAt descending
+     */
+    List<AcademicContext> findByNoteIdOrderByCreatedAtDesc(UUID noteId);
+
+    /**
      * Retrieves academic context records for a set of courses, ordered by creation
      * timestamp descending.
      *

@@ -1,5 +1,11 @@
 package group.four.nyare.nyare.service.impl;
 
+import group.four.nyare.nyare.ai.event.AuditCategory;
+import group.four.nyare.nyare.ai.event.AuditSeverity;
+import group.four.nyare.nyare.ai.event.AuditTraceEvent;
+import group.four.nyare.nyare.ai.event.MutationAction;
+import group.four.nyare.nyare.ai.event.TraceKind;
+import group.four.nyare.nyare.ai.event.TriggerSource;
 import group.four.nyare.nyare.dto.ImageUploadResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
@@ -8,11 +14,17 @@ import group.four.nyare.nyare.model.User;
 import group.four.nyare.nyare.repository.ImageRepository;
 import group.four.nyare.nyare.repository.UserRepository;
 import group.four.nyare.nyare.service.ImageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
@@ -27,12 +39,17 @@ public class ImageServiceImpl implements ImageService {
             "image/jpeg", "image/png", "image/webp", "image/gif"
     );
 
+    private static final Logger log = LoggerFactory.getLogger(ImageServiceImpl.class);
+
     private final ImageRepository imageRepository;
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public ImageServiceImpl(ImageRepository imageRepository, UserRepository userRepository) {
+    public ImageServiceImpl(ImageRepository imageRepository, UserRepository userRepository,
+            ApplicationEventPublisher eventPublisher) {
         this.imageRepository = imageRepository;
         this.userRepository = userRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -54,6 +71,8 @@ public class ImageServiceImpl implements ImageService {
             byte[] bytes = file.getBytes();
             Image image = new Image(bytes, contentType, file.getOriginalFilename(), file.getSize(), user);
             Image saved = imageRepository.save(image);
+            publishMutation(MutationAction.CREATE, saved, userId,
+                    "Image uploaded: '" + saved.getFilename() + "'");
             String url = "/api/images/" + saved.getId();
             return new ImageUploadResponse(saved.getId(), url, saved.getContentType(), saved.getSize(), saved.getCreatedAt());
         } catch (IOException e) {
@@ -73,5 +92,48 @@ public class ImageServiceImpl implements ImageService {
         Image image = imageRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Image not found with ID: " + id));
         imageRepository.delete(image);
+        publishMutation(MutationAction.DELETE, image, userId,
+                "Image deleted: '" + image.getFilename() + "'");
+    }
+
+    /**
+     * Publishes a {@link AuditCategory#DATA_MUTATION} trace event for an image
+     * mutation. Listener failures are swallowed: dev tooling must never break
+     * a mutation.
+     */
+    private void publishMutation(MutationAction action, Image image, Long userId, String summary) {
+        try {
+            User user = image.getUser();
+            AuditTraceEvent event = new AuditTraceEvent(
+                    UUID.randomUUID(), Instant.now(), AuditCategory.DATA_MUTATION, AuditSeverity.INFO,
+                    summary, userId, user != null ? user.getUsername() : null,
+                    TriggerSource.WEB_SESSION, action, TraceKind.image,
+                    String.valueOf(image.getId()), summary,
+                    null, null, null, null, image.getId(), null,
+                    null, null, null, null, null, null);
+            // Defer until afterCommit so a commit-time rollback cannot leave a
+            // phantom mutation event in the dev trace feed.
+            if (TransactionSynchronizationManager.isSynchronizationActive()) {
+                TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        publishEvent(event);
+                    }
+                });
+            } else {
+                publishEvent(event);
+            }
+        } catch (Exception e) {
+            log.warn("Audit trace listener failed for image {} event: {}", action, e.getMessage());
+        }
+    }
+
+    private void publishEvent(AuditTraceEvent event) {
+        try {
+            eventPublisher.publishEvent(event);
+        } catch (Exception e) {
+            log.warn("Audit trace listener failed for {} {} event: {}",
+                    event.entityKind(), event.mutationAction(), e.getMessage());
+        }
     }
 }

@@ -18,4 +18,22 @@ public interface ImageRepository extends JpaRepository<Image, UUID> {
     Optional<Image> findByIdAndUserId(UUID id, Long userId);
 
     List<Image> findByUserIdAndIdIn(Long userId, Collection<UUID> ids);
+
+    /**
+     * Finds image metadata by identifier without loading the binary payload.
+     * Used by the dev audit trace console so {@code Image.data} is never selected.
+     *
+     * @param id the image identifier
+     * @return the image metadata projection, otherwise empty
+     */
+    Optional<ImageMetadataView> findMetadataById(UUID id);
+
+    /**
+     * Finds metadata for a set of image identifiers without loading binaries.
+     * Used by the dev audit trace console for note-to-image relation walking.
+     *
+     * @param ids the image identifiers to resolve
+     * @return metadata projections for the images that exist
+     */
+    List<ImageMetadataView> findAllMetadataByIdIn(Collection<UUID> ids);
 }
