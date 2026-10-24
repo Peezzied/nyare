@@ -293,6 +293,8 @@ public class LauncherFrame extends JFrame {
                         context = null;
                         return;
                     }
+                    String warning = config.missingApiKeyWarning(context.getEnvironment());
+                    warningLabel.setText(warning == null ? " " : "Warning: " + warning);
                     setState(ServerState.RUNNING);
                     if (config.isBrowserAutoOpen()) {
                         openBrowser();
