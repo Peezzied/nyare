@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, useTemplateRef } from 'vue'
+import { minidenticon } from 'minidenticons'
 import TactileButton from '@/components/TactileButton.vue'
 import { useOnboarding } from '@/composables/useOnboarding'
 import { useAuth } from '@/composables/useAuth'
@@ -15,6 +16,11 @@ const { wipeTo } = useRouteWipe()
 const { user } = useAuth()
 
 const displayName = computed(() => studentName.value.trim() || user.value?.username || '')
+const profileName = computed(() => user.value?.username?.trim() || 'student')
+const avatarSrc = computed(
+  () =>
+    `data:image/svg+xml;utf8,${encodeURIComponent(minidenticon(profileName.value, 70, 50))}`,
+)
 const summary = computed(
   () =>
     savedSummary.value ?? { courses: [] as { name: string; colorId: string }[], classBlocks: 0 },
@@ -52,21 +58,41 @@ function enterCalendar(event: MouseEvent) {
   void wipeTo('/calendar', { x, y })
 }
 
+// Confetti rains continuously: each piece crosses the full stage on its own
+// loop. Negative delays scatter the pieces mid-fall on reveal.
 const CONFETTI = [
-  { top: '16%', left: '10%', color: '#00A4C8', tilt: '20deg', delay: 0 },
-  { top: '12%', left: '32%', color: '#F6BF26', tilt: '-30deg', delay: 80 },
-  { top: '20%', left: '62%', color: '#F4511E', tilt: '45deg', delay: 140 },
-  { top: '14%', left: '84%', color: '#33B679', tilt: '10deg', delay: 60 },
-  { top: '26%', left: '18%', color: '#8E24AA', tilt: '-15deg', delay: 180 },
-  { top: '24%', left: '74%', color: '#FBC02D', tilt: '32deg', delay: 110 },
-  { top: '30%', left: '46%', color: '#E67C73', tilt: '-40deg', delay: 200 },
-  { top: '10%', left: '52%', color: '#1E88E5', tilt: '24deg', delay: 40 },
+  { top: '16%', left: '10%', color: '#00A4C8', tilt: '20deg', dur: 3800, delay: -400 },
+  { top: '12%', left: '32%', color: '#F6BF26', tilt: '-30deg', dur: 4400, delay: -1900 },
+  { top: '20%', left: '62%', color: '#F4511E', tilt: '45deg', dur: 3600, delay: -2700 },
+  { top: '14%', left: '84%', color: '#33B679', tilt: '10deg', dur: 4800, delay: -900 },
+  { top: '26%', left: '18%', color: '#8E24AA', tilt: '-15deg', dur: 4000, delay: -3300 },
+  { top: '24%', left: '74%', color: '#FBC02D', tilt: '32deg', dur: 3400, delay: -1500 },
+  { top: '30%', left: '46%', color: '#E67C73', tilt: '-40deg', dur: 4600, delay: -2300 },
+  { top: '10%', left: '52%', color: '#1E88E5', tilt: '24deg', dur: 3900, delay: -3100 },
+] as const
+
+// Pencil-gray speed lines rise past the idle slip, telegraphing the peel's
+// upward travel. `y` only applies when motion is reduced: keyframe transforms
+// override the inline transform while the loop runs.
+const STREAKS = [
+  { left: '4%', height: 48, dur: 3.2, delay: -0.9, y: 14 },
+  { left: '10%', height: 30, dur: 2.8, delay: -2.1, y: 42 },
+  { left: '16%', height: 58, dur: 3.8, delay: -0.3, y: 71 },
+  { left: '24%', height: 36, dur: 3.0, delay: -1.6, y: 27 },
+  { left: '33%', height: 44, dur: 2.6, delay: -2.8, y: 58 },
+  { left: '42%', height: 62, dur: 3.6, delay: -1.1, y: 84 },
+  { left: '50%', height: 32, dur: 2.9, delay: -3.4, y: 19 },
+  { left: '58%', height: 52, dur: 3.3, delay: -0.5, y: 49 },
+  { left: '67%', height: 28, dur: 2.7, delay: -2.4, y: 76 },
+  { left: '76%', height: 46, dur: 3.5, delay: -1.9, y: 33 },
+  { left: '86%', height: 38, dur: 3.1, delay: -0.8, y: 64 },
+  { left: '94%', height: 56, dur: 4.0, delay: -2.7, y: 8 },
 ] as const
 </script>
 
 <template>
   <div
-    class="relative mx-auto flex h-[100svh] w-full max-w-[420px] flex-col overflow-hidden bg-[#F6F7EE] px-6"
+    class="relative mx-auto flex h-[100dvh] w-full max-w-[420px] flex-col overflow-hidden bg-[#F6F7EE] px-6"
   >
     <!-- Celebration scene: underneath the slip from the first frame -->
     <div :inert="!revealed" :aria-hidden="!revealed" class="absolute inset-0">
@@ -93,7 +119,8 @@ const CONFETTI = [
           left: piece.left,
           backgroundColor: piece.color,
           '--tilt': piece.tilt,
-          animationDelay: `${950 + piece.delay}ms`,
+          animationDuration: `${piece.dur}ms`,
+          animationDelay: `${piece.delay}ms`,
         }"
         aria-hidden="true"
       />
@@ -105,13 +132,20 @@ const CONFETTI = [
       >
         You did it!
       </h1>
-      <p
-        class="absolute inset-x-0 top-[33%] text-center text-lg font-bold text-[#527A8C]"
+      <div
+        class="absolute inset-x-0 top-[33%] flex items-center justify-center gap-2 px-6"
         :class="revealed ? 'pop-in' : 'pre-hidden'"
-        style="font-family: 'Quicksand', sans-serif; animation-delay: 1100ms"
+        style="animation-delay: 1100ms"
       >
-        {{ displayName ? `your week is set, ${displayName}` : 'your week is set' }}
-      </p>
+        <img
+          :src="avatarSrc"
+          :alt="`${profileName} profile picture`"
+          class="h-7 w-7 rounded-full border border-white bg-white object-cover shadow-[0_2px_0_#D5EBF1]"
+        />
+        <p class="text-lg font-bold text-[#527A8C]" style="font-family: 'Quicksand', sans-serif">
+          {{ displayName ? `your week is set, ${displayName}` : 'your week is set' }}
+        </p>
+      </div>
 
       <img
         src="@/assets/mascot/duckuta_greet.png"
@@ -161,6 +195,27 @@ const CONFETTI = [
       </div>
     </div>
 
+    <!-- Idle speed lines: stream up behind the slip until the peel -->
+    <div
+      v-show="!slipGone"
+      class="streaks absolute inset-0"
+      :class="{ 'streaks-off': revealed }"
+      aria-hidden="true"
+    >
+      <span
+        v-for="streak in STREAKS"
+        :key="streak.left"
+        class="streak"
+        :style="{
+          left: streak.left,
+          height: `${streak.height}px`,
+          transform: `translateY(${streak.y}vh)`,
+          animationDuration: `${streak.dur}s`,
+          animationDelay: `${streak.delay}s`,
+        }"
+      />
+    </div>
+
     <!-- Recap slip: the paper on stage, lifted away on continue -->
     <section
       v-show="!slipGone"
@@ -175,6 +230,15 @@ const CONFETTI = [
         style="font-family: 'Quicksand', sans-serif"
       >
         SAVED
+      </div>
+
+      <div class="absolute -top-4 right-5 rotate-6">
+        <img
+          :src="avatarSrc"
+          :alt="`${profileName} profile picture`"
+          class="slip-line h-11 w-11 rounded-full border-2 border-[#FDFEF7] bg-white object-cover shadow-[0_3px_0_#D5EBF1]"
+          style="animation-delay: 300ms"
+        />
       </div>
 
       <h2
@@ -245,6 +309,35 @@ const CONFETTI = [
    never get the animation classes' from-frames, so the base state is visible. */
 .pre-hidden {
   opacity: 0;
+}
+
+/* Speed lines die out as the slip lifts; v-show removes them with the slip. */
+.streaks {
+  transition: opacity 300ms ease;
+}
+
+.streaks-off {
+  opacity: 0;
+}
+
+.streak {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  border-radius: 9999px;
+  background: #7b8b97;
+  opacity: 0.4;
+  animation: streak-rise linear infinite;
+}
+
+/* Both endpoints sit off-screen, so the loop has no seam. */
+@keyframes streak-rise {
+  from {
+    transform: translateY(105vh);
+  }
+  to {
+    transform: translateY(-15vh);
+  }
 }
 
 /* Slip lines print in one at a time. */
@@ -334,23 +427,25 @@ const CONFETTI = [
 }
 
 .confetti-burst {
-  animation: confetti-fall 1100ms cubic-bezier(0.25, 0.8, 0.4, 1) both;
+  animation: confetti-drift linear infinite;
 }
 
-@keyframes confetti-fall {
+/* Both endpoints sit off-stage, so the loop has no seam: pieces fade in at
+   the top edge and out at the bottom. */
+@keyframes confetti-drift {
   0% {
     opacity: 0;
-    transform: translateY(-18px) rotate(0deg) scale(0.4);
+    transform: translateY(-40vh) rotate(0deg) scale(0.7);
   }
-  25% {
+  8% {
     opacity: 1;
   }
-  70% {
-    transform: translateY(52px) rotate(var(--tilt)) scale(1);
+  85% {
+    opacity: 1;
   }
   100% {
     opacity: 0;
-    transform: translateY(90px) rotate(calc(var(--tilt) * 2)) scale(0.9);
+    transform: translateY(115vh) rotate(calc(var(--tilt) * 4)) scale(0.95);
   }
 }
 
@@ -394,7 +489,8 @@ const CONFETTI = [
   .duckota-cheer,
   .confetti-burst,
   .prop-in,
-  .cta-glow {
+  .cta-glow,
+  .streak {
     animation: none;
   }
   .confetti-burst {
