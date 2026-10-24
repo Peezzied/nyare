@@ -13,7 +13,7 @@ Verify that building the frontend places static assets into the backend, and the
 
 ### Automated Incremental Build via Gradle:
 ```bash
-cd backend
+cd app
 # Compiles frontend automatically if changes are detected, then builds bootJar
 ./gradlew bootJar -x test
 cd ..
@@ -28,7 +28,7 @@ npm run build
 cd ..
 
 # 2. Package Spring Boot Standalone JAR
-cd backend
+cd app
 ./gradlew bootJar -x test
 cd ..
 ```
@@ -75,8 +75,8 @@ java --enable-native-access=ALL-UNNAMED -Djava.awt.headless=true -jar app/build/
 Run isolated unit tests to ensure no regressions:
 
 ```bash
-cd backend
-./gradlew test --tests "*Test" --tests "!*IntegrationTest"
+cd app
+./gradlew test -PexcludeIntegrationTests
 ```
 
 **Expected Result**:

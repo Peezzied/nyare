@@ -1,6 +1,7 @@
 package group.four.nyare.nyare.observability.sink;
 
 import group.four.nyare.nyare.ai.observability.event.AuditTraceEvent;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  * <p>Deque orientation: newest events sit at the head, oldest at the tail.
  * Iteration order is therefore newest-first, matching the dashboard feed.
  */
+@Profile("dev | observability")
 @Component
 public class DevAuditTraceSink {
 

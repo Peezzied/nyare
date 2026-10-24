@@ -25,6 +25,7 @@ import group.four.nyare.nyare.repository.NoteRepository;
 import group.four.nyare.nyare.repository.ScheduleRepository;
 import group.four.nyare.nyare.repository.TaskRepository;
 import group.four.nyare.nyare.service.impl.ImageReferenceExtractor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +51,7 @@ import java.util.UUID;
  * outcome: a matching {@code DELETE} mutation produces a tombstone node,
  * while any other miss stays a plain 404.
  */
+@Profile("dev | observability")
 @Service
 @Transactional(readOnly = true)
 public class DevTraceWalker {

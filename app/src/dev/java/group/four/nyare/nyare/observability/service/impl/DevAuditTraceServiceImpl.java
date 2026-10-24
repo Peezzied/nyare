@@ -21,6 +21,7 @@ import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.repository.CourseRepository;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.prompt.ChatOptions;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +43,7 @@ import java.util.regex.Pattern;
  * through {@link DevTraceWalker}, and synthesizes {@code lifecycle} nodes from
  * the planning-run events still held in the sink. Dev-sourceSet only.
  */
+@Profile("dev | observability")
 @Service
 @Transactional(readOnly = true)
 public class DevAuditTraceServiceImpl implements DevAuditTraceService {

@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '4.1.1'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.github.node-gradle.node' version '7.1.0'
 }
 
 group = 'group.four.nyare'
@@ -16,6 +17,47 @@ java {
 
 repositories {
     mavenCentral()
+}
+
+springBoot {
+    mainClass = 'group.four.nyare.nyare.NyareApplication'
+}
+
+def frontendDir = file("${projectDir}/../frontend")
+
+node {
+    download = false
+    nodeProjectDir = frontendDir
+}
+
+tasks.register('npmCi', NpmTask) {
+    group = 'frontend'
+    description = 'Install frontend dependencies; fails fast when Node.js/npm is not on PATH'
+    workingDir = frontendDir
+    args = ['ci']
+    inputs.files file("${frontendDir}/package.json"), file("${frontendDir}/package-lock.json")
+    outputs.file file("${frontendDir}/node_modules/.package-lock.json")
+}
+
+tasks.register('buildFrontend', NpmTask) {
+    group = 'frontend'
+    description = 'Build the Vue SPA into src/main/resources/static'
+    workingDir = frontendDir
+    dependsOn 'npmCi'
+    args = ['run', 'build']
+    inputs.dir file("${frontendDir}/src")
+    inputs.dir file("${frontendDir}/public")
+    inputs.files file("${frontendDir}/package.json"), file("${frontendDir}/vite.config.ts")
+    inputs.files fileTree(frontendDir) { include 'tsconfig*.json' }
+    outputs.dir file("${projectDir}/src/main/resources/static")
+    doLast {
+        // preview/ is dev-mock imagery served from frontend/public; not shipped in the jar.
+        delete "${projectDir}/src/main/resources/static/preview"
+    }
+}
+
+tasks.named('processResources') {
+    dependsOn 'buildFrontend'
 }
 
 sourceSets {
@@ -59,6 +101,11 @@ tasks.withType(Test).configureEach {
     useJUnitPlatform()
     jvmArgs '--enable-native-access=ALL-UNNAMED'
     systemProperty 'spring.profiles.active', 'test'
+    if (providers.gradleProperty('excludeIntegrationTests').isPresent()) {
+        filter {
+            excludeTestsMatching '*IntegrationTest'
+        }
+    }
 }
 
 tasks.withType(org.springframework.boot.gradle.tasks.run.BootRun).configureEach {
@@ -70,6 +117,14 @@ tasks.register('devRun', org.springframework.boot.gradle.tasks.run.BootRun) {
     description = 'Run the application with the nyare.dev fixtures'
     mainClass = 'group.four.nyare.nyare.NyareApplication'
     classpath = sourceSets.main.runtimeClasspath + configurations.developmentOnly + sourceSets.dev.runtimeClasspath
+    dependsOn tasks.named('devClasses')
+}
+
+tasks.named('bootJar') {
+    // Ship the dev console in the release jar. Its beans stay inert unless the
+    // observability/dev profile is active, which the launcher toggle controls.
+    classpath sourceSets.dev.output
+    classpath configurations.devRuntimeClasspath.minus(configurations.runtimeClasspath)
     dependsOn tasks.named('devClasses')
 }
 

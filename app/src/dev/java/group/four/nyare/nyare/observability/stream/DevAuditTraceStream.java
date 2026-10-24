@@ -2,6 +2,7 @@ package group.four.nyare.nyare.observability.stream;
 
 import group.four.nyare.nyare.ai.observability.event.AuditTraceEvent;
 import group.four.nyare.nyare.observability.dto.AuditTraceEventDto;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -18,6 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * {@link AuditTraceEventDto} JSON. Dev-sourceSet only; dead emitters are
  * dropped on completion, timeout, error, or a failed write.
  */
+@Profile("dev | observability")
 @Component
 public class DevAuditTraceStream {
 

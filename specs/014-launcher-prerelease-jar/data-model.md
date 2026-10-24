@@ -13,6 +13,7 @@ Represents the user configuration loaded from and saved to `nyare.properties`.
 | `groqApiKey` | String | API key for Groq Cloud | `""` | Non-null, trimmed string |
 | `serverPort` | Integer | Network port for Spring HTTP server | `8080` | Between `1024` and `65535` |
 | `browserAutoOpen` | Boolean | Launch default browser on startup | `true` | Valid boolean |
+| `observability` | Boolean | Activate the `observability` profile and audit console | `false` | Valid boolean |
 
 #### File Representation (`nyare.properties`)
 ```properties
@@ -31,6 +32,9 @@ server.port=8080
 
 # Automatically open default browser when server starts
 browser.auto-open=true
+
+# Enable the dev audit trace console at /dev/observability
+observability.enabled=false
 ```
 
 ---

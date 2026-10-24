@@ -1,0 +1,86 @@
+name: Pre-release JAR
+
+on:
+  release:
+    types: [published, prereleased]
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: Git release tag to upload the asset to
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Copy properties templates
+        run: |
+          cd app/src/main/resources
+          for f in application*.properties.example; do cp "$f" "${f%.example}"; done
+          cd ../../test/resources
+          for f in application*.properties.example; do cp "$f" "${f%.example}"; done
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x app/gradlew
+
+      - name: Run unit tests
+        working-directory: app
+        run: ./gradlew test -PexcludeIntegrationTests
+
+      - name: Package executable JAR
+        working-directory: app
+        run: ./gradlew bootJar -x test
+
+      - name: Normalize artifact
+        run: |
+          JAR=$(ls app/build/libs/*.jar | grep -v -- '-plain\.jar' | grep -v -- '-javadoc\.jar' | head -n 1)
+          TAG="${{ github.event.release.tag_name || inputs.tag_name }}"
+          if [ -n "$TAG" ]; then
+            cp "$JAR" "nyare-${TAG}.jar"
+            JAR="nyare-${TAG}.jar"
+          fi
+          echo "JAR_PATH=$JAR" >> "$GITHUB_ENV"
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+
+      - name: Upload actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nyare-jar
+          path: ${{ env.JAR_PATH }}
+          retention-days: 7
+
+      - name: Upload to GitHub release
+        if: env.TAG != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "$TAG" "$JAR_PATH" --clobber
