@@ -82,6 +82,7 @@ public class LauncherConfig {
     public static LauncherConfig load(Path file) {
         LauncherConfig config = new LauncherConfig(file);
         if (!Files.exists(file)) {
+            populateApiKeysFromDotenv(file, config);
             config.saveQuietly();
             return config;
         }
@@ -107,6 +108,8 @@ public class LauncherConfig {
         missing |= groqKey == null;
         config.groqApiKey = groqKey == null ? "" : groqKey.trim();
 
+        populateApiKeysFromDotenv(file, config);
+
         String port = props.getProperty("server.port");
         missing |= port == null;
         config.serverPort = parsePort(port);
@@ -124,6 +127,46 @@ public class LauncherConfig {
             config.saveQuietly();
         }
         return config;
+    }
+
+    private static void populateApiKeysFromDotenv(Path configFile, LauncherConfig config) {
+        if (!config.googleApiKey.isBlank() && !config.groqApiKey.isBlank()) {
+            return;
+        }
+        Path parent = configFile.getParent();
+        if (parent == null) {
+            return;
+        }
+        Path envFile = parent.resolve(".env");
+        if (!Files.isRegularFile(envFile)) {
+            return;
+        }
+        try {
+            for (String line : Files.readAllLines(envFile, StandardCharsets.UTF_8)) {
+                String trimmed = line.trim();
+                if (trimmed.isEmpty() || trimmed.startsWith("#")) {
+                    continue;
+                }
+                int eq = trimmed.indexOf('=');
+                if (eq <= 0) {
+                    continue;
+                }
+                String key = trimmed.substring(0, eq).trim();
+                String val = trimmed.substring(eq + 1).trim();
+                if ((val.startsWith("\"") && val.endsWith("\""))
+                        || (val.startsWith("'") && val.endsWith("'"))) {
+                    val = val.substring(1, val.length() - 1);
+                }
+                if (config.googleApiKey.isBlank() && "GOOGLE_API_KEY".equals(key)) {
+                    config.googleApiKey = val;
+                }
+                if (config.groqApiKey.isBlank() && "GROQ_API_KEY".equals(key)) {
+                    config.groqApiKey = val;
+                }
+            }
+        } catch (IOException e) {
+            // Ignore unreadable .env file; nyare.properties defaults apply.
+        }
     }
 
     private static String sanitizeProvider(String value) {
@@ -185,9 +228,26 @@ public class LauncherConfig {
      * or {@code null} when a key is configured. AI features fail without it.
      */
     public String missingApiKeyWarning() {
+        return missingApiKeyWarning(null);
+    }
+
+    /**
+     * Returns a startup warning when the selected provider's API key is blank
+     * in this config and missing in the Spring environment.
+     */
+    public String missingApiKeyWarning(org.springframework.core.env.Environment env) {
         boolean google = PROVIDER_GOOGLE.equals(aiProvider);
-        if (!(google ? googleApiKey : groqApiKey).isBlank()) {
+        String key = google ? googleApiKey : groqApiKey;
+        if (!key.isBlank()) {
             return null;
+        }
+        if (env != null) {
+            String springKey = env.getProperty(google
+                    ? "spring.ai.google.genai.api-key"
+                    : "spring.ai.openai.api-key");
+            if (springKey != null && !springKey.isBlank() && !springKey.endsWith("-disabled")) {
+                return null;
+            }
         }
         return (google ? "Google" : "Groq")
                 + " API key is missing. AI features will fail until it is configured.";
@@ -201,10 +261,12 @@ public class LauncherConfig {
         Map<String, String> managed = new LinkedHashMap<>();
         managed.put("spring.profiles.active",
                 observability ? "observability," + aiProvider : aiProvider);
-        managed.put("spring.ai.google.genai.api-key",
-                googleApiKey.isBlank() ? "google-disabled" : googleApiKey);
-        managed.put("spring.ai.openai.api-key",
-                groqApiKey.isBlank() ? "groq-disabled" : groqApiKey);
+        if (!googleApiKey.isBlank()) {
+            managed.put("spring.ai.google.genai.api-key", googleApiKey);
+        }
+        if (!groqApiKey.isBlank()) {
+            managed.put("spring.ai.openai.api-key", groqApiKey);
+        }
         managed.put("server.port", String.valueOf(serverPort));
 
         List<String> passthrough = new ArrayList<>();

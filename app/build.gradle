@@ -57,6 +57,14 @@ tasks.register('buildFrontend', NpmTask) {
 }
 
 tasks.named('processResources') {
+    mustRunAfter 'buildFrontend'
+}
+
+tasks.named('bootRun') {
+    dependsOn 'buildFrontend'
+}
+
+tasks.named('bootJar') {
     dependsOn 'buildFrontend'
 }
 
@@ -117,6 +125,8 @@ tasks.register('devRun', org.springframework.boot.gradle.tasks.run.BootRun) {
     description = 'Run the application with the nyare.dev fixtures'
     mainClass = 'group.four.nyare.nyare.NyareApplication'
     classpath = sourceSets.main.runtimeClasspath + configurations.developmentOnly + sourceSets.dev.runtimeClasspath
+    systemProperty 'java.awt.headless', 'true'
+    args '--headless'
     dependsOn tasks.named('devClasses')
 }
 

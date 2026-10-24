@@ -36,6 +36,21 @@ class LauncherConfigTest {
     }
 
     @Test
+    void load_blankKeysWithDotenvNextToFile_populatesFromDotenv() throws Exception {
+        // given
+        Path file = configFile();
+        Path envFile = tempDir.resolve(".env");
+        Files.writeString(envFile, "GOOGLE_API_KEY=test-dotenv-google\nGROQ_API_KEY=\"test-dotenv-groq\"\n");
+
+        // when
+        LauncherConfig config = LauncherConfig.load(file);
+
+        // then
+        assertThat(config.getGoogleApiKey()).isEqualTo("test-dotenv-google");
+        assertThat(config.getGroqApiKey()).isEqualTo("test-dotenv-groq");
+    }
+
+    @Test
     void load_savedFile_roundTripsAllValues() throws Exception {
         // given
         Path file = configFile();
@@ -129,7 +144,7 @@ class LauncherConfigTest {
     }
 
     @Test
-    void toSpringArgs_blankKeys_usesDisabledPlaceholders() {
+    void toSpringArgs_blankKeys_omitsApiKeyArgs() {
         // given
         LauncherConfig config = LauncherConfig.load(configFile());
 
@@ -139,9 +154,23 @@ class LauncherConfigTest {
         // then
         assertThat(args).contains(
                 "--spring.profiles.active=google",
-                "--spring.ai.google.genai.api-key=google-disabled",
-                "--spring.ai.openai.api-key=groq-disabled",
                 "--server.port=8080");
+        assertThat(args).noneMatch(arg -> arg.startsWith("--spring.ai.google.genai.api-key="));
+        assertThat(args).noneMatch(arg -> arg.startsWith("--spring.ai.openai.api-key="));
+    }
+
+    @Test
+    void missingApiKeyWarning_withEnvironmentKey_returnsNull() {
+        // given
+        LauncherConfig config = LauncherConfig.load(configFile());
+        org.springframework.mock.env.MockEnvironment env = new org.springframework.mock.env.MockEnvironment();
+        env.setProperty("spring.ai.google.genai.api-key", "env-google-key");
+
+        // when
+        String warning = config.missingApiKeyWarning(env);
+
+        // then
+        assertThat(warning).isNull();
     }
 
     @Test
