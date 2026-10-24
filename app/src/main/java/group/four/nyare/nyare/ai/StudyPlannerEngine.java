@@ -68,8 +68,11 @@ public class StudyPlannerEngine {
         public static final String SCHEDULES = "class_schedules";
     }
 
-    // FIXME temporary only. change in the future
-    private static final int PLANNING_SCOPE_DAYS = 14;
+    /**
+     * Default planning lookahead in days, used when the caller does not
+     * supply a per-user horizon.
+     */
+    public static final int DEFAULT_PLANNING_SCOPE_DAYS = 14;
 
     /**
      * Default guard for a single model round-trip. Bounds each model call so a
@@ -80,36 +83,23 @@ public class StudyPlannerEngine {
 
     private final ChatClient chatClient;
     private final long aiTimeoutMs;
+    private final SystemPromptTemplate systemPromptTemplate;
+    private final Map<String, Object> systemParams;
 
     @Autowired
     public StudyPlannerEngine(ChatClient.Builder chatClientBuilder,
                               @Value("classpath:planner_sys-prompt.st") Resource systemPromptResource,
                               @Autowired(required = false) group.four.nyare.nyare.ai.observability.advisor.PlannerAuditAdvisor plannerAuditAdvisor,
                               @Value("${nyare.study-planner.ai-timeout-ms:50000}") long aiTimeoutMs) {
-        SystemPromptTemplate systemTemplate = new SystemPromptTemplate(systemPromptResource);
+        this.systemPromptTemplate = new SystemPromptTemplate(systemPromptResource);
+        this.systemParams = defaultSystemParams();
+        this.aiTimeoutMs = aiTimeoutMs;
 
-        Function<String, String> tagWrap = (tag) -> {
-            return "<" + tag + ">";
-        };
-
-        String renderedSystemPrompt = systemTemplate.render(Map.of(
-                "time", tagWrap.apply(Tags.TIME),
-                "journal", tagWrap.apply(Tags.JOURNAL),
-                "image", tagWrap.apply(Tags.IMAGE),
-                "tasks", tagWrap.apply(Tags.TASKS),
-                "events", tagWrap.apply(Tags.EVENTS),
-                "contexts", tagWrap.apply(Tags.CONTEXTS),
-                "schedules", tagWrap.apply(Tags.SCHEDULES),
-                "days", PLANNING_SCOPE_DAYS
-        ));
-
-        ChatClient.Builder builder = chatClientBuilder.defaultSystem(renderedSystemPrompt);
+        ChatClient.Builder builder = chatClientBuilder;
         if (plannerAuditAdvisor != null) {
             builder.defaultAdvisors(plannerAuditAdvisor);
         }
-
         this.chatClient = builder.build();
-        this.aiTimeoutMs = aiTimeoutMs;
     }
 
     StudyPlannerEngine(ChatClient chatClient) {
@@ -117,8 +107,38 @@ public class StudyPlannerEngine {
     }
 
     StudyPlannerEngine(ChatClient chatClient, long aiTimeoutMs) {
+        this(chatClient, null, aiTimeoutMs);
+    }
+
+    StudyPlannerEngine(ChatClient chatClient, Resource systemPromptResource, long aiTimeoutMs) {
         this.chatClient = chatClient;
         this.aiTimeoutMs = aiTimeoutMs;
+        this.systemPromptTemplate = systemPromptResource != null
+                ? new SystemPromptTemplate(systemPromptResource)
+                : null;
+        this.systemParams = defaultSystemParams();
+    }
+
+    private static Map<String, Object> defaultSystemParams() {
+        Function<String, String> tagWrap = (tag) -> "<" + tag + ">";
+        Map<String, Object> params = new HashMap<>();
+        params.put("time", tagWrap.apply(Tags.TIME));
+        params.put("journal", tagWrap.apply(Tags.JOURNAL));
+        params.put("image", tagWrap.apply(Tags.IMAGE));
+        params.put("tasks", tagWrap.apply(Tags.TASKS));
+        params.put("events", tagWrap.apply(Tags.EVENTS));
+        params.put("contexts", tagWrap.apply(Tags.CONTEXTS));
+        params.put("schedules", tagWrap.apply(Tags.SCHEDULES));
+        return params;
+    }
+
+    private String renderSystemPrompt(int planningScopeDays) {
+        if (systemPromptTemplate == null) {
+            return null;
+        }
+        Map<String, Object> params = new HashMap<>(systemParams);
+        params.put("days", planningScopeDays);
+        return systemPromptTemplate.render(params);
     }
 
     /**
@@ -161,6 +181,30 @@ public class StudyPlannerEngine {
             List<AcademicContext> existingContexts,
             List<Schedule> schedules,
             Map<UUID, List<Image>> noteImages) {
+        return process(notes, existingTasks, existingEvents, existingContexts, schedules, noteImages,
+                DEFAULT_PLANNING_SCOPE_DAYS);
+    }
+
+    /**
+     * Processes notes and attached images with a caller-supplied planning horizon.
+     *
+     * @param notes             journal notes to process
+     * @param existingTasks     open tasks for the scoped courses (caller-filtered)
+     * @param existingEvents    upcoming events for the scoped courses (caller-filtered)
+     * @param existingContexts  known academic context facts for the scoped courses
+     * @param schedules         recurring class schedules for the scoped courses
+     * @param noteImages        map of note ID to attached images with descriptions
+     * @param planningScopeDays lookahead window in days for upcoming event preparation
+     * @return extracted and scheduled tasks, events, and contexts
+     */
+    public ExtractedData process(
+            List<Note> notes,
+            List<Task> existingTasks,
+            List<AcademicEvent> existingEvents,
+            List<AcademicContext> existingContexts,
+            List<Schedule> schedules,
+            Map<UUID, List<Image>> noteImages,
+            int planningScopeDays) {
 
         if (notes == null || notes.isEmpty()) {
             return emptyExtractedData();
@@ -186,6 +230,7 @@ public class StudyPlannerEngine {
         String timeContext = String.format("Current Reference Date: %s (%s)", today, today.getDayOfWeek());
 
         TaggedPromptBuilder builder = TaggedPromptBuilder.builder()
+                .systemInstruction(renderSystemPrompt(planningScopeDays))
                 .tag(Tags.TIME, timeContext)
                 .tag(Tags.JOURNAL, buildNotesCsv(validNotes, noteCodec))
                 .tagIfPresent(Tags.IMAGE, buildImagesCsv(validNotes, noteImages, noteCodec, imageCodec))

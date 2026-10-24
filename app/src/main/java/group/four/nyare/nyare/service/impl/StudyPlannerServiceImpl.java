@@ -28,6 +28,7 @@ import group.four.nyare.nyare.repository.ImageRepository;
 import group.four.nyare.nyare.repository.NoteRepository;
 import group.four.nyare.nyare.repository.ScheduleRepository;
 import group.four.nyare.nyare.repository.TaskRepository;
+import group.four.nyare.nyare.repository.UserRepository;
 import group.four.nyare.nyare.service.ProcessListener;
 import group.four.nyare.nyare.service.StudyPlannerService;
 import org.slf4j.Logger;
@@ -78,6 +79,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
     private final ImageAiProcessor imageAiProcessor;
     private final StudyPlannerEngine studyPlannerEngine;
     private final ApplicationEventPublisher eventPublisher;
+    private final UserRepository userRepository;
 
     @Autowired
     public StudyPlannerServiceImpl(
@@ -89,7 +91,8 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
             ImageRepository imageRepository,
             ImageAiProcessor imageAiProcessor,
             StudyPlannerEngine studyPlannerEngine,
-            ApplicationEventPublisher eventPublisher) {
+            ApplicationEventPublisher eventPublisher,
+            UserRepository userRepository) {
         this.noteRepository = noteRepository;
         this.taskRepository = taskRepository;
         this.academicEventRepository = academicEventRepository;
@@ -99,6 +102,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         this.imageAiProcessor = imageAiProcessor;
         this.studyPlannerEngine = studyPlannerEngine;
         this.eventPublisher = eventPublisher;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -218,6 +222,13 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         }
     }
 
+    private int resolvePlanningScopeDays(Long userId) {
+        return userRepository.findById(userId)
+                .map(User::getPlanningHorizonDays)
+                .filter(Objects::nonNull)
+                .orElse(StudyPlannerEngine.DEFAULT_PLANNING_SCOPE_DAYS);
+    }
+
     /**
      * Executes the multi-day extraction and persistence body of a planning run.
      * Runs inside the boundary in {@link #processDirtyNotes} so an unhandled
@@ -231,6 +242,8 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         int totalEventsCreated = 0;
         int totalContextsCreated = 0;
         Set<Long> affectedCourseIds = new TreeSet<>();
+
+        int planningScopeDays = resolvePlanningScopeDays(userId);
 
         int index = 0;
         int total = notesByDate.size();
@@ -263,7 +276,8 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
             List<Schedule> schedules = scheduleRepository.findAllFiltered(userId, null, false);
 
             StudyPlannerEngine.ExtractedData extracted = studyPlannerEngine.process(
-                    dateNotes, existingTasks, existingEvents, existingContexts, schedules, noteImages);
+                    dateNotes, existingTasks, existingEvents, existingContexts, schedules, noteImages,
+                    planningScopeDays);
             checkCancelled(listener, runId, userId, originUsername, startedAt);
 
             Map<UUID, Note> noteMap = dateNotes.stream()

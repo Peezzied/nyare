@@ -18,6 +18,7 @@ import group.four.nyare.nyare.model.User;
 import group.four.nyare.nyare.repository.CourseRepository;
 import group.four.nyare.nyare.repository.ImageRepository;
 import group.four.nyare.nyare.repository.NoteRepository;
+import group.four.nyare.nyare.repository.UserRepository;
 import group.four.nyare.nyare.service.NoteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,19 +57,22 @@ public class NoteServiceImpl implements NoteService {
     private final CourseRepository courseRepository;
     private final ImageRepository imageRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final UserRepository userRepository;
 
     public NoteServiceImpl(NoteRepository noteRepository, CourseRepository courseRepository,
-            ImageRepository imageRepository, ApplicationEventPublisher eventPublisher) {
+            ImageRepository imageRepository, ApplicationEventPublisher eventPublisher,
+            UserRepository userRepository) {
         this.noteRepository = noteRepository;
         this.courseRepository = courseRepository;
         this.imageRepository = imageRepository;
         this.eventPublisher = eventPublisher;
+        this.userRepository = userRepository;
     }
 
     @Override
     @Transactional
     public NoteResponse createNote(NoteRequest request, Long userId) {
-        validateEntryDate(request.getEntryDate());
+        validateEntryDate(request.getEntryDate(), resolveBackdatingDays(userId));
 
         Course course = courseRepository.findByIdAndUserId(request.getCourseId(), userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + request.getCourseId()));
@@ -121,7 +125,7 @@ public class NoteServiceImpl implements NoteService {
     @Transactional
     public NoteResponse updateNote(UUID id, NoteRequest request, Long userId) {
         if (request.getEntryDate() != null) {
-            validateEntryDate(request.getEntryDate());
+            validateEntryDate(request.getEntryDate(), resolveBackdatingDays(userId));
         }
 
         Note note = noteRepository.findByIdAndCourseUserId(id, userId)
@@ -211,7 +215,14 @@ public class NoteServiceImpl implements NoteService {
         }
     }
 
-    private void validateEntryDate(LocalDate entryDate) {
+    private int resolveBackdatingDays(Long userId) {
+        return userRepository.findById(userId)
+                .map(User::getBackdatingHorizonDays)
+                .filter(days -> days != null)
+                .orElse(maxBackdateDays);
+    }
+
+    private void validateEntryDate(LocalDate entryDate, int horizonDays) {
         if (entryDate == null) {
             return;
         }
@@ -219,9 +230,9 @@ public class NoteServiceImpl implements NoteService {
         if (entryDate.isAfter(today)) {
             throw new BadRequestException("Entry date cannot be in the future");
         }
-        LocalDate oldestAllowed = today.minusDays(maxBackdateDays);
+        LocalDate oldestAllowed = today.minusDays(horizonDays);
         if (entryDate.isBefore(oldestAllowed)) {
-            throw new BadRequestException("Entry date cannot be older than " + maxBackdateDays + " days");
+            throw new BadRequestException("Entry date cannot be older than " + horizonDays + " days");
         }
     }
 

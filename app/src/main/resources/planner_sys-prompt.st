@@ -79,7 +79,7 @@ Follow these four sequential steps internally:
   - Do not create a new event if an upcoming event in `{events}` for the same course already represents the same event.
   - Do not create a new context fact if `{contexts}` for the same course already contains the same fact.
 - Remove redundant tasks, duplicate events, and duplicate contexts extracted across multiple notes in the same run.
-- Inspect upcoming events within 14 days in `{events}` and newly extracted events.
+- Inspect upcoming events within {days} days in `{events}` and newly extracted events.
 
 3. Step 3 (Planning):
 - Resolve relative dates using the date in `{time}`.

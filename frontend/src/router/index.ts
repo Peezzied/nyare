@@ -102,6 +102,11 @@ const router = createRouter({
           name: 'archived-course',
           component: () => import('@/views/ArchivedCourseView.vue'),
         },
+        {
+          path: '/settings',
+          name: 'settings',
+          component: () => import('@/views/SettingsView.vue'),
+        },
       ],
     },
     {

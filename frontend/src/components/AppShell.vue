@@ -31,6 +31,11 @@ const title = computed(() => toValue(header.title ?? ''))
 const route = useRoute()
 const router = useRouter()
 
+// Management screens carry no Process surface, so the Duckota trigger and its
+// speech bubble stay hidden there.
+const FAB_HIDDEN_ROUTES = ['manage-courses', 'archive', 'archived-course', 'settings']
+const showDuckotaFab = computed(() => !FAB_HIDDEN_ROUTES.includes(route.name as string))
+
 const isGlobalNoteOpen = computed(() => Boolean(route.query?.note))
 const globalNoteId = computed(() => {
   const noteParam = route.query?.note
@@ -296,7 +301,7 @@ onMounted(() => {
           </KeepAlive>
         </Transition>
       </RouterView>
-      <div class="absolute bottom-4 left-5 z-20">
+      <div v-if="showDuckotaFab" class="absolute bottom-4 left-5 z-20">
         <div aria-live="polite">
           <Transition name="duckota-bubble">
             <DuckotaBubble
