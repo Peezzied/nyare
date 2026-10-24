@@ -50,6 +50,7 @@ flowchart LR
 | `frontend/` | Vue SPA. Alias `@` maps to `src/`. |
 | `docs/` | Domain truth and this specification. |
 | `docs/deliberations/` | Submission deliverables. Not engineering truth. |
+| `references/` | Submission templates and external reference materials (read-only). |
 | `specs/` | Per-feature specification kits. |
 | `DESIGN.md` | UI/UX design system. |
 
