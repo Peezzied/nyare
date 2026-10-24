@@ -40,10 +40,10 @@ function handleChooseAccount(): void {
 
 <template>
   <div
-    class="relative min-h-screen w-full overflow-x-hidden bg-[#F6F7EE] text-[#334155] font-['Quicksand'] select-none"
+    class="relative min-h-dvh w-full overflow-x-hidden bg-[#F6F7EE] text-[#334155] font-['Quicksand'] select-none"
   >
     <main
-      class="relative z-10 mx-auto flex h-[100svh] max-w-[420px] flex-col justify-between px-5 pt-8 pb-8"
+      class="relative z-10 mx-auto flex h-[100dvh] max-w-[420px] flex-col justify-between px-5 pt-8 pb-8"
     >
       <!-- Header -->
       <header class="text-center">

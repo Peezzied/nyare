@@ -11,7 +11,7 @@ function begin() {
 
 <template>
   <div
-    class="relative mx-auto flex h-[100svh] w-full max-w-[420px] flex-col items-center overflow-hidden bg-[#F6F7EE] px-6"
+    class="relative mx-auto flex h-[100dvh] w-full max-w-[420px] flex-col items-center overflow-hidden bg-[#F6F7EE] px-6"
   >
     <!-- Background props: sun (top-right) -->
     <img

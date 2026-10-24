@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft } from '@lucide/vue'
 import TactileButton from '@/components/TactileButton.vue'
@@ -37,6 +37,15 @@ const canContinue = computed(() => isNameValid.value && studentName.value.trim()
 const entered = ref(false)
 entered.value = true
 
+// index.html resizes the layout viewport for the virtual keyboard
+// (interactive-widget=resizes-content). Freeze this page's geometry so the
+// keyboard overlays it instead of shrinking every svh-sized element.
+const pageHeight = ref<number | null>(null)
+
+onMounted(() => {
+  pageHeight.value = window.innerHeight
+})
+
 function onInput(event: Event) {
   setStudentName((event.target as HTMLInputElement).value)
 }
@@ -53,7 +62,12 @@ async function proceed() {
 
 <template>
   <div
-    class="relative mx-auto flex h-[100svh] w-full max-w-[420px] flex-col overflow-hidden bg-[#F6F7EE] px-6 pt-4"
+    class="relative mx-auto flex h-[100dvh] w-full max-w-[420px] flex-col overflow-hidden bg-[#F6F7EE] px-6 pt-4"
+    :style="
+      pageHeight
+        ? { height: `${pageHeight}px`, '--welcome-vh': `${pageHeight / 100}px` }
+        : undefined
+    "
   >
     <!-- Back to the account picker, only after Add Account -->
     <button
@@ -84,7 +98,7 @@ async function proceed() {
 
     <!-- Step indicator -->
     <div
-      class="relative z-10 flex justify-center pt-[1svh]"
+      class="relative z-10 flex justify-center pt-[var(--welcome-vh,1svh)]"
       :class="{ 'welcome-enter welcome-delay-1': entered }"
     >
       <StepProgress
@@ -97,7 +111,7 @@ async function proceed() {
 
     <!-- Heading -->
     <div
-      class="relative z-10 mt-[14svh] w-full shrink-0"
+      class="relative z-10 mt-[calc(var(--welcome-vh,1svh)*14)] w-full shrink-0"
       :class="{ 'welcome-enter welcome-delay-2': entered }"
     >
       <h1 class="font-logo text-5xl font-semibold leading-tight text-[#00A4C8]">Welcome,</h1>
@@ -181,7 +195,7 @@ async function proceed() {
 
     <!-- Continue: same position as Start -->
     <div
-      class="absolute bottom-[20svh] left-0 right-0 z-20 flex flex-col items-stretch px-6"
+      class="absolute bottom-[calc(var(--welcome-vh,1svh)*20)] left-0 right-0 z-20 flex flex-col items-stretch px-6"
       :class="{ 'welcome-enter welcome-delay-6': entered }"
     >
       <TactileButton
