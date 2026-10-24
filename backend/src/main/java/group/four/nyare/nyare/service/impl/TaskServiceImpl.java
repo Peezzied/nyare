@@ -1,11 +1,11 @@
 package group.four.nyare.nyare.service.impl;
 
-import group.four.nyare.nyare.ai.event.AuditCategory;
-import group.four.nyare.nyare.ai.event.AuditSeverity;
-import group.four.nyare.nyare.ai.event.AuditTraceEvent;
-import group.four.nyare.nyare.ai.event.MutationAction;
-import group.four.nyare.nyare.ai.event.TraceKind;
-import group.four.nyare.nyare.ai.event.TriggerSource;
+import group.four.nyare.nyare.ai.observability.event.AuditCategory;
+import group.four.nyare.nyare.ai.observability.event.AuditSeverity;
+import group.four.nyare.nyare.ai.observability.event.AuditTraceEvent;
+import group.four.nyare.nyare.ai.observability.event.MutationAction;
+import group.four.nyare.nyare.ai.observability.event.TraceKind;
+import group.four.nyare.nyare.ai.observability.event.TriggerSource;
 import group.four.nyare.nyare.dto.TaskRequest;
 import group.four.nyare.nyare.dto.TaskResponse;
 import group.four.nyare.nyare.dto.TaskStatusRequest;

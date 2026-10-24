@@ -1,6 +1,6 @@
 package group.four.nyare.nyare.service;
 
-import group.four.nyare.nyare.ai.event.AuditTraceEvent;
+import group.four.nyare.nyare.ai.observability.event.AuditTraceEvent;
 import group.four.nyare.nyare.dto.CourseRequest;
 import group.four.nyare.nyare.dto.CourseResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
