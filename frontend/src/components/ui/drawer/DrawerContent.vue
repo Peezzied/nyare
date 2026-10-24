@@ -93,14 +93,14 @@ function onHandleClick() {
       @pointerup="onContentPointerUp"
       :style="{
         transform:
-          'translate3d(var(--drawer-swipe-movement-x, 0px), clamp(0px, calc(var(--drawer-swipe-movement-y, 0px) + var(--drawer-snap-point-offset, 0px)), calc(100svh - 210px)), 0)',
+          'translate3d(var(--drawer-swipe-movement-x, 0px), clamp(0px, calc(var(--drawer-swipe-movement-y, 0px) + var(--drawer-snap-point-offset, 0px)), calc(100dvh - 210px)), 0)',
       }"
       :class="
         cn(
           'group/drawer-content fixed z-50 flex flex-col bg-[#FDFEF7] border-[#C2E8F1] shadow-2xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform',
           'data-[state=open]:animate-in data-[state=closed]:animate-out',
           'data-[swipe-direction=up]:inset-x-0 data-[swipe-direction=up]:top-0 data-[swipe-direction=up]:mb-24 data-[swipe-direction=up]:max-h-[80vh] data-[swipe-direction=up]:rounded-b-lg data-[swipe-direction=up]:data-[state=open]:slide-in-from-top data-[swipe-direction=up]:data-[state=closed]:slide-out-to-top',
-          'data-[swipe-direction=down]:inset-x-0 data-[swipe-direction=down]:bottom-0 data-[swipe-direction=down]:h-[100svh] sm:data-[swipe-direction=down]:max-w-[440px] sm:data-[swipe-direction=down]:mx-auto',
+          'data-[swipe-direction=down]:inset-x-0 data-[swipe-direction=down]:bottom-0 data-[swipe-direction=down]:h-[100dvh] sm:data-[swipe-direction=down]:max-w-[440px] sm:data-[swipe-direction=down]:mx-auto',
           props.fullView
             ? 'data-[swipe-direction=down]:rounded-none data-[swipe-direction=down]:border-t-0'
             : 'data-[swipe-direction=down]:rounded-t-[28px] data-[swipe-direction=down]:border-t',
