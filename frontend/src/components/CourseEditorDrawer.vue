@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, useId, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { DrawerOpenChangeDetails } from 'reka-ui'
 import { Plus, X } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
@@ -102,38 +102,9 @@ const activeSnapPoint = ref<string | number>(props.stage === 'full' ? SNAP_FULL 
 
 const isFull = computed(() => activeSnapPoint.value === SNAP_FULL || activeSnapPoint.value === 1)
 
-// The parchment wash fades with the sheet's real translateY: full cover in
-// partial mode, gone once the sheet reaches full screen.
-const sheetId = useId()
-const parchmentCover = ref(1)
-let parchmentRaf = 0
-let sheetEl: HTMLElement | null = null
-
-function sampleParchment() {
-  if (!sheetEl?.isConnected) {
-    sheetEl = document.querySelector(`[data-course-editor-sheet="${sheetId}"]`)
-  }
-  if (sheetEl) {
-    const translateY = new DOMMatrixReadOnly(getComputedStyle(sheetEl).transform).m42
-    const travel = sheetEl.offsetHeight - Number.parseFloat(SNAP_PARTIAL)
-    parchmentCover.value = travel > 0 ? Math.min(1, Math.max(0, translateY / travel)) : 0
-  }
-  parchmentRaf = requestAnimationFrame(sampleParchment)
-}
-
-watch(
-  () => props.open,
-  (open) => {
-    cancelAnimationFrame(parchmentRaf)
-    sheetEl = null
-    if (open) {
-      parchmentRaf = requestAnimationFrame(sampleParchment)
-    }
-  },
-  { immediate: true },
-)
-
-onBeforeUnmount(() => cancelAnimationFrame(parchmentRaf))
+// The parchment wash keeps the sheet blending into the page in partial mode
+// and fades out once the sheet expands to full.
+const parchmentCover = computed(() => (isFull.value ? 0 : 1))
 
 // The 4rem lift keeps the sheet above a bottom bar in partial mode. In full
 // mode an opted-in parent drops the lift so the sheet covers that bar.
@@ -287,11 +258,10 @@ const isAddAnotherTimeDisabled = computed(() => {
     <DrawerContent
       :portal="portal"
       :full-view="isFull"
-      :data-course-editor-sheet="sheetId"
       :class="[
         'border-t border-[#C2E8F1] bg-[#FDFEF7] outline-none shadow-2xl',
         lifted &&
-          'data-[swipe-direction=down]:bottom-[calc(4rem+env(safe-area-inset-bottom))] data-[swipe-direction=down]:h-[calc(100svh-4rem-env(safe-area-inset-bottom))]',
+          'data-[swipe-direction=down]:bottom-[calc(4rem+env(safe-area-inset-bottom))] data-[swipe-direction=down]:h-[calc(100dvh-4rem-env(safe-area-inset-bottom))]',
       ]"
       @click:handle="toggleStage"
       @touchstart="handleTouchStart"
@@ -300,7 +270,7 @@ const isAddAnotherTimeDisabled = computed(() => {
     >
       <div
         aria-hidden="true"
-        class="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-[#F6F7EE]"
+        class="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-[#F6F7EE] transition-opacity duration-300 ease-out"
         :style="{ opacity: parchmentCover }"
       ></div>
       <DrawerHeader

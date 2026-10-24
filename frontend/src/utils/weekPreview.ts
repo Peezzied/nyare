@@ -13,6 +13,8 @@ export interface PreviewBlock {
   color: CoursePaletteColor
   blockId: string
   dimmed?: boolean
+  /** Stand-in pill for a block with no day or time yet. */
+  placeholder?: boolean
 }
 
 export interface PendingSlot {
@@ -77,6 +79,29 @@ export function derivePreviewBlocks(
   }
 
   return result
+}
+
+/**
+ * Stand-in pill for an untouched block: one hour centered on the week grid
+ * (Wednesday noon), staggered one hour per extra untouched block.
+ */
+export function placeholderPreviewBlock(
+  block: TimeBlockDraft,
+  name: string,
+  color: CoursePaletteColor,
+  index = 0,
+): PreviewBlock {
+  const start = 12 * 60 + index * 60
+  return {
+    id: `${block.id}-placeholder`,
+    day: 'WEDNESDAY',
+    title: name.trim() || 'New course',
+    startTime: minutesToTime(start),
+    endTime: minutesToTime(start + 60),
+    color,
+    blockId: block.id,
+    placeholder: true,
+  }
 }
 
 export function slotFromOffset(
