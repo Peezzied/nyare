@@ -41,7 +41,7 @@ useShellHeader({
               deletingAll.value = true
             },
           },
-          () => h(Trash2, { class: 'h-6 w-6 text-[#B91C1C]', 'aria-hidden': 'true' }),
+          () => h(Trash2, { class: 'h-6 w-6 text-destructive-hover', 'aria-hidden': 'true' }),
         )
       : h('span', { class: 'block h-11 w-11', 'aria-hidden': 'true' }),
 })
@@ -183,7 +183,7 @@ onMounted(load)
           role="button"
           tabindex="0"
           data-testid="archive-course-row"
-          class="cursor-pointer gap-0 rounded-2xl border-[#D5EBF1] bg-[#FDFEF7] px-4 py-4 shadow-[0_4px_0_#D5EBF1] transition-transform active:scale-[0.98]"
+          class="cursor-pointer gap-0 rounded-2xl border-border-soft bg-card px-4 py-4 shadow-stationery transition-transform active:scale-[0.98]"
           @click="openCourse(course)"
           @keydown.enter="openCourse(course)"
           @keydown.space.prevent="openCourse(course)"
@@ -214,7 +214,7 @@ onMounted(load)
               type="button"
               :aria-label="`Delete ${course.name}`"
               data-testid="archive-course-delete"
-              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-[#B91C1C] transition-colors hover:bg-black/5 active:bg-black/10"
+              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-destructive-hover transition-colors hover:bg-black/5 active:bg-black/10"
               @click.stop="deletingCourse = course"
               @keydown.enter.stop
               @keydown.space.stop
@@ -233,8 +233,8 @@ onMounted(load)
         data-testid="archive-empty-state"
         class="flex flex-col items-center px-6 py-16 text-center"
       >
-        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-[#E8F6FA]">
-          <Archive class="h-8 w-8 text-[#007B99]" aria-hidden="true" />
+        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-ocean-soft">
+          <Archive class="h-8 w-8 text-primary-bevel" aria-hidden="true" />
         </div>
         <p class="mt-4 text-lg font-bold text-text-main">No archived courses</p>
         <p class="mt-1 text-sm text-text-muted">
@@ -249,95 +249,33 @@ onMounted(load)
       :title="deleteTitle"
       @update:open="closeDeleteDialog"
     >
-      <p
-        class="mt-2 text-sm text-[#7B8B97]"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
-      >
+      <p class="mt-2 font-secondary text-sm text-text-muted">
         {{ deleteMessage }}
       </p>
 
       <template #actions="{ dismiss }">
-        <button
+        <Button
           type="button"
+          variant="tactile-secondary"
+          size="touch"
           data-testid="archive-delete-cancel"
-          class="min-h-[44px] rounded-xl border-b-4 border-[#CBD5E1] bg-[#E2E8F0] px-4 py-2.5 text-sm font-semibold text-[#334155] transition-all duration-75 hover:bg-[#D7DEE8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
           @click="dismiss"
         >
           Keep course
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
+          variant="tactile-destructive"
+          size="touch"
           data-testid="archive-delete-confirm"
-          class="min-h-[44px] rounded-xl border-b-4 border-[#991B1B] bg-[#DC2626] px-5 py-2.5 text-sm font-bold text-white transition-all duration-75 hover:bg-[#B91C1C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
           @click="confirmDelete"
         >
           Delete
-        </button>
+        </Button>
       </template>
     </DialogShell>
   </div>
 </template>
 
-<style scoped>
-.archive-row-enter-active,
-.archive-row-leave-active,
-.archive-row-move {
-  transition:
-    opacity 200ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
-}
 
-.archive-row-leave-active {
-  position: absolute;
-  right: 0;
-  left: 0;
-  z-index: 0;
-  transition-duration: 160ms;
-}
-
-.archive-row-enter-from {
-  opacity: 0;
-  transform: translateY(8px);
-}
-
-.archive-row-leave-to {
-  opacity: 0;
-  transform: translateX(-16px);
-}
-
-.empty-fade-enter-active {
-  transition: opacity 200ms ease-out 140ms;
-}
-
-.empty-fade-leave-active {
-  position: absolute;
-  right: 16px;
-  left: 16px;
-  transition: opacity 150ms ease-in;
-}
-
-.empty-fade-enter-from,
-.empty-fade-leave-to {
-  opacity: 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .archive-row-enter-active,
-  .archive-row-leave-active,
-  .archive-row-move {
-    transition-duration: 120ms;
-  }
-
-  .archive-row-enter-from,
-  .archive-row-leave-to {
-    transform: none;
-  }
-
-  .empty-fade-enter-active {
-    transition-delay: 0ms;
-  }
-}
-</style>

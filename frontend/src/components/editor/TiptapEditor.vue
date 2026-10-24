@@ -166,21 +166,21 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="font-secondary flex flex-col flex-1 w-full bg-[#FDFEF7] transition-colors"
+    class="font-secondary flex flex-col flex-1 w-full bg-card transition-colors"
     :class="{ 'opacity-60 cursor-not-allowed select-none': !editable }"
   >
     <div
       v-if="activeError"
       role="alert"
-      class="shrink-0 flex items-center justify-between border-b border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800 transition-colors"
+      class="shrink-0 flex items-center justify-between border-b border-destructive-line bg-destructive-soft px-3 py-2 text-xs text-destructive-bevel transition-colors"
     >
       <div class="flex items-center gap-1.5">
-        <AlertCircle class="size-4 shrink-0 text-red-600" />
+        <AlertCircle class="size-4 shrink-0 text-destructive" />
         <span>{{ activeError }}</span>
       </div>
       <button
         type="button"
-        class="ml-2 font-medium text-red-700 hover:underline cursor-pointer"
+        class="ml-2 font-medium text-destructive-hover hover:underline cursor-pointer"
         aria-label="Dismiss error notice"
         @click="dismissError"
       >
@@ -190,7 +190,7 @@ onBeforeUnmount(() => {
 
     <div
       v-if="isUploading"
-      class="shrink-0 bg-[#E8F6FA] px-3 py-1.5 text-xs text-[#00556B] transition-all border-b border-[#D5EBF1]"
+      class="shrink-0 bg-ocean-soft px-3 py-1.5 text-xs text-primary-deep transition-all border-b border-border-soft"
     >
       Uploading image...
     </div>
@@ -202,7 +202,7 @@ onBeforeUnmount(() => {
     >
       <EditorContent
         :editor="editor"
-        class="font-secondary h-full min-h-full text-[#334155] focus-within:outline-none [&_.tiptap]:font-secondary [&_.tiptap]:min-h-full [&_.tiptap]:outline-none [&_.tiptap]:focus:outline-none"
+        class="font-secondary h-full min-h-full text-text-main focus-within:outline-none [&_.tiptap]:font-secondary [&_.tiptap]:min-h-full [&_.tiptap]:outline-none [&_.tiptap]:focus:outline-none"
       />
     </div>
 
@@ -229,7 +229,7 @@ onBeforeUnmount(() => {
 }
 
 :deep(.tiptap p.is-editor-empty:first-child::before) {
-  color: #7b8b97;
+  color: var(--color-text-muted);
   content: attr(data-placeholder);
   float: left;
   height: 0;
@@ -285,16 +285,16 @@ onBeforeUnmount(() => {
 }
 
 :deep(.tiptap blockquote) {
-  border-left: 3px solid var(--color-app-border, #cbd5e1);
+  border-left: 3px solid var(--color-app-border);
   padding-left: 0.875rem;
   margin: 0.75rem 0;
-  color: var(--color-text-muted, #7b8b97);
+  color: var(--color-text-muted);
   font-style: italic;
 }
 
 :deep(.tiptap hr) {
   border: none;
-  border-top: 1px solid var(--color-app-border, #cbd5e1);
+  border-top: 1px solid var(--color-app-border);
   margin: 1.25rem 0;
 }
 

@@ -98,11 +98,11 @@ function handleSelect(item: NavigationItem): void {
         :aria-selected="isItemActive(item)"
         :aria-current="isItemActive(item) ? 'page' : undefined"
         :aria-label="item.label"
-        class="group relative flex flex-col items-center justify-center min-w-[48px] min-h-[44px] px-4 py-2 select-none outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 rounded-2xl cursor-pointer transition-all duration-150 ease-out active:translate-y-0.5 active:scale-95 motion-reduce:transition-none motion-reduce:transform-none"
+        class="group relative flex flex-col items-center justify-center min-w-[48px] min-h-[44px] px-4 py-2 select-none outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-2xl cursor-pointer transition-all duration-150 ease-out active:translate-y-0.5 active:scale-95 motion-reduce:transition-none motion-reduce:transform-none"
         :class="[
           isItemActive(item)
-            ? '-translate-y-1 text-[#00A4C8]'
-            : 'translate-y-0 text-[#7B8B97] hover:text-[#334155]',
+            ? '-translate-y-1 text-primary'
+            : 'translate-y-0 text-text-muted hover:text-text-main',
         ]"
         @click="handleSelect(item)"
       >
@@ -110,7 +110,7 @@ function handleSelect(item: NavigationItem): void {
           class="relative flex items-center justify-center p-2 rounded-xl transition-colors duration-150"
           :class="[
             isItemActive(item)
-              ? 'bg-[#E1F5FE] border-b-[3px] border-[#007B99]'
+              ? 'bg-ocean-soft border-b-[3px] border-primary-bevel'
               : 'bg-transparent border-b-[3px] border-transparent',
           ]"
         >
@@ -125,7 +125,7 @@ function handleSelect(item: NavigationItem): void {
         <span
           v-if="showLabels"
           class="text-[11px] font-['Quicksand'] mt-0.5 transition-colors duration-150"
-          :class="[isItemActive(item) ? 'font-bold text-[#00A4C8]' : 'font-medium text-[#7B8B97]']"
+          :class="[isItemActive(item) ? 'font-bold text-primary' : 'font-medium text-text-muted']"
         >
           {{ item.label }}
         </span>

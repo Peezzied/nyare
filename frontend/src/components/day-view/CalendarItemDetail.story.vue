@@ -54,7 +54,7 @@ const overflowDay = {
 <template>
   <Story title="CalendarItemDetail" group="day-view">
     <Variant v-for="fixture in detailFixtures" :key="fixture.name" :title="fixture.name">
-      <div class="bg-[#F5F6EE] p-6">
+      <div class="bg-app-bg p-6">
         <div class="mx-auto w-[342px] rounded-2xl bg-white p-6 shadow-sm">
           <CalendarItemDetail :item="fixture.item" />
         </div>
@@ -62,7 +62,7 @@ const overflowDay = {
     </Variant>
 
     <Variant v-for="fixture in markerFixtures" :key="fixture.name" :title="fixture.name">
-      <div class="bg-[#F5F6EE] p-6">
+      <div class="bg-app-bg p-6">
         <div
           class="flex w-[220px] items-center gap-2 rounded border border-[#1E293B]/50 bg-[#80C2F8] px-1.5 py-1"
         >
@@ -79,7 +79,7 @@ const overflowDay = {
     </Variant>
 
     <Variant title="week-overflow-day">
-      <div class="bg-[#F5F6EE] p-6">
+      <div class="bg-app-bg p-6">
         <div class="w-[120px]">
           <WeekHeaderRow :days="[overflowDay]" today-key="" :gutter-left="0" :cols-width="0" />
         </div>

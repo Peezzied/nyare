@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { AlertCircle, RefreshCw, UserCheck } from '@lucide/vue'
+import OnboardingShell from '@/components/OnboardingShell.vue'
+import { Button } from '@/components/ui/button'
 import { clearSessionUser, ensureSession, useAuth } from '@/composables/useAuth'
 import duckotaCasual from '@/assets/mascot/duckota_casual.png'
 
@@ -39,20 +41,15 @@ function handleChooseAccount(): void {
 </script>
 
 <template>
-  <div
-    class="relative min-h-dvh w-full overflow-x-hidden bg-[#F6F7EE] text-[#334155] font-['Quicksand'] select-none"
-  >
-    <main
-      class="relative z-10 mx-auto flex h-[100dvh] max-w-[420px] flex-col justify-between px-5 pt-8 pb-8"
-    >
-      <!-- Header -->
-      <header class="text-center">
+  <OnboardingShell page class="pt-8">
+    <!-- Header -->
+    <header class="text-center">
         <h1
-          class="font-['DynaPuff'] text-4xl sm:text-5xl font-bold tracking-tight text-[#00A4C8] leading-none drop-shadow-xs"
+          class="font-logo text-4xl sm:text-5xl font-bold tracking-tight text-primary leading-none drop-shadow-xs"
         >
           'Nyare
         </h1>
-        <p class="mt-2 text-xs font-bold uppercase tracking-widest text-[#94A3B8]">
+        <p class="mt-2 text-xs font-bold uppercase tracking-widest text-text-muted">
           Developer Mode Notice
         </p>
       </header>
@@ -68,25 +65,25 @@ function handleChooseAccount(): void {
         </div>
 
         <div
-          class="w-full rounded-2xl border-2 border-[#CBD5E1] bg-white p-5 shadow-[0_3px_0_#CBD5E1] text-center"
+          class="w-full rounded-2xl border-2 border-app-border bg-card p-5 shadow-bevel-ghost text-center"
         >
           <div
-            class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-amber-50 text-amber-600"
+            class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-warn-bg text-warn"
           >
             <AlertCircle class="h-6 w-6" />
           </div>
 
-          <h2 class="text-lg font-bold text-[#334155]">Dev Account Missing</h2>
+          <h2 class="text-lg font-bold text-text-main">Dev Account Missing</h2>
 
-          <p class="mt-2 font-['Inter'] text-xs text-[#64748B] leading-relaxed">
+          <p class="mt-2 font-secondary text-xs text-text-muted leading-relaxed">
             The configured student account
-            <span class="font-mono font-bold text-[#334155]">{{ devUser }}</span> does not exist in
+            <span class="font-mono font-bold text-text-main">{{ devUser }}</span> does not exist in
             the backend database.
           </p>
 
-          <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50/70 p-3 text-left">
-            <p class="font-bold text-xs text-amber-900">How to restore:</p>
-            <ol class="mt-1 list-decimal pl-4 font-['Inter'] text-[11px] text-amber-800 space-y-1">
+          <div class="mt-4 rounded-xl border border-warn/40 bg-warn-bg/70 p-3 text-left">
+            <p class="font-bold text-xs text-warn">How to restore:</p>
+            <ol class="mt-1 list-decimal pl-4 font-secondary text-[11px] text-warn space-y-1">
               <li>
                 Re-run
                 <code class="font-mono font-semibold">backend/src/main/resources/data.sql</code>
@@ -98,7 +95,7 @@ function handleChooseAccount(): void {
           <div
             v-if="retryError"
             role="alert"
-            class="mt-3 rounded-xl border border-red-200 bg-red-50 p-2 text-xs font-['Inter'] text-red-700"
+            class="mt-3 rounded-xl border border-destructive-line bg-destructive-soft p-2 font-secondary text-xs text-destructive-hover"
           >
             {{ retryError }}
           </div>
@@ -107,25 +104,26 @@ function handleChooseAccount(): void {
 
       <!-- Actions -->
       <footer class="space-y-3 pt-2">
-        <button
+        <Button
           type="button"
-          class="flex h-13 w-full items-center justify-center gap-2 rounded-2xl bg-[#00A4C8] border-b-4 border-[#007B99] text-sm font-bold text-white uppercase tracking-wider transition-all duration-75 hover:bg-[#0096B7] active:translate-y-1 active:border-b-0 cursor-pointer shadow-xs disabled:opacity-50"
+          variant="tactile"
+          size="touch"
+          class="h-13 w-full rounded-2xl uppercase tracking-wider"
           :disabled="isRetrying"
           @click="handleRetry"
         >
           <RefreshCw class="h-4 w-4" :class="{ 'animate-spin': isRetrying }" />
           <span>{{ isRetrying ? 'Retrying...' : 'Retry Connection' }}</span>
-        </button>
+        </Button>
 
         <button
           type="button"
-          class="flex h-11 w-full items-center justify-center gap-2 rounded-2xl border-2 border-[#CBD5E1] bg-white text-xs font-bold text-[#64748B] transition-colors hover:bg-[#ECEFE6] cursor-pointer"
+          class="flex h-11 w-full items-center justify-center gap-2 rounded-2xl border-2 border-app-border bg-card text-xs font-bold text-text-muted transition-colors hover:bg-skeleton-hi cursor-pointer"
           @click="handleChooseAccount"
         >
           <UserCheck class="h-4 w-4" />
           <span>Choose Different Account</span>
         </button>
       </footer>
-    </main>
-  </div>
+  </OnboardingShell>
 </template>

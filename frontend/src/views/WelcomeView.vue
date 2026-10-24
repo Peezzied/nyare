@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft } from '@lucide/vue'
 import TactileButton from '@/components/TactileButton.vue'
+import OnboardingShell from '@/components/OnboardingShell.vue'
 import StepProgress from '@/components/StepProgress.vue'
 import { useOnboarding } from '@/composables/useOnboarding'
 
@@ -61,8 +62,11 @@ async function proceed() {
 </script>
 
 <template>
-  <div
-    class="relative mx-auto flex h-[100dvh] w-full max-w-[420px] flex-col overflow-hidden bg-[#F6F7EE] px-6 pt-4"
+  <OnboardingShell
+    show-sun
+    show-cloud
+    show-wave
+    class="px-6 pt-4"
     :style="
       pageHeight
         ? { height: `${pageHeight}px`, '--welcome-vh': `${pageHeight / 100}px` }
@@ -75,26 +79,11 @@ async function proceed() {
       type="button"
       data-testid="welcome-back"
       aria-label="Go back"
-      class="absolute left-6 top-6 z-20 flex h-10 w-10 items-center justify-center rounded-xl border-2 text-[#94A3B8] transition-colors duration-150 cursor-pointer hover:border-0 hover:bg-[#00A4C8]/10 hover:text-[#00A4C8] focus-visible:outline-2 focus-visible:outline-[#00A4C8]/45 focus-visible:outline-offset-2"
+      class="absolute left-6 top-6 z-20 flex h-10 w-10 items-center justify-center rounded-xl border-2 text-text-muted transition-colors duration-150 cursor-pointer hover:border-0 hover:bg-primary/10 hover:text-primary focus-visible:outline-2 focus-visible:outline-primary/45 focus-visible:outline-offset-2"
       @click="goBack"
     >
       <ArrowLeft class="h-5 w-5" />
     </button>
-
-    <!-- Static background: same as Start -->
-    <img
-      src="@/assets/props/sun.svg"
-      alt=""
-      aria-hidden="true"
-      class="pointer-events-none absolute -top-12 -right-14 z-0 w-52 select-none sm:w-56"
-    />
-
-    <img
-      src="@/assets/props/double_cloud.svg"
-      alt=""
-      aria-hidden="true"
-      class="pointer-events-none absolute left-[6%] top-[9%] z-0 w-32 select-none sm:w-36"
-    />
 
     <!-- Step indicator -->
     <div
@@ -114,12 +103,9 @@ async function proceed() {
       class="relative z-10 mt-[calc(var(--welcome-vh,1svh)*14)] w-full shrink-0"
       :class="{ 'welcome-enter welcome-delay-2': entered }"
     >
-      <h1 class="font-logo text-5xl font-semibold leading-tight text-[#00A4C8]">Welcome,</h1>
+      <h1 class="font-logo text-5xl font-semibold leading-tight text-primary">Welcome,</h1>
 
-      <p
-        class="mt-1 text-lg tracking-wide text-[#526B73]"
-        style="font-family: 'Quicksand', sans-serif; font-weight: 700"
-      >
+      <p class="mt-1 text-lg font-bold tracking-wide text-text-soft">
         let's get to know you!
       </p>
     </div>
@@ -132,11 +118,11 @@ async function proceed() {
       <label for="student-name" class="sr-only">Your name</label>
 
       <div
-        class="flex items-center rounded-2xl border-[3px] border-[#C2E8F1] bg-white px-4 py-3.5 transition-colors focus-within:border-[#00A4C8]"
+        class="flex items-center rounded-2xl border-[3px] border-border-cyan bg-card px-4 py-3.5 transition-colors focus-within:border-primary"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="mr-3 h-6 w-6 shrink-0 text-[#7B8B97]"
+          class="mr-3 h-6 w-6 shrink-0 text-text-muted"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -156,8 +142,7 @@ async function proceed() {
           placeholder="What is your name?"
           aria-label="Enter your name"
           autocomplete="given-name"
-          class="min-w-0 flex-1 bg-transparent text-lg font-medium text-[#334155] outline-none placeholder:text-[#7B8B97]"
-          style="font-family: 'Quicksand', sans-serif"
+          class="min-w-0 flex-1 bg-transparent font-sans text-lg font-medium text-text-main outline-none placeholder:text-text-muted"
           @input="onInput"
           @keydown.enter="proceed"
         />
@@ -175,19 +160,14 @@ async function proceed() {
 
       <!-- Chat bubble pops in -->
       <div
-        class="chat-pop relative mr-1 max-w-[180px] flex-1 rounded-2xl border-2 border-[#CBD5E1] bg-white p-3.5 shadow-[0_3px_0_#CBD5E1]"
+        class="chat-pop relative mr-1 max-w-[180px] flex-1 rounded-2xl border-2 border-app-border bg-card p-3.5 shadow-bevel-ghost"
         :class="{ 'chat-pop-delay': entered }"
       >
-        <p
-          class="text-lg font-bold leading-snug text-[#334155]"
-          style="font-family: 'Quicksand', sans-serif"
-        >
-          my name is duckota!
-        </p>
+        <p class="text-lg font-bold leading-snug text-text-main">my name is duckota!</p>
 
         <!-- Tail pointing toward Duckota -->
         <div
-          class="absolute -left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 rotate-45 border-b-2 border-l-2 border-[#CBD5E1] bg-white"
+          class="absolute -left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 rotate-45 border-b-2 border-l-2 border-app-border bg-card"
           aria-hidden="true"
         />
       </div>
@@ -203,20 +183,10 @@ async function proceed() {
         aria-label="Continue to schedule setup"
         @click="proceed"
       >
-        <span style="font-family: 'Quicksand', sans-serif; font-weight: 700 !important">
-          CONTINUE
-        </span>
+        CONTINUE
       </TactileButton>
     </div>
-
-    <!-- Static bottom wave -->
-    <img
-      src="@/assets/props/wave_1.svg"
-      alt=""
-      aria-hidden="true"
-      class="pointer-events-none absolute -bottom-[16%] -left-[12%] z-0 w-[124%] max-w-none select-none"
-    />
-  </div>
+  </OnboardingShell>
 </template>
 
 <style scoped>
@@ -257,27 +227,6 @@ async function proceed() {
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes chat-pop-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.55);
-  }
-
-  65% {
-    opacity: 1;
-    transform: scale(1.08);
-  }
-
-  85% {
-    transform: scale(0.96);
-  }
-
-  100% {
-    opacity: 1;
-    transform: scale(1);
   }
 }
 

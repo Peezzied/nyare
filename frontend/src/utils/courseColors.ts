@@ -23,6 +23,8 @@ export interface CourseDotStyle {
 export interface CourseColorDef {
   /** Position in `COURSE_COLORS` (0-23). */
   readonly index: number
+  /** Stable slug stored on `course.color` (e.g. 'tomato'). */
+  readonly id: string
   readonly name: string
   /** Full-strength hex color for marker dots. */
   readonly solid: string
@@ -49,6 +51,7 @@ export interface CourseColorDef {
 /** Builds a palette entry with alias fields and Tailwind classes from four hex colors. */
 function defineColor(
   index: number,
+  id: string,
   name: string,
   solid: string,
   badgeBg: string,
@@ -57,6 +60,7 @@ function defineColor(
 ): CourseColorDef {
   return {
     index,
+    id,
     name,
     solid,
     solidMarker: solid,
@@ -81,30 +85,30 @@ function defineColor(
  * 24-color course palette per Section 4 of DESIGN.md (Google Calendar parity).
  */
 export const COURSE_COLORS: readonly CourseColorDef[] = [
-  defineColor(0, 'Tomato', '#D50000', '#FFEBEE', '#B71C1C', '#EF9A9A'),
-  defineColor(1, 'Flamingo', '#E67C73', '#FDEAE8', '#C53929', '#F5B0AA'),
-  defineColor(2, 'Radicchio', '#AD1457', '#FCE4EC', '#880E4F', '#F48FB1'),
-  defineColor(3, 'Cherry Blossom', '#D81B60', '#FCE4EC', '#AD1457', '#F48FB1'),
-  defineColor(4, 'Tangerine', '#F4511E', '#FBE9E7', '#BF360C', '#FFAB91'),
-  defineColor(5, 'Pumpkin', '#EF6C00', '#FFF3E0', '#E65100', '#FFCC80'),
-  defineColor(6, 'Mango', '#F57C00', '#FFF3E0', '#EF6C00', '#FFE0B2'),
-  defineColor(7, 'Banana', '#F6BF26', '#FEF9E7', '#B78103', '#FCE793'),
-  defineColor(8, 'Lemon', '#FBC02D', '#FFFDE7', '#F57F17', '#FFF59D'),
-  defineColor(9, 'Citron', '#AFB42B', '#F9FBE7', '#827717', '#E6EE9C'),
-  defineColor(10, 'Basil', '#0B8043', '#E6F4EA', '#0D652D', '#A8DAB5'),
-  defineColor(11, 'Sage', '#33B679', '#E8F8F0', '#1E8E5A', '#A2E2BF'),
-  defineColor(12, 'Avocado', '#689F38', '#F1F8E9', '#33691E', '#C5E1A5'),
-  defineColor(13, 'Pistachio', '#7CB342', '#F1F8E9', '#558B2F', '#DCEDC8'),
-  defineColor(14, 'Eucalyptus', '#00897B', '#E0F2F1', '#004D40', '#80CBC4'),
-  defineColor(15, 'Peacock', '#039BE5', '#E1F5FE', '#0277BD', '#81D4FA'),
-  defineColor(16, 'Sky', '#29B6F6', '#E1F5FE', '#0288D1', '#B3E5FC'),
-  defineColor(17, 'Blueberry', '#3F51B5', '#E8EAF6', '#283593', '#9FA8DA'),
-  defineColor(18, 'Cobalt', '#1E88E5', '#E3F2FD', '#1565C0', '#90CAF9'),
-  defineColor(19, 'Grape', '#8E24AA', '#F3E5F5', '#6A1B9A', '#CE93D8'),
-  defineColor(20, 'Amethyst', '#9C27B0', '#F3E5F5', '#7B1FA2', '#BA68C8'),
-  defineColor(21, 'Lavender', '#7986CB', '#E8EAF6', '#3949AB', '#C5CAE9'),
-  defineColor(22, 'Wisteria', '#B39DDB', '#EDE7F6', '#512DA8', '#D1C4E9'),
-  defineColor(23, 'Graphite', '#616161', '#EEEEEE', '#212121', '#BDBDBD'),
+  defineColor(0, 'tomato', 'Tomato', '#D50000', '#FFEBEE', '#B71C1C', '#EF9A9A'),
+  defineColor(1, 'flamingo', 'Flamingo', '#E67C73', '#FDEAE8', '#C53929', '#F5B0AA'),
+  defineColor(2, 'radicchio', 'Radicchio', '#AD1457', '#FCE4EC', '#880E4F', '#F48FB1'),
+  defineColor(3, 'cherry', 'Cherry Blossom', '#D81B60', '#FCE4EC', '#AD1457', '#F48FB1'),
+  defineColor(4, 'tangerine', 'Tangerine', '#F4511E', '#FBE9E7', '#BF360C', '#FFAB91'),
+  defineColor(5, 'pumpkin', 'Pumpkin', '#EF6C00', '#FFF3E0', '#E65100', '#FFCC80'),
+  defineColor(6, 'mango', 'Mango', '#F57C00', '#FFF3E0', '#EF6C00', '#FFE0B2'),
+  defineColor(7, 'banana', 'Banana', '#F6BF26', '#FEF9E7', '#B78103', '#FCE793'),
+  defineColor(8, 'lemon', 'Lemon', '#FBC02D', '#FFFDE7', '#F57F17', '#FFF59D'),
+  defineColor(9, 'citron', 'Citron', '#AFB42B', '#F9FBE7', '#827717', '#E6EE9C'),
+  defineColor(10, 'basil', 'Basil', '#0B8043', '#E6F4EA', '#0D652D', '#A8DAB5'),
+  defineColor(11, 'sage', 'Sage', '#33B679', '#E8F8F0', '#1E8E5A', '#A2E2BF'),
+  defineColor(12, 'avocado', 'Avocado', '#689F38', '#F1F8E9', '#33691E', '#C5E1A5'),
+  defineColor(13, 'pistachio', 'Pistachio', '#7CB342', '#F1F8E9', '#558B2F', '#DCEDC8'),
+  defineColor(14, 'eucalyptus', 'Eucalyptus', '#00897B', '#E0F2F1', '#004D40', '#80CBC4'),
+  defineColor(15, 'peacock', 'Peacock', '#039BE5', '#E1F5FE', '#0277BD', '#81D4FA'),
+  defineColor(16, 'sky', 'Sky', '#29B6F6', '#E1F5FE', '#0288D1', '#B3E5FC'),
+  defineColor(17, 'blueberry', 'Blueberry', '#3F51B5', '#E8EAF6', '#283593', '#9FA8DA'),
+  defineColor(18, 'cobalt', 'Cobalt', '#1E88E5', '#E3F2FD', '#1565C0', '#90CAF9'),
+  defineColor(19, 'grape', 'Grape', '#8E24AA', '#F3E5F5', '#6A1B9A', '#CE93D8'),
+  defineColor(20, 'amethyst', 'Amethyst', '#9C27B0', '#F3E5F5', '#7B1FA2', '#BA68C8'),
+  defineColor(21, 'lavender', 'Lavender', '#7986CB', '#E8EAF6', '#3949AB', '#C5CAE9'),
+  defineColor(22, 'wisteria', 'Wisteria', '#B39DDB', '#EDE7F6', '#512DA8', '#D1C4E9'),
+  defineColor(23, 'graphite', 'Graphite', '#616161', '#EEEEEE', '#212121', '#BDBDBD'),
 ] as const
 
 /**
@@ -119,6 +123,9 @@ export const FALLBACK_COURSE_COLOR: CourseColorDef = DEFAULT_COURSE_COLOR
  * Alias for backward compatibility.
  */
 export const COURSE_PALETTE_24 = COURSE_COLORS
+
+/** Alias of `CourseColorDef` for former `constants/palette` consumers. */
+export type CoursePaletteColor = CourseColorDef
 
 /**
  * Resolves the deterministic palette index (0-23) for a course identifier.

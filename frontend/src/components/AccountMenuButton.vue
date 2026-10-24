@@ -27,12 +27,12 @@ function goToSelectAccount(): void {
         :side-offset="8"
         aria-label="Menu"
         data-testid="account-menu"
-        class="z-30 w-44 rounded-2xl border border-(--color-app-border) bg-(--color-card) px-4 py-3 shadow-lg"
+        class="z-30 w-44 rounded-2xl border border-app-border bg-card px-4 py-3 shadow-lg"
       >
         <button
           type="button"
           data-testid="select-account-item"
-          class="w-full text-start text-base font-semibold text-(--color-text-main)"
+          class="w-full text-start text-base font-semibold text-text-main"
           @click="goToSelectAccount"
         >
           Select Account

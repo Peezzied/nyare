@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Drawer, DrawerContent, DrawerHeader } from '@/components/ui/drawer'
 import DialogShell from '@/components/ui/DialogShell.vue'
 import TimeBlockCard, { type TimeBlockDraft } from '@/components/TimeBlockCard.vue'
-import { COURSE_PALETTE_24 } from '@/constants/palette'
+import { COURSE_PALETTE_24 } from '@/utils/courseColors'
 import type { CourseEditor } from '@/composables/useCourseEditor'
 import type { DayOfWeek } from '@/types/api'
 
@@ -259,7 +259,7 @@ const isAddAnotherTimeDisabled = computed(() => {
       :portal="portal"
       :full-view="isFull"
       :class="[
-        'border-t border-[#C2E8F1] bg-[#FDFEF7] outline-none shadow-2xl',
+        'border-t border-border-cyan bg-card outline-none shadow-2xl',
         lifted &&
           'data-[swipe-direction=down]:bottom-[calc(4rem+env(safe-area-inset-bottom))] data-[swipe-direction=down]:h-[calc(100dvh-4rem-env(safe-area-inset-bottom))]',
       ]"
@@ -270,7 +270,7 @@ const isAddAnotherTimeDisabled = computed(() => {
     >
       <div
         aria-hidden="true"
-        class="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-[#F6F7EE] transition-opacity duration-300 ease-out"
+        class="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-app-bg transition-opacity duration-300 ease-out"
         :style="{ opacity: parchmentCover }"
       ></div>
       <DrawerHeader
@@ -281,7 +281,7 @@ const isAddAnotherTimeDisabled = computed(() => {
           variant="ghost"
           size="icon"
           aria-label="Close drawer"
-          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[#334155] transition-colors hover:bg-[#C2E8F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8]"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-text-main transition-colors hover:bg-border-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           @click="requestClose"
         >
           <X class="size-5" aria-hidden="true" />
@@ -323,7 +323,7 @@ const isAddAnotherTimeDisabled = computed(() => {
               :tabindex="isFull ? 0 : -1"
               :disabled="saving"
               aria-label="Course name"
-              class="w-full bg-transparent px-0 py-1 font-sans text-2xl font-bold text-[#1E293B] placeholder:font-semibold placeholder:text-slate-400 outline-none disabled:cursor-not-allowed disabled:text-slate-400"
+              class="w-full bg-transparent px-0 py-1 font-sans text-2xl font-bold text-heading placeholder:font-semibold placeholder:text-slate-400 outline-none disabled:cursor-not-allowed disabled:text-slate-400"
               :class="{ 'cursor-pointer': !isFull }"
               @focus="handleInputFocus"
               @input="handleInput"
@@ -337,7 +337,7 @@ const isAddAnotherTimeDisabled = computed(() => {
                   :aria-haspopup="true"
                   aria-label="Course color"
                   :disabled="saving"
-                  class="inline-flex min-w-0 items-center gap-2 rounded-lg border border-[#D5EBF1] bg-[#F0F8FA] px-3 py-2 shadow-xs transition-all hover:border-[#00A4C8] hover:bg-[#E5F3F7] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  class="inline-flex min-w-0 items-center gap-2 rounded-lg border border-border-soft bg-field px-3 py-2 shadow-xs transition-all hover:border-primary hover:bg-ocean-soft active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   @click="onColorToggleClick"
                 >
                   <span
@@ -346,12 +346,12 @@ const isAddAnotherTimeDisabled = computed(() => {
                     aria-hidden="true"
                   ></span>
                   <span
-                    class="min-w-0 truncate text-left font-sans text-sm font-semibold text-[#1E293B]"
+                    class="min-w-0 truncate text-left font-sans text-sm font-semibold text-heading"
                     >{{ selectedColor.name }}</span
                   >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 shrink-0 text-[#7B8B97]"
+                    class="h-4 w-4 shrink-0 text-text-muted"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -367,7 +367,7 @@ const isAddAnotherTimeDisabled = computed(() => {
 
               <PopoverContent
                 :portal="false"
-                class="z-50 w-auto max-w-full rounded-2xl border border-[#D5EBF1] bg-[#FDFEF7] p-2 shadow-lg"
+                class="z-50 w-auto max-w-full rounded-2xl border border-border-soft bg-card p-2 shadow-lg"
                 role="listbox"
                 aria-label="Course color options"
               >
@@ -383,14 +383,14 @@ const isAddAnotherTimeDisabled = computed(() => {
                     :title="color.name"
                     data-testid="color-swatch"
                     :data-color-id="color.id"
-                    class="flex h-11 w-11 items-center justify-center rounded-xl p-1 transition-all hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2"
+                    class="flex h-11 w-11 items-center justify-center rounded-xl p-1 transition-all hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                     @click="selectColor(color.id)"
                   >
                     <span
                       class="flex h-7 w-7 items-center justify-center rounded-lg border text-[10px] font-bold shadow-xs transition-transform"
                       :class="
                         selectedColorId === color.id
-                          ? 'border-[#334155] ring-2 ring-[#00A4C8]'
+                          ? 'border-text-main ring-2 ring-primary'
                           : 'border-black/10'
                       "
                       :style="{ backgroundColor: color.solid }"
@@ -409,13 +409,13 @@ const isAddAnotherTimeDisabled = computed(() => {
           </section>
 
           <!-- Divider -->
-          <hr class="-mx-5 sm:-mx-6 border-t border-[#E2E8F0]/80" />
+          <hr class="-mx-5 sm:-mx-6 border-t border-ghost/80" />
 
           <!-- Time blocks -->
           <section class="space-y-4 px-5" aria-labelledby="time-blocks-heading">
             <h2
               id="time-blocks-heading"
-              class="text-xs font-bold tracking-wider text-[#475569] uppercase"
+              class="text-xs font-bold tracking-wider text-text-soft uppercase"
             >
               Class times
             </h2>
@@ -453,7 +453,7 @@ const isAddAnotherTimeDisabled = computed(() => {
                 type="button"
                 data-testid="add-another-time"
                 :disabled="saving || isAddAnotherTimeDisabled"
-                class="flex min-h-12 w-full items-center justify-center rounded-xl border border-[#BCE3ED] bg-[#E8F6FA] px-4 py-3 font-sans text-sm font-bold text-[#007B99] shadow-[0_3px_0_#B0DBE5] transition-all hover:bg-[#DCF1F7] hover:text-[#006880] active:translate-y-0.5 active:shadow-[0_1px_0_#B0DBE5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none disabled:active:translate-y-0"
+                class="flex min-h-12 w-full items-center justify-center rounded-xl border border-secondary-border bg-ocean-soft px-4 py-3 font-sans text-sm font-bold text-primary-bevel shadow-bevel-secondary transition-all hover:bg-ocean-soft hover:text-primary-deep active:translate-y-0.5 active:shadow-bevel-secondary-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none disabled:active:translate-y-0"
                 @click="emit('add-block')"
               >
                 <Plus class="mr-2 h-4 w-4 stroke-2" aria-hidden="true" />
@@ -471,35 +471,28 @@ const isAddAnotherTimeDisabled = computed(() => {
   <DialogShell
     :open="discardOpen"
     title="Discard changes?"
-    overlay-class="z-[80]"
+    overlay-class="z-overlay"
     @update:open="discardOpen = $event"
     @cancel="handleKeepEditing"
   >
-    <p
-      class="mt-2 text-sm text-[#7B8B97]"
-      style="font-family: 'Inter', sans-serif; font-weight: 400"
-    >
+    <p class="mt-2 font-secondary text-sm text-text-muted">
       {{ discardMessageOverride ?? discardMessage ?? DISCARD_MESSAGE }}
     </p>
 
     <template #actions="{ dismiss }">
-      <button
-        type="button"
-        class="min-h-[44px] rounded-xl border-b-4 border-[#CBD5E1] bg-[#E2E8F0] px-4 py-2.5 text-sm font-semibold text-[#334155] transition-all duration-75 hover:bg-[#D7DEE8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
-        style="font-family: 'Quicksand', sans-serif; font-weight: 600"
-        @click="dismiss"
-      >
+      <Button type="button" variant="tactile-secondary" size="touch" @click="dismiss">
         Keep editing
-      </button>
+      </Button>
 
-      <button
+      <Button
         type="button"
-        class="min-h-[44px] rounded-xl border-b-4 border-[#991B1B] bg-[#DC2626] px-5 py-2.5 text-sm font-bold text-white transition-all duration-75 hover:bg-[#B91C1C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
-        style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+        variant="tactile-destructive"
+        size="touch"
+        class="px-5"
         @click="handleDiscard"
       >
         Discard
-      </button>
+      </Button>
     </template>
   </DialogShell>
 </template>

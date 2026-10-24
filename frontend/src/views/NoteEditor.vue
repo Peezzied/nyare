@@ -800,7 +800,7 @@ defineExpose({ requestBack: handleBack })
                 type="button"
                 data-testid="note-actions-trigger"
                 aria-label="Note actions"
-                class="flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-full p-2.5 text-[#334155] transition-all hover:bg-slate-200/70 active:scale-95"
+                class="flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-full p-2.5 text-text-main transition-all hover:bg-ghost/70 active:scale-95"
               >
                 <EllipsisVertical class="h-6 w-6 stroke-[2.2]" aria-hidden="true" />
               </button>
@@ -809,7 +809,7 @@ defineExpose({ requestBack: handleBack })
               <button
                 type="button"
                 data-testid="delete-note-action"
-                class="flex h-11 w-full cursor-pointer items-center gap-2 rounded-xl px-3 text-left font-semibold text-[#B91C1C] transition-colors hover:bg-black/5"
+                class="flex h-11 w-full cursor-pointer items-center gap-2 rounded-xl px-3 text-left font-semibold text-destructive-hover transition-colors hover:bg-black/5"
                 @click="openDeleteDialog"
               >
                 <Trash2 class="h-4 w-4 shrink-0" aria-hidden="true" />
@@ -832,15 +832,15 @@ defineExpose({ requestBack: handleBack })
       v-if="errorMessage"
       role="alert"
       data-testid="error-banner"
-      class="shrink-0 mx-4 mt-3 flex items-center justify-between rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-800"
+      class="shrink-0 mx-4 mt-3 flex items-center justify-between rounded-xl border border-destructive-line bg-destructive-soft p-3 text-xs text-destructive-bevel"
     >
       <div class="flex items-center gap-2">
-        <AlertCircle class="size-4 shrink-0 text-red-600" />
+        <AlertCircle class="size-4 shrink-0 text-destructive" />
         <span>{{ errorMessage }}</span>
       </div>
       <button
         type="button"
-        class="shrink-0 min-h-11 -my-2 px-2 font-medium text-red-700 hover:underline cursor-pointer"
+        class="shrink-0 min-h-11 -my-2 px-2 font-medium text-destructive-hover hover:underline cursor-pointer"
         @click="errorMessage = null"
       >
         Dismiss
@@ -863,10 +863,10 @@ defineExpose({ requestBack: handleBack })
       </div>
 
       <!-- Plan zone -->
-      <section class="mt-4 rounded-2xl bg-white p-1">
+      <section class="mt-4 rounded-2xl bg-card p-1">
         <!-- Course row -->
         <div class="flex min-h-11 items-center gap-3 px-3" data-testid="course-pill">
-          <GraduationCap class="h-5 w-5 shrink-0 text-(--color-text-muted)" aria-hidden="true" />
+          <GraduationCap class="h-5 w-5 shrink-0 text-text-muted" aria-hidden="true" />
           <span
             v-if="isArchivedCourse"
             data-testid="archived-course-chip"
@@ -887,11 +887,11 @@ defineExpose({ requestBack: handleBack })
           />
         </div>
 
-        <div class="h-px bg-slate-100" />
+        <div class="h-px bg-ghost" />
 
         <!-- Date row -->
         <div class="flex min-h-11 items-center gap-3 px-3" data-testid="date-pill">
-          <CalendarIcon class="h-5 w-5 shrink-0 text-(--color-text-muted)" aria-hidden="true" />
+          <CalendarIcon class="h-5 w-5 shrink-0 text-text-muted" aria-hidden="true" />
           <Popover v-model:open="isCalendarOpen">
             <PopoverTrigger as-child>
               <Button
@@ -903,7 +903,7 @@ defineExpose({ requestBack: handleBack })
                 aria-label="Date"
                 :disabled="isArchivedCourse"
                 class="min-w-0 flex-1 justify-start px-0 text-sm font-normal hover:bg-transparent"
-                :class="entryDate ? 'text-slate-700' : 'text-slate-400'"
+                :class="entryDate ? 'text-text-main' : 'text-text-muted'"
               >
                 {{ formattedDisplayDate }}
               </Button>
@@ -922,23 +922,23 @@ defineExpose({ requestBack: handleBack })
     </section>
 
     <!-- Teal Horizontal Divider Accent -->
-    <div class="shrink-0 mx-4 my-2 h-px bg-[#00A4C8]/30" :class="contentStaggerClass" />
+    <div class="shrink-0 mx-4 my-2 h-px bg-primary/30" :class="contentStaggerClass" />
 
     <!-- Locked Editor Helper Prompt (when courseId is unassigned) -->
     <button
       v-if="!selectedCourseId"
       type="button"
       data-testid="course-gating-prompt"
-      class="shrink-0 mx-4 my-2 flex items-center gap-2.5 rounded-xl border border-[#D5EBF1] bg-[#E8F6FA] px-3.5 py-2.5 text-left text-xs cursor-pointer transition-colors hover:bg-[#D8EEF6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8]/40"
+      class="shrink-0 mx-4 my-2 flex items-center gap-2.5 rounded-xl border border-border-soft bg-ocean-soft px-3.5 py-2.5 text-left text-xs cursor-pointer transition-colors hover:bg-border-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
       :class="contentStaggerClass"
       @click="openCoursePicker"
     >
-      <GraduationCap class="size-4 shrink-0 text-[#007B99]" />
-      <span class="leading-snug text-[#00556B]">
-        <span class="font-bold text-[#1E293B]">Select a course to start writing.</span>
+      <GraduationCap class="size-4 shrink-0 text-primary-bevel" />
+      <span class="leading-snug text-primary-deep">
+        <span class="font-bold text-heading">Select a course to start writing.</span>
         Nyare files every note under a course.
       </span>
-      <ArrowRight class="size-3.5 ml-auto shrink-0 text-[#007B99]/60" />
+      <ArrowRight class="size-3.5 ml-auto shrink-0 text-primary-bevel/60" />
     </button>
 
     <!-- Editor Body Container -->
@@ -958,7 +958,7 @@ defineExpose({ requestBack: handleBack })
         <template #status-bar>
           <div
             data-testid="editor-status-bar"
-            class="shrink-0 flex items-center justify-between border-t border-app-border bg-[#FDFEF7] px-3 py-1.5 text-xs text-text-soft select-none"
+            class="shrink-0 flex items-center justify-between border-t border-app-border bg-card px-3 py-1.5 text-xs text-text-soft select-none"
           >
             <div class="flex items-center gap-1.5" data-testid="status-indicator-group">
               <span class="font-bold uppercase tracking-wider text-text-muted text-[10px]">
@@ -986,8 +986,7 @@ defineExpose({ requestBack: handleBack })
     <DialogShell v-model:open="isUnsavedDialogOpen" title="Discard Changes" @cancel="cancelDiscard">
       <p
         data-testid="unsaved-changes-dialog"
-        class="mt-2 text-sm text-[#7B8B97]"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
+        class="mt-2 font-secondary text-sm text-text-muted"
       >
         You have unsaved changes in this note. Discard them and leave?
       </p>
@@ -999,7 +998,6 @@ defineExpose({ requestBack: handleBack })
           size="touch"
           data-testid="cancel-discard-button"
           :disabled="disabled"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
           @click="dismiss"
         >
           Keep Editing
@@ -1010,7 +1008,6 @@ defineExpose({ requestBack: handleBack })
           size="touch"
           data-testid="confirm-discard-button"
           :disabled="disabled"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
           @click="confirmDiscard"
         >
           Discard
@@ -1022,8 +1019,7 @@ defineExpose({ requestBack: handleBack })
     <DialogShell v-model:open="isDeleteDialogOpen" title="Delete Note">
       <p
         data-testid="delete-note-dialog"
-        class="mt-2 text-sm text-[#7B8B97]"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
+        class="mt-2 font-secondary text-sm text-text-muted"
       >
         Delete this note? You can undo the delete for a few seconds.
       </p>
@@ -1035,7 +1031,6 @@ defineExpose({ requestBack: handleBack })
           size="touch"
           data-testid="cancel-delete-button"
           :disabled="disabled"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
           @click="dismiss"
         >
           Back
@@ -1046,7 +1041,6 @@ defineExpose({ requestBack: handleBack })
           size="touch"
           data-testid="confirm-delete-button"
           :disabled="disabled"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
           @click="confirmDelete"
         >
           Delete

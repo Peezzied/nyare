@@ -218,11 +218,11 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
 
 <style scoped>
 .picker-day-dot {
-  background-color: #00a4c8;
+  background-color: var(--color-primary);
 }
 
 [data-selected] + .picker-day-dot {
-  background-color: #ffffff;
+  background-color: var(--color-primary-foreground);
 }
 
 [data-outside-view] + .picker-day-dot {

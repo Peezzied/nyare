@@ -20,7 +20,7 @@ const catalog = useCatalog()
 const courseColor = computed(() => catalog.courseColor(props.row.event.courseId))
 
 const surfaceClasses = computed(() =>
-  props.past ? 'border border-[#D5DBCB] bg-[#F1F3EA] text-[#7B8B97]' : 'border-2 text-white',
+  props.past ? 'border border-[#D5DBCB] bg-[#F1F3EA] text-text-muted' : 'border-2 text-white',
 )
 
 const surfaceStyle = computed(() =>

@@ -46,11 +46,11 @@ describe('NavigationBar.vue', () => {
 
     // Active tab has lift translation and accent color
     expect(activeTab.classes()).toContain('-translate-y-1')
-    expect(activeTab.classes()).toContain('text-[#00A4C8]')
+    expect(activeTab.classes()).toContain('text-primary')
 
     // Inactive tab is resting on baseline in muted color
     expect(inactiveTab.classes()).toContain('translate-y-0')
-    expect(inactiveTab.classes()).toContain('text-[#7B8B97]')
+    expect(inactiveTab.classes()).toContain('text-text-muted')
   })
 
   it('satisfies accessible touch target boundaries and safe-area markup', () => {

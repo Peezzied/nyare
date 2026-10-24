@@ -2,10 +2,13 @@
 import { computed, ref, useTemplateRef } from 'vue'
 import { minidenticon } from 'minidenticons'
 import TactileButton from '@/components/TactileButton.vue'
+import OnboardingShell from '@/components/OnboardingShell.vue'
+import { Button } from '@/components/ui/button'
 import { useOnboarding } from '@/composables/useOnboarding'
 import { useAuth } from '@/composables/useAuth'
 import { useRouteWipe } from '@/composables/useRouteWipe'
-import { COURSE_PALETTE_24 } from '@/constants/palette'
+import { COURSE_PALETTE_24 } from '@/utils/courseColors'
+import { COURSE_COLORS } from '@/utils/courseColors'
 
 const props = withDefaults(defineProps<{ initialRevealed?: boolean }>(), {
   initialRevealed: false,
@@ -61,14 +64,14 @@ function enterCalendar(event: MouseEvent) {
 // Confetti rains continuously: each piece crosses the full stage on its own
 // loop. Negative delays scatter the pieces mid-fall on reveal.
 const CONFETTI = [
-  { top: '16%', left: '10%', color: '#00A4C8', tilt: '20deg', dur: 3800, delay: -400 },
-  { top: '12%', left: '32%', color: '#F6BF26', tilt: '-30deg', dur: 4400, delay: -1900 },
-  { top: '20%', left: '62%', color: '#F4511E', tilt: '45deg', dur: 3600, delay: -2700 },
-  { top: '14%', left: '84%', color: '#33B679', tilt: '10deg', dur: 4800, delay: -900 },
-  { top: '26%', left: '18%', color: '#8E24AA', tilt: '-15deg', dur: 4000, delay: -3300 },
-  { top: '24%', left: '74%', color: '#FBC02D', tilt: '32deg', dur: 3400, delay: -1500 },
-  { top: '30%', left: '46%', color: '#E67C73', tilt: '-40deg', dur: 4600, delay: -2300 },
-  { top: '10%', left: '52%', color: '#1E88E5', tilt: '24deg', dur: 3900, delay: -3100 },
+  { top: '16%', left: '10%', color: 'var(--color-primary)', tilt: '20deg', dur: 3800, delay: -400 },
+  { top: '12%', left: '32%', color: COURSE_COLORS[7]!.solid, tilt: '-30deg', dur: 4400, delay: -1900 },
+  { top: '20%', left: '62%', color: COURSE_COLORS[4]!.solid, tilt: '45deg', dur: 3600, delay: -2700 },
+  { top: '14%', left: '84%', color: COURSE_COLORS[11]!.solid, tilt: '10deg', dur: 4800, delay: -900 },
+  { top: '26%', left: '18%', color: COURSE_COLORS[19]!.solid, tilt: '-15deg', dur: 4000, delay: -3300 },
+  { top: '24%', left: '74%', color: COURSE_COLORS[8]!.solid, tilt: '32deg', dur: 3400, delay: -1500 },
+  { top: '30%', left: '46%', color: COURSE_COLORS[1]!.solid, tilt: '-40deg', dur: 4600, delay: -2300 },
+  { top: '10%', left: '52%', color: COURSE_COLORS[18]!.solid, tilt: '24deg', dur: 3900, delay: -3100 },
 ] as const
 
 // Pencil-gray speed lines rise past the idle slip, telegraphing the peel's
@@ -91,9 +94,7 @@ const STREAKS = [
 </script>
 
 <template>
-  <div
-    class="relative mx-auto flex h-[100dvh] w-full max-w-[420px] flex-col overflow-hidden bg-[#F6F7EE] px-6"
-  >
+  <OnboardingShell class="px-6">
     <!-- Celebration scene: underneath the slip from the first frame -->
     <div :inert="!revealed" :aria-hidden="!revealed" class="absolute inset-0">
       <img
@@ -126,7 +127,7 @@ const STREAKS = [
       />
 
       <h1
-        class="absolute inset-x-0 top-[24%] text-center font-logo text-6xl font-semibold text-[#00A4C8]"
+        class="absolute inset-x-0 top-[24%] text-center font-logo text-6xl font-semibold text-primary"
         :class="revealed ? 'pop-in' : 'pre-hidden'"
         style="animation-delay: 1000ms"
       >
@@ -140,9 +141,9 @@ const STREAKS = [
         <img
           :src="avatarSrc"
           :alt="`${profileName} profile picture`"
-          class="h-7 w-7 rounded-full border border-white bg-white object-cover shadow-[0_2px_0_#D5EBF1]"
+          class="h-7 w-7 rounded-full border border-card bg-card object-cover shadow-day-toggle"
         />
-        <p class="text-lg font-bold text-[#527A8C]" style="font-family: 'Quicksand', sans-serif">
+        <p class="text-lg font-bold text-text-soft">
           {{ displayName ? `your week is set, ${displayName}` : 'your week is set' }}
         </p>
       </div>
@@ -187,9 +188,7 @@ const STREAKS = [
             class="w-full"
             @click="enterCalendar"
           >
-            <span style="font-family: 'Quicksand', sans-serif; font-weight: 700 !important">
-              GO TO CALENDAR
-            </span>
+            GO TO CALENDAR
           </TactileButton>
         </div>
       </div>
@@ -222,12 +221,11 @@ const STREAKS = [
       :inert="revealed"
       :aria-hidden="revealed"
       aria-label="Saved schedule summary"
-      class="slip absolute left-1/2 top-[16%] z-30 w-[86%] max-w-[340px] -translate-x-1/2 rounded-2xl border border-[#D5EBF1] bg-[#FDFEF7] p-5 pt-7 shadow-[0_10px_0_rgba(0,123,153,0.12),0_24px_44px_rgba(51,65,85,0.16)]"
+      class="slip absolute left-1/2 top-[16%] z-30 w-[86%] max-w-[340px] -translate-x-1/2 rounded-2xl border border-border-soft bg-card p-5 pt-7 shadow-[0_10px_0_rgba(0,123,153,0.12),0_24px_44px_rgba(51,65,85,0.16)]"
       :class="{ 'slip-away': revealed }"
     >
       <div
-        class="absolute -top-3.5 left-1/2 -translate-x-1/2 rotate-2 rounded-lg bg-[#00A4C8] px-4 py-1.5 text-[11px] font-bold tracking-[0.14em] text-white shadow-[0_3px_0_#007B99]"
-        style="font-family: 'Quicksand', sans-serif"
+        class="absolute -top-3.5 left-1/2 -translate-x-1/2 rotate-2 rounded-lg bg-primary px-4 py-1.5 text-[11px] font-bold tracking-[0.14em] text-white shadow-bevel"
       >
         SAVED
       </div>
@@ -236,13 +234,13 @@ const STREAKS = [
         <img
           :src="avatarSrc"
           :alt="`${profileName} profile picture`"
-          class="slip-line h-11 w-11 rounded-full border-2 border-[#FDFEF7] bg-white object-cover shadow-[0_3px_0_#D5EBF1]"
+          class="slip-line h-11 w-11 rounded-full border-2 border-card bg-card object-cover shadow-stationery"
           style="animation-delay: 300ms"
         />
       </div>
 
       <h2
-        class="slip-line font-logo text-3xl font-semibold text-[#007B99]"
+        class="slip-line font-logo text-3xl font-semibold text-primary-bevel"
         style="animation-delay: 200ms"
       >
         All set{{ displayName ? `, ${displayName}` : '' }}!
@@ -250,18 +248,18 @@ const STREAKS = [
 
       <dl class="mt-4">
         <div
-          class="slip-line flex items-center justify-between border-t border-dashed border-[#D5EBF1] py-2.5"
+          class="slip-line flex items-center justify-between border-t border-dashed border-border-soft py-2.5"
           style="animation-delay: 420ms"
         >
-          <dt class="text-sm font-semibold text-[#334155]">Courses pinned</dt>
-          <dd class="text-base font-bold text-[#00A4C8]">{{ summary.courses.length }}</dd>
+          <dt class="text-sm font-semibold text-text-main">Courses pinned</dt>
+          <dd class="text-base font-bold text-primary">{{ summary.courses.length }}</dd>
         </div>
         <div
-          class="slip-line flex items-center justify-between border-t border-dashed border-[#D5EBF1] py-2.5"
+          class="slip-line flex items-center justify-between border-t border-dashed border-border-soft py-2.5"
           style="animation-delay: 620ms"
         >
-          <dt class="text-sm font-semibold text-[#334155]">Class blocks</dt>
-          <dd class="text-base font-bold text-[#00A4C8]">{{ summary.classBlocks }}</dd>
+          <dt class="text-sm font-semibold text-text-main">Class blocks</dt>
+          <dd class="text-base font-bold text-primary">{{ summary.classBlocks }}</dd>
         </div>
       </dl>
 
@@ -279,7 +277,6 @@ const STREAKS = [
             backgroundColor: paletteFor(course.colorId).bg,
             borderColor: paletteFor(course.colorId).border,
             color: paletteFor(course.colorId).text,
-            fontFamily: 'Quicksand, sans-serif',
           }"
         >
           <span
@@ -291,17 +288,19 @@ const STREAKS = [
         </li>
       </ul>
 
-      <button
+      <Button
         type="button"
+        variant="tactile-ocean"
+        size="touch"
         data-testid="reveal-celebration"
-        class="slip-line mt-5 flex min-h-[44px] w-full items-center justify-center rounded-xl border border-[#BCE3ED] bg-[#E8F6FA] text-sm font-bold text-[#007B99] shadow-[0_3px_0_#B0DBE5] transition-all hover:bg-[#DCF1F7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:translate-y-0.5 active:shadow-[0_1px_0_#B0DBE5]"
-        style="font-family: 'Quicksand', sans-serif; animation-delay: 950ms"
+        class="slip-line mt-5 w-full"
+        style="animation-delay: 950ms"
         @click="reveal"
       >
         CONTINUE
-      </button>
+      </Button>
     </section>
-  </div>
+  </OnboardingShell>
 </template>
 
 <style scoped>
@@ -325,7 +324,7 @@ const STREAKS = [
   top: 0;
   width: 2px;
   border-radius: 9999px;
-  background: #7b8b97;
+  background: var(--color-text-muted);
   opacity: 0.4;
   animation: streak-rise linear infinite;
 }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useCatalog } from '@/composables/useCatalog'
-import type { CoursePaletteColor } from '@/constants/palette'
+import type { CoursePaletteColor } from '@/utils/courseColors'
 import { formatCardTimestamp } from '@/utils/noteDate'
 import { collapseBlankLines, extractFirstImageUrl, stripImageMarkdown } from '@/utils/noteImage'
 import type { NoteSummaryResponse } from '@/types/api'

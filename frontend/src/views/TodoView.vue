@@ -328,7 +328,7 @@ onActivated(loadData)
 </script>
 
 <template>
-  <div class="relative flex h-full flex-col bg-(--color-app-bg) text-(--color-text-main)">
+  <div class="relative flex h-full flex-col bg-app-bg text-text-main">
     <div
       v-if="searchResults === null && searchError === null"
       class="shrink-0 overflow-visible mx-4 pt-3 pb-3 [&::-webkit-scrollbar]:hidden"
@@ -342,7 +342,7 @@ onActivated(loadData)
         <div
           role="group"
           aria-label="Task views"
-          class="flex shrink-0 items-center gap-1 rounded-full border border-[#D5EBF1] bg-[#FDFEF7] p-1 shadow-[0_2px_0_#D5EBF1]"
+          class="flex shrink-0 items-center gap-1 rounded-full border border-border-soft bg-card p-1 shadow-day-toggle"
         >
           <button
             v-for="f in filterTabs.slice(0, 2)"
@@ -352,11 +352,11 @@ onActivated(loadData)
             type="button"
             :aria-selected="activeFilter === f.key"
             :tabindex="activeFilter === f.key ? 0 : -1"
-            class="flex min-h-11 items-center justify-center rounded-full px-4 text-sm font-bold whitespace-nowrap transition-[background-color,color,box-shadow,translate] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-primary)/50"
+            class="flex min-h-11 items-center justify-center rounded-full px-4 text-sm font-bold whitespace-nowrap transition-[background-color,color,box-shadow,translate] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
             :class="
               activeFilter === f.key
-                ? 'bg-(--color-primary) text-white shadow-[0_2px_0_var(--color-primary-bevel)] active:translate-y-0.5 active:shadow-[0_1px_0_var(--color-primary-bevel)]'
-                : 'text-(--color-primary-bevel) hover:bg-white/70 active:bg-white'
+                ? 'bg-primary text-white shadow-[0_2px_0_var(--color-primary-bevel)] active:translate-y-0.5 active:shadow-[0_1px_0_var(--color-primary-bevel)]'
+                : 'text-primary-bevel hover:bg-card/70 active:bg-card'
             "
             @click="selectFilter(f.key)"
             @keydown="onTabKeydown($event, f.key)"
@@ -367,7 +367,7 @@ onActivated(loadData)
         <div
           role="group"
           aria-label="Plan categories"
-          class="flex flex-1 items-center gap-1 rounded-full border border-[#D5EBF1] bg-[#F0F8FA] p-1 shadow-[inset_0_1px_3px_rgba(0,75,99,0.1)]"
+          class="flex flex-1 items-center gap-1 rounded-full border border-border-soft bg-field p-1 shadow-[inset_0_1px_3px_rgba(0,75,99,0.1)]"
         >
           <button
             v-for="f in filterTabs.slice(2)"
@@ -377,11 +377,11 @@ onActivated(loadData)
             type="button"
             :aria-selected="activeFilter === f.key"
             :tabindex="activeFilter === f.key ? 0 : -1"
-            class="flex min-h-11 flex-1 items-center justify-center rounded-full px-3 text-sm font-bold whitespace-nowrap transition-[background-color,color,box-shadow,translate] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-primary)/50"
+            class="flex min-h-11 flex-1 items-center justify-center rounded-full px-3 text-sm font-bold whitespace-nowrap transition-[background-color,color,box-shadow,translate] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
             :class="
               activeFilter === f.key
-                ? 'bg-(--color-primary) text-white shadow-[0_2px_0_var(--color-primary-bevel)] active:translate-y-0.5 active:shadow-[0_1px_0_var(--color-primary-bevel)]'
-                : 'text-(--color-primary-bevel) hover:bg-white/70 active:bg-white'
+                ? 'bg-primary text-white shadow-[0_2px_0_var(--color-primary-bevel)] active:translate-y-0.5 active:shadow-[0_1px_0_var(--color-primary-bevel)]'
+                : 'text-primary-bevel hover:bg-card/70 active:bg-card'
             "
             @click="selectFilter(f.key)"
             @keydown="onTabKeydown($event, f.key)"
@@ -408,7 +408,7 @@ onActivated(loadData)
       />
       <p
         v-if="loading && searchResults === null"
-        class="py-8 text-center text-(--color-text-muted)"
+        class="py-8 text-center text-text-muted"
       >
         Loading tasks…
       </p>
@@ -417,17 +417,17 @@ onActivated(loadData)
         v-else-if="loadError && searchResults === null"
         class="flex flex-col items-center gap-3 py-12"
       >
-        <p role="alert" class="text-center text-(--color-text-muted)">{{ loadError }}</p>
+        <p role="alert" class="text-center text-text-muted">{{ loadError }}</p>
         <Button type="button" variant="outline" @click="loadData">Retry</Button>
       </div>
 
       <div v-else-if="searchError" class="flex flex-col items-center gap-3 py-12">
-        <p role="alert" class="text-center text-(--color-text-muted)">{{ searchError }}</p>
+        <p role="alert" class="text-center text-text-muted">{{ searchError }}</p>
         <Button type="button" variant="outline" @click="retrySearch">Retry</Button>
       </div>
 
       <template v-else-if="searchResults !== null">
-        <p v-if="searchResults.length === 0" class="py-12 text-center text-(--color-text-muted)">
+        <p v-if="searchResults.length === 0" class="py-12 text-center text-text-muted">
           No matching tasks
         </p>
         <TransitionGroup v-else tag="ul" name="task-item" class="relative">
@@ -447,7 +447,7 @@ onActivated(loadData)
       </template>
 
       <template v-else-if="activeFilter !== 'ALL'">
-        <p v-if="flatTasks.length === 0" class="py-12 text-center text-(--color-text-muted)">
+        <p v-if="flatTasks.length === 0" class="py-12 text-center text-text-muted">
           No {{ activeFilter.toLowerCase() }} tasks
         </p>
         <TransitionGroup v-else tag="ul" name="task-item" class="relative">
@@ -472,13 +472,13 @@ onActivated(loadData)
             v-for="s in sections"
             :key="s.category"
             :value="s.category"
-            class="border-b border-(--color-app-border) last:border-b"
+            class="border-b border-app-border last:border-b"
           >
             <AccordionTrigger class="px-4 py-3 text-xl font-bold hover:no-underline">
               {{ s.label }}
             </AccordionTrigger>
             <AccordionContent class="p-0">
-              <p v-if="s.list.length === 0" class="px-4 py-3 text-sm text-(--color-text-muted)">
+              <p v-if="s.list.length === 0" class="px-4 py-3 text-sm text-text-muted">
                 No {{ s.label.toLowerCase() }} tasks
               </p>
               <TransitionGroup v-else tag="ul" name="task-item" class="relative">
@@ -522,43 +522,3 @@ onActivated(loadData)
   </div>
 </template>
 
-<style scoped>
-.task-item-enter-active,
-.task-item-leave-active,
-.task-item-move {
-  transition:
-    opacity 200ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.task-item-leave-active {
-  position: absolute;
-  right: 0;
-  left: 0;
-  z-index: 0;
-  transition-duration: 160ms;
-}
-
-.task-item-enter-from {
-  opacity: 0;
-  transform: translateY(8px);
-}
-
-.task-item-leave-to {
-  opacity: 0;
-  transform: translateX(-16px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .task-item-enter-active,
-  .task-item-leave-active,
-  .task-item-move {
-    transition-duration: 120ms;
-  }
-
-  .task-item-enter-from,
-  .task-item-leave-to {
-    transform: none;
-  }
-}
-</style>

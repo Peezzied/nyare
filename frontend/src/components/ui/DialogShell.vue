@@ -89,7 +89,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeydown))
       v-if="open"
       :class="
         cn(
-          'fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.4)] px-4',
+          'fixed inset-0 z-50 flex items-center justify-center bg-scrim px-4',
           overlayClass,
         )
       "
@@ -103,7 +103,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeydown))
         :aria-labelledby="titleId"
         :aria-describedby="contentId"
         tabindex="-1"
-        class="popup-card relative w-full max-w-[360px] rounded-2xl border border-[#CBD5E1] bg-white p-5 shadow-xl"
+        class="popup-card relative w-full max-w-[360px] rounded-2xl border border-app-border bg-card p-5 shadow-xl"
       >
         <img
           :src="duckotaFeedback"
@@ -111,22 +111,22 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeydown))
           aria-hidden="true"
           class="pointer-events-none absolute -right-12 -top-20 h-[175px] w-[175px] object-contain"
           style="
-            filter: drop-shadow(1px 0 0 #ffffff) drop-shadow(-1px 0 0 #ffffff)
-              drop-shadow(0 1px 0 #ffffff) drop-shadow(0 -1px 0 #ffffff)
-              drop-shadow(1px 1px 0 #ffffff) drop-shadow(-1px 1px 0 #ffffff)
-              drop-shadow(1px -1px 0 #ffffff) drop-shadow(-1px -1px 0 #ffffff);
+            filter: drop-shadow(1px 0 0 var(--color-card)) drop-shadow(-1px 0 0 var(--color-card))
+              drop-shadow(0 1px 0 var(--color-card)) drop-shadow(0 -1px 0 var(--color-card))
+              drop-shadow(1px 1px 0 var(--color-card)) drop-shadow(-1px 1px 0 var(--color-card))
+              drop-shadow(1px -1px 0 var(--color-card)) drop-shadow(-1px -1px 0 var(--color-card));
           "
         />
 
         <h2
           :id="titleId"
-          class="pr-32 text-lg font-bold text-[#DC2626]"
+          class="pr-32 text-lg font-bold text-destructive"
           style="font-family: 'Quicksand', sans-serif; font-weight: 700"
         >
           {{ title }}
         </h2>
 
-        <div :id="contentId">
+        <div :id="contentId" class="mt-2 text-sm text-text-muted font-secondary">
           <slot />
         </div>
 

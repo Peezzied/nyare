@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import OnboardingShell from '@/components/OnboardingShell.vue'
 import TactileButton from '@/components/TactileButton.vue'
 
 const router = useRouter()
@@ -10,37 +11,16 @@ function begin() {
 </script>
 
 <template>
-  <div
-    class="relative mx-auto flex h-[100dvh] w-full max-w-[420px] flex-col items-center overflow-hidden bg-[#F6F7EE] px-6"
-  >
-    <!-- Background props: sun (top-right) -->
-    <img
-      src="@/assets/props/sun.svg"
-      alt=""
-      aria-hidden="true"
-      class="pointer-events-none absolute -top-12 -right-14 z-0 w-52 select-none sm:w-56"
-    />
-
-    <!-- Background props: clouds (top-left) -->
-    <img
-      src="@/assets/props/double_cloud.svg"
-      alt=""
-      aria-hidden="true"
-      class="pointer-events-none absolute left-[6%] top-[9%] z-0 w-32 select-none sm:w-36"
-    />
-
+  <OnboardingShell show-sun show-cloud show-wave class="items-center px-6">
     <!-- Brand title -->
     <div class="relative z-10 flex w-full flex-col items-center pt-[17svh]">
       <h1
-        class="font-logo text-8xl font-semibold leading-tight tracking-tight text-[#00A4C8] sm:text-8xl"
+        class="font-logo text-8xl font-semibold leading-tight tracking-tight text-primary sm:text-8xl"
       >
         'Nyare
       </h1>
 
-      <p
-        class="mt-1 font-sans text-lg tracking-wide text-[#7B8B97]"
-        style="font-family: 'Quicksand', sans-serif; font-weight: 700 !important"
-      >
+      <p class="mt-1 font-sans text-lg font-bold tracking-wide text-text-muted">
         para di ma yare
       </p>
     </div>
@@ -79,9 +59,7 @@ function begin() {
     <!-- CTA: original TactileButton sizing preserved -->
     <div class="absolute bottom-[20svh] left-0 right-0 z-20 flex flex-col items-stretch px-6">
       <TactileButton aria-label="Get started with Nyare" @click="begin">
-        <span style="font-family: 'Quicksand', sans-serif; font-weight: 700 !important">
-          GET STARTED
-        </span>
+        <span>GET STARTED</span>
       </TactileButton>
     </div>
 
@@ -92,15 +70,7 @@ function begin() {
       aria-hidden="true"
       class="pointer-events-none absolute bottom-[12%] left-1/3 z-10 w-9 -translate-x-1/2 select-none sm:w-10 shell-rise"
     />
-
-    <!-- Bottom wave -->
-    <img
-      src="@/assets/props/wave_1.svg"
-      alt=""
-      aria-hidden="true"
-      class="pointer-events-none absolute -bottom-[16%] -left-[12%] z-0 w-[124%] max-w-none select-none"
-    />
-  </div>
+  </OnboardingShell>
 </template>
 
 <style scoped>

@@ -35,7 +35,7 @@ const catalog = useCatalog()
 function chipClasses(item: UntimedDayItem) {
   return item.category === 'event'
     ? 'border text-white'
-    : 'border border-[#CBD5E1] bg-white text-[#334155]'
+    : 'border border-app-border bg-white text-text-main'
 }
 
 function chipStyle(item: UntimedDayItem) {
@@ -73,7 +73,7 @@ function dayAriaLabel(day: { date: Date; untimed: UntimedDayItem[] }) {
       :style="{ width: `${gutterLeft}px` }"
       aria-hidden="true"
     >
-      <span class="rounded-md bg-[#E1F5FE] px-1.5 py-0.5 text-[10px] font-bold text-[#0E7490]">
+      <span class="rounded-md bg-ocean-soft px-1.5 py-0.5 text-[10px] font-bold text-now">
         W{{ weekNumber }}
       </span>
     </span>
@@ -91,13 +91,13 @@ function dayAriaLabel(day: { date: Date; untimed: UntimedDayItem[] }) {
       >
         <span
           class="text-xs font-bold tracking-wide"
-          :class="day.key === todayKey ? 'text-[#0E7490]' : 'text-stone-500'"
+          :class="day.key === todayKey ? 'text-now' : 'text-text-muted'"
         >
           {{ dayName(day.date) }}
         </span>
         <span
           class="mt-0.5 flex size-9 items-center justify-center rounded-full text-xl font-bold"
-          :class="day.key === todayKey ? 'bg-[#0E7490] text-white' : 'text-stone-700'"
+          :class="day.key === todayKey ? 'bg-now text-white' : 'text-text-main'"
         >
           {{ day.date.getDate() }}
         </span>
@@ -117,7 +117,7 @@ function dayAriaLabel(day: { date: Date; untimed: UntimedDayItem[] }) {
           </span>
           <span
             v-if="day.untimed.length > MAX_PILLS"
-            class="text-[9px] font-bold leading-3 text-stone-500"
+            class="text-[9px] font-bold leading-3 text-text-muted"
           >
             +{{ day.untimed.length - MAX_PILLS }}
           </span>

@@ -5,6 +5,7 @@
 import { computed } from 'vue'
 import { CircleCheck, CircleX, Info, LoaderCircle } from '@lucide/vue'
 import type { ToastKind } from '@/composables/useToasts'
+import { statusColor } from '@/utils/statusColors'
 
 export interface DuckotaBubbleProps {
   /** Visual tone, same semantic map as the toast shelf. */
@@ -33,23 +34,14 @@ const icon = computed(() => {
   }
 })
 
-const iconColor = computed(() => {
-  switch (props.kind) {
-    case 'success':
-      return '#0B8043'
-    case 'error':
-      return '#DC2626'
-    default:
-      return '#00A4C8'
-  }
-})
+const iconColor = computed(() => statusColor(props.kind))
 </script>
 
 <template>
   <button
     type="button"
     data-testid="duckota-bubble"
-    class="absolute bottom-[calc(100%+14px)] left-0 z-30 flex w-64 origin-bottom-left cursor-pointer items-start gap-2.5 rounded-2xl border border-[#CBD5E1] bg-[#FDFEF7] p-3 text-left shadow-[0_4px_0_#D5EBF1] drop-shadow-[0_10px_16px_rgba(43,50,54,0.12)]"
+    class="absolute bottom-[calc(100%+14px)] left-0 z-30 flex w-64 origin-bottom-left cursor-pointer items-start gap-2.5 rounded-2xl border border-app-border bg-card p-3 text-left shadow-stationery drop-shadow-[0_10px_16px_rgba(43,50,54,0.12)]"
     @click="emit('tap')"
   >
     <component
@@ -60,15 +52,15 @@ const iconColor = computed(() => {
       aria-hidden="true"
     />
     <span class="min-w-0 flex-1">
-      <span class="block font-sans text-sm font-semibold text-[#334155]">
+      <span class="block font-sans text-sm font-semibold text-text-main">
         {{ title }}
       </span>
-      <span v-if="detail" class="mt-0.5 block font-editor text-xs text-[#7B8B97]">
+      <span v-if="detail" class="mt-0.5 block font-secondary text-xs text-text-muted">
         {{ detail }}
       </span>
     </span>
     <span
-      class="absolute -bottom-[7px] left-7 size-3 rotate-45 border-b border-r border-[#CBD5E1] bg-[#FDFEF7]"
+      class="absolute -bottom-[7px] left-7 size-3 rotate-45 border-b border-r border-app-border bg-card"
       aria-hidden="true"
     />
   </button>

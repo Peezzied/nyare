@@ -209,7 +209,7 @@ describe('NotesView', () => {
 
     const fab = wrapper.get('[data-testid="notes-fab"]')
 
-    expect(fab.classes()).toContain('bg-[#00A4C8]')
+    expect(fab.classes()).toContain('bg-primary')
     expect(fab.classes()).toContain('rounded-2xl')
 
     await fab.trigger('click')

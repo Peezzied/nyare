@@ -665,17 +665,18 @@ onMounted(load)
 
     <div v-else class="flex flex-col gap-4">
       <Transition name="fade">
-        <button
+        <Button
           v-if="catalog.courses.value.length > 0"
           type="button"
+          variant="tactile-ocean"
+          size="touch"
           data-testid="manage-archive-all"
-          class="flex min-h-[44px] items-center justify-center gap-2 self-end rounded-xl border border-[#BCE3ED] bg-[#E8F6FA] px-4 text-sm font-bold text-[#007B99] shadow-[0_3px_0_#B0DBE5] transition-all duration-75 hover:bg-[#DDEFF6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:translate-y-0.5 active:shadow-[0_1px_0_#B0DBE5]"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          class="self-end"
           @click="guardEditorExit(startArchiveAll)"
         >
           <Archive class="h-5 w-5" aria-hidden="true" />
           Archive all
-        </button>
+        </Button>
       </Transition>
 
       <TransitionGroup tag="ul" name="course-row" class="relative flex flex-col gap-4">
@@ -683,7 +684,7 @@ onMounted(load)
           <Card
             as="article"
             data-testid="manage-course-card"
-            class="gap-0 rounded-2xl border-[#D5EBF1] bg-[#FDFEF7] px-4 py-4 shadow-[0_4px_0_#D5EBF1]"
+            class="gap-0 rounded-2xl border-border-soft bg-card px-4 py-4 shadow-stationery"
           >
             <div class="flex items-start gap-3">
               <span
@@ -733,7 +734,7 @@ onMounted(load)
                   type="button"
                   data-testid="manage-course-delete"
                   :aria-label="`Delete ${course.name}`"
-                  class="flex h-11 w-11 items-center justify-center rounded-lg text-[#B91C1C] transition-colors hover:bg-black/5 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
+                  class="flex h-11 w-11 items-center justify-center rounded-lg text-destructive-hover transition-colors hover:bg-black/5 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
                   @click="guardEditorExit(() => startDelete(course))"
                 >
                   <Trash2 class="h-5 w-5" aria-hidden="true" />
@@ -750,8 +751,8 @@ onMounted(load)
           data-testid="manage-empty-state"
           class="flex flex-col items-center px-6 py-16 text-center"
         >
-          <div class="flex h-16 w-16 items-center justify-center rounded-full bg-[#E8F6FA]">
-            <BookOpen class="h-8 w-8 text-[#007B99]" aria-hidden="true" />
+          <div class="flex h-16 w-16 items-center justify-center rounded-full bg-ocean-soft">
+            <BookOpen class="h-8 w-8 text-primary-bevel" aria-hidden="true" />
           </div>
           <p class="mt-4 text-lg font-bold text-text-main">No courses yet</p>
           <p class="mt-1 text-sm text-text-muted">
@@ -797,31 +798,28 @@ onMounted(load)
       title="Delete course?"
       @update:open="deletingCourse = null"
     >
-      <p
-        class="mt-2 text-sm text-[#7B8B97]"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
-      >
+      <p class="mt-2 font-secondary text-sm text-text-muted">
         {{ deleteMessage }}
       </p>
 
       <template #actions="{ dismiss }">
-        <button
+        <Button
           type="button"
-          class="min-h-[44px] rounded-xl border-b-4 border-[#CBD5E1] bg-[#E2E8F0] px-4 py-2.5 text-sm font-semibold text-[#334155] transition-all duration-75 hover:bg-[#D7DEE8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
+          variant="tactile-secondary"
+          size="touch"
           @click="dismiss"
         >
           Keep course
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
-          class="min-h-[44px] rounded-xl border-b-4 border-[#991B1B] bg-[#DC2626] px-5 py-2.5 text-sm font-bold text-white transition-all duration-75 hover:bg-[#B91C1C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          variant="tactile-destructive"
+          size="touch"
           @click="confirmDelete"
         >
           Delete
-        </button>
+        </Button>
       </template>
     </DialogShell>
 
@@ -830,33 +828,30 @@ onMounted(load)
       title="Archive course?"
       @update:open="archivingCourse = null"
     >
-      <p
-        class="mt-2 text-sm text-[#7B8B97]"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
-      >
+      <p class="mt-2 font-secondary text-sm text-text-muted">
         {{ archiveMessage }}
       </p>
 
       <template #actions="{ dismiss }">
-        <button
+        <Button
           type="button"
+          variant="tactile-secondary"
+          size="touch"
           data-testid="manage-archive-cancel"
-          class="min-h-[44px] rounded-xl border-b-4 border-[#CBD5E1] bg-[#E2E8F0] px-4 py-2.5 text-sm font-semibold text-[#334155] transition-all duration-75 hover:bg-[#D7DEE8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
           @click="dismiss"
         >
           Keep course
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
+          variant="tactile-destructive"
+          size="touch"
           data-testid="manage-archive-confirm"
-          class="min-h-[44px] rounded-xl border-b-4 border-[#991B1B] bg-[#DC2626] px-5 py-2.5 text-sm font-bold text-white transition-all duration-75 hover:bg-[#B91C1C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
           @click="confirmArchive"
         >
           Archive
-        </button>
+        </Button>
       </template>
     </DialogShell>
 
@@ -865,102 +860,43 @@ onMounted(load)
       title="Archive all courses?"
       @update:open="archiveAllOpen = $event"
     >
-      <p
-        class="mt-2 text-sm text-[#7B8B97]"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
-      >
+      <p class="mt-2 font-secondary text-sm text-text-muted">
         {{ archiveAllMessage }}
       </p>
 
       <template #actions="{ dismiss }">
-        <button
+        <Button
           type="button"
+          variant="tactile-secondary"
+          size="touch"
           data-testid="manage-archive-all-cancel"
-          class="min-h-[44px] rounded-xl border-b-4 border-[#CBD5E1] bg-[#E2E8F0] px-4 py-2.5 text-sm font-semibold text-[#334155] transition-all duration-75 hover:bg-[#D7DEE8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
           @click="dismiss"
         >
           Keep courses
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
+          variant="tactile-destructive"
+          size="touch"
           data-testid="manage-archive-all-confirm"
-          class="min-h-[44px] rounded-xl border-b-4 border-[#991B1B] bg-[#DC2626] px-5 py-2.5 text-sm font-bold text-white transition-all duration-75 hover:bg-[#B91C1C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
           @click="confirmArchiveAll"
         >
           Archive all
-        </button>
+        </Button>
       </template>
     </DialogShell>
   </div>
 </template>
 
 <style scoped>
-.course-row-enter-active,
-.course-row-leave-active,
-.course-row-move {
-  transition:
-    opacity 200ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.course-row-leave-active {
-  position: absolute;
-  right: 0;
-  left: 0;
-  z-index: 0;
-  transition-duration: 160ms;
-}
-
-.course-row-enter-from {
-  opacity: 0;
-  transform: translateY(8px);
-}
-
-.course-row-leave-to {
-  opacity: 0;
-  transform: translateX(-16px);
-}
-
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 150ms ease-out;
 }
 
 .fade-enter-from,
-.fade-leave-to,
-.empty-fade-enter-from,
-.empty-fade-leave-to {
+.fade-leave-to {
   opacity: 0;
-}
-
-.empty-fade-enter-active {
-  transition: opacity 200ms ease-out 140ms;
-}
-
-.empty-fade-leave-active {
-  position: absolute;
-  right: 16px;
-  left: 16px;
-  transition: opacity 150ms ease-in;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .course-row-enter-active,
-  .course-row-leave-active,
-  .course-row-move {
-    transition-duration: 120ms;
-  }
-
-  .course-row-enter-from,
-  .course-row-leave-to {
-    transform: none;
-  }
-
-  .empty-fade-enter-active {
-    transition-delay: 0ms;
-  }
 }
 </style>

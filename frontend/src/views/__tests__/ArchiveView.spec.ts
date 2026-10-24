@@ -4,7 +4,7 @@ import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
 import ArchiveView from '../ArchiveView.vue'
 import AppHeader from '@/components/AppHeader.vue'
 import { provideShellHeader } from '@/composables/useShellHeader'
-import { COURSE_PALETTE_24, getCourseColor } from '@/constants/palette'
+import { COURSE_PALETTE_24, getCourseColor } from '@/utils/courseColors'
 import type { CourseResponse } from '@/types/api'
 
 const mockPush = vi.fn<(to: unknown) => Promise<void>>(() => Promise.resolve())

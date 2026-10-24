@@ -707,24 +707,14 @@ onUnmounted(() => {
   display: none !important;
 }
 
-.sx-nyare-week :deep(.sx__calendar),
-.sx-nyare-week :deep(.sx__view-container) {
-  background-color: var(--color-calendar-canvas);
-  --sx-color-background: var(--color-calendar-canvas);
-  --sx-color-outline-variant: #cbd5e1;
-  --sx-color-surface: var(--color-calendar-canvas);
-}
+/* Canvas, outline variant, and hour-label colors are set globally in main.css. */
 
 .sx-nyare-week :deep(.sx__week-grid__hour) {
-  border-top: 1px solid #cbd5e1 !important;
+  border-top: 1px solid var(--color-app-border) !important;
 }
 
 .sx-nyare-week :deep(.sx__time-grid-day) {
-  border-left: 1px solid #cbd5e1 !important;
-}
-
-.sx-nyare-week :deep(.sx__week-grid__hour-text) {
-  color: var(--color-text-muted);
+  border-left: 1px solid var(--color-app-border) !important;
 }
 
 .sx-nyare-week :deep(.sx__time-grid-event) {

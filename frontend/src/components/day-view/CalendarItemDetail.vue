@@ -62,7 +62,7 @@ function confirmDelete() {
       />
       <h2
         id="detail-modal-title"
-        class="min-w-0 flex-1 truncate font-quicksand text-xl font-bold text-[#1E293B]"
+        class="min-w-0 flex-1 truncate font-sans text-xl font-bold text-heading"
       >
         {{ item.title }}
       </h2>
@@ -71,28 +71,28 @@ function confirmDelete() {
     <!-- Only the fields this item owns render; a missing field shows no placeholder (FR-022). -->
     <dl class="flex flex-col gap-3">
       <div v-if="item.timeWindow" class="flex flex-col gap-0.5">
-        <dt class="text-xs font-bold tracking-wide text-[#64748B] uppercase">Time</dt>
-        <dd data-testid="detail-time-window" class="text-sm font-semibold text-[#334155]">
+        <dt class="text-xs font-bold tracking-wide text-text-muted uppercase">Time</dt>
+        <dd data-testid="detail-time-window" class="text-sm font-semibold text-text-main">
           {{ item.timeWindow }}
         </dd>
       </div>
 
       <div v-if="item.duration" class="flex flex-col gap-0.5">
-        <dt class="text-xs font-bold tracking-wide text-[#64748B] uppercase">Duration</dt>
-        <dd data-testid="detail-duration" class="text-sm font-semibold text-[#334155]">
+        <dt class="text-xs font-bold tracking-wide text-text-muted uppercase">Duration</dt>
+        <dd data-testid="detail-duration" class="text-sm font-semibold text-text-main">
           {{ item.duration }}
         </dd>
       </div>
     </dl>
 
     <div v-if="item.notes.length" class="flex flex-col gap-2">
-      <h3 class="text-xs font-bold tracking-wide text-[#64748B] uppercase">{{ notesLabel }}</h3>
+      <h3 class="text-xs font-bold tracking-wide text-text-muted uppercase">{{ notesLabel }}</h3>
       <button
         v-for="note in item.notes"
         :key="note.id"
         data-testid="note-control"
         type="button"
-        class="flex min-h-[44px] min-w-[44px] cursor-pointer items-center gap-2 rounded-xl border-2 border-[#CBD5E1] bg-white/70 px-4 py-2.5 text-left font-quicksand text-sm font-bold text-[#334155] transition-transform hover:bg-white active:translate-y-0.5"
+        class="flex min-h-[44px] min-w-[44px] cursor-pointer items-center gap-2 rounded-xl border-2 border-app-border bg-white/70 px-4 py-2.5 text-left font-sans text-sm font-bold text-text-main transition-transform hover:bg-white active:translate-y-0.5"
         :aria-label="`Open linked note: ${note.title}`"
         @click="onOpenNote(note)"
       >
@@ -105,7 +105,7 @@ function confirmDelete() {
       v-if="item.entryDate"
       data-testid="add-note-control"
       type="button"
-      class="flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#7CCFE2] bg-[#E8F6FA]/60 px-4 py-2.5 font-quicksand text-sm font-bold text-[#007B99] transition-colors hover:bg-[#E8F6FA] active:translate-y-0.5"
+      class="flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#7CCFE2] bg-ocean-soft/60 px-4 py-2.5 font-sans text-sm font-bold text-primary-bevel transition-colors hover:bg-ocean-soft active:translate-y-0.5"
       :aria-label="`Add a note for ${item.title}`"
       @click="emit('add-note')"
     >
@@ -127,7 +127,7 @@ function confirmDelete() {
       <button
         data-testid="open-task-control"
         type="button"
-        class="flex min-h-[44px] min-w-[44px] cursor-pointer items-center gap-2 rounded-xl border-2 border-[#CBD5E1] bg-white/70 px-4 py-2.5 text-left font-quicksand text-sm font-bold text-[#334155] transition-transform hover:bg-white active:translate-y-0.5"
+        class="flex min-h-[44px] min-w-[44px] cursor-pointer items-center gap-2 rounded-xl border-2 border-app-border bg-white/70 px-4 py-2.5 text-left font-sans text-sm font-bold text-text-main transition-transform hover:bg-white active:translate-y-0.5"
         :aria-label="`Open ${item.title} in the To-do view`"
         @click="onOpenTask"
       >
@@ -152,13 +152,13 @@ function confirmDelete() {
 
     <DialogShell v-model:open="deleteOpen" title="Delete Event">
       <p
-        class="mt-2 text-sm text-[#7B8B97]"
+        class="mt-2 text-sm text-text-muted"
         style="font-family: 'Inter', sans-serif; font-weight: 400"
       >
         Are you sure you want to delete this event?
       </p>
       <p
-        class="mt-3 text-sm font-semibold text-[#334155]"
+        class="mt-3 text-sm font-semibold text-text-main"
         style="font-family: 'Quicksand', sans-serif; font-weight: 600"
       >
         {{ item.title }}

@@ -100,10 +100,10 @@ const STATUS_OPTIONS = [
 ] as const
 
 const FIELD_CLASS =
-  'mt-2 h-11 w-full rounded-xl border border-(--color-app-border) bg-[#F0F8FA] px-3 text-sm text-(--color-text-main) shadow-2xs outline-none focus-visible:bg-card focus-visible:border-[#00A4C8] focus-visible:ring-2 focus-visible:ring-[#00A4C8]/30'
+  'mt-2 h-11 w-full rounded-xl border border-app-border bg-field px-3 text-sm text-text-main shadow-2xs outline-none focus-visible:bg-card focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30'
 
 const STATUS_CHIP =
-  'h-11 flex-1 rounded-full border-(--color-app-border) bg-(--color-card) px-3 font-semibold text-(--color-text-main) shadow-none hover:bg-[#E8F6FA] hover:text-(--color-text-main) data-[state=on]:border-transparent data-[state=on]:bg-(--color-primary) data-[state=on]:text-white'
+  'h-11 flex-1 rounded-full border-app-border bg-card px-3 font-semibold text-text-main shadow-none hover:bg-ocean-soft hover:text-text-main data-[state=on]:border-transparent data-[state=on]:bg-primary data-[state=on]:text-white'
 </script>
 
 <template>
@@ -112,7 +112,7 @@ const STATUS_CHIP =
       <DrawerTitle class="sr-only">Filters</DrawerTitle>
 
       <div class="px-4 pt-2">
-        <label for="filter-course" class="text-xs font-semibold text-(--color-text-muted)">
+        <label for="filter-course" class="text-xs font-semibold text-text-muted">
           Course
         </label>
         <div class="mt-2 flex flex-col">
@@ -120,7 +120,7 @@ const STATUS_CHIP =
             id="filter-course"
             data-testid="filter-course"
             :model-value="draftCourseId ?? ''"
-            class="h-11 rounded-xl border-(--color-app-border) bg-[#F0F8FA] text-sm text-(--color-text-main) shadow-2xs focus-visible:border-[#00A4C8] focus-visible:ring-2 focus-visible:ring-[#00A4C8]/30"
+            class="h-11 rounded-xl border-app-border bg-field text-sm text-text-main shadow-2xs focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30"
             @update:model-value="onCourseChange"
           >
             <NativeSelectOption value="">All courses</NativeSelectOption>
@@ -134,7 +134,7 @@ const STATUS_CHIP =
       <div class="mt-4 px-4">
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label for="filter-from" class="text-xs font-semibold text-(--color-text-muted)">
+            <label for="filter-from" class="text-xs font-semibold text-text-muted">
               From
             </label>
             <input
@@ -146,7 +146,7 @@ const STATUS_CHIP =
             />
           </div>
           <div>
-            <label for="filter-to" class="text-xs font-semibold text-(--color-text-muted)">
+            <label for="filter-to" class="text-xs font-semibold text-text-muted">
               To
             </label>
             <input
@@ -158,13 +158,13 @@ const STATUS_CHIP =
             />
           </div>
         </div>
-        <p v-if="rangeInvalid" role="alert" class="mt-2 text-xs font-semibold text-[#B91C1C]">
+        <p v-if="rangeInvalid" role="alert" class="mt-2 text-xs font-semibold text-destructive-hover">
           The From date must not be after the To date.
         </p>
       </div>
 
       <div v-if="showStatus" class="mt-4 px-4">
-        <p class="text-xs font-semibold text-(--color-text-muted)">Status</p>
+        <p class="text-xs font-semibold text-text-muted">Status</p>
         <ToggleGroup
           type="single"
           variant="outline"
@@ -188,9 +188,9 @@ const STATUS_CHIP =
       <div class="flex gap-2 px-4 pt-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
         <Button
           type="button"
-          variant="outline"
+          variant="tactile-ocean"
           size="touch"
-          class="flex-1 rounded-xl border-[#BCE3ED] bg-[#E8F6FA] font-bold text-[#007B99] shadow-[0_3px_0_#B0DBE5] hover:bg-[#D8EEF4] hover:text-[#007B99] active:translate-y-0.5 active:shadow-[0_1px_0_#B0DBE5]"
+          class="flex-1"
           data-testid="filter-clear"
           @click="clear"
         >

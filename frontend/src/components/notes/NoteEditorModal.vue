@@ -1,14 +1,14 @@
 <script setup lang="ts">
-// In-page container-transform overlay that hosts NoteEditor. The shared
-// useContainerMorph composable owns the choreography: expand from the tapped rect
-// over 320ms, contract back over 240ms, ephemeral history state for device back
-// gestures, reduced motion falls back to an opacity crossfade.
+// In-page container-transform overlay that hosts NoteEditor. MorphModalShell
+// owns the scrim and card chrome; the shared useContainerMorph composable
+// inside it owns the choreography: expand from the tapped rect, contract back,
+// ephemeral history state for device back gestures.
 import { ref } from 'vue'
 import NoteEditor from '@/views/NoteEditor.vue'
+import MorphModalShell from '@/components/ui/MorphModalShell.vue'
 import type { TapOriginRect } from '@/types/notesTransition'
-import { useContainerMorph } from '@/composables/useNoteTransition'
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     isOpen: boolean
     noteId: string | null
@@ -26,70 +26,29 @@ const emit = defineEmits<{
 
 const editorRef = ref<{ requestBack?: () => void } | null>(null)
 
-const {
-  rootRef,
-  containerRef,
-  phase,
-  isTransitioning,
-  isExpanded,
-  showContent,
-  showControls,
-  cardStyle,
-  fadeMode,
-  sessionKey,
-  dismiss,
-  requestClose,
-} = useContainerMorph({
-  isOpen: () => props.isOpen,
-  originRect: () => props.originRect,
-  historyKey: 'nyareNoteModal',
-  onDismiss: () => {
-    if (!editorRef.value?.requestBack) {
-      return false
-    }
-    editorRef.value.requestBack()
-    return true
-  },
-  onClosed: () => emit('close'),
-})
+/** Keeps the overlay open when the editor wants to intercept back (unsaved changes). */
+function onDismiss(): boolean {
+  if (!editorRef.value?.requestBack) {
+    return false
+  }
+  editorRef.value.requestBack()
+  return true
+}
 </script>
 
 <template>
-  <div
-    v-if="isOpen || phase === 'collapsing'"
-    ref="rootRef"
-    data-testid="note-editor-modal"
-    tabindex="-1"
-    class="fixed inset-0 z-50 overflow-hidden outline-none"
-    role="dialog"
-    aria-modal="true"
+  <MorphModalShell
+    :is-open="isOpen"
+    :origin-rect="originRect"
+    history-key="nyareNoteModal"
     aria-label="Note editor"
-    @keydown.esc="dismiss(true)"
+    data-testid="note-editor-modal"
+    backdrop-testid="note-modal-backdrop"
+    container-testid="note-modal-container"
+    :on-dismiss="onDismiss"
+    @closed="emit('close')"
   >
-    <!-- Background layer: subtle dark scrim -->
-    <div
-      data-testid="note-modal-backdrop"
-      class="absolute inset-0 bg-black/20 transition-opacity duration-300"
-      :class="isExpanded ? 'opacity-100' : 'opacity-0'"
-      @click="dismiss(true)"
-    />
-
-    <!-- Full-screen expanding container -->
-    <div
-      ref="containerRef"
-      data-testid="note-modal-container"
-      class="fixed overflow-hidden bg-[#F5F6EE] will-change-[top,left,width,height,border-radius]"
-      :class="
-        fadeMode
-          ? ['transition-opacity duration-[150ms]', isExpanded ? 'opacity-100' : 'opacity-0']
-          : isTransitioning && phase === 'expanding'
-            ? 'transition-all duration-[320ms] [transition-timing-function:cubic-bezier(0.05,0.7,0.1,1.0)]'
-            : isTransitioning && phase === 'collapsing'
-              ? 'transition-all duration-[240ms] [transition-timing-function:cubic-bezier(0.3,0.0,0.8,0.15)]'
-              : ''
-      "
-      :style="cardStyle"
-    >
+    <template #default="{ showContent, showControls, sessionKey, requestClose }">
       <NoteEditor
         ref="editorRef"
         :key="sessionKey"
@@ -101,6 +60,6 @@ const {
         @close="requestClose(true)"
         @saved="emit('saved', $event)"
       />
-    </div>
-  </div>
+    </template>
+  </MorphModalShell>
 </template>

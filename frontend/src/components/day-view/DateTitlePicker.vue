@@ -45,7 +45,7 @@ function dayMarker(day: DateValue): boolean {
           :aria-expanded="open"
           aria-haspopup="dialog"
           :aria-label="`Choose a date — ${title}`"
-          class="flex min-h-11 min-w-0 items-center gap-1 rounded-lg px-2 transition-colors hover:bg-black/5 active:bg-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8]"
+          class="flex min-h-11 min-w-0 items-center gap-1 rounded-lg px-2 transition-colors hover:bg-black/5 active:bg-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
           <span class="truncate">{{ title }}</span>
           <ChevronDown

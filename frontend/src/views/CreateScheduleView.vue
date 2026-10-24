@@ -29,7 +29,7 @@ import {
 } from '@/utils/scheduleValidation'
 import { ApiError } from '@/api/client'
 import type { DayOfWeek } from '@/types/api'
-import { COURSE_PALETTE_24 } from '@/constants/palette'
+import { COURSE_PALETTE_24 } from '@/utils/courseColors'
 import { Button } from '@/components/ui/button'
 import CourseEditorDrawer from '@/components/CourseEditorDrawer.vue'
 import StepProgress from '@/components/StepProgress.vue'
@@ -1010,7 +1010,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="relative h-[100dvh] w-full overflow-hidden bg-[#F6F7EE]">
+  <div class="relative h-[100dvh] w-full overflow-hidden bg-app-bg">
     <!-- Background Week Calendar Preview -->
     <div class="absolute inset-x-0 top-[100px] z-0 bottom-[calc(4rem+env(safe-area-inset-bottom))]">
       <WeekPreview
@@ -1030,7 +1030,7 @@ defineExpose({
           variant="ghost"
           size="icon"
           aria-label="Go back"
-          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#00A4C8] text-white shadow-[0_3px_0_#007B99] transition-all hover:bg-[#0096B7] active:translate-y-0.5 active:shadow-[0_1px_0_#007B99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-bevel transition-all hover:bg-primary-hover active:translate-y-0.5 active:shadow-bevel-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           @click="goBack"
         >
           <ArrowLeft class="h-5 w-5 stroke-[2.5]" aria-hidden="true" />
@@ -1050,8 +1050,7 @@ defineExpose({
           aria-label="Submit schedule"
           :aria-busy="saving"
           :disabled="!canSaveAll"
-          class="flex h-10 shrink-0 items-center gap-1.5 rounded-xl bg-[#007B99] px-4 font-sans text-sm font-bold text-white shadow-[0_3px_0_#00556B] transition-all hover:bg-[#006B85] active:translate-y-0.5 active:shadow-[0_1px_0_#00556B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007B99] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:active:translate-y-0"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          class="flex h-10 shrink-0 items-center gap-1.5 rounded-xl bg-primary-bevel px-4 font-sans text-sm font-bold text-white shadow-[0_3px_0_var(--color-primary-deep)] transition-all hover:bg-primary-deep active:translate-y-0.5 active:shadow-[0_1px_0_var(--color-primary-deep)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-bevel focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-ghost disabled:text-text-muted disabled:shadow-none disabled:active:translate-y-0"
           @click="requestSubmit"
         >
           <svg
@@ -1083,8 +1082,7 @@ defineExpose({
 
       <div class="flex h-12 items-center justify-center">
         <h1
-          class="min-w-0 flex-1 truncate px-2 text-center text-2xl font-bold text-[#1E293B]"
-          style="font-family: 'Quicksand', sans-serif"
+          class="min-w-0 flex-1 truncate px-2 text-center font-sans text-2xl font-bold text-heading"
         >
           Create a Schedule
         </h1>
@@ -1120,7 +1118,7 @@ defineExpose({
             v-if="blocks.some((block) => blockStatus(block) === 'failed')"
             type="button"
             variant="outline"
-            class="flex-1 rounded-xl border border-red-200 bg-[#FDFEF7] px-4 py-3 font-sans text-sm font-bold text-red-700 transition-colors hover:bg-red-50 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+            class="flex-1 rounded-xl border border-destructive-line bg-card px-4 py-3 font-sans text-sm font-bold text-destructive-hover transition-colors hover:bg-destructive-soft active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-2"
             :disabled="saving"
             @click="retryFailed"
           >
@@ -1132,7 +1130,7 @@ defineExpose({
 
     <!-- Course dock: one chip per course editor, pinned + at the right -->
     <footer
-      class="absolute inset-x-0 bottom-0 z-[60] flex min-h-16 items-center gap-2 border-t border-[#CBD5E1] bg-[#F6F7EE] px-3 pb-[env(safe-area-inset-bottom)]"
+      class="absolute inset-x-0 bottom-0 z-sheet flex min-h-16 items-center gap-2 border-t border-app-border bg-app-bg px-3 pb-[env(safe-area-inset-bottom)]"
     >
       <div
         class="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto py-2.5"
@@ -1148,7 +1146,7 @@ defineExpose({
           :class="
             editor.id === activeEditorId
               ? 'border-transparent'
-              : 'border-[#D5EBF1] bg-[#FDFEF7] text-[#1E293B] shadow-[0_2px_0_#E2E8F0] hover:border-[#00A4C8] hover:bg-[#F0F8FA]'
+              : 'border-border-soft bg-card text-heading shadow-[0_2px_0_var(--color-ghost)] hover:border-primary hover:bg-field'
           "
           :style="
             editor.id === activeEditorId
@@ -1165,7 +1163,7 @@ defineExpose({
             type="button"
             :aria-pressed="editor.id === activeEditorId"
             :aria-label="`Switch to ${editor.name.trim() || 'New course'}`"
-            class="flex min-w-0 flex-1 items-center gap-2 px-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#00A4C8] active:scale-[0.97]"
+            class="flex min-w-0 flex-1 items-center gap-2 px-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary active:scale-[0.97]"
             @click="selectCourseChip(editor.id)"
           >
             <span
@@ -1186,7 +1184,7 @@ defineExpose({
             type="button"
             data-testid="remove-course"
             :aria-label="`Remove ${editor.name.trim() || 'New course'}`"
-            class="flex w-11 shrink-0 items-center justify-center border-l transition-colors hover:bg-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#00A4C8]"
+            class="flex w-11 shrink-0 items-center justify-center border-l transition-colors hover:bg-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
             :style="{ borderColor: paletteFor(editor.colorId).border }"
             @click.stop="requestRemoveEditor(editor.id)"
           >
@@ -1201,7 +1199,7 @@ defineExpose({
           data-testid="add-course-hint"
           aria-label="Add a course"
           :disabled="saving"
-          class="flex h-11 shrink-0 items-center gap-1.5 rounded-xl border border-dashed border-[#7FC8DC] bg-[#F0F8FA] px-3.5 font-sans text-xs font-bold whitespace-nowrap text-[#007B99] transition-all hover:bg-[#E8F6FA] hover:text-[#006880] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-60"
+          class="flex h-11 shrink-0 items-center gap-1.5 rounded-xl border border-dashed border-primary/50 bg-field px-3.5 font-sans text-xs font-bold whitespace-nowrap text-primary-bevel transition-all hover:bg-ocean-soft hover:text-primary-deep active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-60"
           @click="guardCourseNavigation(addCourseEditor)"
         >
           <Plus class="h-4 w-4 stroke-[2.5]" aria-hidden="true" />
@@ -1214,12 +1212,12 @@ defineExpose({
         data-testid="add-course"
         aria-label="Add another course"
         :disabled="saving"
-        class="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#BCE3ED] bg-[#E8F6FA] text-[#007B99] shadow-[0_3px_0_#B0DBE5] transition-all hover:bg-[#DCF1F7] hover:text-[#006880] active:translate-y-0.5 active:shadow-[0_1px_0_#B0DBE5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none disabled:active:translate-y-0"
+        class="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-secondary-border bg-ocean-soft text-primary-bevel shadow-bevel-secondary transition-all hover:bg-border-soft hover:text-primary-deep active:translate-y-0.5 active:shadow-bevel-secondary-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none disabled:active:translate-y-0"
         @click="guardCourseNavigation(addCourseEditor)"
       >
         <span
           v-if="showAddCourseHint"
-          class="absolute -inset-1 rounded-full border-2 border-[#00A4C8]/50 motion-safe:animate-ping"
+          class="absolute -inset-1 rounded-full border-2 border-primary/50 motion-safe:animate-ping"
           aria-hidden="true"
         />
         <Plus class="h-5 w-5 stroke-[2.5]" aria-hidden="true" />
@@ -1227,10 +1225,7 @@ defineExpose({
     </footer>
 
     <DialogShell v-model:open="showSubmitConfirm" title="Submit your schedule?" :busy="saving">
-      <p
-        class="mt-2 text-sm text-[#7B8B97]"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
-      >
+      <p class="mt-2 font-secondary text-sm text-text-muted">
         {{ submitConfirmMessage }}
       </p>
 
@@ -1241,7 +1236,6 @@ defineExpose({
           size="touch"
           data-testid="submit-cancel"
           :disabled="disabled"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
           @click="dismiss"
         >
           Keep editing
@@ -1254,7 +1248,6 @@ defineExpose({
           data-testid="submit-confirm"
           :disabled="disabled"
           :aria-busy="saving"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
           @click="confirmSubmit"
         >
           Submit
@@ -1268,31 +1261,28 @@ defineExpose({
       @update:open="showRemoveDialog = $event"
       @cancel="cancelRemoveEditor"
     >
-      <p
-        class="mt-2 text-sm text-[#7B8B97]"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
-      >
+      <p class="mt-2 font-secondary text-sm text-text-muted">
         This removes {{ pendingRemoveName }} and its class times from your draft.
       </p>
 
       <template #actions="{ dismiss }">
-        <button
+        <Button
           type="button"
-          class="min-h-[44px] rounded-xl border-b-4 border-[#CBD5E1] bg-[#E2E8F0] px-4 py-2.5 text-sm font-semibold text-[#334155] transition-all duration-75 hover:bg-[#D7DEE8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00A4C8] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
+          variant="tactile-secondary"
+          size="touch"
           @click="dismiss"
         >
           Keep course
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
-          class="min-h-[44px] rounded-xl border-b-4 border-[#991B1B] bg-[#DC2626] px-5 py-2.5 text-sm font-bold text-white transition-all duration-75 hover:bg-[#B91C1C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626] focus-visible:ring-offset-2 active:translate-y-1 active:border-b-0"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          variant="tactile-destructive"
+          size="touch"
           @click="confirmRemoveEditor"
         >
           Remove
-        </button>
+        </Button>
       </template>
     </DialogShell>
   </div>

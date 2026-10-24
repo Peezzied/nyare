@@ -6,7 +6,7 @@ import { useArchive } from './useArchive'
 import { useNotes } from './useNotes'
 import { usePlannerStatus } from './usePlannerStatus'
 import { useTasks } from './useTasks'
-import { COURSE_PALETTE_24, getCourseColor, type CoursePaletteColor } from '@/constants/palette'
+import { COURSE_PALETTE_24, getCourseColor, type CoursePaletteColor } from '@/utils/courseColors'
 import type { CourseResponse, ScheduleResponse } from '@/types/api'
 
 // Module-level state, so every useCatalog() caller shares one cache.

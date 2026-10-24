@@ -11,7 +11,7 @@ import {
   devPreviewEnabled,
 } from '@/api/mocks/notesDevPreview'
 import { useCatalog } from './useCatalog'
-import type { CoursePaletteColor } from '@/constants/palette'
+import type { CoursePaletteColor } from '@/utils/courseColors'
 
 const rawNotes = ref<NoteSummaryResponse[]>([])
 const loading = ref(false)

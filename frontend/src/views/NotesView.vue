@@ -9,6 +9,7 @@ import FilterSheet, { type ListFilters } from '@/components/FilterSheet.vue'
 import NoteEditorModal from '@/components/notes/NoteEditorModal.vue'
 import AddFab from '@/components/AddFab.vue'
 import HamburgerMenu from '@/components/HamburgerMenu.vue'
+import { Button } from '@/components/ui/button'
 import type { NoteSummaryResponse } from '@/types/api'
 import type { TapOriginRect } from '@/types/notesTransition'
 import { useCatalog } from '@/composables/useCatalog'
@@ -186,13 +187,15 @@ onActivated(loadData)
 
         <p class="mt-1 text-sm text-text-muted">{{ error }}</p>
 
-        <button
-          class="btn-tactile mt-4 rounded-xl px-4 py-2 font-sans text-sm font-bold text-white"
+        <Button
           type="button"
+          variant="tactile"
+          size="touch"
+          class="mt-4"
           @click="loadNotes(true)"
         >
           Retry
-        </button>
+        </Button>
       </div>
 
       <div
@@ -205,13 +208,15 @@ onActivated(loadData)
 
         <p class="mt-1 text-sm text-text-muted">{{ searchError }}</p>
 
-        <button
-          class="btn-tactile mt-4 rounded-xl px-4 py-2 font-sans text-sm font-bold text-white"
+        <Button
           type="button"
+          variant="tactile"
+          size="touch"
+          class="mt-4"
           @click="retrySearch"
         >
           Retry
-        </button>
+        </Button>
       </div>
 
       <p

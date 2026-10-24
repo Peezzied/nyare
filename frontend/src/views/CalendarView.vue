@@ -22,6 +22,7 @@ import type { TapOriginRect } from '@/types/notesTransition'
 import { setNoteMorphOrigin, takeNoteMorphOrigin } from '@/composables/useNoteTransition'
 import type { AcademicEventResponse, TaskResponse } from '@/types/api'
 import { buildCalendarItemDetail } from '@/utils/calendarItemDetail'
+import { getGutterLeft } from '@/utils/calendarStyle'
 import { toDateKey } from '@/utils/dayKey'
 import { deriveDeadlineSections } from '@/utils/deadlineSections'
 import { expandSchedulesForDate, formatDateHeader } from '@/utils/scheduleExpander'
@@ -31,6 +32,7 @@ import { useNow } from '@/composables/useNow'
 import { formatWeekTitle, weekDates } from '@/utils/weekDays'
 import DateTitlePicker from '@/components/day-view/DateTitlePicker.vue'
 import DeadlinesView from '@/components/day-view/DeadlinesView.vue'
+import ErrorBanner from '@/components/ErrorBanner.vue'
 import EventDetailModal from '@/components/day-view/EventDetailModal.vue'
 import TaskContainerModal from '@/components/tasks/TaskContainerModal.vue'
 import FilterSheet, { type ListFilters } from '@/components/FilterSheet.vue'
@@ -38,7 +40,7 @@ import HamburgerMenu from '@/components/HamburgerMenu.vue'
 import DaySwiper from '@/components/day-view/DaySwiper.vue'
 import ScheduleCalendar from '@/components/day-view/ScheduleCalendar.vue'
 import SearchBar from '@/components/SearchBar.vue'
-import TodayButton from '@/components/day-view/TodayButton.vue'
+import FloatingJumpButton from '@/components/day-view/FloatingJumpButton.vue'
 import ViewModeToggle from '@/components/day-view/ViewModeToggle.vue'
 import WeekCalendar from '@/components/day-view/WeekCalendar.vue'
 import WeekHeaderRow from '@/components/day-view/WeekHeaderRow.vue'
@@ -367,16 +369,12 @@ useShellHeader({
 <template>
   <!-- Fills the AppShell scroll area; the swiper manages its own height. -->
   <div class="relative flex h-full flex-col">
-    <div
+    <ErrorBanner
       v-if="loadError"
-      role="alert"
-      class="mx-4 mt-3 flex items-center justify-between gap-3 rounded-xl bg-[#DC2626] px-4 py-2 text-sm font-bold text-white"
-    >
-      <span>{{ loadError }}</span>
-      <button type="button" class="rounded-lg bg-white/20 px-3 py-1" @click="loadData">
-        Retry
-      </button>
-    </div>
+      :message="loadError"
+      action-label="Retry"
+      @action="loadData"
+    />
 
     <!-- Swipe left/right anywhere on the calendar: a day in day view, a week in week view.
          The deadlines list is now-anchored and sits outside the swiper. -->
@@ -417,7 +415,7 @@ useShellHeader({
             <WeekHeaderRow
               :days="weekInfosFor(date)"
               :today-key="todayKey"
-              :gutter-left="gutterLeft || 55"
+              :gutter-left="gutterLeft || getGutterLeft()"
               :cols-width="0"
             />
           </div>
@@ -432,15 +430,7 @@ useShellHeader({
             :filters-active="filtersActive"
             @filter="filterSheetOpen = true"
           />
-          <div
-            role="alert"
-            class="mx-4 mt-3 flex items-center justify-between gap-3 rounded-xl bg-[#DC2626] px-4 py-2 text-sm font-bold text-white"
-          >
-            <span>{{ searchError }}</span>
-            <button type="button" class="rounded-lg bg-white/20 px-3 py-1" @click="retrySearch">
-              Retry
-            </button>
-          </div>
+          <ErrorBanner :message="searchError" action-label="Retry" @action="retrySearch" />
         </template>
         <FilterSheet
           v-model:open="filterSheetOpen"
@@ -470,7 +460,11 @@ useShellHeader({
       </div>
     </Transition>
 
-    <TodayButton v-if="viewMode !== 'deadlines' && !isShowingToday" @jump="goToday" />
+    <FloatingJumpButton
+      v-if="viewMode !== 'deadlines' && !isShowingToday"
+      direction="today"
+      @jump="goToday"
+    />
 
     <!-- One detail modal for both views; the container owns it.
          No frame element: the shell fills the viewport, so the modal fits it. -->
@@ -492,19 +486,13 @@ useShellHeader({
       :is-open="isTaskDetailOpen"
       :task-id="taskDetailId"
       :origin-rect="null"
-      class="z-[55]"
+      class="z-sheet"
       @close="closeTaskDetail"
       @deleted="onTaskDeleted"
     />
 
     <!-- A failed complete write keeps the prior state and shows the error here -->
-    <p
-      v-if="detailError"
-      role="alert"
-      class="absolute bottom-20 left-1/2 z-[60] w-max max-w-[80%] -translate-x-1/2 rounded-xl bg-[#DC2626] px-4 py-2 text-center text-sm font-bold text-white shadow-lg"
-    >
-      {{ detailError }}
-    </p>
+    <ErrorBanner v-if="detailError" :message="detailError" floating />
   </div>
 </template>
 

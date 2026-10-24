@@ -269,7 +269,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex h-full flex-col overflow-hidden bg-[#F5F6EE] text-slate-800">
+  <div class="flex h-full flex-col overflow-hidden bg-app-bg text-heading">
     <!-- Header bar: close left, title center, save right -->
     <DetailTopBar
       :title="isViewMode ? 'Task' : 'New task'"
@@ -281,7 +281,7 @@ onMounted(() => {
         <span
           v-if="isArchivedCourse"
           data-testid="archived-course-label"
-          class="inline-flex min-h-11 items-center rounded-full border border-(--color-app-border) bg-white px-4 text-xs font-bold uppercase tracking-wider text-(--color-text-muted)"
+          class="inline-flex min-h-11 items-center rounded-full border border-app-border bg-card px-4 text-xs font-bold uppercase tracking-wider text-text-muted"
         >
           Archived course
         </span>
@@ -318,14 +318,13 @@ onMounted(() => {
             aria-label="Task title"
             rows="1"
             placeholder="Task title"
-            class="min-h-0 min-w-0 flex-1 resize-none rounded-none border-0 bg-transparent px-0 py-0 text-2xl font-bold text-slate-800 shadow-none placeholder-slate-400 outline-none focus-visible:border-0 focus-visible:ring-0 md:text-2xl"
-            style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+            class="min-h-0 min-w-0 flex-1 resize-none rounded-none border-0 bg-transparent px-0 py-0 font-sans text-2xl font-bold text-heading shadow-none placeholder:text-text-muted outline-none focus-visible:border-0 focus-visible:ring-0 md:text-2xl"
           />
         </div>
         <p
           v-if="titleError"
           data-testid="task-title-error"
-          class="mt-1 text-xs font-semibold text-red-600"
+          class="mt-1 text-xs font-semibold text-destructive"
         >
           {{ titleError }}
         </p>
@@ -361,14 +360,14 @@ onMounted(() => {
             <p
               v-if="courses.length === 0"
               data-testid="task-course-required"
-              class="text-xs font-semibold text-amber-700"
+              class="text-xs font-semibold text-warn"
             >
               A course is required. Create a course first.
             </p>
             <p
               v-if="courseError"
               data-testid="task-course-error"
-              class="mt-1 text-xs font-semibold text-red-600"
+              class="mt-1 text-xs font-semibold text-destructive"
             >
               {{ courseError }}
             </p>
@@ -377,7 +376,7 @@ onMounted(() => {
       </section>
 
       <!-- Plan zone -->
-      <section class="mt-4 rounded-2xl bg-white p-1" :class="contentStaggerClass">
+      <section class="mt-4 rounded-2xl bg-card p-1" :class="contentStaggerClass">
         <div class="flex min-h-11 items-center gap-3 px-3">
           <CalendarIcon
             class="h-5 w-5 shrink-0"
@@ -394,7 +393,7 @@ onMounted(() => {
                 aria-label="Scheduled date"
                 :disabled="isArchivedCourse"
                 class="min-w-0 flex-1 justify-start px-0 text-sm font-normal hover:bg-transparent"
-                :class="form.scheduledDate ? 'text-slate-700' : 'text-slate-400'"
+                :class="form.scheduledDate ? 'text-text-main' : 'text-text-muted'"
               >
                 {{ formattedScheduledDate }}
               </Button>
@@ -410,17 +409,17 @@ onMounted(() => {
             size="icon-touch"
             data-testid="task-date-clear"
             aria-label="Clear date"
-            class="rounded-full text-slate-400"
+            class="rounded-full text-text-muted"
             @click="form.scheduledDate = ''"
           >
             <X class="size-4" />
           </Button>
         </div>
 
-        <div class="h-px bg-slate-100" />
+        <div class="h-px bg-ghost" />
 
         <div class="flex min-h-11 items-center gap-3 px-3">
-          <Clock class="h-5 w-5 shrink-0 text-(--color-text-muted)" aria-hidden="true" />
+          <Clock class="h-5 w-5 shrink-0 text-text-muted" aria-hidden="true" />
           <NativeSelect
             data-testid="task-duration"
             aria-label="Duration"
@@ -436,14 +435,14 @@ onMounted(() => {
           </NativeSelect>
         </div>
 
-        <div class="h-px bg-slate-100" />
+        <div class="h-px bg-ghost" />
 
         <div class="flex min-h-11 items-center gap-3 px-3">
-          <span class="text-sm text-(--color-text-muted)">Plan</span>
+          <span class="text-sm text-text-muted">Plan</span>
           <span
             data-testid="task-section"
             :aria-label="`Plan section: ${sectionLabel}`"
-            class="ml-auto rounded-full bg-[#E1F5FE] px-3 py-1 text-xs font-bold text-[#007B99]"
+            class="ml-auto rounded-full bg-ocean-soft px-3 py-1 text-xs font-bold text-primary-bevel"
           >
             {{ sectionLabel }}
           </span>
@@ -451,10 +450,10 @@ onMounted(() => {
       </section>
 
       <!-- Description zone -->
-      <section class="mt-4 rounded-2xl bg-white p-3" :class="controlsStaggerClass">
+      <section class="mt-4 rounded-2xl bg-card p-3" :class="controlsStaggerClass">
         <label
           for="task-description"
-          class="mb-2 block text-xs font-bold uppercase tracking-wider text-(--color-text-muted)"
+          class="mb-2 block text-xs font-bold uppercase tracking-wider text-text-muted"
         >
           Description
         </label>
@@ -466,8 +465,7 @@ onMounted(() => {
           :readonly="isArchivedCourse"
           rows="3"
           placeholder="Add details"
-          class="min-h-0 w-full resize-none rounded-none border-0 bg-transparent px-0 py-0 text-sm text-slate-700 shadow-none placeholder-slate-400 outline-none focus-visible:border-0 focus-visible:ring-0"
-          style="font-family: 'Inter', sans-serif; font-weight: 400"
+          class="min-h-0 w-full resize-none rounded-none border-0 bg-transparent px-0 py-0 text-sm text-text-main shadow-none placeholder:text-text-muted outline-none focus-visible:border-0 focus-visible:ring-0"
         />
       </section>
 
@@ -476,11 +474,11 @@ onMounted(() => {
         v-if="sourceNoteId"
         :href="`?note=${sourceNoteId}`"
         data-testid="task-source-note"
-        class="mt-4 flex min-h-11 items-center gap-3 rounded-2xl bg-white px-3 text-sm font-semibold text-(--color-text-main)"
+        class="mt-4 flex min-h-11 items-center gap-3 rounded-2xl bg-card px-3 text-sm font-semibold text-text-main"
         :class="controlsStaggerClass"
         @click="openSourceNote"
       >
-        <FileText class="h-5 w-5 shrink-0 text-(--color-text-muted)" aria-hidden="true" />
+        <FileText class="h-5 w-5 shrink-0 text-text-muted" aria-hidden="true" />
         <span>From a note</span>
       </a>
 
@@ -492,7 +490,6 @@ onMounted(() => {
         size="touch"
         data-testid="task-delete"
         class="mt-4 w-full"
-        style="font-family: 'Quicksand', sans-serif; font-weight: 700"
         :class="controlsStaggerClass"
         @click="deleteOpen = true"
       >
@@ -505,16 +502,16 @@ onMounted(() => {
         v-if="errorMessage"
         variant="destructive"
         data-testid="task-error"
-        class="mt-4 rounded-xl border-red-200 bg-red-50 p-3 text-xs text-red-800"
+        class="mt-4 rounded-xl border-destructive-line bg-destructive-soft p-3 text-xs text-destructive-bevel"
       >
-        <AlertDescription class="flex items-center justify-between text-xs text-red-800">
+        <AlertDescription class="flex items-center justify-between text-xs text-destructive-bevel">
           <span>{{ errorMessage }}</span>
           <Button
             type="button"
             variant="link"
             size="touch"
             data-testid="task-error-retry"
-            class="font-bold text-red-700"
+            class="font-bold text-destructive-hover"
             @click="handleRetry"
           >
             Retry
@@ -524,16 +521,10 @@ onMounted(() => {
     </main>
 
     <DialogShell v-model:open="deleteOpen" title="Delete Task">
-      <p
-        class="mt-2 text-sm text-[#7B8B97]"
-        style="font-family: 'Inter', sans-serif; font-weight: 400"
-      >
+      <p class="mt-2 font-secondary text-sm text-text-muted">
         Are you sure you want to delete this task?
       </p>
-      <p
-        class="mt-3 text-sm font-semibold text-[#334155]"
-        style="font-family: 'Quicksand', sans-serif; font-weight: 600"
-      >
+      <p class="mt-3 font-sans text-sm font-semibold text-text-main">
         {{ form.title }}
       </p>
 
@@ -544,7 +535,6 @@ onMounted(() => {
           size="touch"
           data-testid="task-delete-cancel"
           :disabled="disabled"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
           @click="dismiss"
         >
           Cancel
@@ -556,7 +546,6 @@ onMounted(() => {
           size="touch"
           data-testid="task-delete-confirm"
           :disabled="disabled"
-          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
           @click="confirmDelete"
         >
           CONFIRM

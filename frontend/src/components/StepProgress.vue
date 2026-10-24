@@ -38,12 +38,12 @@ function stepLabel(dot: number) {
 
 function dotClass(dot: number) {
   if (dot === active.value) {
-    return 'step-dot-active step-active active is-active bg-[#007B99] scale-125'
+    return 'step-dot-active step-active active is-active bg-primary-bevel scale-125'
   }
   if (dot < active.value) {
-    return 'bg-[#00A4C8] group-hover:scale-125'
+    return 'bg-primary group-hover:scale-125'
   }
-  return 'step-dot-inactive bg-[#00A4C8]/25'
+  return 'step-dot-inactive bg-primary/25'
 }
 
 function selectStep(dot: number) {
@@ -64,8 +64,8 @@ function selectStep(dot: number) {
       <button
         v-if="interactive"
         type="button"
-        class="step-dot group flex size-8 items-center justify-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-[#00A4C8]/45 focus-visible:outline-offset-1"
-        :class="dot < active ? 'cursor-pointer hover:bg-[#00A4C8]/10' : 'cursor-default'"
+        class="step-dot group flex size-8 items-center justify-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-primary/45 focus-visible:outline-offset-1"
+        :class="dot < active ? 'cursor-pointer hover:bg-primary/10' : 'cursor-default'"
         :disabled="dot >= active"
         :aria-current="dot === active ? 'step' : undefined"
         :aria-label="`Step ${dot}: ${stepLabel(dot)}`"

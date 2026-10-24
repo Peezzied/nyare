@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { academicEventsApi, coursesApi, notesApi, schedulesApi, tasksApi } from '@/api'
 import { createCache } from './createCache'
-import { COURSE_PALETTE_24, getCourseColor, type CoursePaletteColor } from '@/constants/palette'
+import { COURSE_PALETTE_24, getCourseColor, type CoursePaletteColor } from '@/utils/courseColors'
 import type {
   AcademicEventResponse,
   CourseResponse,

@@ -6,6 +6,7 @@
 import { ref } from 'vue'
 import { ArrowLeft } from '@lucide/vue'
 import { useTopBarInset } from '@/composables/useTopBarInset'
+import HeaderIconButton from './HeaderIconButton.vue'
 
 const headerEl = ref<HTMLElement | null>(null)
 useTopBarInset(headerEl)
@@ -34,22 +35,22 @@ const emit = defineEmits<{
 <template>
   <header
     ref="headerEl"
-    class="relative flex shrink-0 items-center justify-between border-b border-[#CBD5E1]/60 bg-[#F5F6EE] px-4 py-2 mb-4"
+    class="relative flex shrink-0 items-center justify-between border-b border-app-border/60 bg-app-bg px-4 py-2 mb-4"
   >
-    <button
-      type="button"
+    <HeaderIconButton
+      rounded="full"
       data-testid="detail-back"
       :aria-label="backLabel"
-      class="-ml-2 flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-full p-2.5 text-[#334155] transition-all hover:bg-slate-200/70 active:scale-95"
+      class="-ml-2 p-2.5 transition-all active:scale-95"
       @click="emit('close')"
     >
       <ArrowLeft class="h-6 w-6 stroke-[2.2]" aria-hidden="true" />
-    </button>
+    </HeaderIconButton>
 
     <h1
       v-if="title"
       :id="titleId"
-      class="pointer-events-none absolute left-1/2 max-w-[55%] -translate-x-1/2 truncate font-quicksand text-sm font-semibold text-[#64748B]"
+      class="pointer-events-none absolute left-1/2 max-w-[55%] -translate-x-1/2 truncate font-sans text-sm font-semibold text-text-muted"
     >
       {{ title }}
     </h1>

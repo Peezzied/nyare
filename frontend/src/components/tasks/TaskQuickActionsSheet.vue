@@ -28,8 +28,8 @@ const emit = defineEmits<{
 const DURATION_PRESETS = [15, 30, 45, 60, 90, 120, 180] as const
 
 const CHIP_BASE =
-  'flex h-11 items-center gap-1.5 rounded-full border border-(--color-app-border) bg-(--color-card) px-4 text-sm font-semibold text-(--color-text-main)'
-const CHIP_ACTIVE = 'border-transparent bg-(--color-primary) text-white'
+  'flex h-11 items-center gap-1.5 rounded-full border border-app-border bg-card px-4 text-sm font-semibold text-text-main'
+const CHIP_ACTIVE = 'border-transparent bg-primary text-white'
 
 const datePickerOpen = ref(false)
 
@@ -71,7 +71,7 @@ function pickDate(value: DateValue | undefined) {
         <DrawerTitle class="sr-only">Quick actions</DrawerTitle>
 
         <div class="px-4 pt-2">
-          <p class="text-xs font-semibold text-(--color-text-muted)">Reschedule</p>
+          <p class="text-xs font-semibold text-text-muted">Reschedule</p>
           <div class="mt-2 flex flex-wrap gap-2">
             <button
               v-for="opt in scheduleOptions"
@@ -106,7 +106,7 @@ function pickDate(value: DateValue | undefined) {
         </div>
 
         <div class="mt-4 px-4">
-          <p class="text-xs font-semibold text-(--color-text-muted)">Duration</p>
+          <p class="text-xs font-semibold text-text-muted">Duration</p>
           <div class="mt-2 flex flex-wrap gap-2">
             <button
               type="button"
@@ -134,7 +134,6 @@ function pickDate(value: DateValue | undefined) {
             size="touch"
             class="w-full"
             data-testid="quick-delete"
-            style="font-family: 'Quicksand', sans-serif; font-weight: 700"
             @click="emit('delete')"
           >
             <Trash2 class="size-5" aria-hidden="true" />

@@ -61,7 +61,7 @@ const courseOptions = computed(() => {
   <Dialog :open="open" @update:open="(val) => emit('update:open', val)">
     <DialogContent
       data-testid="course-picker-modal"
-      class="w-[calc(100%-3rem)] max-w-sm rounded-2xl border border-[#00A4C8]/30 bg-[#FDFEF7] p-5 shadow-xl !font-sans"
+      class="w-[calc(100%-3rem)] max-w-sm rounded-2xl border border-primary/30 bg-card p-5 shadow-xl !font-sans"
     >
       <DialogHeader class="text-left pb-2">
         <DialogTitle class="text-base font-bold text-slate-800 tracking-tight">
@@ -73,7 +73,7 @@ const courseOptions = computed(() => {
       <div
         v-if="courses.length === 0"
         data-testid="empty-course-state"
-        class="py-8 text-center text-sm text-[#7B8B97]"
+        class="py-8 text-center text-sm text-text-muted"
       >
         <p class="font-semibold text-slate-700">No courses available</p>
         <p class="mt-1 text-xs">Create a course in your catalog first to associate notes.</p>
@@ -94,8 +94,8 @@ const courseOptions = computed(() => {
           class="flex w-full min-h-[48px] items-center justify-between rounded-xl px-3.5 py-2.5 text-left transition-colors cursor-pointer"
           :class="
             isSelected
-              ? 'bg-[#00A4C8]/15 ring-1 ring-[#00A4C8]/40'
-              : 'hover:bg-[#00A4C8]/10 active:bg-[#00A4C8]/20'
+              ? 'bg-primary/15 ring-1 ring-primary/40'
+              : 'hover:bg-primary/10 active:bg-primary/20'
           "
           @click="handleSelect(course.id)"
         >
@@ -112,7 +112,7 @@ const courseOptions = computed(() => {
               <span class="truncate text-sm font-bold text-slate-800 leading-tight">
                 {{ course.name }}
               </span>
-              <span class="text-xs text-[#7B8B97] font-medium leading-tight mt-0.5">
+              <span class="text-xs text-text-muted font-medium leading-tight mt-0.5">
                 {{ scheduleSummary }}
               </span>
             </div>
@@ -121,7 +121,7 @@ const courseOptions = computed(() => {
           <!-- Selection Indicator -->
           <Check
             v-if="isSelected"
-            class="size-4 shrink-0 text-[#00A4C8]"
+            class="size-4 shrink-0 text-primary"
             data-testid="selected-check"
           />
         </button>
