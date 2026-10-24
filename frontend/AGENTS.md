@@ -26,7 +26,7 @@ The repository contains scaffold code and demo components.
 
 Read the domain documents before you create frontend components:
 
-- `DESIGN.md` defines the UI/UX design system, brand fonts, colors, and component patterns.
+- `DESIGN.md` (repository root) defines the UI/UX design system, brand fonts, colors, and component patterns.
 - `docs/conceptual-model.md` defines domain entities and the virtual study plan.
 - `docs/system-workflows.md` defines system workflows and planner logic.
 

@@ -43,7 +43,7 @@ Mobile-first web application tailored for a 390px viewport width. Students captu
 - Conceptual Model: `docs/conceptual-model.md`
 - System Workflows: `docs/system-workflows.md`
 - MVP Boundaries: `docs/mvp-boundaries.md`
-- Design System Specification: `frontend/DESIGN.md`
+- Design System Specification: `DESIGN.md`
 
 ## Product Principles
 

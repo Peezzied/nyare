@@ -8,6 +8,23 @@ Generates commit messages in Conventional Commits format. Subject ≤50 chars, h
 
 Outputs only the message. Does not stage, commit, or amend.
 
+## Commit mode
+
+Pass the parameter `perform git commit`, optionally with a count:
+
+```
+/caveman-commit perform git commit 3
+```
+
+Commit mode does three things:
+
+1. Audits the working tree and partitions every changed path into `N` groups (default `N = 1`). Each group lists its files and their status.
+2. Prints one message per group, in commit order, plus an `Unassigned paths: none` check.
+3. Asks for confirmation. Only an explicit yes runs `git add -- <paths>` and `git commit` per group. A decline leaves the tree untouched.
+
+The parameter selects the mode. It does not replace the confirmation step.
+
+
 ## How to invoke
 
 ```

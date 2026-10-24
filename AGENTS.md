@@ -4,10 +4,20 @@ Calendar-first academic planner. Class schedule → course-linked journal (`Note
 
 ## Repo layout
 
+- `DESIGN.md` — UI/UX design system specification.
 - `backend/` — Spring Boot 4.1.1, Java 25 (toolchain), Gradle, JPA/Hibernate + SQLite (`nyare.db`, gitignored). Base package `group.four.nyare.nyare`.
-- `frontend/` — Vue 3 + Vite + TypeScript + Tailwind 4. Alias `@` → `src/`. Design spec: `frontend/DESIGN.md`.
+- `frontend/` — Vue 3 + Vite + TypeScript + Tailwind 4. Alias `@` → `src/`. Design spec: `DESIGN.md`.
 - `docs/` — domain truth: `conceptual-model.md`, `system-workflows.md`, `mvp-boundaries.md`.
+- `docs/deliberations/` — final project documents and presentation materials for submission, built from `[OOP] Project Documentation Template.docx.md`. Deliverables only, not engineering truth.
 - `backend/docs/conventions.md` — backend rule index (architecture, entities, DTOs, services, exceptions, REST, SQLite, testing). Read it before backend changes.
+
+## Deliverables (`docs/deliberations/`)
+
+- Treat this folder as the submission staging area: course documentation, report, and presentation material.
+- Keep the template section order and headings. Do not renumber or restructure.
+- Take facts from `docs/*.md`, `AGENTS.md`, and the code. Do not invent values to fill template gaps. Leave placeholders and ask.
+- Template guidance describes a desktop Swing application. Nyare is Spring Boot + Vue. Map each required topic to the real stack. Do not describe a Swing UI or local file persistence.
+- Write Markdown first. Ask before generating `.docx`, `.pptx`, or exported PDFs.
 
 ## Tool Efficiency & Token Management
 
