@@ -1,0 +1,99 @@
+openapi: 3.0.3
+info:
+  title: Nyare Settings API
+  description: Endpoints for inspecting and configuring user preferences and planning horizons.
+  version: 1.0.0
+paths:
+  /api/settings:
+    get:
+      summary: Retrieve current user settings
+      description: Returns the active horizon settings for the authenticated user session.
+      responses:
+        '200':
+          description: User settings retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSettingsResponse'
+        '401':
+          description: Unauthenticated session
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+    put:
+      summary: Update user settings
+      description: Updates horizon settings for the authenticated user session.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSettingsRequest'
+      responses:
+        '200':
+          description: User settings updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSettingsResponse'
+        '400':
+          description: Validation failure (e.g. days < 1 or days > 60)
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '401':
+          description: Unauthenticated session
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+components:
+  schemas:
+    UserSettingsRequest:
+      type: object
+      required:
+        - planningHorizonDays
+        - backdatingHorizonDays
+      properties:
+        planningHorizonDays:
+          type: integer
+          minimum: 1
+          maximum: 60
+          example: 21
+          description: Number of days ahead the planner looks for upcoming events
+        backdatingHorizonDays:
+          type: integer
+          minimum: 1
+          maximum: 60
+          example: 30
+          description: Maximum days in the past a note can be dated
+    UserSettingsResponse:
+      type: object
+      required:
+        - planningHorizonDays
+        - backdatingHorizonDays
+      properties:
+        planningHorizonDays:
+          type: integer
+          example: 21
+        backdatingHorizonDays:
+          type: integer
+          example: 30
+    ProblemDetail:
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+          format: uri

@@ -10,8 +10,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -37,6 +41,20 @@ public class User {
     @Size(min = 3, max = 64, message = "Username must be between 3 and 64 characters")
     @Column(nullable = false, unique = true, length = 64)
     private String username;
+
+    @NotNull
+    @Min(1)
+    @Max(60)
+    @ColumnDefault("14")
+    @Column(nullable = false)
+    private Integer planningHorizonDays = 14;
+
+    @NotNull
+    @Min(1)
+    @Max(60)
+    @ColumnDefault("14")
+    @Column(nullable = false)
+    private Integer backdatingHorizonDays = 14;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Course> courses = new ArrayList<>();
@@ -73,6 +91,22 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Integer getPlanningHorizonDays() {
+        return planningHorizonDays;
+    }
+
+    public void setPlanningHorizonDays(Integer planningHorizonDays) {
+        this.planningHorizonDays = planningHorizonDays;
+    }
+
+    public Integer getBackdatingHorizonDays() {
+        return backdatingHorizonDays;
+    }
+
+    public void setBackdatingHorizonDays(Integer backdatingHorizonDays) {
+        this.backdatingHorizonDays = backdatingHorizonDays;
     }
 
     public List<Course> getCourses() {

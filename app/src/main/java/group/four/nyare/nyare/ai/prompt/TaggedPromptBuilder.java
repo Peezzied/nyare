@@ -34,6 +34,17 @@ public class TaggedPromptBuilder {
     }
 
     /**
+     * Sets the system instruction emitted as the first message of the prompt.
+     *
+     * @param text the system prompt text; null or blank adds no system message
+     * @return this builder
+     */
+    public TaggedPromptBuilder systemInstruction(String text) {
+        this.systemInstruction = text;
+        return this;
+    }
+
+    /**
      * Appends an XML-tagged content block using PromptTemplate.
      *
      * @param tagName the XML tag name

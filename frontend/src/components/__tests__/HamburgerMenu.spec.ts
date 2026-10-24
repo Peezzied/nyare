@@ -108,6 +108,25 @@ describe('HamburgerMenu', () => {
     wrapper.unmount()
   })
 
+  it('navigates to settings and closes the drawer', async () => {
+    const wrapper = mount(HamburgerMenu)
+    await wrapper.get('[data-testid="topbar-menu"]').trigger('click')
+    await flushPromises()
+
+    const item = document.querySelector<HTMLElement>('[data-testid="settings-item"]')
+    expect(item).not.toBeNull()
+    expect(item?.textContent).toContain('Settings')
+
+    item?.click()
+    await flushPromises()
+
+    expect(mockPush).toHaveBeenCalledWith({ name: 'settings' })
+    await vi.waitFor(() => {
+      expect(document.querySelector('[data-testid="account-menu"]')).toBeNull()
+    })
+    wrapper.unmount()
+  })
+
   it('navigates to account selection and closes the drawer', async () => {
     const wrapper = mount(HamburgerMenu)
     await wrapper.get('[data-testid="topbar-menu"]').trigger('click')

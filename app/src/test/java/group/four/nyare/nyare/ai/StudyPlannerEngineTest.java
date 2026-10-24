@@ -410,4 +410,29 @@ class StudyPlannerEngineTest {
         assertThat(sent).contains(pastDate.toString());
         assertThat(sent).contains(LocalDate.now().toString());
     }
+
+    @Test
+    @DisplayName("process renders the configured planning horizon into the system prompt")
+    void process_injectsPlanningScopeDaysIntoSystemPrompt() {
+        // given
+        StudyPlannerEngine templatedEngine = new StudyPlannerEngine(
+                chatClient, new org.springframework.core.io.ClassPathResource("planner_sys-prompt.st"),
+                50_000);
+        Course course = new Course("CS101", "Computer Science");
+        Note note = new Note(course, "Read chapter 2");
+
+        ArgumentCaptor<Prompt> promptCaptor = ArgumentCaptor.forClass(Prompt.class);
+        when(chatClient.prompt(promptCaptor.capture()).advisors(any(Consumer.class)).call()
+                .entity(PlannerResponseRecords.LlmPayload.class))
+                .thenReturn(new PlannerResponseRecords.LlmPayload(List.of(), List.of(), List.of(), List.of()));
+
+        // when
+        templatedEngine.process(List.of(note), List.of(), List.of(), List.of(), List.of(),
+                Collections.emptyMap(), 21);
+
+        // then
+        String systemText = promptCaptor.getValue().getInstructions().get(0).getText();
+        assertThat(systemText).contains("within 21 days");
+        assertThat(systemText).doesNotContain("{days}");
+    }
 }

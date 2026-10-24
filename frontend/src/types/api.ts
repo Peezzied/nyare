@@ -46,6 +46,17 @@ export interface LoginRequest {
   readonly username: string
 }
 
+/**
+ * Per-user planning horizons from `GET`/`PUT /api/settings`.
+ * Both values stay within the 1-60 day bounds and default to 14.
+ */
+export interface UserSettings {
+  /** Days ahead the planner inspects upcoming events for preparation tasks. */
+  readonly planningHorizonDays: number
+  /** Maximum days in the past a journal note entry date may be set. */
+  readonly backdatingHorizonDays: number
+}
+
 /** Academic course that owns schedules, notes, tasks, and events. */
 export interface CourseResponse {
   readonly id: number

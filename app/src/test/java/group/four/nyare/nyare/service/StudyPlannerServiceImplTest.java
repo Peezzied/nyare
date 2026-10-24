@@ -16,6 +16,7 @@ import group.four.nyare.nyare.model.Course;
 import group.four.nyare.nyare.model.Image;
 import group.four.nyare.nyare.model.Note;
 import group.four.nyare.nyare.model.Task;
+import group.four.nyare.nyare.model.User;
 import group.four.nyare.nyare.model.enums.TaskStatus;
 import group.four.nyare.nyare.repository.AcademicContextRepository;
 import group.four.nyare.nyare.repository.AcademicEventRepository;
@@ -23,6 +24,7 @@ import group.four.nyare.nyare.repository.ImageRepository;
 import group.four.nyare.nyare.repository.NoteRepository;
 import group.four.nyare.nyare.repository.ScheduleRepository;
 import group.four.nyare.nyare.repository.TaskRepository;
+import group.four.nyare.nyare.repository.UserRepository;
 import group.four.nyare.nyare.service.impl.StudyPlannerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,6 +53,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -82,6 +85,8 @@ class StudyPlannerServiceImplTest {
     StudyPlannerEngine studyPlannerEngine;
     @Mock
     ApplicationEventPublisher eventPublisher;
+    @Mock
+    UserRepository userRepository;
 
     StudyPlannerServiceImpl service;
 
@@ -94,7 +99,7 @@ class StudyPlannerServiceImplTest {
                 noteRepository, taskRepository,
                 academicEventRepository, academicContextRepository,
                 scheduleRepository, imageRepository,
-                imageAiProcessor, studyPlannerEngine, eventPublisher);
+                imageAiProcessor, studyPlannerEngine, eventPublisher, userRepository);
     }
 
     @Test
@@ -211,9 +216,9 @@ class StudyPlannerServiceImplTest {
         StudyPlannerEngine.ExtractedContext context2 = new StudyPlannerEngine.ExtractedContext(
                 null, noteDay2.getId(), "Fact 2");
 
-        when(studyPlannerEngine.process(eq(List.of(noteDay1)), any(), any(), any(), any(), any()))
+        when(studyPlannerEngine.process(eq(List.of(noteDay1)), any(), any(), any(), any(), any(), anyInt()))
                 .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(task1), List.of(event1), List.of()));
-        when(studyPlannerEngine.process(eq(List.of(noteDay2)), any(), any(), any(), any(), any()))
+        when(studyPlannerEngine.process(eq(List.of(noteDay2)), any(), any(), any(), any(), any(), anyInt()))
                 .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(task2), List.of(), List.of(context2)));
 
         when(taskRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
@@ -225,8 +230,8 @@ class StudyPlannerServiceImplTest {
 
         // Verify chronological execution order
         InOrder inOrder = inOrder(studyPlannerEngine);
-        inOrder.verify(studyPlannerEngine).process(eq(List.of(noteDay1)), any(), any(), any(), any(), any());
-        inOrder.verify(studyPlannerEngine).process(eq(List.of(noteDay2)), any(), any(), any(), any(), any());
+        inOrder.verify(studyPlannerEngine).process(eq(List.of(noteDay1)), any(), any(), any(), any(), any(), anyInt());
+        inOrder.verify(studyPlannerEngine).process(eq(List.of(noteDay2)), any(), any(), any(), any(), any(), anyInt());
 
         // Verify aggregated summary
         assertThat(summary.getTasksCreated()).isEqualTo(2);
@@ -250,7 +255,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt()))
                 .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of()));
         when(taskRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
@@ -278,7 +283,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt()))
                 .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of()));
         when(taskRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
@@ -315,7 +320,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt()))
                 .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of()));
         when(taskRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
@@ -356,7 +361,7 @@ class StudyPlannerServiceImplTest {
 
         RuntimeException failure = new RuntimeException("LLM unavailable",
                 new java.net.SocketTimeoutException("connect timed out"));
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenThrow(failure);
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt())).thenThrow(failure);
 
         assertThatThrownBy(() -> service.processNotes(USER_ID))
                 .isSameAs(failure);
@@ -393,7 +398,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt()))
                 .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of()));
         when(taskRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
@@ -418,7 +423,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt()))
                 .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of()));
         when(taskRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
@@ -439,7 +444,7 @@ class StudyPlannerServiceImplTest {
         when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt()))
                 .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of()));
         when(taskRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
@@ -466,7 +471,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt()))
                 .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of()));
         when(taskRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
@@ -496,7 +501,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt()))
                 .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(promotion), List.of(), List.of()));
         when(taskRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
         when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
@@ -531,7 +536,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(any())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt()))
                 .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of()));
         when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
 
@@ -566,7 +571,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(any())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt()))
                 .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of()));
         when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
 
@@ -599,7 +604,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(any())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt()))
                 .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of()));
         when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
 
@@ -637,7 +642,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(any())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt()))
                 .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of()));
         when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
 
@@ -672,7 +677,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt())).thenReturn(extracted);
         when(taskRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
@@ -706,7 +711,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt())).thenReturn(extracted);
         when(taskRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
@@ -756,7 +761,7 @@ class StudyPlannerServiceImplTest {
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
 
         java.util.concurrent.atomic.AtomicBoolean engineCalled = new java.util.concurrent.atomic.AtomicBoolean();
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt()))
                 .thenAnswer(inv -> {
                     engineCalled.set(true);
                     return new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of());
@@ -801,7 +806,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt()))
                 .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of()));
         when(taskRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
@@ -849,7 +854,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt())).thenReturn(extracted);
         when(taskRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
         when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
@@ -899,7 +904,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt())).thenReturn(extracted);
         when(taskRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
         when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
@@ -939,7 +944,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of(existingEvent));
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt())).thenReturn(extracted);
         when(taskRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicEventRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
         when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
@@ -979,7 +984,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of(existingContext));
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt())).thenReturn(extracted);
         when(taskRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicContextRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
@@ -1022,7 +1027,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt())).thenReturn(extracted);
         when(taskRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
         when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
@@ -1061,7 +1066,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt())).thenReturn(extracted);
         when(taskRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
         when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
@@ -1108,7 +1113,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt())).thenReturn(extracted);
         when(taskRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
         when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
@@ -1149,7 +1154,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of(existingEvent));
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt())).thenReturn(extracted);
         when(taskRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicEventRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
         when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
@@ -1189,7 +1194,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt())).thenReturn(extracted);
         when(taskRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
         when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
@@ -1227,7 +1232,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of(manualEvent));
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt())).thenReturn(extracted);
         when(taskRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicEventRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
         when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
@@ -1285,7 +1290,7 @@ class StudyPlannerServiceImplTest {
         when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
         when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
         when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
-        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenReturn(extracted);
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any(), anyInt())).thenReturn(extracted);
         when(taskRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
         when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
         when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());

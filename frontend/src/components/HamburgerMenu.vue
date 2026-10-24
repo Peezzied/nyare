@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, type CSSProperties } from 'vue'
-import { Archive, ArrowRightLeft, ChevronRight, GraduationCap, Menu, X } from '@lucide/vue'
+import { Archive, ArrowRightLeft, ChevronRight, GraduationCap, Menu, Settings, X } from '@lucide/vue'
 import { onKeyStroke } from '@vueuse/core'
 import { minidenticon } from 'minidenticons'
 import { useRouter } from 'vue-router'
@@ -255,6 +255,11 @@ function goToArchive(): void {
   void router.push({ name: 'archive' })
 }
 
+function goToSettings(): void {
+  closeMenu()
+  void router.push({ name: 'settings' })
+}
+
 function goToSelectAccount(): void {
   closeMenu()
   void router.push('/select-account')
@@ -389,6 +394,19 @@ onUnmounted(() => {
             <p v-if="!user" class="px-1 text-sm text-text-muted">
               Choose a profile to get started.
             </p>
+
+            <div class="mt-auto border-t border-app-border pt-4">
+              <button
+                type="button"
+                data-testid="settings-item"
+                class="flex min-h-12 w-full items-center gap-3 rounded-xl border border-app-border bg-card px-4 py-3 text-left font-semibold text-text-main transition-colors hover:bg-black/5 active:bg-black/10 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
+                @click="goToSettings"
+              >
+                <Settings class="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+                <span class="flex-1">Settings</span>
+                <ChevronRight class="h-4 w-4 shrink-0 text-text-muted" aria-hidden="true" />
+              </button>
+            </div>
           </div>
         </aside>
       </div>

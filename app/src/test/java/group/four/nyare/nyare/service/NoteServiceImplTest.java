@@ -12,6 +12,7 @@ import group.four.nyare.nyare.model.User;
 import group.four.nyare.nyare.repository.CourseRepository;
 import group.four.nyare.nyare.repository.ImageRepository;
 import group.four.nyare.nyare.repository.NoteRepository;
+import group.four.nyare.nyare.repository.UserRepository;
 import group.four.nyare.nyare.service.impl.NoteServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,6 +56,9 @@ class NoteServiceImplTest {
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
+
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private NoteServiceImpl noteService;
@@ -502,5 +506,48 @@ class NoteServiceImplTest {
 
         // then
         verify(imageRepository, never()).findByUserIdAndIdIn(any(), anySet());
+    }
+
+    @Test
+    void createNote_withinCustomBackdatingHorizon_savesNote() {
+        // given
+        user.setBackdatingHorizonDays(30);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        LocalDate entryDate = LocalDate.now().minusDays(25);
+        NoteRequest request = new NoteRequest(1L, "Catching up", entryDate);
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
+        when(noteRepository.save(any(Note.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        // when
+        NoteResponse response = noteService.createNote(request, 1L);
+
+        // then
+        assertThat(response.getEntryDate()).isEqualTo(entryDate);
+    }
+
+    @Test
+    void createNote_olderThanCustomBackdatingHorizon_throwsBadRequest() {
+        // given
+        user.setBackdatingHorizonDays(30);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        NoteRequest request = new NoteRequest(1L, "Too old", LocalDate.now().minusDays(35));
+
+        // when & then
+        assertThatThrownBy(() -> noteService.createNote(request, 1L))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("Entry date cannot be older than 30 days");
+    }
+
+    @Test
+    void updateNote_olderThanCustomBackdatingHorizon_throwsBadRequest() {
+        // given
+        user.setBackdatingHorizonDays(7);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        NoteRequest request = new NoteRequest(1L, "Too old", LocalDate.now().minusDays(10));
+
+        // when & then
+        assertThatThrownBy(() -> noteService.updateNote(noteId, request, 1L))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("Entry date cannot be older than 7 days");
     }
 }
