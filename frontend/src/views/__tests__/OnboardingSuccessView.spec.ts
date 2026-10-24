@@ -48,6 +48,16 @@ describe('OnboardingSuccessView', () => {
     expect(wrapper.find('[aria-hidden="true"]').exists()).toBe(true)
   })
 
+  it('shows the profile avatar on the slip and the celebration', () => {
+    const wrapper = mount(OnboardingSuccessView)
+
+    const avatars = wrapper.findAll('img[alt$="profile picture"]')
+    expect(avatars).toHaveLength(2)
+    for (const avatar of avatars) {
+      expect(avatar.attributes('src')).toContain('data:image/svg+xml')
+    }
+  })
+
   it('peels the slip away and sends the student to the calendar', async () => {
     const wrapper = mount(OnboardingSuccessView)
 

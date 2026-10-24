@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   User as UserIcon,
@@ -128,6 +128,15 @@ async function goToOnboarding(): Promise<void> {
   void router.push({ path: '/welcome', query: { from: 'accounts' } })
 }
 
+const isDeleteDialogOpen = computed({
+  get: () => userToDelete.value !== null,
+  set: (open: boolean) => {
+    if (!open) {
+      userToDelete.value = null
+    }
+  },
+})
+
 function promptDeleteUser(user: UserResponse): void {
   userToDelete.value = user
 }
@@ -170,11 +179,11 @@ onMounted(() => {
 
 <template>
   <div
-    class="relative min-h-screen w-full overflow-x-hidden bg-[#F6F7EE] text-[#334155] font-['Quicksand'] select-none"
+    class="relative min-h-dvh w-full overflow-x-hidden bg-[#F6F7EE] text-[#334155] font-['Quicksand'] select-none"
   >
     <!-- Main Wireframe Mobile Container -->
     <main
-      class="relative z-10 mx-auto flex h-[100svh] max-w-[420px] flex-col justify-between px-5 pt-6 pb-8"
+      class="relative z-10 mx-auto flex h-[100dvh] max-w-[420px] flex-col justify-between px-5 pt-6 pb-8"
     >
       <!-- TOP SECTION (Green Doodle in Wireframe) -->
       <header>
@@ -431,49 +440,50 @@ onMounted(() => {
       </template>
     </DialogShell>
 
-    <!-- Delete Confirmation Modal Dialog -->
-    <div
-      v-if="userToDelete"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="delete-modal-title"
+    <!-- Delete Account Confirmation -->
+    <DialogShell
+      v-model:open="isDeleteDialogOpen"
+      title="Delete Profile"
+      :busy="isDeleting"
+      @cancel="cancelDeleteUser"
     >
-      <div class="w-full max-w-sm rounded-2xl border-2 border-[#FCA5A5] bg-white p-5 shadow-lg">
-        <div class="flex items-center gap-3 mb-3 text-[#DC2626]">
-          <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#FEF2F2]">
-            <TrashIcon class="h-5 w-5" />
-          </div>
-          <h2 id="delete-modal-title" class="text-lg font-bold text-[#991B1B]">Delete Profile</h2>
-        </div>
+      <p
+        class="mt-2 text-sm text-[#7B8B97]"
+        style="font-family: 'Inter', sans-serif; font-weight: 400"
+      >
+        Are you sure you want to delete
+        <strong class="text-[#334155]">{{ userToDelete?.username }}</strong
+        >? This action cannot be undone.
+      </p>
 
-        <p class="font-['Inter'] text-sm text-[#475569] mb-4">
-          Are you sure you want to delete
-          <strong class="text-[#334155]">{{ userToDelete.username }}</strong
-          >? This action cannot be undone.
-        </p>
+      <template #actions="{ disabled, dismiss }">
+        <Button
+          type="button"
+          variant="secondary"
+          size="touch"
+          data-testid="delete-account-cancel"
+          :disabled="disabled"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 600"
+          @click="dismiss"
+        >
+          Cancel
+        </Button>
 
-        <div class="flex items-center gap-2">
-          <button
-            type="button"
-            class="flex h-11 flex-1 items-center justify-center rounded-xl bg-[#DC2626] border-b-4 border-[#991B1B] text-sm font-bold text-white uppercase tracking-wider transition-all duration-75 hover:bg-[#B91C1C] active:translate-y-1 active:border-b-0 disabled:opacity-60 cursor-pointer"
-            :disabled="isDeleting"
-            @click="executeDeleteUser"
-          >
-            <Loader2 v-if="isDeleting" class="h-4 w-4 animate-spin mr-2" />
-            <span>{{ isDeleting ? 'Deleting...' : 'Delete' }}</span>
-          </button>
-          <button
-            type="button"
-            class="flex h-11 items-center justify-center rounded-xl border-2 border-[#CBD5E1] px-4 text-sm font-bold text-[#64748B] hover:bg-[#F8FAFC] active:translate-y-0.5 cursor-pointer"
-            :disabled="isDeleting"
-            @click="cancelDeleteUser"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
+        <Button
+          type="button"
+          variant="tactile-destructive"
+          size="touch"
+          data-testid="delete-account-confirm"
+          :disabled="disabled"
+          :aria-busy="isDeleting"
+          style="font-family: 'Quicksand', sans-serif; font-weight: 700"
+          @click="executeDeleteUser"
+        >
+          <Loader2 v-if="isDeleting" class="h-4 w-4 animate-spin" />
+          {{ isDeleting ? 'Deleting...' : 'Delete' }}
+        </Button>
+      </template>
+    </DialogShell>
   </div>
 </template>
 
