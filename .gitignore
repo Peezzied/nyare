@@ -13,3 +13,6 @@ __pycache__/
 .specify/bridge-snapshots/
 .specify/bridge-events.jsonl
 .specify/superpowers-handoff.json
+
+# Built SPA bundle (Vite outDir; SpaController serves it)
+backend/src/main/resources/static/
