@@ -12,7 +12,7 @@ import { authApi } from '@/api'
 import { useCourseDrafts } from '@/composables/useCourseDrafts'
 import { createCourseEditor, type CourseEditor } from '@/composables/useCourseEditor'
 import type { TimeBlockDraft } from '@/components/TimeBlockCard.vue'
-import type { PendingSlot } from '@/utils/weekPreview'
+import type { PendingSlot, PreviewBlock } from '@/utils/weekPreview'
 import { useToasts } from '@/composables/useToasts'
 import type { ToastKind } from '@/composables/useToasts'
 
@@ -810,17 +810,46 @@ describe('CreateScheduleView', () => {
     expect(wrapper.emitted('close')).toBeTruthy()
   })
 
-  it('starts in partial view with course details read-only and class times loaded in DOM', async () => {
+  it('starts in partial view with a centered course block on the calendar', async () => {
     const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
     await router.isReady()
+
+    expect((wrapper.vm as unknown as ExposedScheduleView).stage).toBe('partial')
 
     const input = wrapper.find('input[type="text"]')
     expect(input.attributes('readonly')).toBeDefined()
     expect(wrapper.find('[aria-labelledby="time-blocks-heading"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="time-block-card"]').exists()).toBe(true)
     expect(wrapper.find('[aria-label="Submit schedule"]').exists()).toBe(true)
+
+    const weekPreview = wrapper.findComponent({ name: 'WeekPreview' })
+    const blocks = weekPreview.props('blocks') as PreviewBlock[]
+    expect(blocks).toHaveLength(1)
+    expect(blocks[0]!.placeholder).toBe(true)
+    expect(blocks[0]!.title).toBe('New course')
+    expect(blocks[0]!.day).toBe('WEDNESDAY')
+    expect(blocks[0]!.startTime).toBe('12:00')
+    expect(blocks[0]!.endTime).toBe('13:00')
 
     const content = wrapper.find('[data-slot="drawer-content"]')
     expect(content.classes().some((cls) => cls.includes('rounded-none'))).toBe(false)
+  })
+
+  it('hides the placeholder course block once the drawer expands to full', async () => {
+    const wrapper = mount(CreateScheduleView, { global: { plugins: [router] } })
+    await router.isReady()
+
+    const weekPreview = wrapper.findComponent({ name: 'WeekPreview' })
+    expect((weekPreview.props('blocks') as PreviewBlock[]).some((b) => b.placeholder)).toBe(
+      true,
+    )
+
+    ;(wrapper.vm as unknown as ExposedScheduleView).stage = 'full'
+    await flushPromises()
+
+    expect((weekPreview.props('blocks') as PreviewBlock[]).some((b) => b.placeholder)).toBe(
+      false,
+    )
   })
 
   it('extends to full view without rounded corners when drag bar is clicked and toggles back', async () => {

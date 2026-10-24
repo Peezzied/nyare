@@ -560,6 +560,23 @@ function onBlockPointerUp(e: PointerEvent) {
   }
 }
 
+function pillStyle(raw: PreviewBlock) {
+  return {
+    backgroundColor: raw.color.solid,
+    borderColor: raw.color.text,
+    color: '#fff',
+    opacity: raw.dimmed ? 0.55 : 1,
+  }
+}
+
+function pillLabel(raw: PreviewBlock): string {
+  const time = `${raw.startTime} to ${raw.endTime}`
+  if (raw.placeholder) {
+    return `Empty class block for ${raw.title}, ${time}`
+  }
+  return raw.title ? `${raw.title} ${time}` : time
+}
+
 function onBlockClick(raw: PreviewBlock) {
   if (suppressNextBlockClick) {
     suppressNextBlockClick = false
@@ -628,18 +645,9 @@ onUnmounted(() => {
             >
               <button
                 type="button"
-                :aria-label="
-                  (calendarEvent as any)._raw.title
-                    ? `${(calendarEvent as any)._raw.title} ${(calendarEvent as any)._raw.startTime} to ${(calendarEvent as any)._raw.endTime}`
-                    : `${(calendarEvent as any)._raw.startTime} to ${(calendarEvent as any)._raw.endTime}`
-                "
+                :aria-label="pillLabel((calendarEvent as any)._raw)"
                 class="h-full w-full min-h-[44px] cursor-move overflow-hidden rounded-md border p-1 text-left shadow-sm transition-all active:scale-95"
-                :style="{
-                  backgroundColor: (calendarEvent as any)._raw.color.solid,
-                  borderColor: (calendarEvent as any)._raw.color.text,
-                  color: '#fff',
-                  opacity: (calendarEvent as any)._raw.dimmed ? 0.55 : 1,
-                }"
+                :style="pillStyle((calendarEvent as any)._raw)"
                 @click.stop="onBlockClick((calendarEvent as any)._raw)"
               >
                 <p

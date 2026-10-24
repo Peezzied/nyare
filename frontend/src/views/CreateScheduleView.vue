@@ -45,7 +45,12 @@ import {
   type TimeBlockDraft,
 } from '@/components/TimeBlockCard.vue'
 import WeekPreview from '@/components/WeekPreview.vue'
-import { derivePreviewBlocks, type PendingSlot, type PreviewBlock } from '@/utils/weekPreview'
+import {
+  derivePreviewBlocks,
+  placeholderPreviewBlock,
+  type PendingSlot,
+  type PreviewBlock,
+} from '@/utils/weekPreview'
 
 const props = withDefaults(
   defineProps<{
@@ -426,6 +431,22 @@ const previewBlocks = computed(() => {
       })
     }
   }
+
+  // At partial the sheet hides the form's block cards, so an untouched block
+  // of the active course shows on the calendar as a centered placeholder. A
+  // tap or drag on it writes into that same draft block.
+  if (isOpen.value && stage.value === 'partial') {
+    const editor = activeEditor.value
+    const color = paletteFor(editor.colorId)
+    let placeholderIndex = 0
+    for (const block of editor.blocks) {
+      if (block.selectedDays.length > 0 || block.startTime || block.endTime) continue
+      const placeholder = placeholderPreviewBlock(block, editor.name, color, placeholderIndex++)
+      placeholder.blockId = `${editor.id}/${block.id}`
+      list.push(placeholder)
+    }
+  }
+
   return list
 })
 
@@ -989,7 +1010,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="relative h-[100svh] w-full overflow-hidden bg-[#F6F7EE]">
+  <div class="relative h-[100dvh] w-full overflow-hidden bg-[#F6F7EE]">
     <!-- Background Week Calendar Preview -->
     <div class="absolute inset-x-0 top-[100px] z-0 bottom-[calc(4rem+env(safe-area-inset-bottom))]">
       <WeekPreview
