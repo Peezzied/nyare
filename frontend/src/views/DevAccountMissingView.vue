@@ -86,7 +86,7 @@ function handleChooseAccount(): void {
             <ol class="mt-1 list-decimal pl-4 font-secondary text-[11px] text-warn space-y-1">
               <li>
                 Re-run
-                <code class="font-mono font-semibold">backend/src/main/resources/data.sql</code>
+                <code class="font-mono font-semibold">app/src/main/resources/data.sql</code>
               </li>
               <li>Or restart the Spring Boot backend server</li>
             </ol>

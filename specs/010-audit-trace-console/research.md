@@ -22,7 +22,7 @@ Tap directly into affected services (`StudyPlannerServiceImpl`, domain entity se
 ## 2. Dev Presentation Library: Thymeleaf Inside Backend Dev Module
 
 ### Decision
-Render the developer console UI entirely from the backend using Spring Boot Thymeleaf (`org.springframework.boot:spring-boot-starter-thymeleaf`), located strictly inside the `backend/src/dev` sourceSet.
+Render the developer console UI entirely from the backend using Spring Boot Thymeleaf (`org.springframework.boot:spring-boot-starter-thymeleaf`), located strictly inside the `app/src/dev` sourceSet.
 
 ### Rationale
 - **Zero Frontend Contamination**: Constitution Principle X strictly requires that frontend presentation components remain pure, production-grade representations. Embedding dev-only views or dev routing guards in Vue/Vite violates this separation. Moving the dashboard to the backend eliminates all dev tooling from `frontend/src/`.

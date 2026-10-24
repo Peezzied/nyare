@@ -6,7 +6,7 @@
 ## 1. Prerequisites
 
 - Java 25
-- Gradle wrapper in `backend/`
+- Gradle wrapper in `app/`
 - Valid test profile with mocked LLM or recorded Spring AI prompt fixture
 
 ## 2. Test Execution Scenarios
@@ -50,7 +50,7 @@
 ## 3. Targeted Unit & Integration Test Commands
 
 ```bash
-# In backend/ directory:
+# In app/ directory:
 ./gradlew test --tests "group.four.nyare.nyare.service.StudyPlannerServiceImplTest"
 ./gradlew test --tests "group.four.nyare.nyare.ai.StudyPlannerEngineTest"
 ```

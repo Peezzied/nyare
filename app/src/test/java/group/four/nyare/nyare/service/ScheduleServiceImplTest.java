@@ -1,0 +1,267 @@
+package group.four.nyare.nyare.service;
+
+import group.four.nyare.nyare.dto.ScheduleRequest;
+import group.four.nyare.nyare.dto.ScheduleResponse;
+import group.four.nyare.nyare.exception.BadRequestException;
+import group.four.nyare.nyare.exception.ResourceNotFoundException;
+import group.four.nyare.nyare.model.Course;
+import group.four.nyare.nyare.model.Schedule;
+import group.four.nyare.nyare.repository.CourseRepository;
+import group.four.nyare.nyare.repository.ScheduleRepository;
+import group.four.nyare.nyare.service.impl.ScheduleServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class ScheduleServiceImplTest {
+
+    @Mock
+    private ScheduleRepository scheduleRepository;
+
+    @Mock
+    private CourseRepository courseRepository;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
+    @InjectMocks
+    private ScheduleServiceImpl scheduleService;
+
+    private Course sampleCourse;
+    private Schedule sampleSchedule;
+
+    @BeforeEach
+    void setUp() {
+        sampleCourse = new Course("Computer Networks", "CN core");
+        ReflectionTestUtils.setField(sampleCourse, "id", 1L);
+
+        sampleSchedule = new Schedule(sampleCourse, DayOfWeek.MONDAY,
+                LocalTime.of(9, 0), LocalTime.of(10, 30));
+        ReflectionTestUtils.setField(sampleSchedule, "id", 10L);
+    }
+
+    @Test
+    @DisplayName("createSchedule creates and returns schedule when valid")
+    void createSchedule_withValidRequest_returnsResponse() {
+        ScheduleRequest request = new ScheduleRequest(1L, DayOfWeek.MONDAY,
+                LocalTime.of(9, 0), LocalTime.of(10, 30));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(sampleCourse));
+        when(scheduleRepository.save(any(Schedule.class))).thenReturn(sampleSchedule);
+
+        ScheduleResponse response = scheduleService.createSchedule(request, 1L);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getId()).isEqualTo(10L);
+        assertThat(response.getCourseId()).isEqualTo(1L);
+        assertThat(response.getDay()).isEqualTo(DayOfWeek.MONDAY);
+    }
+
+    @Test
+    @DisplayName("createSchedule throws ResourceNotFoundException when course is not found")
+    void createSchedule_withUnknownCourse_throwsResourceNotFoundException() {
+        ScheduleRequest request = new ScheduleRequest(99L, DayOfWeek.MONDAY,
+                LocalTime.of(9, 0), LocalTime.of(10, 30));
+        when(courseRepository.findByIdAndUserId(99L, 1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> scheduleService.createSchedule(request, 1L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Course not found with ID: 99");
+    }
+
+    @Test
+    @DisplayName("createSchedule throws ResourceNotFoundException when the course belongs to another user")
+    void createSchedule_courseOfOtherUser_throwsResourceNotFound() {
+        ScheduleRequest request = new ScheduleRequest(1L, DayOfWeek.MONDAY,
+                LocalTime.of(9, 0), LocalTime.of(10, 30));
+        when(courseRepository.findByIdAndUserId(1L, 2L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> scheduleService.createSchedule(request, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("createSchedule throws BadRequestException when start time is after end time")
+    void createSchedule_withInvalidTimes_throwsBadRequestException() {
+        ScheduleRequest request = new ScheduleRequest(1L, DayOfWeek.MONDAY,
+                LocalTime.of(11, 0), LocalTime.of(10, 0));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(sampleCourse));
+
+        assertThatThrownBy(() -> scheduleService.createSchedule(request, 1L))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("Start time must be before end time");
+    }
+
+    @Test
+    @DisplayName("listSchedules passes userId and courseId to repository and filters by day")
+    void listSchedules_withDayFilter_returnsFilteredSchedules() {
+        Schedule tuesdaySchedule = new Schedule(sampleCourse, DayOfWeek.TUESDAY,
+                LocalTime.of(9, 0), LocalTime.of(10, 30));
+        ReflectionTestUtils.setField(tuesdaySchedule, "id", 11L);
+
+        when(scheduleRepository.findAllFiltered(42L, 1L, false))
+                .thenReturn(List.of(sampleSchedule, tuesdaySchedule));
+
+        List<ScheduleResponse> responses = scheduleService.listSchedules(42L, 1L, DayOfWeek.MONDAY, false);
+
+        assertThat(responses).hasSize(1);
+        assertThat(responses.get(0).getId()).isEqualTo(10L);
+        verify(scheduleRepository).findAllFiltered(42L, 1L, false);
+    }
+
+    @Test
+    @DisplayName("listSchedules scopes results to the session user")
+    void listSchedules_scopedToUser_returnsOnlyOwnData() {
+        Schedule tuesdaySchedule = new Schedule(sampleCourse, DayOfWeek.TUESDAY,
+                LocalTime.of(9, 0), LocalTime.of(10, 30));
+        ReflectionTestUtils.setField(tuesdaySchedule, "id", 11L);
+
+        when(scheduleRepository.findAllFiltered(42L, 1L, false))
+                .thenReturn(List.of(sampleSchedule, tuesdaySchedule));
+
+        List<ScheduleResponse> responses = scheduleService.listSchedules(42L, 1L, null, false);
+
+        assertThat(responses).hasSize(2);
+        verify(scheduleRepository).findAllFiltered(42L, 1L, false);
+    }
+
+    @Test
+    @DisplayName("getSchedule returns schedule when found")
+    void getSchedule_withValidId_returnsSchedule() {
+        when(scheduleRepository.findByIdAndCourseUserId(10L, 1L)).thenReturn(Optional.of(sampleSchedule));
+
+        ScheduleResponse response = scheduleService.getSchedule(10L, 1L);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getId()).isEqualTo(10L);
+    }
+
+    @Test
+    @DisplayName("getSchedule throws ResourceNotFoundException when schedule is not found")
+    void getSchedule_withUnknownId_throwsResourceNotFoundException() {
+        when(scheduleRepository.findByIdAndCourseUserId(99L, 1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> scheduleService.getSchedule(99L, 1L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Schedule not found with ID: 99");
+    }
+
+    @Test
+    @DisplayName("getSchedule throws ResourceNotFoundException when the schedule belongs to another user")
+    void getSchedule_otherUser_throwsResourceNotFound() {
+        when(scheduleRepository.findByIdAndCourseUserId(10L, 2L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> scheduleService.getSchedule(10L, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("updateSchedule updates and returns schedule when valid")
+    void updateSchedule_withValidRequest_updatesAndReturnsSchedule() {
+        ScheduleRequest request = new ScheduleRequest(1L, DayOfWeek.WEDNESDAY,
+                LocalTime.of(14, 0), LocalTime.of(16, 0));
+        when(scheduleRepository.findByIdAndCourseUserId(10L, 1L)).thenReturn(Optional.of(sampleSchedule));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(sampleCourse));
+
+        ScheduleResponse response = scheduleService.updateSchedule(10L, request, 1L);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getDay()).isEqualTo(DayOfWeek.WEDNESDAY);
+        assertThat(response.getStartTime()).isEqualTo(LocalTime.of(14, 0));
+    }
+
+    @Test
+    @DisplayName("updateSchedule throws ResourceNotFoundException when schedule not found")
+    void updateSchedule_withUnknownSchedule_throwsResourceNotFoundException() {
+        ScheduleRequest request = new ScheduleRequest(1L, DayOfWeek.WEDNESDAY,
+                LocalTime.of(14, 0), LocalTime.of(16, 0));
+        when(scheduleRepository.findByIdAndCourseUserId(99L, 1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> scheduleService.updateSchedule(99L, request, 1L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Schedule not found with ID: 99");
+    }
+
+    @Test
+    @DisplayName("updateSchedule throws ResourceNotFoundException when course not found")
+    void updateSchedule_withUnknownCourse_throwsResourceNotFoundException() {
+        ScheduleRequest request = new ScheduleRequest(99L, DayOfWeek.WEDNESDAY,
+                LocalTime.of(14, 0), LocalTime.of(16, 0));
+        when(scheduleRepository.findByIdAndCourseUserId(10L, 1L)).thenReturn(Optional.of(sampleSchedule));
+        when(courseRepository.findByIdAndUserId(99L, 1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> scheduleService.updateSchedule(10L, request, 1L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Course not found with ID: 99");
+    }
+
+    @Test
+    @DisplayName("updateSchedule throws BadRequestException when start time is equal to or after end time")
+    void updateSchedule_withInvalidTimes_throwsBadRequestException() {
+        ScheduleRequest request = new ScheduleRequest(1L, DayOfWeek.WEDNESDAY,
+                LocalTime.of(16, 0), LocalTime.of(14, 0));
+        when(scheduleRepository.findByIdAndCourseUserId(10L, 1L)).thenReturn(Optional.of(sampleSchedule));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(sampleCourse));
+
+        assertThatThrownBy(() -> scheduleService.updateSchedule(10L, request, 1L))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("Start time must be before end time");
+    }
+
+    @Test
+    @DisplayName("updateSchedule throws ResourceNotFoundException when the schedule belongs to another user")
+    void updateSchedule_otherUser_throwsResourceNotFound() {
+        ScheduleRequest request = new ScheduleRequest(1L, DayOfWeek.WEDNESDAY,
+                LocalTime.of(14, 0), LocalTime.of(16, 0));
+        when(scheduleRepository.findByIdAndCourseUserId(10L, 2L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> scheduleService.updateSchedule(10L, request, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("deleteSchedule deletes schedule when found")
+    void deleteSchedule_withValidId_deletesSchedule() {
+        when(scheduleRepository.findByIdAndCourseUserId(10L, 1L)).thenReturn(Optional.of(sampleSchedule));
+
+        scheduleService.deleteSchedule(10L, 1L);
+
+        verify(scheduleRepository).delete(sampleSchedule);
+    }
+
+    @Test
+    @DisplayName("deleteSchedule throws ResourceNotFoundException when schedule not found")
+    void deleteSchedule_withUnknownId_throwsResourceNotFoundException() {
+        when(scheduleRepository.findByIdAndCourseUserId(99L, 1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> scheduleService.deleteSchedule(99L, 1L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Schedule not found with ID: 99");
+    }
+
+    @Test
+    @DisplayName("deleteSchedule throws ResourceNotFoundException when the schedule belongs to another user")
+    void deleteSchedule_otherUser_throwsResourceNotFound() {
+        when(scheduleRepository.findByIdAndCourseUserId(10L, 2L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> scheduleService.deleteSchedule(10L, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+}

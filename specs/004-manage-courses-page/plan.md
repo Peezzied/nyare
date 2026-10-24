@@ -27,7 +27,7 @@ Approach (YAGNI):
 
 **Target Platform**: Mobile-first web, 390 px width.
 
-**Project Type**: Web application (`frontend/` + `backend/`).
+**Project Type**: Web application (`frontend/` + `app/`).
 
 **Performance Goals**: A save shows on the calendar with no list refetch.
 
@@ -70,11 +70,11 @@ specs/004-manage-courses-page/
 ### Source Code
 
 ```text
-backend/src/main/java/group/four/nyare/nyare/
+app/src/main/java/group/four/nyare/nyare/
 ├── controller/CourseController.java          # + PUT /{id}
 ├── service/CourseService.java                # + updateCourse
 └── service/impl/CourseServiceImpl.java       # + updateCourse (@Transactional)
-backend/src/test/java/group/four/nyare/nyare/
+app/src/test/java/group/four/nyare/nyare/
 ├── controller/CourseControllerTest.java      # + update cases
 └── service/impl/CourseServiceImplTest.java   # + update cases
 

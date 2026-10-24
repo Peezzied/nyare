@@ -17,7 +17,7 @@ Use this skill to answer questions about the Nyare domain model, backend archite
 1. **Context Lookup with Graphify**:
    - Query the `graphify-out/` knowledge graph with `graphify query "<question>"` or `graphify explain "<concept>"`.
    - Set `BypassSandbox: true` and set `Cwd` to the backend or project root directory.
-   - Read documentation in `docs/` and `backend/docs/conventions/` for authoritative details.
+   - Read documentation in `docs/` and `app/docs/conventions/` for authoritative details.
 2. **One-Shot Caveman Response**:
    - Write the entire response in **Caveman (Lite)** style.
 3. **No State Persistence**:
@@ -55,7 +55,7 @@ Course Schedule → Course-linked Journal (JSON) → AI Processing (Today's Note
 
 ---
 
-## 3. Backend Conventions Summary ([`backend/docs/conventions/`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/backend/docs/conventions.md))
+## 3. App Conventions Summary ([`app/docs/conventions/`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/app/docs/conventions.md))
 
 - **Stack**: Java 25, Spring Boot 4.1.1 (`webmvc`, `data-jpa`, `validation`), SQLite (`nyare.db`), and Gradle Kotlin DSL.
 - **Layer Isolation**:
@@ -70,7 +70,7 @@ Course Schedule → Course-linked Journal (JSON) → AI Processing (Today's Note
 - **Error Handling**:
   - Use canonical exceptions only: `ResourceNotFoundException` (404) and `BadRequestException` (400).
   - `GlobalExceptionHandler` returns `ProblemDetail` responses (RFC 7807).
-- **Testing Standards ([`backend/docs/conventions/testing-standards.md`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/backend/docs/conventions/testing-standards.md))**:
+- **Testing Standards ([`app/docs/conventions/testing-standards.md`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/app/docs/conventions/testing-standards.md))**:
   - **Service Tests**: Write unit tests with JUnit 5 and Mockito (`@ExtendWith(MockitoExtension.class)`). Mock dependencies with `@Mock`. Inject them through constructors or `@InjectMocks`.
   - **Controller Tests**: Write controller tests with `@WebMvcTest` and `MockMvc`. Mock service interfaces with `@MockitoBean`.
   - **AssertJ and Given-When-Then**: Structure tests with `// given`, `// when`, and `// then` blocks. Use `assertThat(...)` assertions.
@@ -91,7 +91,7 @@ Course Schedule → Course-linked Journal (JSON) → AI Processing (Today's Note
 - **Role**: Code minimalism and prevention of over-engineering.
 - **Usage**: Follow YAGNI, choose standard libraries over dependencies, use native platform features, and write minimal code changes.
 
-### 4. `intellij-mcp` ([`.agents/rules/intellij-mcp.md`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/backend/.agents/rules/intellij-mcp.md))
+### 4. `intellij-mcp` ([`.agents/rules/intellij-mcp.md`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/app/.agents/rules/intellij-mcp.md))
 - **Role**: Primary tool for code intelligence.
 - **Usage**: Resolve symbols, find usages, inspect diagnostics, and compile code in memory before running CLI builds.
 

@@ -5,11 +5,11 @@ Calendar-first academic planner. Class schedule → course-linked journal (`Note
 ## Repo layout
 
 - `DESIGN.md` — UI/UX design system specification.
-- `backend/` — Spring Boot 4.1.1, Java 25 (toolchain), Gradle, JPA/Hibernate + SQLite (`nyare.db`, gitignored). Base package `group.four.nyare.nyare`.
+- `app/` — Spring Boot 4.1.1, Java 25 (toolchain), Gradle, JPA/Hibernate + SQLite (`nyare.db`, gitignored). Base package `group.four.nyare.nyare`.
 - `frontend/` — Vue 3 + Vite + TypeScript + Tailwind 4. Alias `@` → `src/`. Design spec: `DESIGN.md`.
-- `docs/` — domain truth: `conceptual-model.md`, `system-workflows.md`, `mvp-boundaries.md`.
+- `docs/` — domain truth: `architecture.md` (top-to-bottom system architecture), `conceptual-model.md`, `system-workflows.md`, `mvp-boundaries.md`.
 - `docs/deliberations/` — final project documents and presentation materials for submission, built from `[OOP] Project Documentation Template.docx.md`. Deliverables only, not engineering truth.
-- `backend/docs/conventions.md` — backend rule index (architecture, entities, DTOs, services, exceptions, REST, SQLite, testing). Read it before backend changes.
+- `app/docs/conventions.md` — backend rule index (architecture, entities, DTOs, services, exceptions, REST, SQLite, testing). Read it before backend changes.
 
 ## Deliverables (`docs/deliberations/`)
 
@@ -44,7 +44,7 @@ Calendar-first academic planner. Class schedule → course-linked journal (`Note
 - Document intent, parameters, return values, and edge cases.
 - Do not add comments for self-explanatory code.
 
-## Backend commands (`backend/`)
+## Backend commands (`app/`)
 
 ```bash
 ./gradlew compileJava                                            # fast compile check
@@ -70,17 +70,19 @@ npm run test:unit    # vitest (jsdom, e2e/ excluded)
 - Gitignored, never commit: `.env`, `src/**/application*.properties`, `*.db`. Only `*.example` templates are committed — copy them for local dev.
 - Required keys: `GOOGLE_API_KEY`, `GROQ_API_KEY` (via `.env` + spring-dotenv).
 - Default profile is `dev,google` (`application.properties`); test profile group maps to `groq` (`spring.profiles.group.test=groq`). Switch providers with `spring.ai.model.chat` (`google-genai` vs `openai`+Groq base-url); each provider file carries a placeholder key for the unused SDK so autoconfig stays clean.
-- Prompts live in `backend/src/main/resources/planner_sys-prompt.st` and `image_sys-prompt.st`; shared params under `nyare.ai.*` (temperature 0.1).
+- Prompts live in `app/src/main/resources/planner_sys-prompt.st` and `image_sys-prompt.st`; shared params under `nyare.ai.*` (temperature 0.1).
 - Never touch `nyare.db` from tests: tests use shared in-memory SQLite (`file::memory:?cache=shared`, `ddl-auto=create-drop`, Hikari pool size 1). Prod uses `ddl-auto=update`, `open-in-view=false`.
 
 ## Backend invariants
 
-- Layering: controller → **service interface** → `service.impl` → repository → DB. Controllers never touch repositories; entities never leave the service layer (DTOs only). Packages strictly lowercase.
+- Single deployable artifact: Spring Boot serves the compiled Vue SPA from `app/src/main/resources/static`. `SpaController` forwards unknown non-API routes to `index.html` while preserving RFC 7807 JSON errors on `/api/**`.
+- Layering: controller → **service interface** → `service.impl` → repository → DB. Controllers never touch repositories; entities never leave the service layer (DTOs only). Packages strictly lowercase (`observability` included).
 - Services: class-level `@Transactional(readOnly = true)`, explicit `@Transactional` on mutations.
 - Exceptions: only `ResourceNotFoundException` (404) / `BadRequestException` (400); `@Valid` failures handled by `GlobalExceptionHandler` (RFC 7807). No new exception classes.
 - Session enforcement: protected `/api/**` paths (courses, schedules, tasks, notes, academic-events, images, study-planner) require a session and answer 401 (RFC 7807) without one. `/api/users`, `/api/users/**` stay open by design (PoC/MVP): the account picker lists users pre-login and login is passwordless, so any caller can log in as any user by name. Do not add passwords or lock `/api/users` without an explicit requirement. Services take the session user ID and scope every read and write to it; a by-ID access to another user's record throws `ResourceNotFoundException` (404).
 - Tests: unit = JUnit5 + Mockito, no Spring (`@Mock` repos, `@InjectMocks` on `*Impl`); controllers = `@WebMvcTest` + `@MockitoBean` on the **service interface**. AssertJ, `// given/when/then`, name `method_condition_expected`.
 - Process entrypoints: `StudyPlannerService.getPlannerStatus(Long)` exposes pending dirty note counts/dates (`GET /api/study-planner/status`); `StudyPlannerService.processNotes(Long)` executes two-phase multi-day sequential extraction and today-anchored study planning. Exposed as `POST /api/study-planner/process` — SSE stream (`init`/`progress`/`done`/`error` events plus `:ping` heartbeat comments) on a virtual thread; no stream timeout (each AI call has its own timeout); a client disconnect cancels the run at the next checkpoint and rolls back the transaction.
+- Observability & Dev Audit Trace: Domain mutations and AI planning lifecycle publish `AuditTraceEvent` records (`group.four.nyare.nyare.ai.observability.event`). Dev console (`/dev/observability`, `src/dev` sourceSet, run via `./gradlew devRun`) consumes events via in-memory sink, walks entity trace trees, and streams SSE updates without affecting production jars.
 
 ## Domain rules (do not violate)
 

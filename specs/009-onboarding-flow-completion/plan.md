@@ -64,15 +64,15 @@ specs/009-onboarding-flow-completion/
 ### Source Code (repository root)
 
 ```text
-backend/src/main/java/group/four/nyare/nyare/
+app/src/main/java/group/four/nyare/nyare/
 ├── model/User.java                      # + onboarded column
 ├── dto/UserResponse.java                # + onboarded
 ├── controller/UserController.java       # + POST /me/onboarding/complete
 ├── service/UserService.java             # + completeOnboarding(Long userId)
 ├── service/impl/UserServiceImpl.java    # + impl, new users start false, toResponse maps flag
 └── repository/CourseRepository.java     # + existsByUserId
-backend/src/main/resources/data.sql      # dev_student seeded onboarded
-backend/src/test/java/.../UserServiceImplTest.java, UserControllerTest.java
+app/src/main/resources/data.sql      # dev_student seeded onboarded
+app/src/test/java/.../UserServiceImplTest.java, UserControllerTest.java
 
 frontend/src/
 ├── types/api.ts                         # UserResponse.onboarded
@@ -86,7 +86,7 @@ frontend/src/
 └── **/__tests__/*.spec.ts               # updated/added
 ```
 
-**Structure Decision**: Existing web-application layout (`backend/` + `frontend/`). No new top-level directories.
+**Structure Decision**: Existing web-application layout (`app/` + `frontend/`). No new top-level directories.
 
 ## Design Decisions
 

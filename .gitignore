@@ -2,7 +2,7 @@ graphify-out/
 /docs/temp/*
 **/docs/superpowers/
 mcp_config.json
-!/.agents/mcp_config.json
+.agents/mcp_config.json
 
 **/.superpowers/
 
@@ -15,4 +15,4 @@ __pycache__/
 .specify/superpowers-handoff.json
 
 # Built SPA bundle (Vite outDir; SpaController serves it)
-backend/src/main/resources/static/
+app/src/main/resources/static/

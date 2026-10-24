@@ -1,0 +1,11 @@
+group.four.nyare.nyare
+group.four.nyare.nyare.config
+group.four.nyare.nyare.controller
+group.four.nyare.nyare.dto
+group.four.nyare.nyare.exception
+group.four.nyare.nyare.model
+group.four.nyare.nyare.model.converter
+group.four.nyare.nyare.model.enums
+group.four.nyare.nyare.model.validation
+group.four.nyare.nyare.repository
+group.four.nyare.nyare.service

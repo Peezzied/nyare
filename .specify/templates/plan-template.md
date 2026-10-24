@@ -77,8 +77,8 @@ tests/
 ├── integration/
 └── unit/
 
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
+# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "app" detected)
+app/
 ├── src/
 │   ├── models/
 │   ├── services/
@@ -94,7 +94,7 @@ frontend/
 
 # [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
 api/
-└── [same as backend above]
+└── [same as app above]
 
 ios/ or android/
 └── [platform-specific structure: feature modules, UI flows, platform tests]

@@ -22,9 +22,9 @@
 
 **⚠️ CRITICAL**: US2 and US3 cannot work without the course update path and the extracted drawer.
 
-- [x] T004 Add unit tests for `updateCourse` in `backend/src/test/java/group/four/nyare/nyare/service/impl/CourseServiceImplTest.java`: happy path, name blank → `BadRequestException` via `@Valid`, other-user or missing id → `ResourceNotFoundException`. Confirm they fail before T005
-- [x] T005 Add `updateCourse(Long id, CourseRequest request, Long userId)` to `CourseService` and `CourseServiceImpl` in `backend/src/main/java/group/four/nyare/nyare/service/`. Reuse `findByIdAndUserId` for scoping. Class stays `@Transactional(readOnly = true)`. Add `@Transactional` on the method. Map name and description. Return `CourseResponse`
-- [x] T006 Add `PUT /{id}` `updateCourse` to `backend/src/main/java/group/four/nyare/nyare/controller/CourseController.java`. `@Valid @RequestBody`, `sessionContext.requireUserId()`, return 200 + body. Add matching `@WebMvcTest` cases in `CourseControllerTest.java` (200, 400, 404)
+- [x] T004 Add unit tests for `updateCourse` in `app/src/test/java/group/four/nyare/nyare/service/impl/CourseServiceImplTest.java`: happy path, name blank → `BadRequestException` via `@Valid`, other-user or missing id → `ResourceNotFoundException`. Confirm they fail before T005
+- [x] T005 Add `updateCourse(Long id, CourseRequest request, Long userId)` to `CourseService` and `CourseServiceImpl` in `app/src/main/java/group/four/nyare/nyare/service/`. Reuse `findByIdAndUserId` for scoping. Class stays `@Transactional(readOnly = true)`. Add `@Transactional` on the method. Map name and description. Return `CourseResponse`
+- [x] T006 Add `PUT /{id}` `updateCourse` to `app/src/main/java/group/four/nyare/nyare/controller/CourseController.java`. `@Valid @RequestBody`, `sessionContext.requireUserId()`, return 200 + body. Add matching `@WebMvcTest` cases in `CourseControllerTest.java` (200, 400, 404)
 - [x] T007 [P] Add `coursesApi.update(id, request)` to `frontend/src/api/courses.ts` (`PUT /api/courses/{id}`) and remove the "no update endpoint" comment
 - [x] T008 [P] Add `PUT /api/courses/{id}` handling to `frontend/src/api/mocks/adapter.ts` (update name/description, scope to current user, 404 when missing)
 - [x] T009 [P] Add `applyCourseUpdated(course)` to `frontend/src/composables/useCatalog.ts`. Replace by id, no refetch

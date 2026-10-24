@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "prompt-engineering": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-ai/skills/prompt-engineering/SKILL.md",
+      "computedHash": "555dbdd4365e39b00e4d9f066d53e5f06434e46f771cc9889f3e6bafc1d9f50d"
+    }
+  }
+}
