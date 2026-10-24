@@ -84,7 +84,7 @@ public class StudyPlannerEngine {
     @Autowired
     public StudyPlannerEngine(ChatClient.Builder chatClientBuilder,
                               @Value("classpath:planner_sys-prompt.st") Resource systemPromptResource,
-                              @Autowired(required = false) group.four.nyare.nyare.ai.advisor.PlannerAuditAdvisor plannerAuditAdvisor,
+                              @Autowired(required = false) group.four.nyare.nyare.ai.observability.advisor.PlannerAuditAdvisor plannerAuditAdvisor,
                               @Value("${nyare.study-planner.ai-timeout-ms:50000}") long aiTimeoutMs) {
         SystemPromptTemplate systemTemplate = new SystemPromptTemplate(systemPromptResource);
 
@@ -220,7 +220,7 @@ public class StudyPlannerEngine {
 
         Prompt prompt = builder.buildPrompt();
 
-        PlannerAuditRecords.LlmPayload raw = callWithTimeout(noteIdMap, imageIdMap, imageNoteMap, imageDescriptionMap, existingTasks, prompt);
+        PlannerResponseRecords.LlmPayload raw = callWithTimeout(noteIdMap, imageIdMap, imageNoteMap, imageDescriptionMap, existingTasks, prompt);
 
         return raw != null ? decodeReferences(raw, noteCodec, existingTasks) : emptyExtractedData();
     }
@@ -242,7 +242,7 @@ public class StudyPlannerEngine {
      * @return the extracted LLM payload, possibly {@code null}
      * @throws BadRequestException when the model does not respond within the timeout
      */
-    private PlannerAuditRecords.LlmPayload callWithTimeout(
+    private PlannerResponseRecords.LlmPayload callWithTimeout(
             Map<String, UUID> noteIdMap,
             Map<String, UUID> imageIdMap,
             Map<String, UUID> imageNoteMap,
@@ -268,10 +268,10 @@ public class StudyPlannerEngine {
                         a.param("existingTasks", existingTaskTitles);
                     })
                     .call()
-                    .entity(PlannerAuditRecords.LlmPayload.class);
+                    .entity(PlannerResponseRecords.LlmPayload.class);
         }
 
-        CompletableFuture<PlannerAuditRecords.LlmPayload> future = CompletableFuture.supplyAsync(() -> chatClient.prompt(prompt)
+        CompletableFuture<PlannerResponseRecords.LlmPayload> future = CompletableFuture.supplyAsync(() -> chatClient.prompt(prompt)
                 .advisors(a -> {
                     a.param("noteIdMap", noteIdMap);
                     a.param("imageIdMap", imageIdMap);
@@ -280,7 +280,7 @@ public class StudyPlannerEngine {
                     a.param("existingTasks", existingTaskTitles);
                 })
                 .call()
-                .entity(PlannerAuditRecords.LlmPayload.class),
+                .entity(PlannerResponseRecords.LlmPayload.class),
                 VIRTUAL_EXECUTOR);
 
         try {
@@ -414,7 +414,7 @@ public class StudyPlannerEngine {
     }
 
     private ExtractedData decodeReferences(
-            PlannerAuditRecords.LlmPayload raw,
+            PlannerResponseRecords.LlmPayload raw,
             StubReferenceCodec<Note> noteCodec,
             List<Task> existingTasks) {
         List<ExtractedTask> tasks = raw.tasks() != null
@@ -456,17 +456,17 @@ public class StudyPlannerEngine {
         }).toList()
                 : Collections.emptyList();
 
-        List<PlannerAuditRecords.InternalIgnoredNote> ignoredNotes = raw.ignoredNotes() != null
+        List<PlannerResponseRecords.InternalIgnoredNote> ignoredNotes = raw.ignoredNotes() != null
                 ? raw.ignoredNotes().stream().map(i -> {
             Note note = noteCodec.decode(i.noteRef());
             UUID noteId = note != null ? note.getId() : null;
-            return new PlannerAuditRecords.InternalIgnoredNote(noteId, i.part(), i.reason());
+            return new PlannerResponseRecords.InternalIgnoredNote(noteId, i.part(), i.reason());
         }).toList()
                 : Collections.emptyList();
 
         Map<UUID, String> noteTitles = new HashMap<>();
         if (raw.noteTitles() != null) {
-            for (PlannerAuditRecords.RawNoteTitle item : raw.noteTitles()) {
+            for (PlannerResponseRecords.RawNoteTitle item : raw.noteTitles()) {
                 if (item != null && item.noteRef() != null && item.title() != null && !item.title().isBlank()) {
                     Note note = noteCodec.decode(item.noteRef());
                     if (note != null && note.getId() != null) {

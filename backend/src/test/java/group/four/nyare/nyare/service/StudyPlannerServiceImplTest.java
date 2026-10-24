@@ -2,11 +2,11 @@ package group.four.nyare.nyare.service;
 
 import group.four.nyare.nyare.ai.ImageAiProcessor;
 import group.four.nyare.nyare.ai.StudyPlannerEngine;
-import group.four.nyare.nyare.ai.event.AuditCategory;
-import group.four.nyare.nyare.ai.event.AuditSeverity;
-import group.four.nyare.nyare.ai.event.AuditTraceEvent;
-import group.four.nyare.nyare.ai.event.LifecycleState;
-import group.four.nyare.nyare.ai.event.TriggerSource;
+import group.four.nyare.nyare.ai.observability.event.AuditCategory;
+import group.four.nyare.nyare.ai.observability.event.AuditSeverity;
+import group.four.nyare.nyare.ai.observability.event.AuditTraceEvent;
+import group.four.nyare.nyare.ai.observability.event.LifecycleState;
+import group.four.nyare.nyare.ai.observability.event.TriggerSource;
 import group.four.nyare.nyare.dto.PlannerStatusResponse;
 import group.four.nyare.nyare.dto.ProcessSummaryResponse;
 import group.four.nyare.nyare.exception.BadRequestException;

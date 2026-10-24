@@ -43,7 +43,7 @@ public class StudyPlannerEngineIntegrationTest {
 
     @SpringBootConfiguration
     @EnableAutoConfiguration
-    @Import({StudyPlannerEngine.class, group.four.nyare.nyare.ai.advisor.PlannerAuditAdvisor.class})
+    @Import({StudyPlannerEngine.class, group.four.nyare.nyare.ai.observability.advisor.PlannerAuditAdvisor.class})
     static class TestConfig {
     }
 
