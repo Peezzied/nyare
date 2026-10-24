@@ -460,9 +460,9 @@ describe('Mock Adapter', () => {
     it('supports an open-ended bound on tasks', async () => {
       const open = await tasksApi.list({ from: '2026-10-21' })
       expect(open.length).toBeGreaterThan(0)
-      expect(
-        open.every((t) => t.scheduledDate != null && t.scheduledDate >= '2026-10-21'),
-      ).toBe(true)
+      expect(open.every((t) => t.scheduledDate != null && t.scheduledDate >= '2026-10-21')).toBe(
+        true,
+      )
       expect(open.some((t) => t.id === 'task-cs201-heap-impl')).toBe(true)
     })
 
@@ -502,8 +502,7 @@ describe('Mock Adapter', () => {
       expect(inRange.some((e) => e.id === 'event-phys102-exam1')).toBe(false)
       expect(
         inRange.every(
-          (e) =>
-            e.deadline.slice(0, 10) >= '2026-10-16' && e.deadline.slice(0, 10) <= '2026-10-22',
+          (e) => e.deadline.slice(0, 10) >= '2026-10-16' && e.deadline.slice(0, 10) <= '2026-10-22',
         ),
       ).toBe(true)
     })

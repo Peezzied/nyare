@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { defineComponent, h, ref } from 'vue'
+import { defineComponent, h, reactive, ref } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import AppShell from '../AppShell.vue'
 import type { ShellHeaderConfig } from '@/composables/useShellHeader'
@@ -15,6 +15,14 @@ import type {
 import { routerKey, routeLocationKey } from 'vue-router'
 
 const mockPush = vi.fn<(path: string) => Promise<void>>(() => Promise.resolve())
+const mockReplace = vi.fn<(loc: { query?: Record<string, string> }) => Promise<void>>(() =>
+  Promise.resolve(),
+)
+const mockBack = vi.fn<() => void>()
+const mockRoute = reactive({
+  path: '/tasks',
+  query: {} as Record<string, string>,
+})
 
 const stubHeaderConfig = ref<ShellHeaderConfig>({ title: 'Tasks' })
 
@@ -25,9 +33,12 @@ vi.mock('vue-router', async () => {
   const routeLocationKey = Symbol('routeLocationKey')
   const routerStub = {
     push: (path: string) => mockPush(path),
+    replace: (loc: { query?: Record<string, string> }) => mockReplace(loc),
+    back: () => mockBack(),
   }
   return {
     useRouter: () => routerStub,
+    useRoute: () => mockRoute,
     // The routed child configures the header, like a real view does.
     RouterView: defineComponent({
       name: 'StubView',
@@ -52,9 +63,19 @@ function statusWith(dirtyNoteCount: number): PlannerStatusResponse {
   }
 }
 
+const NoteEditorModalStub = defineComponent({
+  name: 'NoteEditorModal',
+  props: ['isOpen', 'noteId', 'originRect'],
+  emits: ['close'],
+  template: '<div data-testid="note-editor-modal-stub" />',
+})
+
 function mountShell() {
   return mount(AppShell, {
     global: {
+      stubs: {
+        NoteEditorModal: NoteEditorModalStub,
+      },
       provide: {
         [routerKey]: { push: mockPush },
         [routeLocationKey]: { path: '/tasks' },
@@ -68,7 +89,14 @@ describe('AppShell', () => {
     vi.restoreAllMocks()
     resetAllCaches()
     mockPush.mockClear()
+    mockReplace.mockClear()
+    mockBack.mockClear()
+    mockRoute.query = {}
     stubHeaderConfig.value = { title: 'Tasks' }
+    vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => {
+      cb(0)
+      return 0
+    })
     // The shell's Process button refreshes the planner status on mount.
     vi.spyOn(studyPlannerApi, 'status').mockResolvedValue(statusWith(0))
   })
@@ -408,11 +436,7 @@ describe('AppShell', () => {
     // when
     await wrapper.get('[data-testid="notifications-button"]').trigger('click')
     await flushPromises()
-    for (const testid of [
-      'notification-cancelled',
-      'notification-error',
-      'notification-done',
-    ]) {
+    for (const testid of ['notification-cancelled', 'notification-error', 'notification-done']) {
       await wrapper.get(`[data-testid="${testid}"]`).trigger('click')
       await vi.advanceTimersByTimeAsync(240)
       await flushPromises()
@@ -422,5 +446,28 @@ describe('AppShell', () => {
       expect(wrapper.find('[data-testid="notification-center"]').exists()).toBe(true)
     }
     vi.useRealTimers()
+  })
+
+  it('opens NoteEditorModal when route.query.note is present', async () => {
+    mockRoute.query = { note: 'note-123' }
+    const wrapper = mountShell()
+    await flushPromises()
+
+    const modal = wrapper.findComponent({ name: 'NoteEditorModal' })
+    expect(modal.exists()).toBe(true)
+    expect(modal.props('isOpen')).toBe(true)
+    expect(modal.props('noteId')).toBe('note-123')
+  })
+
+  it('removes note query via router.replace when NoteEditorModal closes', async () => {
+    mockRoute.query = { note: 'note-123', courseId: '1', entryDate: '2026-10-24' }
+    const wrapper = mountShell()
+    await flushPromises()
+
+    const modal = wrapper.findComponent({ name: 'NoteEditorModal' })
+    modal.vm.$emit('close')
+    await flushPromises()
+
+    expect(mockReplace).toHaveBeenCalledWith({ query: {} })
   })
 })

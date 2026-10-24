@@ -7,6 +7,64 @@ export const CONTENT_DELAY_MS = 100
 export const CONTROLS_DELAY_MS = 180
 export const REDUCED_MOTION_DURATION_MS = 150
 
+interface MorphRegistration {
+  handlePopState: () => void
+  handleEscape: (e: KeyboardEvent) => void
+  isIdle: () => boolean
+}
+
+const activeMorphStack: MorphRegistration[] = []
+let globalListenersAttached = false
+
+function getTopActiveMorph(): MorphRegistration | null {
+  while (activeMorphStack.length > 0) {
+    const top = activeMorphStack[activeMorphStack.length - 1]
+    if (top && !top.isIdle()) {
+      return top
+    }
+    activeMorphStack.pop()
+  }
+  return null
+}
+
+function onGlobalPopState() {
+  const top = getTopActiveMorph()
+  top?.handlePopState()
+}
+
+function onGlobalKeyDown(e: KeyboardEvent) {
+  if (e.key !== 'Escape') return
+  const top = getTopActiveMorph()
+  top?.handleEscape(e)
+}
+
+function ensureGlobalListeners() {
+  if (globalListenersAttached || typeof window === 'undefined') return
+  window.addEventListener('popstate', onGlobalPopState)
+  window.addEventListener('keydown', onGlobalKeyDown)
+  globalListenersAttached = true
+}
+
+function teardownGlobalListeners() {
+  if (!globalListenersAttached || activeMorphStack.length > 0 || typeof window === 'undefined') return
+  window.removeEventListener('popstate', onGlobalPopState)
+  window.removeEventListener('keydown', onGlobalKeyDown)
+  globalListenersAttached = false
+}
+
+export function resetActiveMorphStack(): void {
+  activeMorphStack.length = 0
+  teardownGlobalListeners()
+}
+
+function safeRaf(cb: () => void) {
+  if (typeof requestAnimationFrame !== 'undefined') {
+    requestAnimationFrame(cb)
+  } else {
+    cb()
+  }
+}
+
 let pendingOrigin: TapOriginRect | null = null
 
 /**
@@ -140,6 +198,44 @@ export function useContainerMorph(options: ContainerMorphOptions) {
   let controlsTimer: ReturnType<typeof setTimeout> | null = null
   let pushedHistory = false
 
+  const registration: MorphRegistration = {
+    handlePopState: () => {
+      if (phase.value === 'collapsing' || phase.value === 'idle') {
+        return
+      }
+      pushedHistory = false
+      dismiss(false)
+      // A consumer that keeps the overlay open (e.g. an unsaved-changes dialog) needs
+      // the history entry restored after the back gesture consumed it. The dismiss
+      // may have collapsed synchronously, so re-read the phase without narrowing.
+      if ((phase.value as AnimationPhase) !== 'collapsing') {
+        pushHistoryState()
+      }
+    },
+    handleEscape: (e: KeyboardEvent) => {
+      if (rootRef.value && e.composedPath().includes(rootRef.value)) {
+        return
+      }
+      dismiss(true)
+    },
+    isIdle: () => phase.value === 'idle',
+  }
+
+  function registerMorph() {
+    if (!activeMorphStack.includes(registration)) {
+      activeMorphStack.push(registration)
+      ensureGlobalListeners()
+    }
+  }
+
+  function unregisterMorph() {
+    const idx = activeMorphStack.indexOf(registration)
+    if (idx !== -1) {
+      activeMorphStack.splice(idx, 1)
+    }
+    teardownGlobalListeners()
+  }
+
   const targetStyle = () => calculateTargetStyle(options.frameEl?.() ?? null)
 
   function clearAllTimers() {
@@ -168,6 +264,7 @@ export function useContainerMorph(options: ContainerMorphOptions) {
       return
     }
 
+    registerMorph()
     clearAllTimers()
     // No origin rect means nothing to morph from, so open (and later close)
     // use the same 150ms opacity crossfade as reduced motion.
@@ -191,7 +288,7 @@ export function useContainerMorph(options: ContainerMorphOptions) {
         if (containerRef.value) {
           void containerRef.value.offsetHeight
         }
-        requestAnimationFrame(() => {
+        safeRaf(() => {
           isExpanded.value = true
           phaseTimer = setTimeout(() => {
             phase.value = 'settled'
@@ -210,7 +307,7 @@ export function useContainerMorph(options: ContainerMorphOptions) {
         void containerRef.value.offsetHeight
       }
 
-      requestAnimationFrame(() => {
+      safeRaf(() => {
         isTransitioning.value = true
         isExpanded.value = true
         cardStyle.value = targetStyle()
@@ -264,6 +361,7 @@ export function useContainerMorph(options: ContainerMorphOptions) {
       () => {
         phase.value = 'idle'
         isTransitioning.value = false
+        unregisterMorph()
         if (typeof document !== 'undefined') {
           document.body.style.overflow = ''
         }
@@ -284,32 +382,6 @@ export function useContainerMorph(options: ContainerMorphOptions) {
     requestClose(triggerHistoryBack)
   }
 
-  function onPopState() {
-    if (phase.value === 'collapsing' || phase.value === 'idle') {
-      return
-    }
-    pushedHistory = false
-    dismiss(false)
-    // A consumer that keeps the overlay open (e.g. an unsaved-changes dialog) needs
-    // the history entry restored after the back gesture consumed it. The dismiss
-    // may have collapsed synchronously, so re-read the phase without narrowing.
-    if ((phase.value as AnimationPhase) !== 'collapsing') {
-      pushHistoryState()
-    }
-  }
-
-  function onKeyDown(e: KeyboardEvent) {
-    if (e.key !== 'Escape') {
-      return
-    }
-    // Events that bubbled through the root were already handled by its
-    // @keydown.esc listener; this only catches Escape presses from outside it.
-    if (rootRef.value && e.composedPath().includes(rootRef.value)) {
-      return
-    }
-    dismiss(true)
-  }
-
   function onViewportResize() {
     if (isExpanded.value && phase.value !== 'collapsing') {
       cardStyle.value = targetStyle()
@@ -326,6 +398,7 @@ export function useContainerMorph(options: ContainerMorphOptions) {
         }
         runExpansion()
       } else {
+        unregisterMorph()
         if (typeof document !== 'undefined') {
           document.body.style.overflow = ''
         }
@@ -344,20 +417,17 @@ export function useContainerMorph(options: ContainerMorphOptions) {
 
   onMounted(() => {
     if (typeof window !== 'undefined') {
-      window.addEventListener('popstate', onPopState)
-      window.addEventListener('keydown', onKeyDown)
       window.addEventListener('resize', onViewportResize)
       window.visualViewport?.addEventListener('resize', onViewportResize)
     }
   })
 
   onUnmounted(() => {
+    unregisterMorph()
     if (typeof document !== 'undefined') {
       document.body.style.overflow = ''
     }
     if (typeof window !== 'undefined') {
-      window.removeEventListener('popstate', onPopState)
-      window.removeEventListener('keydown', onKeyDown)
       window.removeEventListener('resize', onViewportResize)
       window.visualViewport?.removeEventListener('resize', onViewportResize)
     }

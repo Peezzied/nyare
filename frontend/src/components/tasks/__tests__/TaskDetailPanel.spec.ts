@@ -27,9 +27,10 @@ const notesMock = vi.hoisted(() => ({
   notes: [] as { id: string; title: string; courseId: number; entryDate: string }[],
 }))
 
+const routeMock = vi.hoisted(() => ({ query: {} as Record<string, string> }))
 const routerMock = vi.hoisted(() => ({ push: vi.fn<() => void>(), replace: vi.fn<() => void>() }))
 
-vi.mock('vue-router', () => ({ useRouter: () => routerMock }))
+vi.mock('vue-router', () => ({ useRouter: () => routerMock, useRoute: () => routeMock }))
 
 vi.mock('@/composables/useNotes', () => ({
   useNotes: () => ({
@@ -282,9 +283,7 @@ describe('TaskDetailPanel view mode', () => {
     tasksMock.updateTaskStatus.mockReset()
     tasksMock.deleteTask.mockReset()
     catalogState.courses = [{ id: 1, name: 'CS 201' }]
-    notesMock.notes = [
-      { id: 'note-9', title: 'Lecture 7', courseId: 1, entryDate: '2026-10-18' },
-    ]
+    notesMock.notes = [{ id: 'note-9', title: 'Lecture 7', courseId: 1, entryDate: '2026-10-18' }]
   })
 
   afterEach(() => {
@@ -334,17 +333,17 @@ describe('TaskDetailPanel view mode', () => {
 
     const link = wrapper.get('[data-testid="task-source-note"]')
     expect(link.text()).toContain('From a note')
-    expect(link.attributes('href')).toBe('/note/note-9')
+    expect(link.attributes('href')).toBe('?note=note-9')
     expect(link.find('svg').exists()).toBe(true)
   })
 
-  it('opens the note-open route when the source note link is clicked', async () => {
+  it('replaces the note query parameter when the source note link is clicked', async () => {
     const wrapper = mountPanel({ taskId: 'task-1' })
     await flushPromises()
 
     await wrapper.get('[data-testid="task-source-note"]').trigger('click')
 
-    expect(routerMock.replace).toHaveBeenCalledWith({ name: 'note-open', params: { id: 'note-9' } })
+    expect(routerMock.replace).toHaveBeenCalledWith({ query: { note: 'note-9' } })
   })
 
   it('hides the source note row when the task has no noteId', async () => {

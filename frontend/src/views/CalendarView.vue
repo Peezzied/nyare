@@ -9,6 +9,7 @@ import { useCatalog } from '@/composables/useCatalog'
 import { useNotes } from '@/composables/useNotes'
 import { useTasks } from '@/composables/useTasks'
 import { useUndoableEventDelete } from '@/composables/useUndoableEventDelete'
+import { useUndoableTaskDelete } from '@/composables/useUndoableTaskDelete'
 import { useServerSearch } from '@/composables/useServerSearch'
 import { useShellHeader } from '@/composables/useShellHeader'
 import type { CalendarViewMode, DayEvent } from '@/types/calendar'
@@ -19,7 +20,7 @@ import type {
 } from '@/types/calendarItemDetail'
 import type { TapOriginRect } from '@/types/notesTransition'
 import { setNoteMorphOrigin, takeNoteMorphOrigin } from '@/composables/useNoteTransition'
-import type { AcademicEventResponse } from '@/types/api'
+import type { AcademicEventResponse, TaskResponse } from '@/types/api'
 import { buildCalendarItemDetail } from '@/utils/calendarItemDetail'
 import { toDateKey } from '@/utils/dayKey'
 import { deriveDeadlineSections } from '@/utils/deadlineSections'
@@ -31,6 +32,7 @@ import { formatWeekTitle, weekDates } from '@/utils/weekDays'
 import DateTitlePicker from '@/components/day-view/DateTitlePicker.vue'
 import DeadlinesView from '@/components/day-view/DeadlinesView.vue'
 import EventDetailModal from '@/components/day-view/EventDetailModal.vue'
+import TaskContainerModal from '@/components/tasks/TaskContainerModal.vue'
 import FilterSheet, { type ListFilters } from '@/components/FilterSheet.vue'
 import HamburgerMenu from '@/components/HamburgerMenu.vue'
 import DaySwiper from '@/components/day-view/DaySwiper.vue'
@@ -52,6 +54,7 @@ const catalog = useCatalog()
 const { tasks, loadTasks } = useTasks()
 const { events, loadEvents } = useAcademicEvents()
 const { deleteEventWithUndo } = useUndoableEventDelete()
+const { deleteTaskWithUndo } = useUndoableTaskDelete()
 // The shared notes cache never rejects, so a notes failure cannot hide the calendar.
 const { notes, loadNotes } = useNotes()
 const loadError = ref<string | null>(null)
@@ -109,10 +112,11 @@ const searchParams = computed<AcademicEventListParams | null>(() => {
     ...(to && { to }),
   }
 })
-const { results: searchResults, error: searchError, retry: retrySearch } = useServerSearch(
-  academicEventsApi.list,
-  searchParams,
-)
+const {
+  results: searchResults,
+  error: searchError,
+  retry: retrySearch,
+} = useServerSearch(academicEventsApi.list, searchParams)
 
 // Mirrors cache writes into an active search list: saved events refresh in
 // place, deleted events drop out, and events the cache never held keep their
@@ -273,18 +277,31 @@ function closeDetail() {
   }
 }
 
-/** Opens the note editor route for the linked note (FR-009, FR-015).
- *  Replaces the open modal's ephemeral entry; the `?item` entry below is the
- *  back target, so returning from the note reopens this detail. */
+/** Opens the note editor in the global note overlay for the linked note (FR-009, FR-015). */
 function openLinkedNote(note: LinkedNoteRef) {
-  router.replace({ name: 'note-open', params: { id: note.id } })
+  void router.replace({ query: { ...route.query, note: note.id } })
 }
 
-/** Routes to the task in the To-do view, which opens its detail overlay there.
- *  Replaces the open modal's ephemeral entry; the `?item` entry below is the
- *  back target, so returning from the task reopens this detail. */
+const isTaskDetailOpen = computed(() => Boolean(route.query.task))
+const taskDetailId = computed(() => (route.query.task ? String(route.query.task) : null))
+
+/** Opens the full task detail panel as an overlay above this detail (FR-006). */
 function openTaskInTodo(taskId: string) {
-  router.replace({ name: 'task-detail', params: { id: taskId } })
+  void router.replace({ query: { ...route.query, task: taskId } })
+}
+
+function closeTaskDetail() {
+  const nextQuery = { ...route.query }
+  delete nextQuery.task
+  void router.replace({ query: nextQuery })
+}
+
+function onTaskDeleted(task: TaskResponse) {
+  closeTaskDetail()
+  deleteTaskWithUndo(task)
+  if (detailItem.value?.kind === 'task' && detailItem.value.id === task.id) {
+    closeDetail()
+  }
 }
 
 /** Deletes the open event through the undo toast after the modal closes. */
@@ -298,13 +315,18 @@ function onEventDeleted() {
   }
 }
 
-/** Opens a new note prefilled with the class's course and meeting day.
- *  Replaces the open modal's ephemeral entry; the `?item` entry below is the
- *  back target, so returning from the editor reopens this detail. */
+/** Opens a new note prefilled with the class's course and meeting day in the global note overlay. */
 function addNote() {
   const item = detailItem.value
   if (!item?.entryDate) return
-  router.replace({ name: 'note-new', query: { courseId: item.courseId, entryDate: item.entryDate } })
+  void router.replace({
+    query: {
+      ...route.query,
+      note: 'new',
+      courseId: item.courseId,
+      entryDate: item.entryDate,
+    },
+  })
 }
 
 /**
@@ -463,6 +485,16 @@ useShellHeader({
       @open-task="openTaskInTodo"
       @complete-task="completeTask"
       @deleted="onEventDeleted"
+    />
+
+    <!-- Task detail modal when opened from calendar item (FR-006). -->
+    <TaskContainerModal
+      :is-open="isTaskDetailOpen"
+      :task-id="taskDetailId"
+      :origin-rect="null"
+      class="z-[55]"
+      @close="closeTaskDetail"
+      @deleted="onTaskDeleted"
     />
 
     <!-- A failed complete write keeps the prior state and shows the error here -->

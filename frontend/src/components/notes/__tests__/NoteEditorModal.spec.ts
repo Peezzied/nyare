@@ -97,20 +97,23 @@ describe('NoteEditorModal', () => {
     expect(container.classes()).toContain('duration-[320ms]')
   })
 
-  it('mounts the editor once the expansion settles', async () => {
+  it('mounts the editor immediately with staggered content and controls', async () => {
     const wrapper = mountModal({ isOpen: false, noteId: 'note-1' })
     await wrapper.setProps({ isOpen: true })
     await nextTick()
 
-    // The editor stays unmounted while the container animates.
-    expect(wrapper.findComponent(NoteEditorStub).exists()).toBe(false)
-
-    await vi.advanceTimersByTimeAsync(320)
-    await nextTick()
-
     const editor = wrapper.findComponent(NoteEditorStub)
     expect(editor.exists()).toBe(true)
+    expect(editor.props('showContent')).toBe(false)
+    expect(editor.props('showControls')).toBe(false)
+
+    await vi.advanceTimersByTimeAsync(100)
+    await nextTick()
     expect(editor.props('showContent')).toBe(true)
+    expect(editor.props('showControls')).toBe(false)
+
+    await vi.advanceTimersByTimeAsync(80)
+    await nextTick()
     expect(editor.props('showControls')).toBe(true)
   })
 

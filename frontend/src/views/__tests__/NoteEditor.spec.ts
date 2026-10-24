@@ -325,7 +325,10 @@ describe('NoteEditor.vue', () => {
     await flushPromises()
 
     const tiptap = wrapper.findComponent(TiptapEditor)
-    await tiptap.vm.$emit('update:modelValue', `<p>See <img src="/api/images/${imageId}"> and more</p>`)
+    await tiptap.vm.$emit(
+      'update:modelValue',
+      `<p>See <img src="/api/images/${imageId}"> and more</p>`,
+    )
     await flushPromises()
 
     await wrapper.find('[data-testid="save-button"]').trigger('click')

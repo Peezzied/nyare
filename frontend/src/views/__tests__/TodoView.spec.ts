@@ -395,16 +395,16 @@ describe('TodoView search', () => {
     await vi.advanceTimersByTimeAsync(300)
 
     expect(tasksApi.list).toHaveBeenCalledWith({ q: 'study' })
-    expect(
-      wrapper.findAllComponents(TaskRow).map((row) => row.props('task').id),
-    ).toEqual(['task-match'])
+    expect(wrapper.findAllComponents(TaskRow).map((row) => row.props('task').id)).toEqual([
+      'task-match',
+    ])
 
     await input.setValue('')
     await vi.advanceTimersByTimeAsync(300)
 
-    expect(
-      wrapper.findAllComponents(TaskRow).map((row) => row.props('task').id),
-    ).toEqual(['task-row-1'])
+    expect(wrapper.findAllComponents(TaskRow).map((row) => row.props('task').id)).toEqual([
+      'task-row-1',
+    ])
   })
 
   it('shows an empty state when no task matches', async () => {

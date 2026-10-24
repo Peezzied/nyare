@@ -299,9 +299,9 @@ describe('NotesView', () => {
     vi.useFakeTimers()
     mockCatalog()
     const matching: NoteSummaryResponse = { ...summary, id: 'note-9', title: 'Calculus drill' }
-    const list = vi.spyOn(notesApi, 'list').mockImplementation((params) =>
-      Promise.resolve(params?.q ? [matching] : [summary]),
-    )
+    const list = vi
+      .spyOn(notesApi, 'list')
+      .mockImplementation((params) => Promise.resolve(params?.q ? [matching] : [summary]))
 
     const wrapper = mountView()
     await vi.advanceTimersByTimeAsync(0)

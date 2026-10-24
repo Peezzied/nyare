@@ -4,13 +4,14 @@
 // The floating Duckota button is the explicit Process trigger for the planner.
 // Its badge shows the pending dirty note count. The rainbow ring spins while a run is active.
 import { computed, onMounted, ref, toValue, watch } from 'vue'
-import { RouterView } from 'vue-router'
+import { RouterView, useRoute, useRouter } from 'vue-router'
 import AppHeader from './AppHeader.vue'
 import DuckotaBubble from './DuckotaBubble.vue'
 import DuckotaButton from './DuckotaButton.vue'
 import NavigationBar from './NavigationBar.vue'
 import NotificationBell from './NotificationBell.vue'
 import NotificationCenterModal from './NotificationCenterModal.vue'
+import NoteEditorModal from '@/components/notes/NoteEditorModal.vue'
 import ProcessDialog from './ProcessDialog.vue'
 import duckotaImg from '@/assets/mascot/duckota_in_button.png'
 import { useAcademicEvents } from '@/composables/useAcademicEvents'
@@ -27,6 +28,28 @@ import type { TapOriginRect } from '@/types/notesTransition'
 
 const header = provideShellHeader()
 const title = computed(() => toValue(header.title ?? ''))
+const route = useRoute()
+const router = useRouter()
+
+const isGlobalNoteOpen = computed(() => Boolean(route.query?.note))
+const globalNoteId = computed(() => {
+  const noteParam = route.query?.note
+  if (!noteParam || noteParam === 'new') {
+    return null
+  }
+  return String(noteParam)
+})
+
+function closeGlobalNote() {
+  if (!isGlobalNoteOpen.value) {
+    return
+  }
+  const nextQuery = { ...route.query }
+  delete nextQuery.note
+  delete nextQuery.courseId
+  delete nextQuery.entryDate
+  void router.replace({ query: nextQuery })
+}
 
 const planner = usePlannerStatus()
 const tasks = useTasks()
@@ -228,9 +251,6 @@ onMounted(() => {
     void import('@/views/CalendarView.vue')
     void import('@/views/TodoView.vue')
     void import('@/views/NotesView.vue')
-    // Warm the direct note route and its editor chunk so the morph starts
-    // without a lazy-import wait.
-    void import('@/views/NoteOpenView.vue')
     void import('@/views/NoteEditor.vue')
   }
   if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
@@ -309,6 +329,13 @@ onMounted(() => {
         :origin-rect="centerOrigin"
         @open-run="onCenterOpenRun"
         @close="onCenterClose"
+      />
+      <NoteEditorModal
+        :is-open="isGlobalNoteOpen"
+        :note-id="globalNoteId"
+        :origin-rect="null"
+        class="z-[60]"
+        @close="closeGlobalNote"
       />
       <img
         v-if="flight"
