@@ -1,9 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { defineComponent, nextTick, ref } from 'vue'
+import { mount } from '@vue/test-utils'
 import {
   calculateTargetStyle,
   getOriginStyle,
   isReducedMotion,
   toTapOriginRect,
+  useContainerMorph,
 } from '../useNoteTransition'
 
 function mockMatchMedia(matches: boolean): void {
@@ -165,6 +168,78 @@ describe('useNoteTransition', () => {
         height: 78,
         borderRadius: '16px',
       })
+    })
+  })
+
+  describe('useContainerMorph stacking', () => {
+    it('collapses only the topmost active modal on popstate', async () => {
+      vi.useFakeTimers()
+      vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => {
+        cb(0)
+        return 0
+      })
+      const isParentOpen = ref(true)
+      const isChildOpen = ref(false)
+
+      let parentPhase: any
+      let childPhase: any
+
+      const ParentComp = defineComponent({
+        setup() {
+          const morph = useContainerMorph({
+            isOpen: () => isParentOpen.value,
+            originRect: () => null,
+            historyKey: 'parentModal',
+          })
+          parentPhase = morph.phase
+          return () => null
+        },
+      })
+
+      const ChildComp = defineComponent({
+        setup() {
+          const morph = useContainerMorph({
+            isOpen: () => isChildOpen.value,
+            originRect: () => null,
+            historyKey: 'childModal',
+          })
+          childPhase = morph.phase
+          return () => null
+        },
+      })
+
+      const parentWrapper = mount(ParentComp)
+      await nextTick()
+      await vi.advanceTimersByTimeAsync(150)
+      expect(parentPhase.value).toBe('settled')
+
+      isChildOpen.value = true
+      const childWrapper = mount(ChildComp)
+      await nextTick()
+      await vi.advanceTimersByTimeAsync(150)
+      expect(childPhase.value).toBe('settled')
+
+      // Dispatch popstate
+      window.dispatchEvent(new Event('popstate'))
+      await nextTick()
+
+      // Child should be collapsing, parent MUST remain settled
+      expect(childPhase.value).toBe('collapsing')
+      expect(parentPhase.value).toBe('settled')
+
+      // Advance timers so child finishes collapse and unregisters
+      await vi.advanceTimersByTimeAsync(150)
+      expect(childPhase.value).toBe('idle')
+      expect(parentPhase.value).toBe('settled')
+
+      // Second popstate: now parent collapses
+      window.dispatchEvent(new Event('popstate'))
+      await nextTick()
+      expect(parentPhase.value).toBe('collapsing')
+
+      parentWrapper.unmount()
+      childWrapper.unmount()
+      vi.useRealTimers()
     })
   })
 })

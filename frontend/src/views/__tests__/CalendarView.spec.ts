@@ -96,6 +96,13 @@ const EventDetailModalStub = defineComponent({
   template: '<div />',
 })
 
+const TaskContainerModalStub = defineComponent({
+  name: 'TaskContainerModal',
+  props: { isOpen: Boolean, taskId: String, originRect: Object },
+  emits: ['close', 'deleted'],
+  template: '<div />',
+})
+
 function mountContainer() {
   return mount(CalendarView, {
     global: {
@@ -108,6 +115,7 @@ function mountContainer() {
         NavigationBar: true,
         ScheduleCalendar: ScheduleCalendarStub,
         EventDetailModal: EventDetailModalStub,
+        TaskContainerModal: TaskContainerModalStub,
       },
     },
   })
@@ -231,14 +239,8 @@ describe('CalendarView detail', () => {
     await nextTick()
 
     expect(mocks.replace).toHaveBeenCalledWith({
-      name: 'note-new',
-      query: { courseId: 1, entryDate: '2026-10-22' },
+      query: { item: 'class:1:2026-10-22', note: 'new', courseId: 1, entryDate: '2026-10-22' },
     })
-
-    mockRoute.name = 'note-new'
-    mockRoute.query = {}
-    await nextTick()
-    expect(wrapper.findComponent(EventDetailModalStub).props('isOpen')).toBe(false)
   })
 
   it('reads the notes from the shared cache instead of a second list call', async () => {
@@ -292,16 +294,12 @@ describe('CalendarView detail', () => {
     })
     await nextTick()
 
-    expect(mocks.replace).toHaveBeenCalledWith({ name: 'note-open', params: { id: 'note-1' } })
-
-    // The detail stays open under the note route until the route itself changes.
-    mockRoute.name = 'note-open'
-    mockRoute.query = {}
-    await nextTick()
-    expect(wrapper.findComponent(EventDetailModalStub).props('isOpen')).toBe(false)
+    expect(mocks.replace).toHaveBeenCalledWith({
+      query: { item: 'task:task-1', note: 'note-1' },
+    })
   })
 
-  it('routes to the task detail route on open-task', async () => {
+  it('opens the task container modal overlay on open-task', async () => {
     const wrapper = mountContainer()
     await flushPromises()
     await openTaskDetail(wrapper)
@@ -309,12 +307,27 @@ describe('CalendarView detail', () => {
     wrapper.findComponent(EventDetailModalStub).vm.$emit('open-task', 'task-1')
     await nextTick()
 
-    expect(mocks.replace).toHaveBeenCalledWith({ name: 'task-detail', params: { id: 'task-1' } })
+    expect(mocks.replace).toHaveBeenCalledWith({
+      query: { item: 'task:task-1', task: 'task-1' },
+    })
 
-    mockRoute.name = 'task-detail'
-    mockRoute.query = {}
+    mockRoute.query = { item: 'task:task-1', task: 'task-1' }
     await nextTick()
-    expect(wrapper.findComponent(EventDetailModalStub).props('isOpen')).toBe(false)
+    expect(wrapper.findComponent(TaskContainerModalStub).props('isOpen')).toBe(true)
+    expect(wrapper.findComponent(TaskContainerModalStub).props('taskId')).toBe('task-1')
+  })
+
+  it('removes task query when TaskContainerModal closes', async () => {
+    mockRoute.query = { item: 'task:task-1', task: 'task-1' }
+    const wrapper = mountContainer()
+    await flushPromises()
+
+    wrapper.findComponent(TaskContainerModalStub).vm.$emit('close')
+    await nextTick()
+
+    expect(mocks.replace).toHaveBeenCalledWith({
+      query: { item: 'task:task-1' },
+    })
   })
 
   describe('route-driven detail', () => {

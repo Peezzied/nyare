@@ -87,13 +87,6 @@ const router = createRouter({
           name: 'note-edit',
           component: () => import('../views/NotesView.vue'),
         },
-        // Direct editor route for notes opened outside the Notes tab. The
-        // overlay fades in over the detail view, then returns to that context.
-        {
-          path: '/note/:id',
-          name: 'note-open',
-          component: () => import('@/views/NoteOpenView.vue'),
-        },
         {
           path: '/manage-courses',
           name: 'manage-courses',
@@ -126,7 +119,6 @@ const GATED_WHEN_NOT_ONBOARDED = [
   'notes',
   'note-new',
   'note-edit',
-  'note-open',
   'task-new',
   'task-detail',
 ]

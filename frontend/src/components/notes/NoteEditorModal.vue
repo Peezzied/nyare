@@ -3,11 +3,10 @@
 // useContainerMorph composable owns the choreography: expand from the tapped rect
 // over 320ms, contract back over 240ms, ephemeral history state for device back
 // gestures, reduced motion falls back to an opacity crossfade.
-import { defineAsyncComponent, ref } from 'vue'
+import { ref } from 'vue'
+import NoteEditor from '@/views/NoteEditor.vue'
 import type { TapOriginRect } from '@/types/notesTransition'
 import { useContainerMorph } from '@/composables/useNoteTransition'
-
-const NoteEditor = defineAsyncComponent(() => import('@/views/NoteEditor.vue'))
 
 const props = withDefaults(
   defineProps<{
@@ -91,9 +90,7 @@ const {
       "
       :style="cardStyle"
     >
-      <!-- Mounts once the container settles so the editor's setup cannot drop morph frames. -->
       <NoteEditor
-        v-if="phase !== 'expanding'"
         ref="editorRef"
         :key="sessionKey"
         embedded

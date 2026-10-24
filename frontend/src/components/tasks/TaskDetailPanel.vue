@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Task form and detail content. Create mode is active when taskId is null.
 import { computed, onMounted, reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { CalendarIcon, Clock, FileText, Trash2, X } from '@lucide/vue'
 import { parseDate, type DateValue } from '@internationalized/date'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -52,6 +52,7 @@ const emit = defineEmits<{
   (e: 'missing'): void
 }>()
 
+const route = useRoute()
 const router = useRouter()
 const { courses, schedules, loadCatalog } = useCatalog()
 const archive = useArchive()
@@ -96,14 +97,13 @@ const sourceNoteId = computed(() => {
   return id && notes.value.some((note) => note.id === id) ? id : null
 })
 
-/** Opens the source note in the note route; the editor fades in over the detail.
- *  Replaces the open modal's ephemeral history entry so back returns here. */
+/** Opens the source note in the global note overlay over this task panel. */
 function openSourceNote(event: MouseEvent) {
   if (!router) {
     return
   }
   event.preventDefault()
-  void router.replace({ name: 'note-open', params: { id: sourceNoteId.value } })
+  void router.replace({ query: { ...route?.query, note: sourceNoteId.value } })
 }
 
 const dirty = computed(() => formIsDirty(form, loadedTask.value))
@@ -474,7 +474,7 @@ onMounted(() => {
       <!-- Source zone: only when the task came from a note -->
       <a
         v-if="sourceNoteId"
-        :href="`/note/${sourceNoteId}`"
+        :href="`?note=${sourceNoteId}`"
         data-testid="task-source-note"
         class="mt-4 flex min-h-11 items-center gap-3 rounded-2xl bg-white px-3 text-sm font-semibold text-(--color-text-main)"
         :class="controlsStaggerClass"

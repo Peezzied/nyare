@@ -26,8 +26,7 @@ const CalendarStub = defineComponent({
     h(
       'button',
       {
-        class:
-          'flex h-full w-full items-center justify-center font-bold text-[#007B99]',
+        class: 'flex h-full w-full items-center justify-center font-bold text-[#007B99]',
         onClick: () => void router.replace('/setup-complete'),
       },
       'CALENDAR — tap to replay',

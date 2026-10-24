@@ -39,9 +39,7 @@ const Shell = defineComponent({
     return () =>
       h('div', [
         h('h1', { 'data-testid': 'title' }, String(toValue(header.title ?? ''))),
-        h(KeepAlive, { include: ['CalendarView', 'NotesView'] }, () =>
-          h(swap.value as Component),
-        ),
+        h(KeepAlive, { include: ['CalendarView', 'NotesView'] }, () => h(swap.value as Component)),
       ])
   },
 })

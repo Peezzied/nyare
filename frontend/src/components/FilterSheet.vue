@@ -108,11 +108,7 @@ const STATUS_CHIP =
 
 <template>
   <Drawer :open="open" @update:open="emit('update:open', $event)">
-    <DrawerContent
-      overlay
-      class="data-[swipe-direction=down]:h-auto"
-      data-testid="filter-sheet"
-    >
+    <DrawerContent overlay class="data-[swipe-direction=down]:h-auto" data-testid="filter-sheet">
       <DrawerTitle class="sr-only">Filters</DrawerTitle>
 
       <div class="px-4 pt-2">

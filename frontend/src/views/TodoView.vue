@@ -22,6 +22,7 @@ import { useServerSearch } from '@/composables/useServerSearch'
 import { getPlanCategory } from '@/utils/planCategory'
 import { useShellHeader } from '@/composables/useShellHeader'
 import {
+  isReducedMotion,
   setNoteMorphOrigin,
   takeNoteMorphOrigin,
   toTapOriginRect,
@@ -67,10 +68,11 @@ const searchParams = computed<TaskListParams | null>(() => {
     ...(status && { status }),
   }
 })
-const { results: searchResults, error: searchError, retry: retrySearch } = useServerSearch(
-  tasksApi.list,
-  searchParams,
-)
+const {
+  results: searchResults,
+  error: searchError,
+  retry: retrySearch,
+} = useServerSearch(tasksApi.list, searchParams)
 
 // Mirrors cache writes into an active search list: saved rows refresh in
 // place, deleted rows drop out, and rows the cache never held keep their
@@ -212,11 +214,13 @@ function selectFilter(key: ActiveFilter, focus = false) {
     if (focus) {
       el?.focus()
     }
-    el?.scrollIntoView({
-      inline: 'center',
-      block: 'nearest',
-      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-    })
+    if (typeof el?.scrollIntoView === 'function') {
+      el.scrollIntoView({
+        inline: 'center',
+        block: 'nearest',
+        behavior: isReducedMotion() ? 'auto' : 'smooth',
+      })
+    }
   })
 }
 
@@ -325,7 +329,6 @@ onActivated(loadData)
 
 <template>
   <div class="relative flex h-full flex-col bg-(--color-app-bg) text-(--color-text-main)">
-
     <div
       v-if="searchResults === null && searchError === null"
       class="shrink-0 overflow-visible mx-4 pt-3 pb-3 [&::-webkit-scrollbar]:hidden"
@@ -403,7 +406,10 @@ onActivated(loadData)
         :filters-active="filtersActive"
         @filter="filterSheetOpen = true"
       />
-      <p v-if="loading && searchResults === null" class="py-8 text-center text-(--color-text-muted)">
+      <p
+        v-if="loading && searchResults === null"
+        class="py-8 text-center text-(--color-text-muted)"
+      >
         Loading tasks…
       </p>
 

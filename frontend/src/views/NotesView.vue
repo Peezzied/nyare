@@ -102,10 +102,11 @@ const searchParams = computed<NoteListParams | null>(() => {
     ...(to && { to }),
   }
 })
-const { results: searchResults, error: searchError, retry: retrySearch } = useServerSearch(
-  notesApi.list,
-  searchParams,
-)
+const {
+  results: searchResults,
+  error: searchError,
+  retry: retrySearch,
+} = useServerSearch(notesApi.list, searchParams)
 
 // Mirrors cache writes into an active search list: saved notes refresh their
 // card, deleted notes drop out, and notes the cache never held keep their
