@@ -63,6 +63,26 @@ public interface AcademicEventRepository extends JpaRepository<AcademicEvent, UU
     );
 
     /**
+     * Returns all academic events extracted from the given source note,
+     * ordered by deadline ascending. Used by the dev audit trace console for
+     * relation walking.
+     *
+     * @param noteId the source note identifier
+     * @return events attached to the note ordered by deadline ascending
+     */
+    List<AcademicEvent> findByNoteIdOrderByDeadlineAsc(UUID noteId);
+
+    /**
+     * Finds the most recent academic event attached to a source note with a matching title.
+     * Used by the dev audit trace console for inferred (non-exact) reference resolution.
+     *
+     * @param noteId the source note identifier
+     * @param title  the event title to match, case-insensitive
+     * @return the newest matching academic event, otherwise empty
+     */
+    Optional<AcademicEvent> findFirstByNoteIdAndTitleIgnoreCaseOrderByCreatedAtDesc(UUID noteId, String title);
+
+    /**
      * Deletes academic events associated with the specified notes.
      *
      * @param notes source notes to delete events for

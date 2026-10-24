@@ -66,6 +66,25 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
     );
 
     /**
+     * Returns all tasks extracted from the given source note, newest first.
+     * Used by the dev audit trace console for relation walking.
+     *
+     * @param noteId the source note identifier
+     * @return tasks attached to the note ordered by creation date descending
+     */
+    List<Task> findByNoteIdOrderByCreatedAtDesc(UUID noteId);
+
+    /**
+     * Finds the most recent task attached to a source note with a matching title.
+     * Used by the dev audit trace console for inferred (non-exact) reference resolution.
+     *
+     * @param noteId the source note identifier
+     * @param title  the task title to match, case-insensitive
+     * @return the newest matching task, otherwise empty
+     */
+    Optional<Task> findFirstByNoteIdAndTitleIgnoreCaseOrderByCreatedAtDesc(UUID noteId, String title);
+
+    /**
      * Deletes tasks associated with the specified notes where status does not match.
      *
      * @param notes  source notes to delete tasks for

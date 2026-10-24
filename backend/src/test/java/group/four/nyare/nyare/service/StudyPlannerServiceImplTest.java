@@ -2,6 +2,11 @@ package group.four.nyare.nyare.service;
 
 import group.four.nyare.nyare.ai.ImageAiProcessor;
 import group.four.nyare.nyare.ai.StudyPlannerEngine;
+import group.four.nyare.nyare.ai.event.AuditCategory;
+import group.four.nyare.nyare.ai.event.AuditSeverity;
+import group.four.nyare.nyare.ai.event.AuditTraceEvent;
+import group.four.nyare.nyare.ai.event.LifecycleState;
+import group.four.nyare.nyare.ai.event.TriggerSource;
 import group.four.nyare.nyare.dto.PlannerStatusResponse;
 import group.four.nyare.nyare.dto.ProcessSummaryResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
@@ -28,7 +33,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -48,6 +56,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.InOrder;
@@ -71,6 +80,8 @@ class StudyPlannerServiceImplTest {
     ImageAiProcessor imageAiProcessor;
     @Mock
     StudyPlannerEngine studyPlannerEngine;
+    @Mock
+    ApplicationEventPublisher eventPublisher;
 
     StudyPlannerServiceImpl service;
 
@@ -83,7 +94,7 @@ class StudyPlannerServiceImplTest {
                 noteRepository, taskRepository,
                 academicEventRepository, academicContextRepository,
                 scheduleRepository, imageRepository,
-                imageAiProcessor, studyPlannerEngine);
+                imageAiProcessor, studyPlannerEngine, eventPublisher);
     }
 
     @Test
@@ -254,6 +265,122 @@ class StudyPlannerServiceImplTest {
                 .contains("Dates: 2026-10-01")
                 .contains("Courses: CS101")
                 .contains("[AI AUDIT - PROCESS COMPLETED] UserId: " + USER_ID);
+    }
+
+    @Test
+    @DisplayName("processNotes publishes STARTED and COMPLETED lifecycle events with shared runId")
+    void processNotes_publishesLifecycleEvents() {
+        Course course = courseWithId(1L, "CS101");
+        Note note = new Note(course, "Content", LocalDate.of(2026, 10, 1));
+        ReflectionTestUtils.setField(note, "id", UUID.randomUUID());
+        when(noteRepository.findDirtyNotes(USER_ID, false)).thenReturn(List.of(note));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+                .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of()));
+        when(taskRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
+        when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+
+        service.processNotes(USER_ID);
+
+        ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
+        verify(eventPublisher, times(2)).publishEvent(captor.capture());
+        List<AuditTraceEvent> events = captor.getAllValues().stream()
+                .map(AuditTraceEvent.class::cast)
+                .toList();
+        assertThat(events).extracting(AuditTraceEvent::lifecycleState)
+                .containsExactly(LifecycleState.STARTED, LifecycleState.COMPLETED);
+        assertThat(events).allSatisfy(e -> {
+            assertThat(e.category()).isEqualTo(AuditCategory.LIFECYCLE);
+            assertThat(e.originUserId()).isEqualTo(USER_ID);
+            assertThat(e.triggerSource()).isEqualTo(TriggerSource.WEB_SESSION);
+        });
+        assertThat(events.get(0).runId()).isEqualTo(events.get(1).runId());
+        assertThat(events.get(0).changeSummary()).contains(note.getId().toString());
+        assertThat(events.get(1).extractedCounts()).containsKeys(
+                "tasksCreated", "tasksPromoted", "eventsCreated", "contextsCreated");
+    }
+
+    @Test
+    @DisplayName("processNotes defers COMPLETED publish to afterCommit when synchronization is active")
+    void processNotes_activeSynchronization_publishesCompletedAfterCommit() {
+        Course course = courseWithId(1L, "CS101");
+        Note note = new Note(course, "Content", LocalDate.of(2026, 10, 1));
+        when(noteRepository.findDirtyNotes(USER_ID, false)).thenReturn(List.of(note));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any()))
+                .thenReturn(new StudyPlannerEngine.ExtractedData(List.of(), List.of(), List.of()));
+        when(taskRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicEventRepository.saveAll(anyList())).thenReturn(List.of());
+        when(academicContextRepository.saveAll(anyList())).thenReturn(List.of());
+        when(noteRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
+
+        TransactionSynchronizationManager.initSynchronization();
+        try {
+            service.processNotes(USER_ID);
+
+            // STARTED publishes synchronously; COMPLETED waits for commit.
+            verify(eventPublisher, times(1)).publishEvent(any(AuditTraceEvent.class));
+
+            for (TransactionSynchronization sync : TransactionSynchronizationManager.getSynchronizations()) {
+                sync.afterCommit();
+            }
+        } finally {
+            TransactionSynchronizationManager.clearSynchronization();
+        }
+
+        ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
+        verify(eventPublisher, times(2)).publishEvent(captor.capture());
+        assertThat((AuditTraceEvent) captor.getAllValues().get(1))
+                .extracting(AuditTraceEvent::lifecycleState)
+                .isEqualTo(LifecycleState.COMPLETED);
+    }
+
+    @Test
+    @DisplayName("processNotes publishes FAILED lifecycle event with diagnostics and rethrows on engine failure")
+    void processNotes_engineThrows_publishesFailedEventAndRethrows() {
+        Course course = courseWithId(1L, "CS101");
+        Note note = noteWithCourse(course);
+        when(noteRepository.findDirtyNotes(USER_ID, false)).thenReturn(List.of(note));
+        when(taskRepository.findAllFiltered(eq(USER_ID), isNull(), isNull(), isNull(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicEventRepository.findAllFiltered(eq(USER_ID), isNull(), eq(true), any(), eq(false), isNull(), isNull(), isNull())).thenReturn(List.of());
+        when(academicContextRepository.findByCourseIdInOrderByCreatedAtDesc(anySet())).thenReturn(List.of());
+        when(scheduleRepository.findAllFiltered(eq(USER_ID), isNull(), eq(false))).thenReturn(List.of());
+
+        RuntimeException failure = new RuntimeException("LLM unavailable",
+                new java.net.SocketTimeoutException("connect timed out"));
+        when(studyPlannerEngine.process(any(), any(), any(), any(), any(), any())).thenThrow(failure);
+
+        assertThatThrownBy(() -> service.processNotes(USER_ID))
+                .isSameAs(failure);
+
+        ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
+        verify(eventPublisher, times(2)).publishEvent(captor.capture());
+        List<AuditTraceEvent> events = captor.getAllValues().stream()
+                .map(AuditTraceEvent.class::cast)
+                .toList();
+        assertThat(events).extracting(AuditTraceEvent::lifecycleState)
+                .containsExactly(LifecycleState.STARTED, LifecycleState.FAILED);
+
+        AuditTraceEvent failed = events.get(1);
+        assertThat(failed.category()).isEqualTo(AuditCategory.LIFECYCLE);
+        assertThat(failed.severity()).isEqualTo(AuditSeverity.ERROR);
+        assertThat(failed.runId()).isEqualTo(events.get(0).runId());
+        assertThat(failed.durationMs()).isNotNull();
+        assertThat(failed.errorDiagnostic()).isNotNull();
+        assertThat(failed.errorDiagnostic().exceptionClass()).isEqualTo(RuntimeException.class.getName());
+        assertThat(failed.errorDiagnostic().message()).isEqualTo("LLM unavailable");
+        assertThat(failed.errorDiagnostic().rootCause())
+                .contains("SocketTimeoutException")
+                .contains("connect timed out");
+        assertThat(failed.errorDiagnostic().stackPreview()).contains("at ");
     }
 
     @Test
@@ -651,6 +778,12 @@ class StudyPlannerServiceImplTest {
         verify(academicEventRepository, never()).saveAll(anyList());
         verify(academicContextRepository, never()).saveAll(anyList());
         verify(noteRepository, never()).saveAll(anyList());
+
+        ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
+        verify(eventPublisher, times(2)).publishEvent(captor.capture());
+        assertThat(captor.getAllValues().stream().map(AuditTraceEvent.class::cast).toList())
+                .extracting(AuditTraceEvent::lifecycleState)
+                .containsExactly(LifecycleState.STARTED, LifecycleState.CANCELLED);
     }
 
     @Test

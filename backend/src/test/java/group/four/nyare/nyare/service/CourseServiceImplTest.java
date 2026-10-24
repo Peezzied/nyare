@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.service;
 
+import group.four.nyare.nyare.ai.event.AuditTraceEvent;
 import group.four.nyare.nyare.dto.CourseRequest;
 import group.four.nyare.nyare.dto.CourseResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
@@ -17,7 +18,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,6 +42,9 @@ class CourseServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private CourseServiceImpl courseService;
@@ -122,6 +129,30 @@ class CourseServiceImplTest {
         verify(courseRepository).save(captor.capture());
         assertThat(captor.getValue().getColor()).isNull();
         assertThat(response.getColor()).isNull();
+    }
+
+    @Test
+    @DisplayName("createCourse defers the mutation event to afterCommit when synchronization is active")
+    void createCourse_activeSynchronization_publishesMutationAfterCommit() {
+        // given
+        CourseRequest request = new CourseRequest("CS101", "Intro to CS");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(sampleUser));
+        when(courseRepository.save(any(Course.class))).thenReturn(sampleCourse);
+
+        TransactionSynchronizationManager.initSynchronization();
+        try {
+            // when
+            courseService.createCourse(request, 1L);
+
+            // then: the mutation event waits for commit
+            verify(eventPublisher, never()).publishEvent(any());
+            for (TransactionSynchronization sync : TransactionSynchronizationManager.getSynchronizations()) {
+                sync.afterCommit();
+            }
+        } finally {
+            TransactionSynchronizationManager.clearSynchronization();
+        }
+        verify(eventPublisher).publishEvent(any(AuditTraceEvent.class));
     }
 
     @Test

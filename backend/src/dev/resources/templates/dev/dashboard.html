@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>'Nyare Dev · Audit Trace Console</title>
+  <link rel="stylesheet" th:href="@{/dev/dashboard.css}">
+  <script th:src="@{/dev/dashboard.js}" defer></script>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">'Nyare</span>
+      <span class="brand-sub">dev · audit trace console</span>
+    </div>
+    <div class="topbar-meta">
+      <span id="liveState" class="live-state is-live" role="status">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="live-label">Live</span>
+      </span>
+      <button id="pauseBtn" type="button" class="btn" aria-pressed="false">Pause</button>
+      <span class="retained"><span id="retainedCount" th:text="${totalRetained}">0</span> events retained</span>
+    </div>
+  </header>
+
+  <nav class="toolbar" aria-label="Audit filters">
+    <div class="chip-group" role="group" aria-label="Filter by category">
+      <span class="chip-group-label">Category</span>
+      <button type="button" class="filter-chip" data-category="" aria-pressed="true">All</button>
+      <button type="button" class="filter-chip"
+              th:each="cat : ${categories}"
+              th:attr="data-category=${cat.name()}"
+              th:classappend="${'chip-' + cat.name().toLowerCase().replace('_','-')}"
+              th:text="${cat.name().toLowerCase().replace('_',' ')}"
+              aria-pressed="false">lifecycle</button>
+    </div>
+    <div class="chip-group" role="group" aria-label="Filter by severity">
+      <span class="chip-group-label">Severity</span>
+      <button type="button" class="filter-chip" data-severity="" aria-pressed="true">All</button>
+      <button type="button" class="filter-chip"
+              th:each="sev : ${severities}"
+              th:attr="data-severity=${sev.name()}"
+              th:classappend="${'chip-' + sev.name().toLowerCase()}"
+              th:text="${sev.name().toLowerCase()}"
+              aria-pressed="false">error</button>
+    </div>
+  </nav>
+
+  <div class="split">
+
+    <main class="feed-pane" aria-label="Audit feed">
+
+      <details class="browse">
+        <summary>Browse records by course</summary>
+        <ul id="courseList" class="course-list">
+          <li th:each="course : ${courses}">
+            <button type="button" class="course-entry"
+                    th:attr="data-kind='course',data-id=${course.id}">
+              <span class="swatch" th:style="${'background-color:' + course.color}" aria-hidden="true"></span>
+              <span th:text="${course.name}">Course name</span>
+            </button>
+          </li>
+        </ul>
+      </details>
+
+      <section id="feed" aria-live="off">
+
+        <div class="empty-state" th:if="${#lists.isEmpty(events)}">
+          <p class="empty-title">No audit events yet.</p>
+          <p class="empty-detail">Run the study planner or browse a course above to start tracing records.</p>
+        </div>
+
+        <article class="audit-card"
+                 th:each="event : ${events}"
+                 th:classappend="${'severity-' + event.severity.name().toLowerCase() + ' cat-' + event.category.name().toLowerCase().replace('_','-')}"
+                 th:attr="data-event-id=${event.id},data-ts=${event.timestamp},data-category=${event.category.name()},data-severity=${event.severity.name()}">
+
+          <header class="card-head">
+            <span class="badge badge-category" th:text="${event.category}">LIFECYCLE</span>
+            <span class="badge badge-severity"
+                  th:classappend="${'sev-' + event.severity.name().toLowerCase()}"
+                  th:text="${event.severity}">INFO</span>
+            <time class="card-time" th:attr="datetime=${event.timestamp}" th:text="${event.timestamp}">10:15:31</time>
+          </header>
+
+          <p class="card-message" th:text="${event.message}">Audit message.</p>
+
+          <div class="card-meta">
+            <span class="badge badge-user" th:if="${event.originUsername != null}">
+              <span class="badge-user-name" th:text="${event.originUsername}">student_jane</span>
+              <span class="badge-user-id" th:if="${event.originUserId != null}"
+                    th:text="'(ID: ' + ${event.originUserId} + ')'">(ID: 1)</span>
+            </span>
+            <span class="badge badge-trigger" th:if="${event.triggerSource != null}"
+                  th:classappend="${'trig-' + event.triggerSource.name().toLowerCase().replace('_','-')}"
+                  th:text="${event.triggerSource}">WEB_SESSION</span>
+            <span class="badge badge-action" th:if="${event.mutationAction != null}"
+                  th:classappend="${'act-' + event.mutationAction.name().toLowerCase()}"
+                  th:text="${event.mutationAction}">CREATE</span>
+            <span class="badge badge-lifecycle" th:if="${event.lifecycleState != null}"
+                  th:classappend="${'lc-' + event.lifecycleState.name().toLowerCase()}"
+                  th:text="${event.lifecycleState}">STARTED</span>
+            <span class="badge badge-duration" th:if="${event.durationMs != null}"
+                  th:text="${event.durationMs} + ' ms'">1200 ms</span>
+          </div>
+
+          <ul class="card-refs"
+              th:if="${event.entityId != null or event.noteId != null or event.taskId != null or event.eventId != null or event.imageId != null or event.courseId != null or event.runId != null}">
+            <li th:if="${event.entityKind != null and event.entityId != null}">
+              <button type="button" class="ref-chip"
+                      th:attr="data-kind=${event.entityKind.name()},data-id=${event.entityId}"
+                      th:text="${event.entityKind.name()}">task</button>
+            </li>
+            <li th:if="${event.noteId != null}">
+              <button type="button" class="ref-chip" data-kind="note"
+                      th:attr="data-id=${event.noteId}">note</button>
+            </li>
+            <li th:if="${event.taskId != null}">
+              <button type="button" class="ref-chip" data-kind="task"
+                      th:attr="data-id=${event.taskId}">task</button>
+            </li>
+            <li th:if="${event.eventId != null}">
+              <button type="button" class="ref-chip" data-kind="event"
+                      th:attr="data-id=${event.eventId}">event</button>
+            </li>
+            <li th:if="${event.imageId != null}">
+              <button type="button" class="ref-chip" data-kind="image"
+                      th:attr="data-id=${event.imageId}">image</button>
+            </li>
+            <li th:if="${event.courseId != null}">
+              <button type="button" class="ref-chip" data-kind="course"
+                      th:attr="data-id=${event.courseId}">course</button>
+            </li>
+            <li th:if="${event.runId != null}">
+              <button type="button" class="ref-chip" data-kind="lifecycle"
+                      th:attr="data-id=${event.runId}">run</button>
+            </li>
+          </ul>
+
+          <p class="change-summary" th:if="${event.changeSummary != null}"
+             th:text="${event.changeSummary}">Change summary.</p>
+
+          <blockquote class="rationale" th:if="${event.rationale != null}">
+            <span class="rationale-label">Rationale</span>
+            <span th:text="${event.rationale}">AI rationale text.</span>
+          </blockquote>
+
+          <blockquote class="quoted" th:if="${event.quotedText != null}">
+            <span class="quoted-label">Quoted text</span>
+            <span th:text="${event.quotedText}">Verbatim quote.</span>
+          </blockquote>
+
+          <ul class="count-chips" th:if="${event.extractedCounts != null and !event.extractedCounts.isEmpty()}">
+            <li class="count-chip" th:each="c : ${event.extractedCounts}"
+                th:text="${c.key} + ': ' + ${c.value}">tasks: 2</li>
+          </ul>
+
+          <details class="err-diag" th:if="${event.errorDiagnostic != null}">
+            <summary>Error diagnostic</summary>
+            <dl class="err-fields">
+              <dt>Exception</dt>
+              <dd th:text="${event.errorDiagnostic.exceptionClass}">ExceptionClass</dd>
+              <dt>Message</dt>
+              <dd th:text="${event.errorDiagnostic.message}">message</dd>
+              <dt>Root cause</dt>
+              <dd th:text="${event.errorDiagnostic.rootCause}">root cause</dd>
+            </dl>
+            <pre class="stack-preview" th:if="${event.errorDiagnostic.stackPreview != null}"
+                 th:text="${event.errorDiagnostic.stackPreview}">stack preview</pre>
+          </details>
+
+        </article>
+      </section>
+    </main>
+
+    <aside id="inspector" aria-label="Record inspector">
+      <header class="inspector-head">
+        <h2 class="inspector-title">Inspector</h2>
+      </header>
+
+      <nav id="breadcrumb" class="breadcrumb" aria-label="Audit trail" hidden>
+        <ol class="breadcrumb-list"></ol>
+      </nav>
+
+      <div id="inspectorBody" class="inspector-body">
+        <p class="inspector-empty">Select an audit entry or a record reference to inspect it here.</p>
+      </div>
+
+      <details id="errorDrawer" class="error-drawer" hidden>
+        <summary>Error diagnostic</summary>
+        <div id="errorDrawerBody" class="error-drawer-body"></div>
+      </details>
+    </aside>
+
+  </div>
+</div>
+</body>
+</html>

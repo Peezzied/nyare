@@ -57,6 +57,15 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
     );
 
     /**
+     * Returns notes whose content contains the given fragment. Used by the dev
+     * audit trace console to find notes referencing an image identifier.
+     *
+     * @param fragment substring matched against note content (LIKE %fragment%)
+     * @return matching notes
+     */
+    List<Note> findByContentContaining(String fragment);
+
+    /**
      * Returns all dirty notes for a user across all dates.
      *
      * @param userId   mandatory user identifier

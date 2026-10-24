@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** Extracts the well-formed /api/images/{uuid} references from note markdown. */
-final class ImageReferenceExtractor {
+public final class ImageReferenceExtractor {
 
     private static final Pattern IMAGE_URL_PATTERN = Pattern.compile(
             "/api/images/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})");
@@ -15,7 +15,7 @@ final class ImageReferenceExtractor {
     private ImageReferenceExtractor() {
     }
 
-    static Set<UUID> extractIds(String content) {
+    public static Set<UUID> extractIds(String content) {
         if (content == null || content.isBlank()) {
             return Set.of();
         }

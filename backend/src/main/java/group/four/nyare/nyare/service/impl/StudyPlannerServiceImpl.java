@@ -2,6 +2,13 @@ package group.four.nyare.nyare.service.impl;
 
 import group.four.nyare.nyare.ai.ImageAiProcessor;
 import group.four.nyare.nyare.ai.StudyPlannerEngine;
+import group.four.nyare.nyare.ai.event.AuditCategory;
+import group.four.nyare.nyare.ai.event.AuditSeverity;
+import group.four.nyare.nyare.ai.event.AuditTraceEvent;
+import group.four.nyare.nyare.ai.event.ErrorDiagnostic;
+import group.four.nyare.nyare.ai.event.LifecycleState;
+import group.four.nyare.nyare.ai.event.TraceKind;
+import group.four.nyare.nyare.ai.event.TriggerSource;
 import group.four.nyare.nyare.ai.parser.TitleSimilarityMatcher;
 import group.four.nyare.nyare.dto.PlannerStatusResponse;
 import group.four.nyare.nyare.dto.ProcessSummaryResponse;
@@ -13,6 +20,7 @@ import group.four.nyare.nyare.model.Image;
 import group.four.nyare.nyare.model.Note;
 import group.four.nyare.nyare.model.Schedule;
 import group.four.nyare.nyare.model.Task;
+import group.four.nyare.nyare.model.User;
 import group.four.nyare.nyare.model.enums.TaskStatus;
 import group.four.nyare.nyare.repository.AcademicContextRepository;
 import group.four.nyare.nyare.repository.AcademicEventRepository;
@@ -25,8 +33,11 @@ import group.four.nyare.nyare.service.StudyPlannerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -66,6 +77,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
     private final ImageRepository imageRepository;
     private final ImageAiProcessor imageAiProcessor;
     private final StudyPlannerEngine studyPlannerEngine;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Autowired
     public StudyPlannerServiceImpl(
@@ -76,7 +88,8 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
             ScheduleRepository scheduleRepository,
             ImageRepository imageRepository,
             ImageAiProcessor imageAiProcessor,
-            StudyPlannerEngine studyPlannerEngine) {
+            StudyPlannerEngine studyPlannerEngine,
+            ApplicationEventPublisher eventPublisher) {
         this.noteRepository = noteRepository;
         this.taskRepository = taskRepository;
         this.academicEventRepository = academicEventRepository;
@@ -85,6 +98,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         this.imageRepository = imageRepository;
         this.imageAiProcessor = imageAiProcessor;
         this.studyPlannerEngine = studyPlannerEngine;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -157,14 +171,20 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         return processDirtyNotes(dirtyNotes, userId, ProcessListener.NONE);
     }
 
-    private void checkCancelled(ProcessListener listener) {
+    private void checkCancelled(ProcessListener listener, UUID runId, Long userId,
+                                String originUsername, long startedAtNanos) {
         if (listener.isCancelled()) {
+            publishLifecycle(LifecycleState.CANCELLED, AuditSeverity.WARN, runId, userId, originUsername,
+                    "Planning run cancelled", null,
+                    (System.nanoTime() - startedAtNanos) / 1_000_000, null);
             throw new CancellationException("Processing cancelled");
         }
     }
 
     private ProcessSummaryResponse processDirtyNotes(List<Note> dirtyNotes, Long userId, ProcessListener listener) {
         long startedAt = System.nanoTime();
+        UUID runId = UUID.randomUUID();
+        String originUsername = resolveOriginUsername(dirtyNotes);
 
         SortedMap<LocalDate, List<Note>> notesByDate = new TreeMap<>();
         for (Note note : dirtyNotes) {
@@ -175,6 +195,37 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         log.info("[AI AUDIT - PROCESS TRIGGERED] UserId: {} | Notes: {} | Dates: {} | Courses: {}",
                 userId, dirtyNotes.size(), formatDateRange(notesByDate), formatCourseNames(dirtyNotes));
 
+        String targetNoteIds = dirtyNotes.stream()
+                .map(Note::getId)
+                .filter(Objects::nonNull)
+                .map(UUID::toString)
+                .collect(Collectors.joining(", "));
+        publishLifecycle(LifecycleState.STARTED, AuditSeverity.INFO, runId, userId, originUsername,
+                "Planning run started for " + dirtyNotes.size() + " notes",
+                targetNoteIds.isEmpty() ? null : "Target notes: " + targetNoteIds,
+                null, null);
+
+        try {
+            return runPlanningPass(notesByDate, userId, listener, runId, originUsername, startedAt);
+        } catch (CancellationException e) {
+            // CANCELLED was already emitted at the checkpoint; keep the exception flow unchanged.
+            throw e;
+        } catch (RuntimeException e) {
+            publishLifecycle(LifecycleState.FAILED, AuditSeverity.ERROR, runId, userId,
+                    originUsername, "Planning run failed: " + e.getMessage(), null,
+                    (System.nanoTime() - startedAt) / 1_000_000, null, ErrorDiagnostic.from(e));
+            throw e;
+        }
+    }
+
+    /**
+     * Executes the multi-day extraction and persistence body of a planning run.
+     * Runs inside the boundary in {@link #processDirtyNotes} so an unhandled
+     * failure can emit a {@code FAILED} lifecycle event before propagating.
+     */
+    private ProcessSummaryResponse runPlanningPass(SortedMap<LocalDate, List<Note>> notesByDate,
+                                                   Long userId, ProcessListener listener, UUID runId,
+                                                   String originUsername, long startedAt) {
         int totalTasksCreated = 0;
         int totalTasksPromoted = 0;
         int totalEventsCreated = 0;
@@ -185,14 +236,14 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         int total = notesByDate.size();
         for (Map.Entry<LocalDate, List<Note>> entry : notesByDate.entrySet()) {
             index++;
-            checkCancelled(listener);
+            checkCancelled(listener, runId, userId, originUsername, startedAt);
             listener.onDateStarted(entry.getKey(), index, total);
 
             List<Note> dateNotes = entry.getValue();
 
             // Discover and update note images
             Map<UUID, List<Image>> noteImages = processAndPersistNoteImages(dateNotes);
-            checkCancelled(listener);
+            checkCancelled(listener, runId, userId, originUsername, startedAt);
 
             Set<Long> dateCourseIds = dateNotes.stream()
                     .filter(n -> n.getCourse() != null && n.getCourse().getId() != null)
@@ -213,7 +264,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
 
             StudyPlannerEngine.ExtractedData extracted = studyPlannerEngine.process(
                     dateNotes, existingTasks, existingEvents, existingContexts, schedules, noteImages);
-            checkCancelled(listener);
+            checkCancelled(listener, runId, userId, originUsername, startedAt);
 
             Map<UUID, Note> noteMap = dateNotes.stream()
                     .filter(n -> n.getId() != null)
@@ -386,10 +437,70 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
 
         ProcessSummaryResponse summary = new ProcessSummaryResponse(totalTasksCreated, totalTasksPromoted,
                 totalEventsCreated, totalContextsCreated, affectedCourseIds.stream().sorted().toList());
+        long durationMs = (System.nanoTime() - startedAt) / 1_000_000;
         log.info("[AI AUDIT - PROCESS COMPLETED] UserId: {} | Tasks: {} | Promoted: {} | Events: {} | Contexts: {} | Courses: {} | DurationMs: {}",
                 userId, totalTasksCreated, totalTasksPromoted, totalEventsCreated, totalContextsCreated,
-                summary.getAffectedCourseIds(), (System.nanoTime() - startedAt) / 1_000_000);
+                summary.getAffectedCourseIds(), durationMs);
+        String completedMessage = "Planning run completed in " + durationMs + " ms";
+        Map<String, Integer> extractedCounts = Map.of(
+                "tasksCreated", totalTasksCreated, "tasksPromoted", totalTasksPromoted,
+                "eventsCreated", totalEventsCreated, "contextsCreated", totalContextsCreated);
+        // COMPLETED means committed: defer until afterCommit so a commit failure
+        // cannot leave a false completion event in the dev trace feed.
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    publishLifecycle(LifecycleState.COMPLETED, AuditSeverity.INFO, runId, userId,
+                            originUsername, completedMessage, null, durationMs, extractedCounts);
+                }
+            });
+        } else {
+            publishLifecycle(LifecycleState.COMPLETED, AuditSeverity.INFO, runId, userId,
+                    originUsername, completedMessage, null, durationMs, extractedCounts);
+        }
         return summary;
+    }
+
+    /**
+     * Publishes a {@link AuditCategory#LIFECYCLE} trace event for the planning run.
+     * The lifecycle node identity is {@code entityKind=lifecycle} + {@code entityId=runId}.
+     * Listener failures are swallowed: dev tooling must never break a planning run.
+     */
+    private void publishLifecycle(LifecycleState state, AuditSeverity severity, UUID runId,
+                                  Long userId, String originUsername, String message,
+                                  String changeSummary, Long durationMs,
+                                  Map<String, Integer> extractedCounts) {
+        publishLifecycle(state, severity, runId, userId, originUsername, message,
+                changeSummary, durationMs, extractedCounts, null);
+    }
+
+    private void publishLifecycle(LifecycleState state, AuditSeverity severity, UUID runId,
+                                  Long userId, String originUsername, String message,
+                                  String changeSummary, Long durationMs,
+                                  Map<String, Integer> extractedCounts,
+                                  ErrorDiagnostic errorDiagnostic) {
+        try {
+            eventPublisher.publishEvent(new AuditTraceEvent(
+                    UUID.randomUUID(), Instant.now(), AuditCategory.LIFECYCLE, severity, message,
+                    userId, originUsername, TriggerSource.WEB_SESSION, null,
+                    TraceKind.lifecycle, runId.toString(), changeSummary, runId,
+                    null, null, null, null, null, null, null,
+                    durationMs, state, extractedCounts, errorDiagnostic));
+        } catch (Exception e) {
+            log.warn("Audit trace listener failed for {} event: {}", state, e.getMessage());
+        }
+    }
+
+    private static String resolveOriginUsername(List<Note> notes) {
+        return notes.stream()
+                .map(Note::getCourse)
+                .filter(Objects::nonNull)
+                .map(Course::getUser)
+                .filter(Objects::nonNull)
+                .map(User::getUsername)
+                .findFirst()
+                .orElse(null);
     }
 
     private static String formatDateRange(SortedMap<LocalDate, List<Note>> notesByDate) {
