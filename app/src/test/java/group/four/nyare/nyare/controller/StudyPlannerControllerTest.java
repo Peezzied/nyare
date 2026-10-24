@@ -3,7 +3,7 @@ package group.four.nyare.nyare.controller;
 import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.dto.PlannerStatusResponse;
 import group.four.nyare.nyare.dto.ProcessSummaryResponse;
-import group.four.nyare.nyare.service.ProcessListener;
+import group.four.nyare.nyare.event.PlanningProgressEvent;
 import group.four.nyare.nyare.service.StudyPlannerService;
 import jakarta.servlet.AsyncEvent;
 import jakarta.servlet.AsyncListener;
@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -47,6 +46,9 @@ class StudyPlannerControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private StudyPlannerController studyPlannerController;
 
     @MockitoBean
     private StudyPlannerService studyPlannerService;
@@ -79,9 +81,8 @@ class StudyPlannerControllerTest {
         ProcessSummaryResponse summary = new ProcessSummaryResponse(1, 0, 0, List.of(1L));
 
         when(studyPlannerService.getPlannerStatus(1L)).thenReturn(status);
-        when(studyPlannerService.processNotes(eq(1L), any(ProcessListener.class))).thenAnswer(inv -> {
-            ProcessListener listener = inv.getArgument(1);
-            listener.onDateStarted(date, 1, 1);
+        when(studyPlannerService.processNotes(eq(1L))).thenAnswer(inv -> {
+            studyPlannerController.onProgress(new PlanningProgressEvent(1L, date, 1, 1));
             return summary;
         });
 
@@ -110,7 +111,7 @@ class StudyPlannerControllerTest {
         CountDownLatch release = new CountDownLatch(1);
 
         when(studyPlannerService.getPlannerStatus(1L)).thenReturn(status);
-        when(studyPlannerService.processNotes(eq(1L), any(ProcessListener.class))).thenAnswer(inv -> {
+        when(studyPlannerService.processNotes(eq(1L))).thenAnswer(inv -> {
             captured.countDown();
             release.await(10, TimeUnit.SECONDS);
             return new ProcessSummaryResponse(0, 0, 0, List.of());
@@ -143,7 +144,7 @@ class StudyPlannerControllerTest {
                 List.of("CS101"));
 
         when(studyPlannerService.getPlannerStatus(1L)).thenReturn(status);
-        when(studyPlannerService.processNotes(eq(1L), any(ProcessListener.class)))
+        when(studyPlannerService.processNotes(eq(1L)))
                 .thenReturn(new ProcessSummaryResponse(0, 0, 0, List.of()));
 
         // when
@@ -157,21 +158,27 @@ class StudyPlannerControllerTest {
     }
 
     @Test
-    void process_asyncError_cancelsListener() throws Exception {
+    void process_asyncError_interruptsWorkerThread() throws Exception {
         // given
         LocalDate date = LocalDate.of(2026, 10, 1);
         PlannerStatusResponse status = new PlannerStatusResponse(
                 true, 1, List.of(date), List.of("CS101"));
 
         CountDownLatch captured = new CountDownLatch(1);
+        CountDownLatch interrupted = new CountDownLatch(1);
         CountDownLatch release = new CountDownLatch(1);
-        AtomicReference<ProcessListener> listenerRef = new AtomicReference<>();
+        AtomicReference<Thread> workerThreadRef = new AtomicReference<>();
 
         when(studyPlannerService.getPlannerStatus(1L)).thenReturn(status);
-        when(studyPlannerService.processNotes(eq(1L), any(ProcessListener.class))).thenAnswer(inv -> {
-            listenerRef.set(inv.getArgument(1));
+        when(studyPlannerService.processNotes(eq(1L))).thenAnswer(inv -> {
+            workerThreadRef.set(Thread.currentThread());
             captured.countDown();
-            release.await(10, TimeUnit.SECONDS);
+            try {
+                release.await(10, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                interrupted.countDown();
+                Thread.currentThread().interrupt();
+            }
             return new ProcessSummaryResponse(0, 0, 0, List.of());
         });
 
@@ -189,8 +196,9 @@ class StudyPlannerControllerTest {
         }
 
         // then
-        assertThat(listenerRef.get()).isNotNull();
-        assertThat(listenerRef.get().isCancelled()).isTrue();
+        assertThat(interrupted.await(5, TimeUnit.SECONDS)).isTrue();
+        assertThat(workerThreadRef.get()).isNotNull();
+        assertThat(workerThreadRef.get().isInterrupted()).isTrue();
 
         release.countDown();
     }

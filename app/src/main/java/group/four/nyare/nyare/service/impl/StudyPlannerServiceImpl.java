@@ -12,6 +12,7 @@ import group.four.nyare.nyare.ai.observability.event.TriggerSource;
 import group.four.nyare.nyare.ai.parser.TitleSimilarityMatcher;
 import group.four.nyare.nyare.dto.PlannerStatusResponse;
 import group.four.nyare.nyare.dto.ProcessSummaryResponse;
+import group.four.nyare.nyare.event.PlanningProgressEvent;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.model.AcademicContext;
 import group.four.nyare.nyare.model.AcademicEvent;
@@ -29,7 +30,6 @@ import group.four.nyare.nyare.repository.NoteRepository;
 import group.four.nyare.nyare.repository.ScheduleRepository;
 import group.four.nyare.nyare.repository.TaskRepository;
 import group.four.nyare.nyare.repository.UserRepository;
-import group.four.nyare.nyare.service.ProcessListener;
 import group.four.nyare.nyare.service.StudyPlannerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,12 +139,6 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
     @Override
     @Transactional
     public ProcessSummaryResponse processNotes(Long userId) {
-        return processNotes(userId, ProcessListener.NONE);
-    }
-
-    @Override
-    @Transactional
-    public ProcessSummaryResponse processNotes(Long userId, ProcessListener listener) {
         if (userId == null) {
             throw new BadRequestException("User identifier is required for processing");
         }
@@ -155,8 +149,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
             throw new BadRequestException("No journal notes found to process");
         }
 
-        ProcessListener effectiveListener = listener != null ? listener : ProcessListener.NONE;
-        return processDirtyNotes(dirtyNotes, userId, effectiveListener);
+        return processDirtyNotes(dirtyNotes, userId);
     }
 
     @Override
@@ -172,12 +165,12 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
             throw new BadRequestException("No journal notes found for " + date + " to process");
         }
 
-        return processDirtyNotes(dirtyNotes, userId, ProcessListener.NONE);
+        return processDirtyNotes(dirtyNotes, userId);
     }
 
-    private void checkCancelled(ProcessListener listener, UUID runId, Long userId,
+    private void checkCancelled(UUID runId, Long userId,
                                 String originUsername, long startedAtNanos) {
-        if (listener.isCancelled()) {
+        if (Thread.currentThread().isInterrupted()) {
             publishLifecycle(LifecycleState.CANCELLED, AuditSeverity.WARN, runId, userId, originUsername,
                     "Planning run cancelled", null,
                     (System.nanoTime() - startedAtNanos) / 1_000_000, null);
@@ -185,7 +178,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         }
     }
 
-    private ProcessSummaryResponse processDirtyNotes(List<Note> dirtyNotes, Long userId, ProcessListener listener) {
+    private ProcessSummaryResponse processDirtyNotes(List<Note> dirtyNotes, Long userId) {
         long startedAt = System.nanoTime();
         UUID runId = UUID.randomUUID();
         String originUsername = resolveOriginUsername(dirtyNotes);
@@ -210,7 +203,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
                 null, null);
 
         try {
-            return runPlanningPass(notesByDate, userId, listener, runId, originUsername, startedAt);
+            return runPlanningPass(notesByDate, userId, runId, originUsername, startedAt);
         } catch (CancellationException e) {
             // CANCELLED was already emitted at the checkpoint; keep the exception flow unchanged.
             throw e;
@@ -235,7 +228,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
      * failure can emit a {@code FAILED} lifecycle event before propagating.
      */
     private ProcessSummaryResponse runPlanningPass(SortedMap<LocalDate, List<Note>> notesByDate,
-                                                   Long userId, ProcessListener listener, UUID runId,
+                                                   Long userId, UUID runId,
                                                    String originUsername, long startedAt) {
         int totalTasksCreated = 0;
         int totalTasksPromoted = 0;
@@ -249,14 +242,14 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
         int total = notesByDate.size();
         for (Map.Entry<LocalDate, List<Note>> entry : notesByDate.entrySet()) {
             index++;
-            checkCancelled(listener, runId, userId, originUsername, startedAt);
-            listener.onDateStarted(entry.getKey(), index, total);
+            checkCancelled(runId, userId, originUsername, startedAt);
+            eventPublisher.publishEvent(new PlanningProgressEvent(userId, entry.getKey(), index, total));
 
             List<Note> dateNotes = entry.getValue();
 
             // Discover and update note images
             Map<UUID, List<Image>> noteImages = processAndPersistNoteImages(dateNotes);
-            checkCancelled(listener, runId, userId, originUsername, startedAt);
+            checkCancelled(runId, userId, originUsername, startedAt);
 
             Set<Long> dateCourseIds = dateNotes.stream()
                     .filter(n -> n.getCourse() != null && n.getCourse().getId() != null)
@@ -278,7 +271,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
             StudyPlannerEngine.ExtractedData extracted = studyPlannerEngine.process(
                     dateNotes, existingTasks, existingEvents, existingContexts, schedules, noteImages,
                     planningScopeDays);
-            checkCancelled(listener, runId, userId, originUsername, startedAt);
+            checkCancelled(runId, userId, originUsername, startedAt);
 
             Map<UUID, Note> noteMap = dateNotes.stream()
                     .filter(n -> n.getId() != null)
