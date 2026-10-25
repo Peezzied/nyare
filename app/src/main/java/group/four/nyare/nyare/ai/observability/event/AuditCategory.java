@@ -11,6 +11,7 @@ package group.four.nyare.nyare.ai.observability.event;
  *   <li>{@code IMAGE_CONTEXT} — Image description previews for note attachments.</li>
  *   <li>{@code UNRELATED_INFO} — Statements filtered out as non-academic.</li>
  *   <li>{@code DATA_MUTATION} — State-modifying actions on core records.</li>
+ *   <li>{@code SYSTEM_ERROR} — Unhandled server and AI or image pipeline failures.</li>
  * </ul>
  */
 public enum AuditCategory {
@@ -20,5 +21,6 @@ public enum AuditCategory {
     EVENT_PLANNING,
     IMAGE_CONTEXT,
     UNRELATED_INFO,
-    DATA_MUTATION
+    DATA_MUTATION,
+    SYSTEM_ERROR
 }

@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.controller;
 
+import group.four.nyare.nyare.ai.observability.ErrorAuditPublisher;
 import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.dto.UserSettingsRequest;
 import group.four.nyare.nyare.dto.UserSettingsResponse;
@@ -36,6 +37,9 @@ class SettingsControllerTest {
 
     @MockitoBean
     private SessionContext sessionContext;
+
+    @MockitoBean
+    private ErrorAuditPublisher errorAuditPublisher;
 
     @MockitoBean
     private JpaMetamodelMappingContext jpaMappingContext;

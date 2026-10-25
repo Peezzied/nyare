@@ -1,8 +1,10 @@
 package group.four.nyare.nyare.observability;
 
+import group.four.nyare.nyare.ai.observability.ErrorAuditPublisher;
 import group.four.nyare.nyare.ai.observability.event.AuditCategory;
 import group.four.nyare.nyare.ai.observability.event.AuditSeverity;
 import group.four.nyare.nyare.ai.observability.event.TraceKind;
+import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.observability.controller.DevAuditTraceController;
 import group.four.nyare.nyare.observability.dto.AiEngineInfoDto;
 import group.four.nyare.nyare.observability.dto.AuditTraceEventDto;
@@ -55,6 +57,12 @@ class DevAuditTraceControllerTest {
 
     @MockitoBean
     private JpaMetamodelMappingContext jpaMappingContext;
+
+    @MockitoBean
+    private ErrorAuditPublisher errorAuditPublisher;
+
+    @MockitoBean
+    private SessionContext sessionContext;
 
     @Test
     void dashboard_withRetainedEvents_returnsViewAndModelAttributes() throws Exception {

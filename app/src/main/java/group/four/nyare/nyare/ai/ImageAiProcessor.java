@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.ai;
 
+import group.four.nyare.nyare.ai.observability.ErrorAuditPublisher;
 import group.four.nyare.nyare.exception.BadRequestException;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
@@ -28,6 +29,7 @@ public class ImageAiProcessor {
 
     private final ChatClient chatClient;
     private final long aiTimeoutMs;
+    private final ErrorAuditPublisher errorAuditPublisher;
     private static final ExecutorService VIRTUAL_EXECUTOR = Executors.newVirtualThreadPerTaskExecutor();
 
     private static final String USER_PROMPT =
@@ -39,7 +41,8 @@ public class ImageAiProcessor {
     public ImageAiProcessor(
             ChatClient.Builder chatClientBuilder,
             @Value("classpath:image_sys-prompt.st") Resource systemPromptResource,
-            @Value("${nyare.image-processor.ai-timeout-ms:30000}") long aiTimeoutMs) {
+            @Value("${nyare.image-processor.ai-timeout-ms:30000}") long aiTimeoutMs,
+            ErrorAuditPublisher errorAuditPublisher) {
         SystemPromptTemplate systemTemplate = new SystemPromptTemplate(systemPromptResource);
         String renderedSystemPrompt = systemTemplate.render(Map.of());
 
@@ -47,15 +50,17 @@ public class ImageAiProcessor {
                 .defaultSystem(renderedSystemPrompt)
                 .build();
         this.aiTimeoutMs = aiTimeoutMs;
+        this.errorAuditPublisher = errorAuditPublisher;
     }
 
-    ImageAiProcessor(ChatClient chatClient) {
-        this(chatClient, 30000);
+    ImageAiProcessor(ChatClient chatClient, ErrorAuditPublisher errorAuditPublisher) {
+        this(chatClient, 30000, errorAuditPublisher);
     }
 
-    ImageAiProcessor(ChatClient chatClient, long aiTimeoutMs) {
+    ImageAiProcessor(ChatClient chatClient, long aiTimeoutMs, ErrorAuditPublisher errorAuditPublisher) {
         this.chatClient = chatClient;
         this.aiTimeoutMs = aiTimeoutMs;
+        this.errorAuditPublisher = errorAuditPublisher;
     }
 
     /**
@@ -81,11 +86,16 @@ public class ImageAiProcessor {
 
     private String callWithTimeout(ByteArrayResource resource, MimeType mimeType) {
         if (aiTimeoutMs <= 0) {
-            String content = chatClient.prompt()
-                    .user(u -> u.text(USER_PROMPT).media(mimeType, resource))
-                    .call()
-                    .content();
-            return content != null ? content.trim() : "";
+            try {
+                String content = chatClient.prompt()
+                        .user(u -> u.text(USER_PROMPT).media(mimeType, resource))
+                        .call()
+                        .content();
+                return content != null ? content.trim() : "";
+            } catch (RuntimeException ex) {
+                errorAuditPublisher.report("Image AI processing", ex, null);
+                throw ex;
+            }
         }
 
         CompletableFuture<String> future = CompletableFuture.supplyAsync(() ->
@@ -102,6 +112,7 @@ public class ImageAiProcessor {
         } catch (CompletionException ex) {
             future.cancel(true);
             Throwable cause = ex.getCause();
+            errorAuditPublisher.report("Image AI processing", cause != null ? cause : ex, null);
             if (cause instanceof TimeoutException) {
                 throw new BadRequestException("Image AI processing timed out after " + aiTimeoutMs + " ms", cause);
             }
@@ -115,6 +126,7 @@ public class ImageAiProcessor {
         } catch (CancellationException ex) {
             future.cancel(true);
             Thread.currentThread().interrupt();
+            errorAuditPublisher.report("Image AI processing", ex, null);
             throw new BadRequestException("Image AI processing timed out after " + aiTimeoutMs + " ms", ex);
         }
     }

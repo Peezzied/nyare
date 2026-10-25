@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.service;
 
+import group.four.nyare.nyare.ai.observability.ErrorAuditPublisher;
 import group.four.nyare.nyare.dto.ImageUploadResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
@@ -39,6 +40,9 @@ class ImageServiceImplTest {
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
+
+    @Mock
+    private ErrorAuditPublisher errorAuditPublisher;
 
     @InjectMocks
     private ImageServiceImpl imageService;

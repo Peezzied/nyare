@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.controller;
 
+import group.four.nyare.nyare.ai.observability.ErrorAuditPublisher;
 import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.service.AcademicEventService;
 import group.four.nyare.nyare.service.CourseService;
@@ -9,6 +10,7 @@ import group.four.nyare.nyare.service.ScheduleService;
 import group.four.nyare.nyare.service.StudyPlannerService;
 import group.four.nyare.nyare.service.TaskService;
 import group.four.nyare.nyare.service.UserService;
+import group.four.nyare.nyare.service.UserSettingsService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -67,7 +69,13 @@ class SessionEnforcementControllerTest {
     private ImageService imageService;
 
     @MockitoBean
+    private UserSettingsService userSettingsService;
+
+    @MockitoBean
     private SessionContext sessionContext;
+
+    @MockitoBean
+    private ErrorAuditPublisher errorAuditPublisher;
 
     @MockitoBean
     private JpaMetamodelMappingContext jpaMappingContext;

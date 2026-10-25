@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.ai;
 
+import group.four.nyare.nyare.ai.observability.ErrorAuditPublisher;
 import group.four.nyare.nyare.exception.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,11 +25,14 @@ class ImageAiProcessorTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ChatClient chatClient;
 
+    @Mock
+    private ErrorAuditPublisher errorAuditPublisher;
+
     private ImageAiProcessor processor;
 
     @BeforeEach
     void setUp() {
-        processor = new ImageAiProcessor(chatClient, 5000);
+        processor = new ImageAiProcessor(chatClient, 5000, errorAuditPublisher);
     }
 
     @Test
