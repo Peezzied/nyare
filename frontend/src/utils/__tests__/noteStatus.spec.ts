@@ -50,6 +50,40 @@ describe('noteStatus utility', () => {
       })
       expect(status).toBe('processed')
     })
+
+    it('returns skipped when a saved note is excluded from AI', () => {
+      const status = getNoteProcessingStatus({
+        isSaved: true,
+        excludedFromAi: true,
+        lastProcessedAt: null,
+      })
+      expect(status).toBe('skipped')
+    })
+
+    it('returns skipped over dirty and unprocessed when the note is excluded', () => {
+      const dirty = getNoteProcessingStatus({
+        isSaved: true,
+        excludedFromAi: true,
+        isDirty: true,
+        lastProcessedAt: '2026-10-13T10:00:00Z',
+        updatedAt: '2026-10-13T11:00:00Z',
+      })
+      const unprocessed = getNoteProcessingStatus({
+        isSaved: true,
+        excludedFromAi: true,
+        lastProcessedAt: null,
+      })
+      expect(dirty).toBe('skipped')
+      expect(unprocessed).toBe('skipped')
+    })
+
+    it('returns draft when an unsaved note is excluded', () => {
+      const status = getNoteProcessingStatus({
+        isSaved: false,
+        excludedFromAi: true,
+      })
+      expect(status).toBe('draft')
+    })
   })
 
   describe('getNoteStatusConfig', () => {
@@ -75,6 +109,12 @@ describe('noteStatus utility', () => {
       const config = getNoteStatusConfig('processed')
       expect(config.label).toBe('Processed')
       expect(config.classes).toContain('bg-[#E6F4EA]')
+    })
+
+    it('returns correct label and styling for skipped', () => {
+      const config = getNoteStatusConfig('skipped')
+      expect(config.label).toBe('Skipped by AI')
+      expect(config.classes).toContain('bg-[#F1F5F9]')
     })
   })
 

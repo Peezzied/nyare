@@ -114,6 +114,7 @@ describe('useNotes', () => {
       entryDate: '2026-10-05',
       createdAt: '2026-10-05T09:30:00Z',
       updatedAt: '2026-10-05T11:00:00Z',
+      excludedFromAi: false,
     }
     vi.spyOn(notesApi, 'create').mockResolvedValue(saved)
     vi.spyOn(studyPlannerApi, 'status').mockRejectedValue(new Error('status down'))

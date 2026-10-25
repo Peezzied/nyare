@@ -73,6 +73,76 @@ class NoteRepositoryTest {
     }
 
     @Test
+    @DisplayName("findDirtyNotes excludes notes flagged excludedFromAi")
+    void findDirtyNotes_excludedNote_isNotReturned() {
+        // given
+        Note includedNote = noteRepository.save(new Note(course1, "Included dirty note"));
+        Note excludedNote = new Note(course1, "Excluded dirty note");
+        excludedNote.setExcludedFromAi(true);
+        noteRepository.save(excludedNote);
+
+        // when
+        List<Note> dirtyNotes = noteRepository.findDirtyNotes(user1.getId(), false);
+
+        // then
+        assertThat(dirtyNotes).extracting(Note::getId)
+                .containsExactly(includedNote.getId());
+    }
+
+    @Test
+    @DisplayName("findDirtyNotes for a date excludes notes flagged excludedFromAi")
+    void findDirtyNotes_byDate_excludedNote_isNotReturned() {
+        // given
+        Note includedNote = noteRepository.save(new Note(course1, "Included dated note"));
+        Note excludedNote = new Note(course1, "Excluded dated note");
+        excludedNote.setExcludedFromAi(true);
+        noteRepository.save(excludedNote);
+
+        // when
+        List<Note> dirtyNotes =
+                noteRepository.findDirtyNotes(user1.getId(), LocalDate.now(), false);
+
+        // then
+        assertThat(dirtyNotes).extracting(Note::getId)
+                .containsExactly(includedNote.getId());
+    }
+
+    @Test
+    @DisplayName("findDirtyNotes returns the note again after exclusion is cleared")
+    void findDirtyNotes_afterExclusionCleared_returnsNote() {
+        // given
+        Note note = new Note(course1, "Cleared exclusion note");
+        note.setExcludedFromAi(true);
+        note = noteRepository.save(note);
+        note.setExcludedFromAi(false);
+        noteRepository.save(note);
+
+        // when
+        List<Note> dirtyNotes = noteRepository.findDirtyNotes(user1.getId(), false);
+
+        // then
+        assertThat(dirtyNotes).extracting(Note::getId).containsExactly(note.getId());
+    }
+
+    @Test
+    @DisplayName("findDirtyNotes does not return a cleared note that stays clean by timestamp")
+    void findDirtyNotes_afterExclusionCleared_cleanNote_stillNotReturned() {
+        // given
+        Note note = new Note(course1, "Cleared but clean note");
+        note.setExcludedFromAi(true);
+        note = noteRepository.save(note);
+        note.setExcludedFromAi(false);
+        note.setLastProcessedAt(Instant.now().plusSeconds(60));
+        noteRepository.save(note);
+
+        // when
+        List<Note> dirtyNotes = noteRepository.findDirtyNotes(user1.getId(), false);
+
+        // then
+        assertThat(dirtyNotes).extracting(Note::getId).doesNotContain(note.getId());
+    }
+
+    @Test
     @DisplayName("findAllFiltered isolates notes between users and filters by course")
     void findAllFiltered_isolatesNotesAndAppliesCourseFilter() {
         Course course1b = courseRepository.save(new Course("CS103", "Algorithms", user1));

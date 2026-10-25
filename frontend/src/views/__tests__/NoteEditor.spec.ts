@@ -147,6 +147,7 @@ describe('NoteEditor.vue', () => {
       entryDate: '2026-10-13',
       createdAt: '2026-10-13T00:00:00Z',
       updatedAt: '2026-10-13T00:00:00Z',
+      excludedFromAi: false,
     }
     vi.mocked(notesApi.create).mockResolvedValueOnce(mockCreatedNote)
 
@@ -193,6 +194,7 @@ describe('NoteEditor.vue', () => {
       entryDate: '2026-10-13',
       createdAt: '2026-10-13T00:00:00Z',
       updatedAt: '2026-10-13T00:00:00Z',
+      excludedFromAi: false,
     })
 
     const wrapper = mount(NoteEditor, {
@@ -230,6 +232,7 @@ describe('NoteEditor.vue', () => {
       entryDate: '2026-10-12',
       createdAt: '2026-10-12T00:00:00Z',
       updatedAt: '2026-10-12T00:00:00Z',
+      excludedFromAi: false,
     }
     vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
     vi.mocked(notesApi.update).mockResolvedValueOnce({
@@ -279,6 +282,7 @@ describe('NoteEditor.vue', () => {
       entryDate: '2026-10-20',
       createdAt: '2026-10-20T00:00:00Z',
       updatedAt: '2026-10-20T00:00:00Z',
+      excludedFromAi: false,
     }
     vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
     vi.mocked(notesApi.update).mockResolvedValueOnce({
@@ -313,6 +317,7 @@ describe('NoteEditor.vue', () => {
       entryDate: '2026-10-20',
       createdAt: '2026-10-20T00:00:00Z',
       updatedAt: '2026-10-20T00:00:00Z',
+      excludedFromAi: false,
     }
     vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
     vi.mocked(notesApi.update).mockResolvedValueOnce({
@@ -349,6 +354,7 @@ describe('NoteEditor.vue', () => {
       entryDate: '2026-10-12',
       createdAt: '2026-10-12T00:00:00Z',
       updatedAt: '2026-10-12T00:00:00Z',
+      excludedFromAi: false,
     }
     vi.mocked(notesApi.get)
       .mockResolvedValueOnce(untitledNote)
@@ -384,6 +390,7 @@ describe('NoteEditor.vue', () => {
       entryDate: '2026-10-12',
       createdAt: '2026-10-12T00:00:00Z',
       updatedAt: '2026-10-12T00:00:00Z',
+      excludedFromAi: false,
     }
     vi.mocked(notesApi.get).mockResolvedValueOnce(titledNote)
 
@@ -534,6 +541,7 @@ describe('NoteEditor.vue', () => {
       entryDate: '2026-10-13',
       createdAt: '2026-10-13T00:00:00Z',
       updatedAt: '2026-10-13T00:00:00Z',
+      excludedFromAi: false,
     })
 
     const wrapper = mount(NoteEditor, {
@@ -659,6 +667,7 @@ describe('NoteEditor.vue', () => {
       entryDate: '2026-10-13',
       createdAt: '2026-10-13T00:00:00Z',
       updatedAt: '2026-10-13T00:00:00Z',
+      excludedFromAi: false,
       lastProcessedAt: null,
     }
     vi.mocked(notesApi.get).mockResolvedValueOnce(unprocessedNote)
@@ -680,6 +689,7 @@ describe('NoteEditor.vue', () => {
       entryDate: '2026-10-13',
       createdAt: '2026-10-13T00:00:00Z',
       updatedAt: '2026-10-13T00:00:00Z',
+      excludedFromAi: false,
       lastProcessedAt: '2026-10-13T00:00:00Z',
     }
     vi.mocked(notesApi.get).mockResolvedValueOnce(processedNote)
@@ -708,6 +718,7 @@ describe('NoteEditor.vue', () => {
       entryDate: '2026-10-13',
       createdAt: '2026-10-13T00:00:00Z',
       updatedAt: '2026-10-13T00:00:00Z',
+      excludedFromAi: false,
       lastProcessedAt: '2026-10-13T00:00:00Z',
     })
 
@@ -814,6 +825,7 @@ describe('NoteEditor.vue', () => {
       entryDate: '2026-10-12',
       createdAt: '2026-10-12T00:00:00Z',
       updatedAt: '2026-10-12T00:00:00Z',
+      excludedFromAi: false,
     }
     vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
 
@@ -846,6 +858,7 @@ describe('NoteEditor.vue', () => {
       entryDate: '2026-10-12',
       createdAt: '2026-10-12T00:00:00Z',
       updatedAt: '2026-10-12T00:00:00Z',
+      excludedFromAi: false,
     }
     vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
 
@@ -881,6 +894,7 @@ describe('NoteEditor.vue', () => {
       entryDate: '2026-10-12',
       createdAt: '2026-10-12T00:00:00Z',
       updatedAt: '2026-10-12T00:00:00Z',
+      excludedFromAi: false,
     }
     vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
 
@@ -929,6 +943,7 @@ describe('NoteEditor.vue', () => {
       entryDate: '2026-10-12',
       createdAt: '2026-10-12T00:00:00Z',
       updatedAt: '2026-10-12T00:00:00Z',
+      excludedFromAi: false,
     }
     vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
 
@@ -1017,6 +1032,7 @@ describe('NoteEditor.vue', () => {
       entryDate: '2026-10-12',
       createdAt: '2026-10-12T00:00:00Z',
       updatedAt: '2026-10-12T00:00:00Z',
+      excludedFromAi: false,
     }
     vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
 
@@ -1056,6 +1072,7 @@ describe('NoteEditor.vue', () => {
       entryDate: '2026-10-13',
       createdAt: '2026-10-13T00:00:00Z',
       updatedAt: '2026-10-13T00:00:00Z',
+      excludedFromAi: false,
     })
 
     const wrapper = mount(NoteEditor, {
@@ -1107,6 +1124,7 @@ describe('NoteEditor.vue', () => {
   const deletedNote: NoteResponse = {
     ...deletedSummary,
     content: 'Removable content',
+    excludedFromAi: false,
   }
 
   async function seedAndMountDeletable() {
@@ -1214,6 +1232,157 @@ describe('NoteEditor.vue', () => {
     expect(notesApi.delete).toHaveBeenCalledWith('note-del-1')
     expect(useNotes().notes.value.some((n) => n.id === 'note-del-1')).toBe(false)
 
+    wrapper.unmount()
+  })
+
+  it('renders the skip-ai switch in the Plan zone', async () => {
+    const wrapper = mount(NoteEditor, {
+      props: { initialCourseId: 1 },
+    })
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="skip-ai-row"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="skip-ai-switch"]').exists()).toBe(true)
+  })
+
+  it('enables Save and sends excludedFromAi true when the skip-ai switch turns on', async () => {
+    mockRoute.params = { id: 'note-uuid-excl-toggle' }
+    const existingNote: NoteResponse = {
+      id: 'note-uuid-excl-toggle',
+      courseId: 1,
+      title: 'Private Scratch',
+      content: 'Scratch content',
+      entryDate: '2026-10-12',
+      createdAt: '2026-10-12T00:00:00Z',
+      updatedAt: '2026-10-12T00:00:00Z',
+      excludedFromAi: false,
+    }
+    vi.mocked(notesApi.get).mockResolvedValueOnce(existingNote)
+    vi.mocked(notesApi.update).mockResolvedValueOnce({
+      ...existingNote,
+      excludedFromAi: true,
+    })
+
+    const wrapper = mount(NoteEditor)
+    await flushPromises()
+
+    const saveButton = wrapper.find('[data-testid="save-button"]')
+    expect(saveButton.attributes('disabled')).toBeDefined()
+
+    await wrapper.find('[data-testid="skip-ai-switch"]').trigger('click')
+    await flushPromises()
+
+    expect(saveButton.attributes('disabled')).toBeUndefined()
+
+    await saveButton.trigger('click')
+    await flushPromises()
+
+    expect(notesApi.update).toHaveBeenCalledWith(
+      'note-uuid-excl-toggle',
+      expect.objectContaining({ excludedFromAi: true }),
+    )
+    wrapper.unmount()
+  })
+
+  it('disables the skip-ai switch for an archived course', async () => {
+    mockRoute.params = { id: 'note-uuid-archived-excl' }
+    vi.spyOn(coursesApi, 'list').mockImplementation((params) =>
+      Promise.resolve(
+        params?.archived
+          ? [
+              {
+                id: 9,
+                name: 'HIST 100 Old Course',
+                description: null,
+                userId: 1,
+                archivedAt: '2026-10-01T09:00:00',
+              },
+            ]
+          : [
+              { id: 1, name: 'CS 101 Computer Science', description: null, userId: 1 },
+              { id: 2, name: 'MATH 201 Calculus II', description: null, userId: 1 },
+            ],
+      ),
+    )
+    const archivedNote: NoteResponse = {
+      id: 'note-uuid-archived-excl',
+      courseId: 9,
+      title: 'Archived Note',
+      content: 'Archived content',
+      entryDate: '2026-10-12',
+      createdAt: '2026-10-12T00:00:00Z',
+      updatedAt: '2026-10-12T00:00:00Z',
+      excludedFromAi: false,
+    }
+    vi.mocked(notesApi.get).mockResolvedValueOnce(archivedNote)
+
+    const wrapper = mount(NoteEditor)
+    await flushPromises()
+
+    const switchEl = wrapper.find('[data-testid="skip-ai-switch"]')
+    expect(switchEl.exists()).toBe(true)
+    expect(switchEl.attributes('disabled')).toBeDefined()
+    wrapper.unmount()
+  })
+
+  it('shows the switch on and the Skipped by AI badge for an excluded note', async () => {
+    mockRoute.params = { id: 'note-uuid-excluded-1' }
+    const excludedNote: NoteResponse = {
+      id: 'note-uuid-excluded-1',
+      courseId: 1,
+      title: 'Excluded Note',
+      content: 'Private content',
+      entryDate: '2026-10-12',
+      createdAt: '2026-10-12T00:00:00Z',
+      updatedAt: '2026-10-12T00:00:00Z',
+      excludedFromAi: true,
+    }
+    vi.mocked(notesApi.get).mockResolvedValueOnce(excludedNote)
+
+    const wrapper = mount(NoteEditor)
+    await flushPromises()
+
+    const switchEl = wrapper.find('[data-testid="skip-ai-switch"]')
+    expect(switchEl.attributes('aria-checked')).toBe('true')
+
+    const statusBadge = wrapper.find('[data-testid="processing-status-badge"]')
+    expect(statusBadge.text()).toBe('Skipped by AI')
+    wrapper.unmount()
+  })
+
+  it('sends excludedFromAi false and clears the skipped badge when the switch turns off', async () => {
+    mockRoute.params = { id: 'note-uuid-reinclude' }
+    const excludedNote: NoteResponse = {
+      id: 'note-uuid-reinclude',
+      courseId: 1,
+      title: 'Re-included Note',
+      content: 'Content to process',
+      entryDate: '2026-10-12',
+      createdAt: '2026-10-12T00:00:00Z',
+      updatedAt: '2026-10-12T00:00:00Z',
+      excludedFromAi: true,
+    }
+    vi.mocked(notesApi.get).mockResolvedValueOnce(excludedNote)
+    vi.mocked(notesApi.update).mockResolvedValueOnce({
+      ...excludedNote,
+      excludedFromAi: false,
+    })
+
+    const wrapper = mount(NoteEditor)
+    await flushPromises()
+
+    await wrapper.find('[data-testid="skip-ai-switch"]').trigger('click')
+    await flushPromises()
+
+    await wrapper.find('[data-testid="save-button"]').trigger('click')
+    await flushPromises()
+
+    expect(notesApi.update).toHaveBeenCalledWith(
+      'note-uuid-reinclude',
+      expect.objectContaining({ excludedFromAi: false }),
+    )
+    const statusBadge = wrapper.find('[data-testid="processing-status-badge"]')
+    expect(statusBadge.text()).not.toBe('Skipped by AI')
     wrapper.unmount()
   })
 })

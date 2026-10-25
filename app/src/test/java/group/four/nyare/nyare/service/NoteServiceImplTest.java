@@ -77,6 +77,79 @@ class NoteServiceImplTest {
     }
 
     @Test
+    void createNote_excludedTrue_persistsFlag() {
+        // given
+        NoteRequest request = new NoteRequest(1L, "Private scratch note");
+        request.setExcludedFromAi(true);
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
+        when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        NoteResponse response = noteService.createNote(request, 1L);
+
+        // then
+        assertThat(response.isExcludedFromAi()).isTrue();
+    }
+
+    @Test
+    void createNote_excludedNull_defaultsFalse() {
+        // given
+        NoteRequest request = new NoteRequest(1L, "Regular note");
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
+        when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        NoteResponse response = noteService.createNote(request, 1L);
+
+        // then
+        assertThat(response.isExcludedFromAi()).isFalse();
+    }
+
+    @Test
+    void updateNote_excludedNull_keepsStoredValue() {
+        // given
+        note.setExcludedFromAi(true);
+        NoteRequest request = new NoteRequest(1L, "Edited content");
+        when(noteRepository.findByIdAndCourseUserId(noteId, 1L)).thenReturn(Optional.of(note));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
+        when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        NoteResponse response = noteService.updateNote(noteId, request, 1L);
+
+        // then
+        assertThat(response.isExcludedFromAi()).isTrue();
+    }
+
+    @Test
+    void updateNote_excludedTrue_setsFlag() {
+        // given
+        NoteRequest request = new NoteRequest(1L, "Edited content");
+        request.setExcludedFromAi(true);
+        when(noteRepository.findByIdAndCourseUserId(noteId, 1L)).thenReturn(Optional.of(note));
+        when(courseRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(course));
+        when(noteRepository.save(any(Note.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        NoteResponse response = noteService.updateNote(noteId, request, 1L);
+
+        // then
+        assertThat(response.isExcludedFromAi()).isTrue();
+    }
+
+    @Test
+    void updateNote_otherUsersNote_throwsResourceNotFound() {
+        // given
+        NoteRequest request = new NoteRequest(1L, "Foreign note");
+        request.setExcludedFromAi(true);
+        when(noteRepository.findByIdAndCourseUserId(noteId, 2L)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> noteService.updateNote(noteId, request, 2L))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
     void createNote_withValidRequest_returnsResponse() {
         // given
         NoteRequest request = new NoteRequest(1L, "Lecture 1");

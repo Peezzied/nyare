@@ -127,6 +127,7 @@ describe('API Types Contract', () => {
       createdAt: '2026-10-08T09:00:00Z',
       updatedAt: '2026-10-08T09:30:00Z',
       lastProcessedAt: null,
+      excludedFromAi: false,
     }
     const summary: NoteSummaryResponse = {
       id: 'note-uuid-1',

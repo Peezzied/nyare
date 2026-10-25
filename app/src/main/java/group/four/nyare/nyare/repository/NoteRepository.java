@@ -70,11 +70,12 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
      *
      * @param userId   mandatory user identifier
      * @param archived course archive filter: {@code true} for archived courses, {@code false} for active courses
-     * @return dirty notes matching criteria
+     * @return dirty, non-excluded notes matching criteria
      */
     @Query("""
             SELECT n FROM Note n
             WHERE n.course.user.id = :userId
+              AND n.excludedFromAi = false
               AND (n.lastProcessedAt IS NULL OR n.updatedAt > n.lastProcessedAt)
               AND ((:archived = true AND n.course.archivedAt IS NOT NULL)
                    OR (:archived = false AND n.course.archivedAt IS NULL))
@@ -89,11 +90,12 @@ public interface NoteRepository extends JpaRepository<Note, UUID> {
      * @param startOfDay start of time window
      * @param endOfDay   end of time window
      * @param archived   course archive filter: {@code true} for archived courses, {@code false} for active courses
-     * @return dirty notes matching criteria
+     * @return dirty, non-excluded notes matching criteria
      */
     @Query("""
             SELECT n FROM Note n
             WHERE n.course.user.id = :userId
+              AND n.excludedFromAi = false
               AND n.createdAt >= :startOfDay
               AND n.createdAt < :endOfDay
               AND (n.lastProcessedAt IS NULL OR n.updatedAt > n.lastProcessedAt)

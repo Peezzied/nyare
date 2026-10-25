@@ -13,7 +13,12 @@ import {
   ArrowRight,
   EllipsisVertical,
   Trash2,
+  Sparkles,
+  EyeOff,
+  Info,
 } from '@lucide/vue'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { parseDate, type DateValue } from '@internationalized/date'
@@ -126,6 +131,7 @@ const entryDate = ref(props.initialDate !== undefined ? props.initialDate : toda
 const isCalendarOpen = ref(false)
 const lastProcessedAt = ref<string | null>(props.initialLastProcessedAt ?? null)
 const updatedAt = ref<string | null>(props.initialUpdatedAt ?? null)
+const excludedFromAi = ref(false)
 
 const activeNoteId = computed(() => {
   if (props.embedded) {
@@ -176,6 +182,7 @@ const processingStatus = computed(() => {
   return getNoteProcessingStatus({
     isSaved: isEditMode.value,
     isDirty: isDirty.value,
+    excludedFromAi: excludedFromAi.value,
     updatedAt: updatedAt.value,
     lastProcessedAt: lastProcessedAt.value,
   })
@@ -195,6 +202,8 @@ const statusIcon = computed(() => {
       return RefreshCw
     case 'processed':
       return CheckCircle2
+    case 'skipped':
+      return EyeOff
     default:
       return FileText
   }
@@ -276,6 +285,7 @@ interface NoteFormState {
   courseId: number | null
   entryDate: string
   content: string
+  excludedFromAi: boolean
 }
 
 function isTitleEqual(current?: string | null, baseline?: string | null): boolean {
@@ -312,7 +322,8 @@ function isEqualState(a: NoteFormState, b: NoteFormState): boolean {
     isTitleEqual(a.title, b.title) &&
     isCourseIdEqual(a.courseId, b.courseId) &&
     isEntryDateEqual(a.entryDate, b.entryDate) &&
-    isContentEqual(a.content, b.content)
+    isContentEqual(a.content, b.content) &&
+    a.excludedFromAi === b.excludedFromAi
   )
 }
 
@@ -322,6 +333,7 @@ function getCurrentState(): NoteFormState {
     courseId: selectedCourseId.value ?? null,
     entryDate: entryDate.value ?? '',
     content: contentMarkdown.value ?? '',
+    excludedFromAi: excludedFromAi.value,
   }
 }
 
@@ -330,6 +342,7 @@ const initialState = ref<NoteFormState>({
   courseId: props.initialCourseId ?? null,
   entryDate: props.initialDate !== undefined ? props.initialDate : todayString,
   content: props.initialContent ?? '',
+  excludedFromAi: false,
 })
 
 const isNavigatingAway = ref(false)
@@ -550,6 +563,7 @@ async function loadNote(id: string) {
     htmlContent.value = markdownToHtml(note.content ?? '')
     lastProcessedAt.value = note.lastProcessedAt ?? null
     updatedAt.value = note.updatedAt ?? null
+    excludedFromAi.value = note.excludedFromAi ?? false
     for (const url of extractImageUrls(note.content ?? '')) {
       knownImageUrls.value.add(url)
     }
@@ -589,6 +603,7 @@ async function saveNote() {
     title: trimmedTitle || null,
     content: contentMarkdown.value,
     entryDate: entryDate.value || todayString,
+    excludedFromAi: excludedFromAi.value,
   }
 
   try {
@@ -602,6 +617,7 @@ async function saveNote() {
     }
     lastProcessedAt.value = savedNote.lastProcessedAt ?? null
     updatedAt.value = savedNote.updatedAt ?? null
+    excludedFromAi.value = savedNote.excludedFromAi
 
     // Deleted image nodes can return through undo or a discarded save, so their rows are deleted
     // only after the save commits. Removal failures leave orphan rows and need no user feedback.
@@ -622,6 +638,7 @@ async function saveNote() {
       courseId: savedNote.courseId ?? null,
       entryDate: savedNote.entryDate ?? todayString,
       content: savedNote.content ?? '',
+      excludedFromAi: savedNote.excludedFromAi,
     }
     if (props.embedded) {
       emit('saved', savedNote.id)
@@ -917,6 +934,41 @@ defineExpose({ requestBack: handleBack })
               />
             </PopoverContent>
           </Popover>
+        </div>
+
+        <div class="h-px bg-ghost" />
+
+        <!-- Skip AI row -->
+        <div class="flex min-h-11 items-center gap-3 px-3" data-testid="skip-ai-row">
+          <Sparkles class="h-5 w-5 shrink-0 text-text-muted" aria-hidden="true" />
+          <Label
+            for="skip-ai-switch"
+            class="flex min-h-11 cursor-pointer items-center text-sm font-normal text-text-main"
+          >
+            Skip AI processing
+          </Label>
+          <Popover>
+            <PopoverTrigger as-child>
+              <button
+                type="button"
+                data-testid="skip-ai-info"
+                aria-label="About skipping AI processing"
+                class="flex min-h-11 min-w-11 flex-1 cursor-pointer items-center justify-start text-text-muted transition-colors hover:text-text-main"
+              >
+                <Info class="h-4 w-4" aria-hidden="true" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="start" :side-offset="4" class="w-64 rounded-2xl p-3 text-xs">
+              Nyare ignores this note when you process. Tasks, events, and context from earlier runs
+              stay. Turn this off to include the note again.
+            </PopoverContent>
+          </Popover>
+          <Switch
+            id="skip-ai-switch"
+            v-model="excludedFromAi"
+            data-testid="skip-ai-switch"
+            :disabled="isArchivedCourse"
+          />
         </div>
       </section>
     </section>
