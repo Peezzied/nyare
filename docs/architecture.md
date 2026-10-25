@@ -184,7 +184,7 @@ sequenceDiagram
 ## 5. Persistence
 
 - SQLite file `nyare.db` (gitignored). Hibernate community dialect.
-- Production: `ddl-auto=update`, `open-in-view=false`.
+- Production: `ddl-auto=update`, `open-in-view=false`, Hikari pool size 4 with WAL + `synchronous=NORMAL` + `busy_timeout` pragmas (concurrent readers, single writer).
 - Tests: shared in-memory SQLite (`file::memory:?cache=shared`), `ddl-auto=create-drop`, Hikari pool size 1. Tests never touch `nyare.db`.
 - Entities use UUID identifiers and Spring Data auditing fields (`createdAt`, `updatedAt`).
 

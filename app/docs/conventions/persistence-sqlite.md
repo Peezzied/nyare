@@ -1,12 +1,19 @@
 # Persistence & SQLite Guidelines
 
-## 1. Single-Writer Connection Pool
+## 1. Connection Pool & WAL Pragmas
 
-SQLite requires single-threaded write access. Configure:
+SQLite permits one writer at a time. WAL mode lets readers run concurrently with that writer. Configure:
 ```properties
-spring.datasource.hikari.maximum-pool-size=1
+spring.datasource.hikari.maximum-pool-size=4
+spring.datasource.hikari.data-source-properties.journal_mode=WAL
+spring.datasource.hikari.data-source-properties.synchronous=NORMAL
+spring.datasource.hikari.data-source-properties.busy_timeout=30000
 ```
-This avoids `SQLITE_BUSY` or file-locking collisions.
+
+- Reads never queue behind a write transaction. Writers wait up to `busy_timeout` (ms) before `SQLITE_BUSY`.
+- Set pragmas via `data-source-properties`. sqlite-jdbc executes only the first statement of `connection-init-sql`, so a multi-statement init string silently drops every pragma after the first.
+- Do not enable `foreign_keys` without auditing delete paths first: JPA-generated FK constraints on existing tables would make deletes that leave orphaned records (e.g., note → image) fail.
+- Test profile stays at pool size 1: the shared in-memory database (`cache=shared`) has no WAL and serializes all access.
 
 ## 2. Schema Management
 
