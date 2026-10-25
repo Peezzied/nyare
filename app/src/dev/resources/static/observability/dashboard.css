@@ -302,6 +302,15 @@ body {
   box-shadow: 0 2px 0 var(--mut-border);
 }
 
+.filter-chip.chip-system-error { color: var(--error); }
+.filter-chip.chip-system-error:hover { border-color: var(--error); }
+.filter-chip.chip-system-error[aria-pressed="true"] {
+  background: var(--error-bg);
+  border-color: var(--error-border);
+  color: var(--error);
+  box-shadow: 0 2px 0 var(--error-border);
+}
+
 /* ---------- Split pane ---------- */
 
 .split {
@@ -444,6 +453,11 @@ body {
   background: var(--mut-bg);
   border-color: var(--mut-border);
   color: var(--mut-deep);
+}
+.audit-card.cat-system-error .badge-category {
+  background: var(--error-bg);
+  border-color: var(--error-border);
+  color: var(--error);
 }
 .audit-card.cat-lifecycle .badge-category,
 .audit-card.cat-task-planning .badge-category,

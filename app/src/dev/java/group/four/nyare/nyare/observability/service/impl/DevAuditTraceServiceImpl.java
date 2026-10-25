@@ -141,7 +141,11 @@ public class DevAuditTraceServiceImpl implements DevAuditTraceService {
                         new CategoryGroupDto(
                                 AuditCategory.DATA_MUTATION.name(),
                                 "data mutation",
-                                List.of(AuditCategory.DATA_MUTATION))),
+                                List.of(AuditCategory.DATA_MUTATION)),
+                        new CategoryGroupDto(
+                                AuditCategory.SYSTEM_ERROR.name(),
+                                "system error",
+                                List.of(AuditCategory.SYSTEM_ERROR))),
                 List.of(AuditSeverity.values()),
                 snapshot.size(),
                 aiEngineInfo(),

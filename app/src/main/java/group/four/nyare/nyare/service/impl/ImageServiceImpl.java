@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.service.impl;
 
+import group.four.nyare.nyare.ai.observability.ErrorAuditPublisher;
 import group.four.nyare.nyare.ai.observability.event.AuditCategory;
 import group.four.nyare.nyare.ai.observability.event.AuditSeverity;
 import group.four.nyare.nyare.ai.observability.event.AuditTraceEvent;
@@ -46,12 +47,14 @@ public class ImageServiceImpl implements ImageService {
     private final ImageRepository imageRepository;
     private final UserRepository userRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final ErrorAuditPublisher errorAuditPublisher;
 
     public ImageServiceImpl(ImageRepository imageRepository, UserRepository userRepository,
-            ApplicationEventPublisher eventPublisher) {
+            ApplicationEventPublisher eventPublisher, ErrorAuditPublisher errorAuditPublisher) {
         this.imageRepository = imageRepository;
         this.userRepository = userRepository;
         this.eventPublisher = eventPublisher;
+        this.errorAuditPublisher = errorAuditPublisher;
     }
 
     @Override
@@ -78,6 +81,7 @@ public class ImageServiceImpl implements ImageService {
             String url = "/api/images/" + saved.getId();
             return new ImageUploadResponse(saved.getId(), url, saved.getContentType(), saved.getSize(), saved.getCreatedAt());
         } catch (IOException e) {
+            errorAuditPublisher.report("Image upload", e, userId);
             throw new BadRequestException("Failed to read image data: " + e.getMessage());
         }
     }

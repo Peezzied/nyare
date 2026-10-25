@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.controller;
 
+import group.four.nyare.nyare.ai.observability.ErrorAuditPublisher;
 import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.dto.PlannerStatusResponse;
 import group.four.nyare.nyare.dto.ProcessSummaryResponse;
@@ -55,6 +56,9 @@ class StudyPlannerControllerTest {
 
     @MockitoBean
     private SessionContext sessionContext;
+
+    @MockitoBean
+    private ErrorAuditPublisher errorAuditPublisher;
 
     @MockitoBean
     private JpaMetamodelMappingContext jpaMappingContext;

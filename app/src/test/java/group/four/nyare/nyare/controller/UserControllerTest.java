@@ -1,5 +1,7 @@
 package group.four.nyare.nyare.controller;
 
+import group.four.nyare.nyare.ai.observability.ErrorAuditPublisher;
+import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.dto.LoginRequest;
 import group.four.nyare.nyare.dto.UserRequest;
 import group.four.nyare.nyare.dto.UserResponse;
@@ -43,6 +45,12 @@ class UserControllerTest {
 
     @MockitoBean
     private JpaMetamodelMappingContext jpaMappingContext;
+
+    @MockitoBean
+    private ErrorAuditPublisher errorAuditPublisher;
+
+    @MockitoBean
+    private SessionContext sessionContext;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

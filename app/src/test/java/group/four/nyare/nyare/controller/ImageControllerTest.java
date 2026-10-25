@@ -1,5 +1,6 @@
 package group.four.nyare.nyare.controller;
 
+import group.four.nyare.nyare.ai.observability.ErrorAuditPublisher;
 import group.four.nyare.nyare.config.SessionContext;
 import group.four.nyare.nyare.dto.ImageUploadResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,6 +44,9 @@ class ImageControllerTest {
 
     @MockitoBean
     private SessionContext sessionContext;
+
+    @MockitoBean
+    private ErrorAuditPublisher errorAuditPublisher;
 
     private static final Long USER_ID = 1L;
 

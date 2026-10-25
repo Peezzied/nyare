@@ -3,6 +3,7 @@ package group.four.nyare.nyare.observability;
 import group.four.nyare.nyare.ai.observability.event.AuditCategory;
 import group.four.nyare.nyare.ai.observability.event.AuditSeverity;
 import group.four.nyare.nyare.ai.observability.event.AuditTraceEvent;
+import group.four.nyare.nyare.ai.observability.event.ErrorDiagnostic;
 import group.four.nyare.nyare.ai.observability.event.LifecycleState;
 import group.four.nyare.nyare.ai.observability.event.MutationAction;
 import group.four.nyare.nyare.ai.observability.event.TraceKind;
@@ -99,6 +100,25 @@ class DevAuditTraceServiceImplTest {
     }
 
     @Test
+    void getFeed_withSystemErrorEvent_returnsEvent() {
+        // given
+        AuditTraceEvent systemError = new AuditTraceEvent(
+                UUID.randomUUID(), Instant.now(), AuditCategory.SYSTEM_ERROR, AuditSeverity.ERROR,
+                "Unhandled exception: boom", 1L, null, TriggerSource.WEB_SESSION, null,
+                null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, ErrorDiagnostic.from(new IllegalStateException("boom")));
+        when(sink.snapshot()).thenReturn(List.of(systemError));
+
+        // when
+        List<AuditTraceEventDto> feed = service.getFeed(List.of(AuditCategory.SYSTEM_ERROR), null, 500);
+
+        // then
+        assertThat(feed).hasSize(1);
+        assertThat(feed.get(0).category()).isEqualTo(AuditCategory.SYSTEM_ERROR);
+        assertThat(feed.get(0).id()).isEqualTo(systemError.id());
+    }
+
+    @Test
     void getDashboardView_withRetainedEvents_returnsModelAttributes() {
         // given
         AuditTraceEvent event = lifecycleEvent(LifecycleState.STARTED, UUID.randomUUID(), null, null);
@@ -131,7 +151,7 @@ class DevAuditTraceServiceImplTest {
                         10L, "Introduction to Computer Science", "peacock", "#039BE5"),
                 new group.four.nyare.nyare.observability.dto.CourseTraceSummaryDto(
                         5L, "Calculus 2", null, "#EF6C00"));
-        assertThat(view.categoryGroups()).hasSize(2);
+        assertThat(view.categoryGroups()).hasSize(3);
         assertThat(view.categoryGroups().get(0).key()).isEqualTo("AI_ENGINE");
         assertThat(view.categoryGroups().get(0).categories())
                 .containsExactlyInAnyOrder(
@@ -143,6 +163,8 @@ class DevAuditTraceServiceImplTest {
                         AuditCategory.UNRELATED_INFO);
         assertThat(view.categoryGroups().get(1).categories())
                 .containsExactly(AuditCategory.DATA_MUTATION);
+        assertThat(view.categoryGroups().get(2).categories())
+                .containsExactly(AuditCategory.SYSTEM_ERROR);
         assertThat(view.severities()).containsExactly(AuditSeverity.values());
         assertThat(view.aiEngine()).isEqualTo(
                 new group.four.nyare.nyare.observability.dto.AiEngineInfoDto(

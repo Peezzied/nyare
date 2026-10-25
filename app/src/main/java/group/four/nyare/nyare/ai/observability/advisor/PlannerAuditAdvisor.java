@@ -71,7 +71,7 @@ public class PlannerAuditAdvisor extends SimpleLoggerAdvisor {
                 }
             }
         } catch (Exception e) {
-            log.debug("PlannerAuditAdvisor could not parse audit payload: {}", e.getMessage());
+            log.warn("PlannerAuditAdvisor could not parse audit payload: {}", e.getMessage());
             publish(AuditCategory.TASK_PLANNING, AuditSeverity.ERROR,
                     "PlannerAuditAdvisor could not parse audit payload: " + e.getMessage(),
                     null, null, null, null, null, null, null, null,

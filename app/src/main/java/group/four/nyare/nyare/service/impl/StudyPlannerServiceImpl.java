@@ -208,6 +208,7 @@ public class StudyPlannerServiceImpl implements StudyPlannerService {
             // CANCELLED was already emitted at the checkpoint; keep the exception flow unchanged.
             throw e;
         } catch (RuntimeException e) {
+            log.error("[AI AUDIT - PROCESS FAILED] UserId: {} | RunId: {} | {}", userId, runId, e.getMessage(), e);
             publishLifecycle(LifecycleState.FAILED, AuditSeverity.ERROR, runId, userId,
                     originUsername, "Planning run failed: " + e.getMessage(), null,
                     (System.nanoTime() - startedAt) / 1_000_000, null, ErrorDiagnostic.from(e));
