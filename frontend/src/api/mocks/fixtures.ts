@@ -145,6 +145,7 @@ const INITIAL_FIXTURES: FixtureState = {
       createdAt: '2026-10-05T09:30:00Z',
       updatedAt: '2026-10-05T11:00:00Z',
       lastProcessedAt: '2026-10-05T11:30:00Z',
+      excludedFromAi: false,
     },
     {
       id: 'note-cs201-board',
@@ -156,6 +157,7 @@ const INITIAL_FIXTURES: FixtureState = {
       createdAt: '2026-10-07T10:00:00Z',
       updatedAt: '2026-10-07T10:20:00Z',
       lastProcessedAt: '2026-10-07T10:30:00Z',
+      excludedFromAi: false,
     },
     {
       id: 'note-math204-eigen',
@@ -167,6 +169,7 @@ const INITIAL_FIXTURES: FixtureState = {
       createdAt: '2026-10-06T14:15:00Z',
       updatedAt: '2026-10-06T15:45:00Z',
       lastProcessedAt: null,
+      excludedFromAi: false,
     },
   ],
   tasks: [

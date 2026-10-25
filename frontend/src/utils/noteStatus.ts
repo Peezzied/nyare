@@ -1,7 +1,7 @@
 // ponytail: note status derivation and word count utilities.
 
 /** AI processing state of a note. `getNoteProcessingStatus` defines each value. */
-export type NoteProcessingStatus = 'draft' | 'unprocessed' | 'dirty' | 'processed'
+export type NoteProcessingStatus = 'draft' | 'unprocessed' | 'dirty' | 'processed' | 'skipped'
 
 /** Note fields that `getNoteProcessingStatus` reads. */
 export interface NoteStatusInput {
@@ -9,6 +9,8 @@ export interface NoteStatusInput {
   readonly isSaved: boolean
   /** True when the editor holds edits that are not saved yet. */
   readonly isDirty?: boolean
+  /** True when the note is excluded from AI processing. */
+  readonly excludedFromAi?: boolean
   readonly updatedAt?: string | null
   readonly lastProcessedAt?: string | null
 }
@@ -22,6 +24,7 @@ export interface NoteStatusConfig {
 /**
  * Derives the AI processing status of a note.
  * - 'draft': Note is not yet saved to the backend.
+ * - 'skipped': Saved note excluded from AI processing.
  * - 'unprocessed': Saved note without a lastProcessedAt timestamp.
  * - 'dirty': Note was edited since last processing or has unsaved client edits.
  * - 'processed': Note is up to date with the AI planner.
@@ -29,6 +32,9 @@ export interface NoteStatusConfig {
 export function getNoteProcessingStatus(input: NoteStatusInput): NoteProcessingStatus {
   if (!input.isSaved) {
     return 'draft'
+  }
+  if (input.excludedFromAi) {
+    return 'skipped'
   }
   if (!input.lastProcessedAt) {
     return 'unprocessed'
@@ -71,6 +77,11 @@ export function getNoteStatusConfig(status: NoteProcessingStatus): NoteStatusCon
       return {
         label: 'Processed',
         classes: 'border-[#A8DAB5] bg-[#E6F4EA] text-[#0D652D]',
+      }
+    case 'skipped':
+      return {
+        label: 'Skipped by AI',
+        classes: 'border-[#CBD5E1] bg-[#F1F5F9] text-[#527A8C]',
       }
   }
 }

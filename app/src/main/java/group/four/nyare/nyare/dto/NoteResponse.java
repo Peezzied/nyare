@@ -17,6 +17,7 @@ public class NoteResponse {
     private Instant createdAt;
     private Instant updatedAt;
     private Instant lastProcessedAt;
+    private boolean excludedFromAi;
 
     public NoteResponse() {
     }
@@ -50,6 +51,10 @@ public class NoteResponse {
     }
 
     public NoteResponse(UUID id, Long courseId, String title, String content, LocalDate entryDate, Instant createdAt, Instant updatedAt, Instant lastProcessedAt) {
+        this(id, courseId, title, content, entryDate, createdAt, updatedAt, lastProcessedAt, false);
+    }
+
+    public NoteResponse(UUID id, Long courseId, String title, String content, LocalDate entryDate, Instant createdAt, Instant updatedAt, Instant lastProcessedAt, boolean excludedFromAi) {
         this.id = id;
         this.courseId = courseId;
         this.title = title;
@@ -58,6 +63,7 @@ public class NoteResponse {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.lastProcessedAt = lastProcessedAt;
+        this.excludedFromAi = excludedFromAi;
     }
 
     public UUID getId() {
@@ -122,5 +128,13 @@ public class NoteResponse {
 
     public void setLastProcessedAt(Instant lastProcessedAt) {
         this.lastProcessedAt = lastProcessedAt;
+    }
+
+    public boolean isExcludedFromAi() {
+        return excludedFromAi;
+    }
+
+    public void setExcludedFromAi(boolean excludedFromAi) {
+        this.excludedFromAi = excludedFromAi;
     }
 }

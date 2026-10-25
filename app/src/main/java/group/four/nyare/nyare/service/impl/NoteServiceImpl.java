@@ -89,6 +89,7 @@ public class NoteServiceImpl implements NoteService {
 
         LocalDate entryDate = request.getEntryDate() != null ? request.getEntryDate() : LocalDate.now();
         Note note = new Note(course, title, request.getContent(), entryDate);
+        note.setExcludedFromAi(Boolean.TRUE.equals(request.getExcludedFromAi()));
         Note savedNote = noteRepository.save(note);
         publishMutation(MutationAction.CREATE, savedNote, userId,
                 "Note created: '" + savedNote.getTitle() + "'");
@@ -147,6 +148,10 @@ public class NoteServiceImpl implements NoteService {
 
         if (request.getTitle() != null && !request.getTitle().isBlank()) {
             note.setTitle(request.getTitle().trim());
+        }
+
+        if (request.getExcludedFromAi() != null) {
+            note.setExcludedFromAi(request.getExcludedFromAi());
         }
 
         Note savedNote = noteRepository.save(note);
@@ -260,7 +265,8 @@ public class NoteServiceImpl implements NoteService {
                 note.getEntryDate(),
                 note.getCreatedAt(),
                 note.getUpdatedAt(),
-                note.getLastProcessedAt()
+                note.getLastProcessedAt(),
+                note.isExcludedFromAi()
         );
     }
 

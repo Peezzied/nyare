@@ -24,6 +24,8 @@ public class NoteRequest {
     @PastOrPresent(message = "Entry date cannot be in the future")
     private LocalDate entryDate;
 
+    private Boolean excludedFromAi;
+
     public NoteRequest() {
     }
 
@@ -81,6 +83,14 @@ public class NoteRequest {
 
     public void setEntryDate(LocalDate entryDate) {
         this.entryDate = entryDate;
+    }
+
+    public Boolean getExcludedFromAi() {
+        return excludedFromAi;
+    }
+
+    public void setExcludedFromAi(Boolean excludedFromAi) {
+        this.excludedFromAi = excludedFromAi;
     }
 }
 

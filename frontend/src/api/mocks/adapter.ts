@@ -101,7 +101,10 @@ function dirtyNotes(): NoteResponse[] {
   )
   return state.notes
     .filter(
-      (n) => courseIds.has(n.courseId) && (!n.lastProcessedAt || n.updatedAt > n.lastProcessedAt),
+      (n) =>
+        courseIds.has(n.courseId) &&
+        !n.excludedFromAi &&
+        (!n.lastProcessedAt || n.updatedAt > n.lastProcessedAt),
     )
     .sort((a, b) => a.entryDate.localeCompare(b.entryDate))
 }
@@ -560,6 +563,7 @@ export function mockRouter(
       createdAt: now,
       updatedAt: now,
       lastProcessedAt: null,
+      excludedFromAi: req.excludedFromAi === true,
     }
     state.notes.push(newNote)
     return { status: 201, data: newNote }
@@ -603,6 +607,7 @@ export function mockRouter(
           req.entryDate !== undefined && req.entryDate !== null && req.entryDate.trim() !== ''
             ? req.entryDate
             : existing.entryDate,
+        excludedFromAi: req.excludedFromAi ?? existing.excludedFromAi,
         updatedAt: new Date().toISOString(),
       }
       state.notes[index] = updated

@@ -123,6 +123,8 @@ export interface NoteResponse {
    * `null` means Process did not handle the note yet, so the note is dirty.
    */
   readonly lastProcessedAt?: string | null
+  /** `true` when Process skips this note during AI extraction. */
+  readonly excludedFromAi: boolean
 }
 
 /** List view of a note with a content preview instead of the full content. */
@@ -153,6 +155,8 @@ export interface NoteRequest {
    * On update, an omitted value keeps the stored date.
    */
   readonly entryDate?: string | null
+  /** On create, `true` excludes the note from AI processing. On update, omitted keeps the stored value. */
+  readonly excludedFromAi?: boolean | null
 }
 
 /**

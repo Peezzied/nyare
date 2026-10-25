@@ -350,6 +350,7 @@ describe('API Services', () => {
         entryDate: '2026-10-08',
         createdAt: '2026-10-08T00:00:00Z',
         updatedAt: '2026-10-08T00:00:00Z',
+        excludedFromAi: false,
       }
       const getSpy = vi.spyOn(apiClient, 'get').mockResolvedValue(mockNote)
 
@@ -368,6 +369,7 @@ describe('API Services', () => {
         entryDate: '2026-10-08',
         createdAt: '2026-10-08T00:00:00Z',
         updatedAt: '2026-10-08T00:00:00Z',
+        excludedFromAi: false,
       }
       const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValue(mockNote)
 
@@ -386,6 +388,7 @@ describe('API Services', () => {
         entryDate: '2026-10-08',
         createdAt: '2026-10-08T00:00:00Z',
         updatedAt: '2026-10-08T01:00:00Z',
+        excludedFromAi: false,
       }
       const putSpy = vi.spyOn(apiClient, 'put').mockResolvedValue(mockNote)
 

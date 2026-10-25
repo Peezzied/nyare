@@ -12,6 +12,7 @@ function buildNote(content: string): NoteResponse {
     createdAt: '2026-10-05T09:30:00Z',
     updatedAt: '2026-10-05T11:00:00Z',
     lastProcessedAt: null,
+    excludedFromAi: false,
   }
 }
 

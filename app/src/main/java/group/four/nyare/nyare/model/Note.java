@@ -71,6 +71,9 @@ public class Note {
     @Column(name = "last_processed_at")
     private Instant lastProcessedAt;
 
+    @Column(name = "excluded_from_ai", nullable = false, columnDefinition = "BOOLEAN NOT NULL DEFAULT 0")
+    private boolean excludedFromAi = false;
+
     /**
      * Protected default constructor for JPA proxies.
      */
@@ -174,6 +177,24 @@ public class Note {
 
     public void setLastProcessedAt(Instant lastProcessedAt) {
         this.lastProcessedAt = lastProcessedAt;
+    }
+
+    /**
+     * Returns true when the AI planner skips this note during note processing.
+     *
+     * @return true when the note is excluded from AI processing
+     */
+    public boolean isExcludedFromAi() {
+        return excludedFromAi;
+    }
+
+    /**
+     * Sets whether the AI planner skips this note during note processing.
+     *
+     * @param excludedFromAi true to exclude the note from AI processing
+     */
+    public void setExcludedFromAi(boolean excludedFromAi) {
+        this.excludedFromAi = excludedFromAi;
     }
 
     /**
