@@ -11,10 +11,12 @@ import group.four.nyare.nyare.dto.CourseResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
+import group.four.nyare.nyare.model.Note;
 import group.four.nyare.nyare.model.User;
 import group.four.nyare.nyare.repository.CourseRepository;
 import group.four.nyare.nyare.repository.UserRepository;
 import group.four.nyare.nyare.service.CourseService;
+import group.four.nyare.nyare.service.ImageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -25,7 +27,9 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -40,12 +44,14 @@ public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final ImageService imageService;
 
     public CourseServiceImpl(CourseRepository courseRepository, UserRepository userRepository,
-            ApplicationEventPublisher eventPublisher) {
+            ApplicationEventPublisher eventPublisher, ImageService imageService) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.eventPublisher = eventPublisher;
+        this.imageService = imageService;
     }
 
     @Override
@@ -104,6 +110,14 @@ public class CourseServiceImpl implements CourseService {
     public void deleteCourse(Long id, Long userId) {
         Course course = courseRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + id));
+        // Delete note-referenced images before the cascade removes the notes.
+        Set<UUID> imageIds = new HashSet<>();
+        for (Note note : course.getNotes()) {
+            imageIds.addAll(ImageReferenceExtractor.extractIds(note.getContent()));
+        }
+        if (!imageIds.isEmpty()) {
+            imageService.deleteImages(imageIds, userId);
+        }
         courseRepository.delete(course);
         publishMutation(MutationAction.DELETE, course, userId,
                 "Course deleted: '" + course.getName() + "'");

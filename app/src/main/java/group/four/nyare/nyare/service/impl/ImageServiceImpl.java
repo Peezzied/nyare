@@ -25,6 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -94,6 +96,20 @@ public class ImageServiceImpl implements ImageService {
         imageRepository.delete(image);
         publishMutation(MutationAction.DELETE, image, userId,
                 "Image deleted: '" + image.getFilename() + "'");
+    }
+
+    @Override
+    @Transactional
+    public void deleteImages(Collection<UUID> ids, Long userId) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+        List<Image> images = imageRepository.findByUserIdAndIdIn(userId, ids);
+        imageRepository.deleteAll(images);
+        for (Image image : images) {
+            publishMutation(MutationAction.DELETE, image, userId,
+                    "Image deleted: '" + image.getFilename() + "'");
+        }
     }
 
     /**
