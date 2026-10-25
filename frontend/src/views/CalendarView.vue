@@ -19,7 +19,11 @@ import type {
   LinkedNoteRef,
 } from '@/types/calendarItemDetail'
 import type { TapOriginRect } from '@/types/notesTransition'
-import { setNoteMorphOrigin, takeNoteMorphOrigin } from '@/composables/useNoteTransition'
+import {
+  setNoteMorphOrigin,
+  takeNoteMorphOrigin,
+  toTapOriginRect,
+} from '@/composables/useNoteTransition'
 import type { AcademicEventResponse, TaskResponse } from '@/types/api'
 import { buildCalendarItemDetail } from '@/utils/calendarItemDetail'
 import { getGutterLeft } from '@/utils/calendarStyle'
@@ -30,10 +34,12 @@ import { deriveUntimedItems } from '@/utils/untimedItems'
 import type { UntimedDayItem } from '@/utils/untimedItems'
 import { useNow } from '@/composables/useNow'
 import { formatWeekTitle, weekDates } from '@/utils/weekDays'
+import AddFab from '@/components/AddFab.vue'
 import DateTitlePicker from '@/components/day-view/DateTitlePicker.vue'
 import DeadlinesView from '@/components/day-view/DeadlinesView.vue'
 import ErrorBanner from '@/components/ErrorBanner.vue'
 import EventDetailModal from '@/components/day-view/EventDetailModal.vue'
+import EventContainerModal from '@/components/events/EventContainerModal.vue'
 import TaskContainerModal from '@/components/tasks/TaskContainerModal.vue'
 import FilterSheet, { type ListFilters } from '@/components/FilterSheet.vue'
 import HamburgerMenu from '@/components/HamburgerMenu.vue'
@@ -259,14 +265,18 @@ function openClassDetail(event: DayEvent, originRect: DOMRect) {
   openDetail('class', event.id, event.start.split(' ')[0] ?? null, originRect)
 }
 
-/** Opens the detail view for a tapped task (FR-006) or event (FR-007) chip. */
+/** Opens the detail view for a tapped task (FR-006) or the editor for an event (FR-007) chip. */
 function openUntimedDetail(item: UntimedDayItem, originRect: DOMRect | null) {
+  if (item.category === 'event') {
+    openEventEditor(item.id, originRect)
+    return
+  }
   openDetail(item.category, item.id, null, originRect)
 }
 
-/** Opens the detail view for a tapped deadline row (FR-007). */
+/** Opens the event editor for a tapped deadline row (FR-007). */
 function openEventDetail(event: AcademicEventResponse, originRect: DOMRect | null) {
-  openDetail('event', event.id, null, originRect)
+  openEventEditor(event.id, originRect)
 }
 
 function closeDetail() {
@@ -315,6 +325,60 @@ function onEventDeleted() {
   if (event) {
     deleteEventWithUndo(event)
   }
+}
+
+const isEventEditorOpen = computed(() => Boolean(route.query.event))
+const eventEditorId = computed(() =>
+  route.query.event && route.query.event !== 'new' ? String(route.query.event) : null,
+)
+const eventEditorOrigin = ref<TapOriginRect | null>(null)
+
+// Same morph handoff as the detail overlay: consume the tap rect on open.
+watch(
+  isEventEditorOpen,
+  (open) => {
+    if (open) {
+      eventEditorOrigin.value = takeNoteMorphOrigin()
+    }
+  },
+  { immediate: true },
+)
+
+/** Pushes the event editor overlay (`?event=new|<id>`) above the calendar, mirroring `?task=`/`?note=`. */
+function openEventEditor(id: string, originRect: DOMRect | null) {
+  detailError.value = null
+  setNoteMorphOrigin(
+    originRect
+      ? {
+          top: originRect.top,
+          left: originRect.left,
+          width: originRect.width,
+          height: originRect.height,
+          // DOMRect carries no corner radius; the calendar cards all use 16px.
+          borderRadius: '16px',
+        }
+      : null,
+  )
+  void router.replace({ query: { ...route.query, event: id } })
+}
+
+function newEvent(event?: Event) {
+  if (isEventEditorOpen.value) return
+  const el = (event?.currentTarget ?? event?.target) as Element | null
+  setNoteMorphOrigin(el ? toTapOriginRect(el) : null)
+  void router.replace({ query: { ...route.query, event: 'new' } })
+}
+
+function closeEventEditor() {
+  const nextQuery = { ...route.query }
+  delete nextQuery.event
+  void router.replace({ query: nextQuery })
+}
+
+/** Deletes the editor's event through the undo toast after the modal closes. */
+function onEventEditorDeleted(event: AcademicEventResponse) {
+  closeEventEditor()
+  deleteEventWithUndo(event)
 }
 
 /** Opens a new note prefilled with the class's course and meeting day in the global note overlay. */
@@ -466,6 +530,13 @@ useShellHeader({
       @jump="goToday"
     />
 
+    <AddFab
+      v-if="viewMode === 'deadlines'"
+      label="Add deadline"
+      data-testid="deadlines-fab"
+      @click="newEvent($event)"
+    />
+
     <!-- One detail modal for both views; the container owns it.
          No frame element: the shell fills the viewport, so the modal fits it. -->
     <EventDetailModal
@@ -489,6 +560,16 @@ useShellHeader({
       class="z-sheet"
       @close="closeTaskDetail"
       @deleted="onTaskDeleted"
+    />
+
+    <!-- Event editor overlay; every event open lands here (FR-007). -->
+    <EventContainerModal
+      :is-open="isEventEditorOpen"
+      :event-id="eventEditorId"
+      :origin-rect="eventEditorOrigin"
+      class="z-sheet"
+      @close="closeEventEditor"
+      @deleted="onEventEditorDeleted"
     />
 
     <!-- A failed complete write keeps the prior state and shows the error here -->
