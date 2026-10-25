@@ -24,6 +24,7 @@ export interface UseAcademicEvents {
     params?: AcademicEventListParams,
     force?: boolean,
   ) => Promise<AcademicEventResponse[]>
+  getEvent: (id: string) => Promise<AcademicEventResponse>
   createEvent: (request: AcademicEventRequest) => Promise<AcademicEventResponse>
   updateEvent: (id: string, request: AcademicEventRequest) => Promise<AcademicEventResponse>
   deleteEvent: (id: string) => Promise<void>
@@ -91,6 +92,23 @@ export function useAcademicEvents(): UseAcademicEvents {
     }
 
     return events.value
+  }
+
+  /**
+   * Resolves one event from the cache first, falling back to the API. A fetched
+   * event is upserted into the shared list so direct-link views join the cache.
+   */
+  async function getEvent(id: string): Promise<AcademicEventResponse> {
+    const cached = events.value.find((e) => e.id === id)
+    if (cached) {
+      return cached
+    }
+
+    const fetched = await academicEventsApi.get(id)
+    events.value = events.value.some((e) => e.id === id)
+      ? events.value.map((e) => (e.id === id ? fetched : e))
+      : [...events.value, fetched]
+    return fetched
   }
 
   async function createEvent(request: AcademicEventRequest): Promise<AcademicEventResponse> {
@@ -181,6 +199,7 @@ export function useAcademicEvents(): UseAcademicEvents {
     loading,
     error,
     loadEvents,
+    getEvent,
     createEvent,
     updateEvent,
     deleteEvent,

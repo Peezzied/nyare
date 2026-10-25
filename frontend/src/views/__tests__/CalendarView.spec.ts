@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
-import { defineComponent, nextTick, reactive } from 'vue'
+import { defineComponent, nextTick, reactive, shallowReactive } from 'vue'
+import type { VNode } from 'vue'
 import type { AcademicEventResponse, TaskResponse } from '@/types/api'
+import type { CalendarViewMode } from '@/types/calendar'
+import { shellHeaderKey, type ShellHeaderConfig } from '@/composables/useShellHeader'
 import { toDateKey } from '@/utils/dayKey'
 import CalendarView from '../CalendarView.vue'
 
@@ -13,6 +16,8 @@ const mocks = vi.hoisted(() => ({
   loadTasks: vi.fn<() => Promise<void>>(),
   loadEvents: vi.fn<() => Promise<void>>(),
   updateStatus: vi.fn<(id: string, status: string) => Promise<TaskResponse>>(),
+  deleteEventWithUndo: vi.fn<(event: AcademicEventResponse) => void>(),
+  deleteTaskWithUndo: vi.fn<(task: TaskResponse) => void>(),
   // Shared stand-ins for the refs the container touches.
   tasks: { value: [] as TaskResponse[] },
   events: { value: [] as AcademicEventResponse[] },
@@ -61,6 +66,21 @@ vi.mock('@/composables/useCatalog', () => ({
 vi.mock('@/composables/useNotes', () => ({
   useNotes: () => ({ notes: mocks.notes, loadNotes: mocks.loadNotes }),
 }))
+vi.mock('@/composables/useUndoableEventDelete', () => ({
+  useUndoableEventDelete: () => ({ deleteEventWithUndo: mocks.deleteEventWithUndo }),
+}))
+vi.mock('@/composables/useUndoableTaskDelete', () => ({
+  useUndoableTaskDelete: () => ({ deleteTaskWithUndo: mocks.deleteTaskWithUndo }),
+}))
+
+const DEADLINE_EVENT: AcademicEventResponse = {
+  id: 'event-1',
+  courseId: 1,
+  title: 'Midterm Exam',
+  description: null,
+  deadline: '2026-10-22T09:00:00',
+  createdAt: '2026-10-05T12:00:00Z',
+}
 
 const OPEN_TASK: TaskResponse = {
   id: 'task-1',
@@ -103,10 +123,30 @@ const TaskContainerModalStub = defineComponent({
   template: '<div />',
 })
 
+const EventContainerModalStub = defineComponent({
+  name: 'EventContainerModal',
+  props: { isOpen: Boolean, eventId: String, originRect: Object },
+  emits: ['close', 'deleted'],
+  template: '<div />',
+})
+
+const DeadlinesViewStub = defineComponent({
+  name: 'DeadlinesView',
+  props: { sections: Array, courseName: Function, searching: Boolean },
+  emits: ['select', 'select-day'],
+  template: '<div />',
+})
+
+// Captured per mount so tests can drive the header's ViewModeToggle render
+// prop — the only lever that flips the view's internal `viewMode`.
+let shellHeader: ShellHeaderConfig | undefined
+
 function mountContainer() {
+  shellHeader = shallowReactive<ShellHeaderConfig>({ title: '' })
   return mount(CalendarView, {
     global: {
       renderStubDefaultSlot: true,
+      provide: { [shellHeaderKey]: shellHeader },
       stubs: {
         DayViewHeader: true,
         BurgerMenu: true,
@@ -116,9 +156,24 @@ function mountContainer() {
         ScheduleCalendar: ScheduleCalendarStub,
         EventDetailModal: EventDetailModalStub,
         TaskContainerModal: TaskContainerModalStub,
+        EventContainerModal: EventContainerModalStub,
+        DeadlinesView: DeadlinesViewStub,
+        FilterSheet: true,
+        SearchBar: true,
       },
     },
   })
+}
+
+/** Flips `viewMode` by invoking the `onSelect` prop of the ViewModeToggle vnode the view registers in the shell header. */
+async function selectViewMode(mode: CalendarViewMode) {
+  const right = shellHeader?.right as unknown as (() => VNode) | undefined
+  const props = right?.().props as
+    | { onSelect?: (m: CalendarViewMode) => void }
+    | null
+    | undefined
+  props?.onSelect?.(mode)
+  await nextTick()
 }
 
 type Wrapper = ReturnType<typeof mountContainer>
@@ -422,5 +477,106 @@ describe('CalendarView detail', () => {
     expect(wrapper.findComponent(ScheduleCalendarStub).props('untimedItems')).toContainEqual(
       expect.objectContaining({ id: 'task-2', title: 'Review graph proofs' }),
     )
+  })
+})
+
+describe('CalendarView event editor', () => {
+  it('shows the add-deadline FAB only in deadlines view mode', async () => {
+    const wrapper = mountContainer()
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="deadlines-fab"]').exists()).toBe(false)
+
+    await selectViewMode('deadlines')
+    expect(wrapper.find('[data-testid="deadlines-fab"]').exists()).toBe(true)
+
+    await selectViewMode('day')
+    expect(wrapper.find('[data-testid="deadlines-fab"]').exists()).toBe(false)
+  })
+
+  it('opens the event editor for a new event on FAB click', async () => {
+    const wrapper = mountContainer()
+    await flushPromises()
+    await selectViewMode('deadlines')
+
+    await wrapper.find('[data-testid="deadlines-fab"]').trigger('click')
+
+    expect(mocks.replace).toHaveBeenCalledWith({ query: { event: 'new' } })
+
+    mockRoute.query = { event: 'new' }
+    await nextTick()
+
+    const modal = wrapper.findComponent(EventContainerModalStub)
+    expect(modal.props('isOpen')).toBe(true)
+    expect(modal.props('eventId')).toBeNull()
+  })
+
+  it('routes a deadline row select to the event editor, not the item detail', async () => {
+    const wrapper = mountContainer()
+    await flushPromises()
+    await selectViewMode('deadlines')
+
+    wrapper.findComponent(DeadlinesViewStub).vm.$emit('select', DEADLINE_EVENT, null)
+    await nextTick()
+
+    expect(mocks.replace).toHaveBeenCalledWith({ query: { event: 'event-1' } })
+    expect(mocks.push).not.toHaveBeenCalled()
+  })
+
+  it('routes an untimed event chip select to the event editor', async () => {
+    const wrapper = mountContainer()
+    await flushPromises()
+
+    wrapper.findComponent(ScheduleCalendarStub).vm.$emit(
+      'select-untimed',
+      {
+        id: 'event-9',
+        title: 'Final Exam',
+        category: 'event',
+        courseId: 1,
+        completed: false,
+        date: '2026-10-14',
+      },
+      null,
+    )
+    await nextTick()
+
+    expect(mocks.replace).toHaveBeenCalledWith({ query: { event: 'event-9' } })
+    expect(mocks.push).not.toHaveBeenCalled()
+  })
+
+  it('still resolves a deep-linked ?item=event: to the read-only detail', async () => {
+    mocks.events.value = [DEADLINE_EVENT]
+    mockRoute.query = { item: 'event:event-1' }
+    const wrapper = mountContainer()
+    await flushPromises()
+
+    const modal = wrapper.findComponent(EventDetailModalStub)
+    expect(modal.props('isOpen')).toBe(true)
+    expect(modal.props('item')).toMatchObject({ kind: 'event', id: 'event-1' })
+    expect(wrapper.findComponent(EventContainerModalStub).props('isOpen')).toBe(false)
+  })
+
+  it('removes only the event key from the query on close', async () => {
+    mockRoute.query = { item: 'task:task-1', event: 'event-1' }
+    const wrapper = mountContainer()
+    await flushPromises()
+
+    wrapper.findComponent(EventContainerModalStub).vm.$emit('close')
+    await nextTick()
+
+    expect(mocks.replace).toHaveBeenCalledWith({ query: { item: 'task:task-1' } })
+  })
+
+  it('closes the editor and forwards the event to the undoable delete on deleted', async () => {
+    mockRoute.query = { event: 'event-1' }
+    const wrapper = mountContainer()
+    await flushPromises()
+
+    wrapper.findComponent(EventContainerModalStub).vm.$emit('deleted', DEADLINE_EVENT)
+    await nextTick()
+
+    expect(mocks.replace).toHaveBeenCalledWith({ query: {} })
+    expect(mocks.deleteEventWithUndo).toHaveBeenCalledWith(DEADLINE_EVENT)
   })
 })
