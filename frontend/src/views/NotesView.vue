@@ -124,7 +124,11 @@ watch(notes, (list, prev) => {
     .map((n) => byId.get(n.id) ?? n)
 })
 
-const displayedNotes = computed(() => searchResults.value ?? notes.value)
+const displayedNotes = computed(() =>
+  [...(searchResults.value ?? notes.value)].sort(
+    (a, b) => b.entryDate.localeCompare(a.entryDate) || b.createdAt.localeCompare(a.createdAt),
+  ),
+)
 
 const courseNames = computed(() => {
   const names = new Map<number, string>()
