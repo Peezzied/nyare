@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.mock.web.MockMultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -121,5 +123,35 @@ class ImageServiceImplTest {
         imageService.deleteImage(imageId, 1L);
 
         verify(imageRepository).delete(sampleImage);
+    }
+
+    @Test
+    void deleteImages_ownedIds_deletesAndPublishes() {
+        Image secondImage = new Image(new byte[]{4, 5}, "image/png", "second.png", 2L, owner);
+        List<UUID> ids = List.of(imageId, UUID.randomUUID());
+        when(imageRepository.findByUserIdAndIdIn(1L, ids))
+                .thenReturn(List.of(sampleImage, secondImage));
+
+        imageService.deleteImages(ids, 1L);
+
+        verify(imageRepository).deleteAll(List.of(sampleImage, secondImage));
+    }
+
+    @Test
+    void deleteImages_emptyIds_noRepositoryCall() {
+        imageService.deleteImages(List.of(), 1L);
+
+        verifyNoInteractions(imageRepository);
+    }
+
+    @Test
+    void deleteImages_partialOwnership_deletesOnlyOwned() {
+        List<UUID> ids = List.of(imageId, UUID.randomUUID());
+        when(imageRepository.findByUserIdAndIdIn(1L, ids))
+                .thenReturn(List.of(sampleImage));
+
+        imageService.deleteImages(ids, 1L);
+
+        verify(imageRepository).deleteAll(List.of(sampleImage));
     }
 }

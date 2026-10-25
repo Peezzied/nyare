@@ -6,6 +6,7 @@ import group.four.nyare.nyare.dto.CourseResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import group.four.nyare.nyare.model.Course;
+import group.four.nyare.nyare.model.Note;
 import group.four.nyare.nyare.model.User;
 import group.four.nyare.nyare.repository.CourseRepository;
 import group.four.nyare.nyare.repository.UserRepository;
@@ -26,6 +27,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -45,6 +48,9 @@ class CourseServiceImplTest {
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
+
+    @Mock
+    private ImageService imageService;
 
     @InjectMocks
     private CourseServiceImpl courseService;
@@ -346,6 +352,39 @@ class CourseServiceImplTest {
         // when & then
         assertThatThrownBy(() -> courseService.deleteCourse(10L, 2L))
                 .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("deleteCourse deletes images referenced by the course notes before deleting the course")
+    void deleteCourse_notesWithImageRefs_deletesImages() {
+        // given
+        UUID imageId = UUID.fromString("123e4567-e89b-42d3-a456-426614174000");
+        Note note = new Note(sampleCourse, "See ![x](/api/images/" + imageId + ")");
+        sampleCourse.setNotes(List.of(note));
+        when(courseRepository.findByIdAndUserId(10L, 1L)).thenReturn(Optional.of(sampleCourse));
+
+        // when
+        courseService.deleteCourse(10L, 1L);
+
+        // then
+        verify(imageService).deleteImages(Set.of(imageId), 1L);
+        verify(courseRepository).delete(sampleCourse);
+    }
+
+    @Test
+    @DisplayName("deleteCourse skips image deletion when notes contain no image references")
+    void deleteCourse_noImageRefs_skipsImageDelete() {
+        // given
+        Note note = new Note(sampleCourse, "plain text without images");
+        sampleCourse.setNotes(List.of(note));
+        when(courseRepository.findByIdAndUserId(10L, 1L)).thenReturn(Optional.of(sampleCourse));
+
+        // when
+        courseService.deleteCourse(10L, 1L);
+
+        // then
+        verify(imageService, never()).deleteImages(any(), any());
+        verify(courseRepository).delete(sampleCourse);
     }
 
     @Test

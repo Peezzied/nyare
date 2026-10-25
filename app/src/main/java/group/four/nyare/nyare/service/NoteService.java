@@ -63,8 +63,9 @@ public interface NoteService {
     NoteResponse updateNote(UUID id, NoteRequest request, Long userId);
 
     /**
-     * Deletes a note owned by the session user. Associated AI-extracted records
-     * are not cascade-deleted.
+     * Deletes a note owned by the session user. Images referenced in the note
+     * content are deleted. Associated AI-extracted records are not
+     * cascade-deleted.
      *
      * @param id     the unique UUID of the note to delete
      * @param userId the owner user identifier from the active session

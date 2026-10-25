@@ -32,6 +32,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -53,6 +55,9 @@ class NoteServiceImplTest {
 
     @Mock
     private ImageRepository imageRepository;
+
+    @Mock
+    private ImageService imageService;
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
@@ -391,6 +396,36 @@ class NoteServiceImplTest {
         // when & then
         assertThatThrownBy(() -> noteService.deleteNote(noteId, 2L))
                 .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    void deleteNote_withImageRefs_deletesReferencedImages() {
+        // given
+        UUID imageId = UUID.randomUUID();
+        note.setContent("Note with ![x](/api/images/" + imageId + ")");
+        when(noteRepository.findByIdAndCourseUserId(noteId, 1L)).thenReturn(Optional.of(note));
+
+        // when
+        noteService.deleteNote(noteId, 1L);
+
+        // then
+        verify(imageService).deleteImages(
+                argThat(ids -> ids.size() == 1 && ids.contains(imageId)), eq(1L));
+        verify(noteRepository).delete(note);
+    }
+
+    @Test
+    void deleteNote_noImageRefs_skipsImageDelete() {
+        // given
+        note.setContent("Plain text note without images");
+        when(noteRepository.findByIdAndCourseUserId(noteId, 1L)).thenReturn(Optional.of(note));
+
+        // when
+        noteService.deleteNote(noteId, 1L);
+
+        // then
+        verify(imageService, never()).deleteImages(any(), any());
+        verify(noteRepository).delete(note);
     }
 
     @Test

@@ -19,6 +19,7 @@ import group.four.nyare.nyare.repository.CourseRepository;
 import group.four.nyare.nyare.repository.ImageRepository;
 import group.four.nyare.nyare.repository.NoteRepository;
 import group.four.nyare.nyare.repository.UserRepository;
+import group.four.nyare.nyare.service.ImageService;
 import group.four.nyare.nyare.service.NoteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,15 +57,17 @@ public class NoteServiceImpl implements NoteService {
     private final NoteRepository noteRepository;
     private final CourseRepository courseRepository;
     private final ImageRepository imageRepository;
+    private final ImageService imageService;
     private final ApplicationEventPublisher eventPublisher;
     private final UserRepository userRepository;
 
     public NoteServiceImpl(NoteRepository noteRepository, CourseRepository courseRepository,
-            ImageRepository imageRepository, ApplicationEventPublisher eventPublisher,
-            UserRepository userRepository) {
+            ImageRepository imageRepository, ImageService imageService,
+            ApplicationEventPublisher eventPublisher, UserRepository userRepository) {
         this.noteRepository = noteRepository;
         this.courseRepository = courseRepository;
         this.imageRepository = imageRepository;
+        this.imageService = imageService;
         this.eventPublisher = eventPublisher;
         this.userRepository = userRepository;
     }
@@ -166,6 +169,10 @@ public class NoteServiceImpl implements NoteService {
         Note note = noteRepository.findByIdAndCourseUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Note not found with ID: " + id));
         requireActiveCourse(note.getCourse());
+        Set<UUID> imageIds = ImageReferenceExtractor.extractIds(note.getContent());
+        if (!imageIds.isEmpty()) {
+            imageService.deleteImages(imageIds, userId);
+        }
         noteRepository.delete(note);
         publishMutation(MutationAction.DELETE, note, userId,
                 "Note deleted: '" + note.getTitle() + "'");
