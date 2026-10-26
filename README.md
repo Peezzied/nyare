@@ -2,6 +2,10 @@
 
 Nyare is a calendar-first academic planning assistant designed for students. It helps students organize course notes, track academic responsibilities, and generate dynamic study schedules in one interface.
 
+<img src="https://github.com/user-attachments/assets/437f3275-007f-4c53-a642-b097d266d7e9" height="500" alt="image 1" />
+<img src="https://github.com/user-attachments/assets/1090a733-7d5a-4fe3-8998-f3216a88a6a9" height="500" alt="image 2" />
+<img src="https://github.com/user-attachments/assets/8d7732e1-b98b-497e-a42c-4d9eae005cec" height="500" alt="image 3" />
+
 ---
 
 ## 1. Introduction
