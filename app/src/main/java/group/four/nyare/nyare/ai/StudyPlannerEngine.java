@@ -1,16 +1,14 @@
 package group.four.nyare.nyare.ai;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import group.four.nyare.nyare.ai.parser.CsvParser;
 import group.four.nyare.nyare.ai.parser.StubReferenceCodec;
 import group.four.nyare.nyare.ai.parser.TitleSimilarityMatcher;
 import group.four.nyare.nyare.ai.prompt.TaggedPromptBuilder;
 import group.four.nyare.nyare.exception.BadRequestException;
-import group.four.nyare.nyare.model.AcademicContext;
-import group.four.nyare.nyare.model.AcademicEvent;
-import group.four.nyare.nyare.model.Image;
-import group.four.nyare.nyare.model.Note;
-import group.four.nyare.nyare.model.Schedule;
-import group.four.nyare.nyare.model.Task;
+import group.four.nyare.nyare.model.*;
+import jakarta.validation.constraints.Size;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
@@ -19,23 +17,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.validation.constraints.Size;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.function.Function;
 
 /**

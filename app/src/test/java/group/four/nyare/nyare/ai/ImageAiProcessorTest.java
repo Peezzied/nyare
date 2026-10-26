@@ -1,7 +1,6 @@
 package group.four.nyare.nyare.ai;
 
 import group.four.nyare.nyare.ai.observability.ErrorAuditPublisher;
-import group.four.nyare.nyare.exception.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,6 @@ import org.springframework.ai.chat.client.ChatClient;
 import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;

@@ -2,23 +2,15 @@ package group.four.nyare.nyare.observability.controller;
 
 import group.four.nyare.nyare.ai.observability.event.AuditCategory;
 import group.four.nyare.nyare.ai.observability.event.AuditSeverity;
-import group.four.nyare.nyare.observability.dto.AuditTraceEventDto;
-import group.four.nyare.nyare.observability.dto.CourseTraceSummaryDto;
-import group.four.nyare.nyare.observability.dto.DevDashboardViewModel;
-import group.four.nyare.nyare.observability.dto.TraceNodeDto;
-import group.four.nyare.nyare.observability.dto.TraceNodeStubDto;
+import group.four.nyare.nyare.exception.ResourceNotFoundException;
+import group.four.nyare.nyare.observability.dto.*;
 import group.four.nyare.nyare.observability.service.DevAuditTraceService;
 import group.four.nyare.nyare.observability.stream.DevAuditTraceStream;
-import group.four.nyare.nyare.exception.ResourceNotFoundException;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;

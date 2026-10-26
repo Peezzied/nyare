@@ -1,12 +1,7 @@
 package group.four.nyare.nyare.ai;
 
 import group.four.nyare.nyare.exception.BadRequestException;
-import group.four.nyare.nyare.model.AcademicContext;
-import group.four.nyare.nyare.model.Course;
-import group.four.nyare.nyare.model.Image;
-import group.four.nyare.nyare.model.Note;
-import group.four.nyare.nyare.model.Schedule;
-import group.four.nyare.nyare.model.Task;
+import group.four.nyare.nyare.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,22 +14,17 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.DayOfWeek;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class StudyPlannerEngineTest {

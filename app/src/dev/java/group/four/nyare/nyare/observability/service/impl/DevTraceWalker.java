@@ -4,37 +4,20 @@ import group.four.nyare.nyare.ai.observability.event.AuditCategory;
 import group.four.nyare.nyare.ai.observability.event.AuditTraceEvent;
 import group.four.nyare.nyare.ai.observability.event.MutationAction;
 import group.four.nyare.nyare.ai.observability.event.TraceKind;
+import group.four.nyare.nyare.exception.BadRequestException;
+import group.four.nyare.nyare.exception.ResourceNotFoundException;
+import group.four.nyare.nyare.model.*;
 import group.four.nyare.nyare.observability.dto.TraceNodeDto;
 import group.four.nyare.nyare.observability.dto.TraceNodeStubDto;
 import group.four.nyare.nyare.observability.dto.TraceRelationGroupDto;
 import group.four.nyare.nyare.observability.sink.DevAuditTraceSink;
-import group.four.nyare.nyare.exception.BadRequestException;
-import group.four.nyare.nyare.exception.ResourceNotFoundException;
-import group.four.nyare.nyare.model.AcademicContext;
-import group.four.nyare.nyare.model.AcademicEvent;
-import group.four.nyare.nyare.model.Course;
-import group.four.nyare.nyare.model.Note;
-import group.four.nyare.nyare.model.Schedule;
-import group.four.nyare.nyare.model.Task;
-import group.four.nyare.nyare.repository.AcademicContextRepository;
-import group.four.nyare.nyare.repository.AcademicEventRepository;
-import group.four.nyare.nyare.repository.CourseRepository;
-import group.four.nyare.nyare.repository.ImageMetadataView;
-import group.four.nyare.nyare.repository.ImageRepository;
-import group.four.nyare.nyare.repository.NoteRepository;
-import group.four.nyare.nyare.repository.ScheduleRepository;
-import group.four.nyare.nyare.repository.TaskRepository;
+import group.four.nyare.nyare.repository.*;
 import group.four.nyare.nyare.service.impl.ImageReferenceExtractor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Read-only query service resolving stored records into {@link TraceNodeDto}

@@ -2,11 +2,12 @@ package group.four.nyare.nyare;
 
 import group.four.nyare.nyare.launcher.LauncherConfig;
 import group.four.nyare.nyare.launcher.LauncherFrame;
-import java.awt.GraphicsEnvironment;
-import java.util.Arrays;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+
+import java.awt.*;
+import java.util.Arrays;
 
 @SpringBootApplication
 @EnableJpaAuditing

@@ -1,11 +1,6 @@
 package group.four.nyare.nyare.service.impl;
 
-import group.four.nyare.nyare.ai.observability.event.AuditCategory;
-import group.four.nyare.nyare.ai.observability.event.AuditSeverity;
-import group.four.nyare.nyare.ai.observability.event.AuditTraceEvent;
-import group.four.nyare.nyare.ai.observability.event.MutationAction;
-import group.four.nyare.nyare.ai.observability.event.TraceKind;
-import group.four.nyare.nyare.ai.observability.event.TriggerSource;
+import group.four.nyare.nyare.ai.observability.event.*;
 import group.four.nyare.nyare.dto.ScheduleRequest;
 import group.four.nyare.nyare.dto.ScheduleResponse;
 import group.four.nyare.nyare.exception.BadRequestException;
@@ -27,10 +22,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)

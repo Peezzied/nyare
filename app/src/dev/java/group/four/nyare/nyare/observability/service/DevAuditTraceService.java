@@ -2,13 +2,9 @@ package group.four.nyare.nyare.observability.service;
 
 import group.four.nyare.nyare.ai.observability.event.AuditCategory;
 import group.four.nyare.nyare.ai.observability.event.AuditSeverity;
-import group.four.nyare.nyare.observability.dto.AuditTraceEventDto;
-import group.four.nyare.nyare.observability.dto.CourseTraceSummaryDto;
-import group.four.nyare.nyare.observability.dto.DevDashboardViewModel;
-import group.four.nyare.nyare.observability.dto.TraceNodeDto;
-import group.four.nyare.nyare.observability.dto.TraceNodeStubDto;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
+import group.four.nyare.nyare.observability.dto.*;
 
 import java.util.List;
 import java.util.Optional;

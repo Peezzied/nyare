@@ -1,15 +1,13 @@
 package group.four.nyare.nyare.launcher;
 
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.Element;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import javax.swing.JTextArea;
-import javax.swing.JViewport;
-import javax.swing.SwingUtilities;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.Element;
 
 /**
  * Tee {@link OutputStream} that forwards every byte to the original stream and

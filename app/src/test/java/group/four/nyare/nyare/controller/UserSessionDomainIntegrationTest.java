@@ -2,20 +2,9 @@ package group.four.nyare.nyare.controller;
 
 import group.four.nyare.nyare.dto.LoginRequest;
 import group.four.nyare.nyare.dto.UserRequest;
-import group.four.nyare.nyare.model.AcademicEvent;
-import group.four.nyare.nyare.model.Course;
-import group.four.nyare.nyare.model.Note;
-import group.four.nyare.nyare.model.Schedule;
-import group.four.nyare.nyare.model.Task;
-import group.four.nyare.nyare.model.User;
+import group.four.nyare.nyare.model.*;
 import group.four.nyare.nyare.model.enums.TaskStatus;
-import group.four.nyare.nyare.repository.AcademicContextRepository;
-import group.four.nyare.nyare.repository.AcademicEventRepository;
-import group.four.nyare.nyare.repository.CourseRepository;
-import group.four.nyare.nyare.repository.NoteRepository;
-import group.four.nyare.nyare.repository.ScheduleRepository;
-import group.four.nyare.nyare.repository.TaskRepository;
-import group.four.nyare.nyare.repository.UserRepository;
+import group.four.nyare.nyare.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,13 +21,10 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

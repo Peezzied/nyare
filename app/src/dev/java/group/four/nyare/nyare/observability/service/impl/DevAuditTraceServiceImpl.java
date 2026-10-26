@@ -1,23 +1,11 @@
 package group.four.nyare.nyare.observability.service.impl;
 
-import group.four.nyare.nyare.ai.observability.event.AuditCategory;
-import group.four.nyare.nyare.ai.observability.event.AuditSeverity;
-import group.four.nyare.nyare.ai.observability.event.AuditTraceEvent;
-import group.four.nyare.nyare.ai.observability.event.LifecycleState;
-import group.four.nyare.nyare.ai.observability.event.TraceKind;
-import group.four.nyare.nyare.observability.dto.AiEngineInfoDto;
-import group.four.nyare.nyare.observability.dto.AuditTraceEventDto;
-import group.four.nyare.nyare.observability.dto.CategoryGroupDto;
-import group.four.nyare.nyare.observability.dto.CourseTraceSummaryDto;
-import group.four.nyare.nyare.observability.dto.DatabaseInfoDto;
-import group.four.nyare.nyare.observability.dto.DevDashboardViewModel;
-import group.four.nyare.nyare.observability.dto.TraceNodeDto;
-import group.four.nyare.nyare.observability.dto.TraceNodeStubDto;
-import group.four.nyare.nyare.observability.dto.TraceRelationGroupDto;
-import group.four.nyare.nyare.observability.service.DevAuditTraceService;
-import group.four.nyare.nyare.observability.sink.DevAuditTraceSink;
+import group.four.nyare.nyare.ai.observability.event.*;
 import group.four.nyare.nyare.exception.BadRequestException;
 import group.four.nyare.nyare.exception.ResourceNotFoundException;
+import group.four.nyare.nyare.observability.dto.*;
+import group.four.nyare.nyare.observability.service.DevAuditTraceService;
+import group.four.nyare.nyare.observability.sink.DevAuditTraceSink;
 import group.four.nyare.nyare.repository.CourseRepository;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.prompt.ChatOptions;
@@ -28,12 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

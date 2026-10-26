@@ -2,12 +2,7 @@ package group.four.nyare.nyare.ai;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import group.four.nyare.nyare.model.AcademicContext;
-import group.four.nyare.nyare.model.AcademicEvent;
-import group.four.nyare.nyare.model.Course;
-import group.four.nyare.nyare.model.Note;
-import group.four.nyare.nyare.model.Schedule;
-import group.four.nyare.nyare.model.Task;
+import group.four.nyare.nyare.model.*;
 import group.four.nyare.nyare.model.enums.TaskStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,11 +18,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
-import java.time.DayOfWeek;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
