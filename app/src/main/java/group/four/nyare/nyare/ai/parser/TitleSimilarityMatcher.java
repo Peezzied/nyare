@@ -5,50 +5,42 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Utility for determining semantic similarity and token overlap between academic titles.
+ * Utility for determining similarity between academic titles using Jaccard token overlap.
  */
 public final class TitleSimilarityMatcher {
 
-    private static final Set<String> STOP_WORDS = Set.of(
-            "for", "the", "a", "an", "to", "in", "on", "of", "and", "or", "with",
-            "sa", "ang", "mga", "last", "lesson", "notes"
-    );
-
-    private static final Set<String> KEY_MARKERS = Set.of(
-            "quiz", "midterm", "exam", "lab", "project", "homework", "assignment", "paper"
-    );
+    private static final double SIMILARITY_THRESHOLD = 0.6;
 
     private TitleSimilarityMatcher() {
     }
 
     /**
-     * Determines if two titles describe the same academic item based on exact match or word-token overlap.
+     * Determines if two titles describe the same academic item based on exact match or token similarity.
      *
      * @param a first title
      * @param b second title
-     * @return true if titles are identical (case-insensitive) or share significant tokens
+     * @return true if titles are identical (case-insensitive) or exceed the similarity threshold
      */
     public static boolean isSimilar(String a, String b) {
         if (a == null || b == null) return false;
         String cleanA = a.trim();
         String cleanB = b.trim();
+        if (cleanA.isBlank() || cleanB.isBlank()) return false;
         if (cleanA.equalsIgnoreCase(cleanB)) return true;
 
-        Set<String> wordsA = Arrays.stream(cleanA.toLowerCase().split("[^a-zA-Z0-9]+"))
-                .filter(w -> !w.isBlank() && !STOP_WORDS.contains(w))
-                .collect(Collectors.toSet());
-        Set<String> wordsB = Arrays.stream(cleanB.toLowerCase().split("[^a-zA-Z0-9]+"))
-                .filter(w -> !w.isBlank() && !STOP_WORDS.contains(w))
-                .collect(Collectors.toSet());
-
+        Set<String> wordsA = tokenize(cleanA);
+        Set<String> wordsB = tokenize(cleanB);
         if (wordsA.isEmpty() || wordsB.isEmpty()) return false;
 
-        // Count overlapping significant words
-        long overlap = wordsA.stream().filter(wordsB::contains).count();
-        if (overlap >= 2) return true;
+        long intersection = wordsA.stream().filter(wordsB::contains).count();
+        long union = wordsA.size() + wordsB.size() - intersection;
 
-        // If both mention a key academic marker (like "quiz", "midterm", "exam", "lab", "project")
-        boolean sharesKeyMarker = wordsA.stream().anyMatch(w -> KEY_MARKERS.contains(w) && wordsB.contains(w));
-        return sharesKeyMarker && overlap >= 1;
+        return (double) intersection / union >= SIMILARITY_THRESHOLD;
+    }
+
+    private static Set<String> tokenize(String input) {
+        return Arrays.stream(input.toLowerCase().split("[^a-zA-Z0-9]+"))
+                .filter(w -> !w.isBlank())
+                .collect(Collectors.toSet());
     }
 }
