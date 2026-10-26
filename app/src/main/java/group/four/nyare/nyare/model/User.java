@@ -46,14 +46,14 @@ public class User {
     @Min(1)
     @Max(60)
     @ColumnDefault("14")
-    @Column(nullable = false)
+    @Column(columnDefinition = "smallint", nullable = false)
     private Integer planningHorizonDays = 14;
 
     @NotNull
     @Min(1)
     @Max(60)
     @ColumnDefault("14")
-    @Column(nullable = false)
+    @Column(columnDefinition = "smallint", nullable = false)
     private Integer backdatingHorizonDays = 14;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
