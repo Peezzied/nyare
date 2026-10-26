@@ -147,14 +147,16 @@ GROQ_API_KEY=your_groq_api_key
 ## 5. Application Architecture
 
 ## Project Structure
-<img width="367" height="512" alt="image" src="https://github.com/user-attachments/assets/1b0eac78-fe45-42cf-a860-6edea619d611" />
+<img width="824" height="1151" alt="Untitled Diagram-Page-4 drawio" src="https://github.com/user-attachments/assets/b5dd61ea-2341-4aa2-a8e5-ffd9a5e54856" />
+
 
 
 ## Overview
 
 Nyare uses a layered Spring Boot architecture paired with a Vue single-page application:
 
-<img width="386" height="512" alt="image" src="https://github.com/user-attachments/assets/7bc9dce6-0bf5-4b6a-abee-2ff07ded4e39" />
+<img width="917" height="1215" alt="architecture drawio" src="https://github.com/user-attachments/assets/fd7cb5ac-114c-4e86-ad76-9f42845df538" />
+
 
 
 - **Controller Layer:** Exposes REST endpoints and Server-Sent Event streams.
