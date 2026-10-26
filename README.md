@@ -57,7 +57,7 @@ Nyare requires the following tools:
 Gradle compiles the frontend assets and packages the complete application into a single executable JAR file.
 
 1. **Build the Application JAR:**
-   Open a terminal in the [`app`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/app) directory and run:
+   Open a terminal in the `app` directory and run:
    ```bash
    cd app
    .\gradlew.bat bootJar
@@ -69,7 +69,7 @@ Gradle compiles the frontend assets and packages the complete application into a
 ```bash
 java --enable-native-access=ALL-UNNAMED -jar nyare-0.0.1-SNAPSHOT.jar
 ```
-   This command opens the desktop launcher window ([`LauncherFrame`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/app/src/main/java/group/four/nyare/nyare/launcher/LauncherFrame.java#L41-L95)).
+   This command opens the desktop launcher window (`LauncherFrame`).
 
 3. **Configure Settings:**
    - Select your AI provider (**Google** or **Groq**).
@@ -135,31 +135,23 @@ GROQ_API_KEY=your_groq_api_key
 
 ## 4. Initial Data and Authentication
 
-- **Development Profile (`dev`):** The application loads [`dev.sql`](file:///D:/General%20Project%20Bins/Academics/CCS201/nyare/app/src/dev/resources/dev.sql) on startup. This script seeds user `dev_student` (ID: 1), eight courses, and seventeen class schedule slots. The command `npm run dev` logs in as `dev_student` automatically.
+- **Development Profile (`dev`):** The application loads `dev.sql` on startup. This script seeds user `dev_student` (ID: 1), eight courses, and seventeen class schedule slots. The command `npm run dev` logs in as `dev_student` automatically.
 - **Production Storage:** Production builds initialize blank SQLite tables in `nyare.db`. Users register new accounts through the web interface. Nyare uses username-based authentication and does not require passwords.
 
 ---
 
 ## 5. Application Architecture
 
+## Project Structure
+<img width="367" height="512" alt="image" src="https://github.com/user-attachments/assets/1b0eac78-fe45-42cf-a860-6edea619d611" />
+
+
+## Overview
+
 Nyare uses a layered Spring Boot architecture paired with a Vue single-page application:
 
-```
-[ Desktop Launcher / Browser ]
-           │
-           ▼
-   [ Vue 3 Frontend ] ──( Vite / Static Resource )──┐
-           │                                        │
-      HTTP / SSE                                    │
-           ▼                                        │
- [ Spring Boot Controllers ] ◄──────────────────────┘
-           │
-     Service Layer ◄──► [ Spring AI Engine ] ──► [ Google / Groq ]
-           │
-    Repository Layer
-           │
-    [ SQLite DB (WAL) ]
-```
+<img width="386" height="512" alt="image" src="https://github.com/user-attachments/assets/7bc9dce6-0bf5-4b6a-abee-2ff07ded4e39" />
+
 
 - **Controller Layer:** Exposes REST endpoints and Server-Sent Event streams.
 - **Service Layer:** Enforces domain invariants, transaction boundaries, and user session scopes.
